@@ -45,8 +45,8 @@ function DR_Pin:init()
 	K_dr_HighSpell=1.0 + K_dr_SpellDmg*var.dr --高速符卡伤害
 	K_dr_BonusLimit=1.0 --获得奖残奖雷所需的最低指针绝对值
 	
-	K_MaxSpell=100 --符卡槽耐久最大值基础值
-	K_dr_SpellHp=5 --梦现指针对符卡槽耐久最大值的影响系数
+	K_MaxSpell=60 --符卡槽耐久最大值基础值
+	K_dr_SpellHp=3 --梦现指针对符卡槽耐久最大值的影响系数
 	K_SpellCost=20 --单次符卡攻击消耗的符卡槽耐久
 	K_SpellDecay=0.1 --每帧符卡槽耐久衰减系数
 	
@@ -111,8 +111,10 @@ function DR_Pin:frame()
 		else
 			var.cp = 0.0
 		end
-		if (var.cp<=1 and abs(var.dr)>1-	(1-var.cp) * K_dr_reduce) then--combo_point小于1且dr大于1的情况下d才会渐渐减小，且越接近1减少越慢
-			var.dr = (abs(var.dr)-			(1-var.cp) * K_dr_reduce) * sign(var.dr)
+		local drReduce=K_dr_reduce
+		if IsValid(_boss) then drReduce=K_dr_reduce/2 else drReduce=K_dr_reduce end
+		if (var.cp<=1 and abs(var.dr)>1-	(1-var.cp) * drReduce) then--combo_point小于1且dr大于1的情况下d才会渐渐减小，且越接近1减少越慢
+			var.dr = (abs(var.dr)-			(1-var.cp) * drReduce) * sign(var.dr)
 		end --ddr为0时，dr减的最快
 		
 		--这段是给资源的代码
@@ -246,6 +248,7 @@ function player_class:init()
 	self.PowerDelay1=-1 --上限减少时子机存留时间倒计时，-1表示没有在倒计时
 	--self.PowerDelay2=-1 --【当出现连射灵击和符卡的情况时，有可能出现两个子机同时在减损中的状态】新方案决定当同时减损时直接去掉第一个在减损的子机
 	self.SpellIndex=0
+	self.SC_name=''
 	
 	New(DR_Pin)
 		
@@ -299,7 +302,8 @@ function player_class:frame()
 			--end
 
 --------------------------------------------------------新的符卡设计
-            if self.SpellCardHp>0 then self.SpellCardHp=max(0,self.SpellCardHp-K_SpellDecay) else self.SpellTimer1=-1 self.KeyDownTimer1=0 end
+            if self.SpellCardHp==0 and self.SpellTimer1>=0 then self.SpellTimer1=-1 self.KeyDownTimer1=0 self.SC_name='' end
+            if self.SpellCardHp>0 and self.SpellTimer1>90 then self.SpellCardHp=max(0,self.SpellCardHp-K_SpellDecay) end
 			if self.NextSingleSpell>0 then self.NextSingleSpell=self.NextSingleSpell-1 end
 			if self.SpellTimer1>0 then self.SpellTimer1=self.SpellTimer1+1 end
 			
@@ -307,30 +311,38 @@ function player_class:frame()
 			
 			if KeyIsDown'spell' and not lstg.var.block_spell then
 			    if self.SpellTimer1>90 then self.KeyDownTimer1=self.KeyDownTimer1+1 end
-			    if self.SpellCardHp>=K_SpellCost and self.NextSingleSpell==0 then
-				    self.NextSingleSpell=90
-					self.class.newSpell(self)
-				else if self.SpellCardHp<K_SpellCost and self.nextspell<=0 and self.NextSingleSpell==0 and lstg.var.bomb>0 then
-			             item.PlayerSpell()
-						 if self.slow==1 then self.SpellIndex=lstg.var.bomb+3
-						 else self.SpellIndex=lstg.var.bomb end
-				         lstg.var.bomb=lstg.var.bomb-1
-						 ui.menu.LoseSpell=15
-				         self.SpellCardHp=K_MaxSpell+lstg.var.dr*K_dr_SpellHp
+				if (lstg.var.bomb>0 and self.death>90) or (self.SpellCardHp==0 and self.nextspell<=0 and self.NextSingleSpell==0 and lstg.var.bomb>0) then
+			        item.PlayerSpell()
+					if self.slow==1 then self.SpellIndex=lstg.var.bomb+3
+					else self.SpellIndex=lstg.var.bomb end
+					
+					if player.SpellIndex==1 then SpellName='灵符「梦想妙珠」' end
+					if player.SpellIndex==2 then SpellName='灵符「梦想封印」' end
+					if player.SpellIndex==3 then SpellName='神灵「梦想封印·寂」' end
+					if player.SpellIndex==4 then SpellName='珠符「明珠暗投」' end
+					if player.SpellIndex==5 then SpellName='玉符「阴阳宝玉」' end
+					if player.SpellIndex==6 then SpellName='宝具「阴阳飞鸟井」' end
+					
+				    lstg.var.bomb=lstg.var.bomb-1
+					ui.menu.LoseSpell=15
+				    self.SpellCardHp=K_MaxSpell+lstg.var.dr*K_dr_SpellHp
 						 
-						 self.SpellTimer1=1
-						 self.KeyDownTimer1=0
-						 PlaySound('cat00',0.7)
-						 New(player_spell_mask,64,64,200,30,60,30)
-						 New(bullet_cleaner,player.x,player.y, 350, 60, 90, 1)
-						 self.protect=90
+					self.SpellTimer1=1
+					self.KeyDownTimer1=0
+					New(player_spell_mask,64,64,200,30,60,30)
+					New(bullet_cleaner,player.x,player.y, 270, 60, 90, 1)
+					self.protect=90
 						 
-				         self.death=0
-				         self.nextcollect=90
-						 self.NextSingleSpell=180
+				    self.death=0
+				    self.nextcollect=90
+					self.NextSingleSpell=180
+					self.nextspell=360
 						 
-						 ui.menu.HighlightFlag=30
-					 end
+					ui.menu.HighlightFlag=30
+			    else if self.SpellCardHp>0 and self.NextSingleSpell==0 then
+				         self.NextSingleSpell=90
+					     self.class.newSpell(self)
+					end
 				end
 			else if self.KeyDownTimer1>0 then self.KeyDownTimer1=0 end
 			end
@@ -398,7 +410,7 @@ function player_class:frame()
 		-----------------------------------------------
 		
 		--灵击
-		if KeyIsDown'special' and not self.dialog and self.graze_c>=K_graze_c_min and lstg.var.power>=100 then 
+		if KeyIsDown'special' and not self.dialog and self.graze_c>=K_graze_c_min and lstg.var.power>=100 and self.SpellTimer1==-1 then 
 		    self.offset = 100*(1.0 + K_graze_c_k * (self.graze_c - K_graze_c_min))
 			New(bullet_cleaner,player.x,player.y, 125, 20, 45, 1)
 			-- 待补充：类辉针城梦A的BOMB向外扩散的气场的特效
@@ -406,6 +418,7 @@ function player_class:frame()
 			self.graze_c = 0
 			PlaySound('ophide',0.1)
 			self.ccced_in_chapter=true
+			self.protect=max(20,self.protect)
 			self.class.ccc(self) -- 释放灵击
 			DR_Pin.pin_shift(K_dr_ccced)   --释放灵击梦现指针增加
 		end
@@ -450,7 +463,7 @@ function player_class:frame()
 			--self.collect_time=0
 			if KeyIsDown'slow' then
 				for i,o in ObjList(GROUP_ITEM) do
-					if Dist(self,o)<(48*distant) then
+					if Dist(self,o)<(48*distant) or (self.SpellTimer1>0 and self.SpellTimer1<=90) then
 						if o.attract<3 then
 							o.attract=max(o.attract,3) 
 							o.target=self
@@ -459,7 +472,7 @@ function player_class:frame()
 				end
 			else
 				for i,o in ObjList(GROUP_ITEM) do
-					if Dist(self,o)<(24*distant) then 
+					if Dist(self,o)<(24*distant) or (self.SpellTimer1>0 and self.SpellTimer1<=90) then 
 						if o.attract<3 then
 							o.attract=max(o.attract,3) 
 							o.target=self
@@ -643,6 +656,13 @@ function player_class:findtarget()
 			local pri=abs(dy)/(abs(dx)+0.01)
 			if pri>maxpri then maxpri=pri self.target=o end
 		end
+	end
+end
+
+function player_class:SpellClear()
+	if self.SpellCardHp>0 then
+		lstg.var.bombchip=lstg.var.bombchip+self.SpellCardHp/K_MaxSpell*0.4
+		self.SpellCardHp=0
 	end
 end
 

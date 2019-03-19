@@ -186,7 +186,8 @@ function reimu_player:newSpell()
 		if self.SpellIndex==4 then
 		    task.New(player,function()
 			    for i=1,9 do
-				    New(reimu_orb_T,player.x,player.y,10,i*20,4+deep,0.7+0.3*deep,0.2,player)
+				    --New(reimu_orb_T,player.x,player.y,10,i*20,4+deep,0.7+0.3*deep,0.2,player)
+					New(reimu_orb_T,player.x,player.y,10,i*20,4+deep,0.35+0.15*deep,K_dr_SlowSpell,player)
 				    task.Wait(5)
 			    end
 		    end)
@@ -194,7 +195,8 @@ function reimu_player:newSpell()
 		if self.SpellIndex==5 then
 		    task.New(player,function()
 			    for i=1,3 do
-				    New(reimu_orb_M,player.x,player.y,3,i*45,1+deep,0.7+0.3*deep,1,player)
+				    --New(reimu_orb_M,player.x,player.y,3,i*45,1+deep,0.7+0.3*deep,1,player)
+					New(reimu_orb_M,player.x,player.y,3,i*45,1+deep,0.35+0.15*deep,K_dr_SlowSpell*3,player)
 				    task.Wait(10)
 			    end
 		    end)
@@ -202,12 +204,13 @@ function reimu_player:newSpell()
 		if self.SpellIndex==6 then
 		    task.New(player,function() 
 			    if deep == 1 then
-				    lstg.tmpvar.orb=New(reimu_orb_H,player.x,player.y)
+				    --lstg.tmpvar.orb=New(reimu_orb_H,player.x,player.y)
+					lstg.tmpvar.orb=New(reimu_orb_H,player.x,player.y,K_dr_SlowSpell*10)
 			    end
 			    local orb=lstg.tmpvar.orb
 			    orb.released = false
 			    for i=1,90 do
-				    orb.omega=orb.omega-0.02
+				    orb.omiga=orb.omiga-0.02
 				    orb.s=orb.s+0.0037037*2
 				    orb.x=player.x
 				    orb.y=player.y+10+225*orb.s
@@ -253,7 +256,7 @@ function reimu_player:newSpell()
 		--end
 	end
 	
-    self.SpellCardHp=self.SpellCardHp-K_SpellCost
+    self.SpellCardHp=max(0,self.SpellCardHp-K_SpellCost)
 end
 -------------------------------------------------------
 function reimu_player:render()
@@ -270,6 +273,19 @@ function reimu_player:render()
 				 SetImageState('reimu_support'..x,'',Color(255,255,255,255)) end
 		end
 	end
+	if self.SC_name~='' then
+		SetImageState('boss_spell_name_bg','',Color(255,255,255,255))
+	    if self.SpellTimer1<=90 then
+            Render('boss_spell_name_bg',-150,-100-self.SpellTimer1)
+            RenderTTF('sc_name',self.SC_name,-149,-149,-110-self.SpellTimer1,-110-self.SpellTimer1,Color(255,0,0,0),'right','noclip')
+            RenderTTF('sc_name',self.SC_name,-150,-150,-109-self.SpellTimer1,-109-self.SpellTimer1,Color(255,255,255,255),'right','noclip')
+		else
+			Render('boss_spell_name_bg',-150,-190)
+            RenderTTF('sc_name',self.SC_name,-149,-149,-200,-200,Color(255,0,0,0),'right','noclip')
+            RenderTTF('sc_name',self.SC_name,-150,-150,-199,-199,Color(255,255,255,255),'right','noclip')
+		end
+	end
+	
 	player_class.render(self)
 	task.Do(player)
 end
@@ -929,7 +945,7 @@ function reimu_orb_M:render()
 end
 -------------------------------------
 reimu_orb_H = Class(object)
-function reimu_orb_H:init(x,y)
+function reimu_orb_H:init(x,y,dmg)
 	self.group=GROUP_PLAYER_BULLET
 	self.layer=LAYER_PLAYER_BULLET
 	self.vscale=0
@@ -940,9 +956,9 @@ function reimu_orb_H:init(x,y)
 	self.x=x
 	self.y=y
 	self.rot=0
-	self.omega=6
+	self.omiga=6
 	self.v=v
-	self.dmg=2.5
+	self.dmg=dmg
 	self.bound=false
 	self.player=player
 	self.img='orb_huge'
@@ -951,7 +967,7 @@ function reimu_orb_H:init(x,y)
 end
 
 function reimu_orb_H:frame() 
-	self.rot=self.rot+self.omega
+	--self.rot=self.rot+self.omega
 	if self.released then 
 		--misc.ShakeScreen(2,120)
 		self.y=self.y+2

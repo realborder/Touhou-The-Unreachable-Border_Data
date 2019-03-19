@@ -24,3 +24,5 @@ Include'ex\\crazystorm.lua'
 Include'ex\\system.lua'
 Include'ex\\systems\\act7\\system_act7.lua'
 Include'sp\\sp.lua'--OLC神的sp加强库
+
+Include'THlib\\ChapFin.lua'

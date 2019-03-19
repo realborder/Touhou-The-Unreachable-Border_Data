@@ -12,6 +12,8 @@ function boss:init(x, y, name, cards, bg, diff)
     enemybase.init(self,999999999)
     self.x = x
     self.y = y
+	self.ringX=self.x
+	self.ringY=self.y
     self.img = 'undefined'
     --boss魔法阵
     self.aura_alpha = 255 --法阵透明度

@@ -1,7 +1,7 @@
 LoadTexture('item','THlib\\item\\item.png')
 --【修改标记】增加了正面道具和负面道具在这儿
 --LoadImageGroup('item','item',0,0,32,32,2,5,8,8)
-LoadImageGroup('item','item',0,0,32*2,32*2,2,5,8,8)
+LoadImageGroup('item','item',0,0,32*2,32*2,2,5,16,16)
 --LoadImageGroup('item_up','item',64,0,32,32,2,5)
 LoadImageGroup('item_up','item',64*2,0,32*2,32*2,2,5)
 SetImageState('item8','mul+add',Color(0xC0FFFFFF))
@@ -473,6 +473,8 @@ function item:PlayerMiss()
 --			New(item_power,player.x,player.y+10,3,a)
 --		end
 --	else New(item_power_full,player.x,player.y+10) end
+    lstg.var.bombchip=0
+	self.SpellCardHp=0
 end
 
 function item.PlayerSpell()
@@ -491,7 +493,7 @@ end
 
 function item.PlayerGraze()
 	lstg.var.graze=lstg.var.graze+1
-	DR_Pin.add(0.1)
+	if IsValid(_boss) then DR_Pin.add(0.2) else DR_Pin.add(0.1) end
 	if player.graze_c<K_graze_c_max then player.graze_c=min(K_graze_c_max,player.graze_c + 1 + (lstg.var.dr * K_dr_graze_c)) end
 	
 --	lstg.var.score=lstg.var.score+50

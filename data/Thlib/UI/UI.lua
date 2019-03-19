@@ -335,16 +335,22 @@ function ResetUI()
 			    for i=1,lstg.var.lifeleft do Render('player_life',469.5+12*i,376.3,0,0.5) end
 				Render('player_life',469.5+12*(lstg.var.lifeleft+1),376.3,0,0.5*(ui.menu.LoseLife/15),1.5-ui.menu.LoseLife/15)
 				if lstg.var.lifeleft<10 then
+				    local chipNum=lstg.var.chip/100
 				    SetImageState('player_life','mul+add',Color(125,255,255,255))
-			        Render('player_life',469.5+12*(lstg.var.lifeleft+2),376.3,0,0.5*(lstg.var.chip/100),0.5)
+					for i=1,(11-(lstg.var.lifeleft+1)) do
+			            Render('player_life',469.5+12*(12-i),376.3,0,0.5*min(1,max(0,(lstg.var.lifeleft+1)+chipNum-(11-i))),0.5)
+					end
 				end
 				ui.menu.LoseLife=ui.menu.LoseLife-1
 			else
 			    SetImageState('player_life','mul+add',Color(255,255,255,255))
 			    for i=1,lstg.var.lifeleft do Render('player_life',469.5+12*i,376.3,0,0.5) end
 				if lstg.var.lifeleft<11 then
+				    local chipNum=lstg.var.chip/100
 				    SetImageState('player_life','mul+add',Color(125,255,255,255))
-			        Render('player_life',469.5+12*(lstg.var.lifeleft+1),376.3,0,0.5*(lstg.var.chip/100),0.5)
+					for i=1,(11-lstg.var.lifeleft) do
+			            Render('player_life',469.5+12*(12-i),376.3,0,0.5*min(1,max(0,lstg.var.lifeleft+chipNum-(11-i))),0.5)
+					end
 				end
 			end
 			--for i=1,8 do
@@ -355,16 +361,25 @@ function ResetUI()
 			    for i=1,lstg.var.bomb do Render('spell_life',469.5+12*i,356.8,0,0.5) end
 				Render('spell_life',469.5+12*(lstg.var.bomb+1),356.8,0,0.5*(ui.menu.LoseSpell/15),1.5-ui.menu.LoseSpell/15)
 				if lstg.var.bomb<2 then
+				    local chipNum=lstg.var.bombchip/100
 				    SetImageState('spell_life','mul+add',Color(125,255,255,255))
-			        Render('spell_life',469.5+12*(lstg.var.bomb+2),356.8,0,0.5*(lstg.var.bombchip/100),0.5)
+					if lstg.var.bomb==1 then
+			            Render('spell_life',469.5+12*(lstg.var.bomb+2),356.8,0,0.5*min(1,chipNum),0.5)
+					else
+					    if chipNum>1 then Render('spell_life',469.5+12*(lstg.var.bomb+3),356.8,0,0.5*min(1,chipNum-1),0.5) end
+					    Render('spell_life',469.5+12*(lstg.var.bomb+2),356.8,0,0.5*min(1,chipNum),0.5)
+					end
 				end
 				ui.menu.LoseSpell=ui.menu.LoseSpell-1
 			else
 			    SetImageState('spell_life','mul+add',Color(255,255,255,255))
 			    for i=1,lstg.var.bomb do Render('spell_life',469.5+12*i,356.8,0,0.5) end
 				if lstg.var.bomb<3 then
+				    local chipNum=lstg.var.bombchip/100
 				    SetImageState('spell_life','mul+add',Color(125,255,255,255))
-			        Render('spell_life',469.5+12*(lstg.var.bomb+1),356.8,0,0.5*(lstg.var.bombchip/100),0.5)
+					for i=1,(3-lstg.var.bomb) do
+			            Render('spell_life',469.5+12*(4-i),356.8,0,0.5*min(1,max(0,lstg.var.bomb+chipNum-(3-i))),0.5)
+					end
 				end
 			end
 			
