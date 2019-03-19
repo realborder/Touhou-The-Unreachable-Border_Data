@@ -14,6 +14,15 @@ for i=1,16 do SetImageState('playerring2'..i,'mul+add',Color(0x80FFFFFF)) end
 LoadImageFromFile('UI_gaming_item_collect_word','THlib\\UI\\UI_gaming_item_collect_word.png')
 LoadImageFromFile('UI_gaming_item_collect_line','THlib\\UI\\UI_gaming_item_collect_line.png')
 
+LoadImageFromFile('base_spell_hp','THlib\\player\\ring00.png')
+SetImageState('base_spell_hp','',Color(0xFFFF0000))
+LoadTexture('spellbar','THlib\\player\\spellbar.png')
+--LoadImage('spell_node','spellbar',20,0,12,16)
+LoadImage('spellbar1','spellbar',4,0,2,2)
+SetImageState('spellbar1','',Color(0xFFFFFFFF))
+LoadImage('spellbar2','player',116,0,2,2)
+SetImageState('spellbar2','',Color(0x77D5CFFF))
+
 ----Base class of all player characters (abstract)----
 
 DR_Pin=Class(object)
@@ -239,6 +248,7 @@ function player_class:init()
 	self.graze_c=0
 	self.offset=0.0 --灵击火力减损值
 	self.SpellCardHp=0 --屏幕实际显示的符卡槽耐久数值
+	self.SpellCardHpMax=K_MaxSpell --当前最大耐久值
 	self.NextSingleSpell=0 --符卡释放期间单次符卡攻击间隔
 	self.SpellTimer1=-1 --用于符卡开始后帧计时
 	self.KeyDownTimer1=0 --用于记录持续按压时长
@@ -325,7 +335,8 @@ function player_class:frame()
 					
 				    lstg.var.bomb=lstg.var.bomb-1
 					ui.menu.LoseSpell=15
-				    self.SpellCardHp=K_MaxSpell+lstg.var.dr*K_dr_SpellHp
+				    self.SpellCardHpMax=K_MaxSpell+lstg.var.dr*K_dr_SpellHp
+				    self.SpellCardHp=self.SpellCardHpMax
 						 
 					self.SpellTimer1=1
 					self.KeyDownTimer1=0
@@ -625,6 +636,13 @@ function player_class:render()
 				misc.RenderRing('playerring2',self.x,self.y,50,43, self.ani*3*2,32,16)
 			end
 		end
+		
+		
+		Renderspellbar(self.x,self.y,90,360,60,64,360,1)
+		Renderspellhp(self.x,self.y,90,360*self.SpellCardHp/self.SpellCardHpMax,60,64,360*self.SpellCardHp/self.SpellCardHpMax+2,1)
+		Render('base_spell_hp',self.x,self.y,0,0.548,0.548)
+        Render('base_spell_hp',self.x,self.y,0,0.512,0.512)
+		Render('life_node',self.x-63*cos(K_SpellCost/self.SpellCardHpMax),self.y+63*sin(K_SpellCost/self.SpellCardHpMax),K_SpellCost/self.SpellCardHpMax-90,1.1)
 	end
 end
 
@@ -663,6 +681,31 @@ function player_class:SpellClear()
 	if self.SpellCardHp>0 then
 		lstg.var.bombchip=lstg.var.bombchip+self.SpellCardHp/K_MaxSpell*0.4
 		self.SpellCardHp=0
+	end
+end
+
+function Renderspellhp(x,y,rot,la,r1,r2,n,c)
+	local da=la/n
+	local nn=int(n*c)
+	for i=1,nn do
+		local a=rot+da*i
+		Render4V('spellbar1',
+			r1*cos(a+da)+x,r1*sin(a+da)+y,0.5,
+			r2*cos(a+da)+x,r2*sin(a+da)+y,0.5,
+			r2*cos(a)+x,r2*sin(a)+y,0.5,
+			r1*cos(a)+x,r1*sin(a)+y,0.5)
+	end
+end
+function Renderspellbar(x,y,rot,la,r1,r2,n,c)
+	local da=la/n
+	local nn=int(n*c)
+	for i=1,nn do
+		local a=rot+da*i
+		Render4V('spellbar2',
+			r1*cos(a+da)+x,r1*sin(a+da)+y,0.5,
+			r2*cos(a+da)+x,r2*sin(a+da)+y,0.5,
+			r2*cos(a)+x,r2*sin(a)+y,0.5,
+			r1*cos(a)+x,r1*sin(a)+y,0.5)
 	end
 end
 
