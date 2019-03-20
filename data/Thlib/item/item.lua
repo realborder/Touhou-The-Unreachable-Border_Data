@@ -1,5 +1,5 @@
 LoadTexture('item','THlib\\item\\item.png')
---¡¾ĞŞ¸Ä±ê¼Ç¡¿Ôö¼ÓÁËÕıÃæµÀ¾ßºÍ¸ºÃæµÀ¾ßÔÚÕâ¶ù
+--ã€ä¿®æ”¹æ ‡è®°ã€‘å¢åŠ äº†æ­£é¢é“å…·å’Œè´Ÿé¢é“å…·åœ¨è¿™å„¿
 --LoadImageGroup('item','item',0,0,32,32,2,5,8,8)
 LoadImageGroup('item','item',0,0,32*2,32*2,2,5,16,16)
 --LoadImageGroup('item_up','item',64,0,32,32,2,5)
@@ -47,7 +47,7 @@ function item:frame()
 	else self.vy=max(self.dy-0.03,-1.7) end
 	if self.y<lstg.world.boundb then 
 	    Del(self)
-		DR_Pin.add(K_dr_item) --ÒÅÂ©µÀ¾ßÃÎÏÖÖ¸ÕëÍùµ±Ç°²àÆ«ÒÆ
+		DR_Pin.add(K_dr_item) --é—æ¼é“å…·æ¢¦ç°æŒ‡é’ˆå¾€å½“å‰ä¾§åç§»
 	end
 	if self.attract>=8 then self.collected=true end
 end
@@ -109,7 +109,7 @@ function item_power:collect()
 	-- if self.attract>=8 then
 		-- lstg.var.collectitem[self.num]=lstg.var.collectitem[self.num]+1
 		-- if player.nextcollect>0 and player.nextcollect<15 and self.collected and player.itemed then player.nextcollect=15 end
-	-- end--Õâ¶ÎÓ¦¸Ã¾ÍÊÇhzcÊÕµãÏµÍ³ÁË
+	-- end--è¿™æ®µåº”è¯¥å°±æ˜¯hzcæ”¶ç‚¹ç³»ç»Ÿäº†
 --	Getlife(0.3)
 --	local var=lstg.var
 --	var.itembar[1]=var.itembar[1]+1
@@ -251,7 +251,7 @@ function item_point:collect()
 --	var.itembar[3]=var.itembar[3]+1
 end
 
---ĞÂÔöµÄÕıÃæµÀ¾ß£¨ÒÑ·ÏÆú£©
+--æ–°å¢çš„æ­£é¢é“å…·ï¼ˆå·²åºŸå¼ƒï¼‰
 --item_positive=Class(item)
 --function item_positive:init(x,y) 
 --	item.init(self,x,y,11)
@@ -326,10 +326,10 @@ function item:StartChipBonus()
 end
 
 function item:EndChipBonus(x,y)
-	if (not self.missed_in_chapter) and (not self.spelled_in_chapter) and (not self.ccced_in_chapter) then--·û¿¨»ò·Ç·ûNMNBNCÖ¸ÕëÖµ-0.2
+	if (not self.missed_in_chapter) and (not self.spelled_in_chapter) and (not self.ccced_in_chapter) then--ç¬¦å¡æˆ–éç¬¦NMNBNCæŒ‡é’ˆå€¼-0.2
 		DR_Pin.pin_shift(-0.2)
 	else
-		if (not self.spelled_in_chapter) and (not self.ccced_in_chapter) then DR_Pin.pin_shift(-0.05)end--Èç¹û²»Ğ¡ĞÄ×²ÁË-0.05
+		if (not self.spelled_in_chapter) and (not self.ccced_in_chapter) then DR_Pin.pin_shift(-0.05)end--å¦‚æœä¸å°å¿ƒæ’äº†-0.05
 	end
 	
 	-- if self.chip_bonus and self.bombchip_bonus then
@@ -359,7 +359,7 @@ function item.PlayerInit()
 	--lstg.var.chip_bonus=false
 	--lstg.var.bombchip_bonus=false
 	
-	lstg.var.missed_in_chapter = false--ÓÃÓÚ¼ÇÂ¼µ¥chapterÊÇ·ñmiss»ò·Åb
+	lstg.var.missed_in_chapter = false--ç”¨äºè®°å½•å•chapteræ˜¯å¦missæˆ–æ”¾b
 	lstg.var.spelled_in_chapter = false
 	lstg.var.ccced_in_chapter = false
 	
@@ -379,7 +379,7 @@ function item.PlayerReinit()
 	--if lstg.var.score % 10 ~= 9 then item.AddScore(1) end
 end
 ------------------------------------------
---HZCµÄÊÕµãÏµÍ³
+--HZCçš„æ”¶ç‚¹ç³»ç»Ÿ
 function item.playercollect(n)
 	New(tasker,function()
 		local z=0
@@ -485,7 +485,7 @@ function item.PlayerSpell()
 	if player.death==0 then
 		DR_Pin.pin_shift(2.0)
 	else
-		DR_Pin.pin_shift(3.0)--Èç¹ûÊÇ¾öËÀµÄ»°¾Í¶à¼Ó1
+		DR_Pin.pin_shift(3.0)--å¦‚æœæ˜¯å†³æ­»çš„è¯å°±å¤šåŠ 1
 	end
 --	lstg.var.bombchip_bonus=false
 	player.spelled_in_chapter = true
@@ -499,7 +499,7 @@ function item.PlayerGraze()
 --	lstg.var.score=lstg.var.score+50
 end
 
---ÕâÒ»ĞĞÊÇ¾ö¶¨×î´óµÃµãµÄµØ·½
+--è¿™ä¸€è¡Œæ˜¯å†³å®šæœ€å¤§å¾—ç‚¹çš„åœ°æ–¹
 function item.PointRateFunc()
 	local var=lstg.var
 	local r=int(  (  10000 + int(var.graze/10)*10 + int(var.faith/10)*10  ) * (max((var.dr or -1)*-1,1))  /10)*10

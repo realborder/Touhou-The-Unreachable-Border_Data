@@ -273,18 +273,6 @@ function reimu_player:render()
 				 SetImageState('reimu_support'..x,'',Color(255,255,255,255)) end
 		end
 	end
-	if self.SC_name~='' then
-		SetImageState('boss_spell_name_bg','',Color(255,255,255,255))
-	    if self.SpellTimer1<=90 then
-            Render('boss_spell_name_bg',-150,-100-self.SpellTimer1)
-            RenderTTF('sc_name',self.SC_name,-149,-149,-110-self.SpellTimer1,-110-self.SpellTimer1,Color(255,0,0,0),'right','noclip')
-            RenderTTF('sc_name',self.SC_name,-150,-150,-109-self.SpellTimer1,-109-self.SpellTimer1,Color(255,255,255,255),'right','noclip')
-		else
-			Render('boss_spell_name_bg',-150,-190)
-            RenderTTF('sc_name',self.SC_name,-149,-149,-200,-200,Color(255,0,0,0),'right','noclip')
-            RenderTTF('sc_name',self.SC_name,-150,-150,-199,-199,Color(255,255,255,255),'right','noclip')
-		end
-	end
 	
 	player_class.render(self)
 	task.Do(player)

@@ -23,6 +23,8 @@ SetImageState('spellbar1','',Color(0xFFFFFFFF))
 LoadImage('spellbar2','player',116,0,2,2)
 SetImageState('spellbar2','',Color(0x77D5CFFF))
 
+LoadTTF('sc_card','THlib\\UI\\ttf\\æ¨ä»»ä¸œç«¹çŸ³ä½“-Heavy.ttf',40)
+
 ----Base class of all player characters (abstract)----
 
 DR_Pin=Class(object)
@@ -33,42 +35,42 @@ function DR_Pin:init()
 	self.layer=LAYER_TOP
 	self.x=0
 	self.y=0
-	var.dr=0.01--ÃÎ(dream)ÏÖ(reality)Ö¸ÕëÖµ
-	var.cp=0.0--combo_point Á¬»÷µãÊı£¬ÓÃÀ´¿ØÖÆdrµÄ¼õÉÙ
+	var.dr=0.01--æ¢¦(dream)ç°(reality)æŒ‡é’ˆå€¼
+	var.cp=0.0--combo_point è¿å‡»ç‚¹æ•°ï¼Œç”¨æ¥æ§åˆ¶drçš„å‡å°‘
 	tmpv.bonus_count=0
 	C_BOUNS_LIMIT_IN_CHAPTER=5000
-	K_dr=0.003--ÓÃÓÚ¿ØÖÆdrµÄÔö³¤£¬Ã¿¸öchapter¿ÉÄÜ¶¼ÒªÎ¢µ÷£¬ËùÒÔ¼ÇÔÚlstg.varÀïÁË
+	K_dr=0.003--ç”¨äºæ§åˆ¶drçš„å¢é•¿ï¼Œæ¯ä¸ªchapterå¯èƒ½éƒ½è¦å¾®è°ƒï¼Œæ‰€ä»¥è®°åœ¨lstg.varé‡Œäº†
 	
 
-	K_dr_ccced=1.0 --ÊÍ·ÅÁé»÷Ê±ÃÎÏÖÖ¸ÕëµÄÔö¼ÓÁ¿
-	K_dr_item=1.0  --ÒÅÂ©µÀ¾ßÃÎÏÖÖ¸Õë±ä»¯ÏµÊı
-	K_dr_enemy=1.0 --ÒÅÂ©µĞ»úÃÎÏÖÖ¸Õë±ä»¯ÏµÊı
-	K_graze_c_max=125 --²Áµ¯¼ÆÊıÉÏÏŞ
-	K_graze_c_min=50 --²Áµ¯¼ÆÊıÏÂÏŞ
-	K_dr_graze_c=0.04  --²Áµ¯ÏµÊı
-	K_graze_c_k=(-0.75)/(K_graze_c_max - K_graze_c_min) --ÊÍ·ÅÁé»÷POWWER¼õÉÙ±ÈÀı
-	K_dr_collectline=22.4 --ÃÎÏÖÖ¸ÕëÖ¸ÏòÏÖÊµ²àÊ±ÊÕµãÏß½µµÍÏµÊı
-	K_dr_dist=0.2 --ÃÎÏÖÖ¸ÕëÖ¸ÏòÏÖÊµ²àÊ±µÀ¾ßÎüÊÕ·¶Î§±ä´óÏµÊı
-	K_dr_SpellDmg=0.02 --ÃÎÏÖÖ¸Õë¶Ô·û¿¨ÉËº¦Ó°ÏìÏµÊı
-	K_dr_SlowSpell=1.25 + K_dr_SpellDmg*var.dr --µÍËÙ·û¿¨ÉËº¦
-	K_dr_HighSpell=1.0 + K_dr_SpellDmg*var.dr --¸ßËÙ·û¿¨ÉËº¦
-	K_dr_BonusLimit=1.0 --»ñµÃ½±²Ğ½±À×ËùĞèµÄ×îµÍÖ¸Õë¾ø¶ÔÖµ
+	K_dr_ccced=1.0 --é‡Šæ”¾çµå‡»æ—¶æ¢¦ç°æŒ‡é’ˆçš„å¢åŠ é‡
+	K_dr_item=1.0  --é—æ¼é“å…·æ¢¦ç°æŒ‡é’ˆå˜åŒ–ç³»æ•°
+	K_dr_enemy=1.0 --é—æ¼æ•Œæœºæ¢¦ç°æŒ‡é’ˆå˜åŒ–ç³»æ•°
+	K_graze_c_max=125 --æ“¦å¼¹è®¡æ•°ä¸Šé™
+	K_graze_c_min=50 --æ“¦å¼¹è®¡æ•°ä¸‹é™
+	K_dr_graze_c=0.04  --æ“¦å¼¹ç³»æ•°
+	K_graze_c_k=(-0.75)/(K_graze_c_max - K_graze_c_min) --é‡Šæ”¾çµå‡»POWWERå‡å°‘æ¯”ä¾‹
+	K_dr_collectline=22.4 --æ¢¦ç°æŒ‡é’ˆæŒ‡å‘ç°å®ä¾§æ—¶æ”¶ç‚¹çº¿é™ä½ç³»æ•°
+	K_dr_dist=0.2 --æ¢¦ç°æŒ‡é’ˆæŒ‡å‘ç°å®ä¾§æ—¶é“å…·å¸æ”¶èŒƒå›´å˜å¤§ç³»æ•°
+	K_dr_SpellDmg=0.02 --æ¢¦ç°æŒ‡é’ˆå¯¹ç¬¦å¡ä¼¤å®³å½±å“ç³»æ•°
+	K_dr_SlowSpell=1.25 + K_dr_SpellDmg*var.dr --ä½é€Ÿç¬¦å¡ä¼¤å®³
+	K_dr_HighSpell=1.0 + K_dr_SpellDmg*var.dr --é«˜é€Ÿç¬¦å¡ä¼¤å®³
+	K_dr_BonusLimit=1.0 --è·å¾—å¥–æ®‹å¥–é›·æ‰€éœ€çš„æœ€ä½æŒ‡é’ˆç»å¯¹å€¼
 	
-	K_MaxSpell=60 --·û¿¨²ÛÄÍ¾Ã×î´óÖµ»ù´¡Öµ
-	K_dr_SpellHp=3 --ÃÎÏÖÖ¸Õë¶Ô·û¿¨²ÛÄÍ¾Ã×î´óÖµµÄÓ°ÏìÏµÊı
-	K_SpellCost=20 --µ¥´Î·û¿¨¹¥»÷ÏûºÄµÄ·û¿¨²ÛÄÍ¾Ã
-	K_SpellDecay=0.1 --Ã¿Ö¡·û¿¨²ÛÄÍ¾ÃË¥¼õÏµÊı
+	K_MaxSpell=60 --ç¬¦å¡æ§½è€ä¹…æœ€å¤§å€¼åŸºç¡€å€¼
+	K_dr_SpellHp=3 --æ¢¦ç°æŒ‡é’ˆå¯¹ç¬¦å¡æ§½è€ä¹…æœ€å¤§å€¼çš„å½±å“ç³»æ•°
+	K_SpellCost=20 --å•æ¬¡ç¬¦å¡æ”»å‡»æ¶ˆè€—çš„ç¬¦å¡æ§½è€ä¹…
+	K_SpellDecay=0.1 --æ¯å¸§ç¬¦å¡æ§½è€ä¹…è¡°å‡ç³»æ•°
 	
 	K_cp=0.2
 	K_dr_reduce=0.002
 	
-	self.collectline_a=255 --ÊÕµãÏß¦ÁÖµ
-	self.k_a=(255-100)/(K_dr_collectline*5) --¦ÁÖµ¸Ä±äÏµÊı
+	self.collectline_a=255 --æ”¶ç‚¹çº¿Î±å€¼
+	self.k_a=(255-100)/(K_dr_collectline*5) --Î±å€¼æ”¹å˜ç³»æ•°
 	self.collectline_y=112
 	self.collectline_dy=112
 	
 	end
-function DR_Pin.add(v)--Ôö¼ÓÁ¬»÷µãÊı£¬Á¬»÷µãÊıµÄÔö¼Ó»áÈÃÃÎÏÖÖ¸ÕëÍùµ±Ç°·½ÏòÆ«
+function DR_Pin.add(v)--å¢åŠ è¿å‡»ç‚¹æ•°ï¼Œè¿å‡»ç‚¹æ•°çš„å¢åŠ ä¼šè®©æ¢¦ç°æŒ‡é’ˆå¾€å½“å‰æ–¹å‘å
 	local var=lstg.var
 	v = abs(v)
 	var.cp = var.cp + v * K_cp
@@ -76,19 +78,19 @@ function DR_Pin.add(v)--Ôö¼ÓÁ¬»÷µãÊı£¬Á¬»÷µãÊıµÄÔö¼Ó»áÈÃÃÎÏÖÖ¸ÕëÍùµ±Ç°·½ÏòÆ«
 		var.dr =  ( abs(var.dr) + v * K_dr ) * sign(var.dr)
 	 else
 		var.dr = sign(var.dr) * 5.0
-	 end --¿ØÖÆdrµÄÔö³¤ÌåÏÖÔÚÕâÀï
+	 end --æ§åˆ¶drçš„å¢é•¿ä½“ç°åœ¨è¿™é‡Œ
 end
 function DR_Pin.reduce(v)
 	local var=lstg.var
 	var.dr=max(0.01,abs(var.dr)-v)*sign(var.dr)
 end
-function DR_Pin.reset()--¹Ø¿¨½áËãµã¹Ì¶¨»áµ÷ÓÃµÄº¯Êı
+function DR_Pin.reset()--å…³å¡ç»“ç®—ç‚¹å›ºå®šä¼šè°ƒç”¨çš„å‡½æ•°
 	local var=lstg.var
 	local tmpv=lstg.tmpvar
-	lstg.var.cp=1.0--ÖØÖÃÁ¬»÷µãÊı
-	lstg.tmpvar.bonus_count=0--ÖØÖÃ½±²Ğ½±À×¼ÆÊı£¡£¡£¡£¡£¡
+	lstg.var.cp=1.0--é‡ç½®è¿å‡»ç‚¹æ•°
+	lstg.tmpvar.bonus_count=0--é‡ç½®å¥–æ®‹å¥–é›·è®¡æ•°ï¼ï¼ï¼ï¼ï¼
 
-	if not var.spelled_in_chapter and not var.ccced_in_chapter then--Ò»ĞÄÒ»ÒâÏëÅ¤µÄÈËÊÇ»á°Ñx¼ü¿ÙµôµÄ£¬ËùÒÔ¼´Ê¹µ¥chapterMissÁËÒ²¸øÒ»¶¨Æ«ÒÆ
+	if not var.spelled_in_chapter and not var.ccced_in_chapter then--ä¸€å¿ƒä¸€æ„æƒ³æ‰­çš„äººæ˜¯ä¼šæŠŠxé”®æŠ æ‰çš„ï¼Œæ‰€ä»¥å³ä½¿å•chapterMissäº†ä¹Ÿç»™ä¸€å®šåç§»
 		DR_Pin.pin_shift(-0.15)
 		if not var.missed_in_chapter then DR_Pin.pin_shift(-0.8) end
 	end
@@ -107,48 +109,48 @@ end
 function DR_Pin:frame() 
 	local var=lstg.var
 	local tmpv=lstg.tmpvar
-	tmpv.bonus_rate=0--Õâ¸öÊÇ¾ßÌåµÄ½±²Ğ½±À×Á¿
+	tmpv.bonus_rate=0--è¿™ä¸ªæ˜¯å…·ä½“çš„å¥–æ®‹å¥–é›·é‡
 	
 	if not player.dialog then
-		--Õâ¶ÎÊÇcp¼õÉÙµÄ´úÂë
+		--è¿™æ®µæ˜¯cpå‡å°‘çš„ä»£ç 
 		if (var.cp <=15.0 and var.cp>5.0) then
 			var.cp = var.cp-0.2
 		elseif (var.cp <= 5.0 and var.cp>1.8) then
 			var.cp = var.cp-0.04
 		elseif (var.cp <=1.8 and var.cp>=0.008) then
-			var.cp = var.cp-0.008--¾­Àú125Ö¡cp¹éÁã
+			var.cp = var.cp-0.008--ç»å†125å¸§cpå½’é›¶
 		else
 			var.cp = 0.0
 		end
 		local drReduce=K_dr_reduce
 		if IsValid(_boss) then drReduce=K_dr_reduce/2 else drReduce=K_dr_reduce end
-		if (var.cp<=1 and abs(var.dr)>1-	(1-var.cp) * drReduce) then--combo_pointĞ¡ÓÚ1ÇÒdr´óÓÚ1µÄÇé¿öÏÂd²Å»á½¥½¥¼õĞ¡£¬ÇÒÔ½½Ó½ü1¼õÉÙÔ½Âı
+		if (var.cp<=1 and abs(var.dr)>1-	(1-var.cp) * drReduce) then--combo_pointå°äº1ä¸”drå¤§äº1çš„æƒ…å†µä¸‹dæ‰ä¼šæ¸æ¸å‡å°ï¼Œä¸”è¶Šæ¥è¿‘1å‡å°‘è¶Šæ…¢
 			var.dr = (abs(var.dr)-			(1-var.cp) * drReduce) * sign(var.dr)
-		end --ddrÎª0Ê±£¬dr¼õµÄ×î¿ì
+		end --ddrä¸º0æ—¶ï¼Œdrå‡çš„æœ€å¿«
 		
-		--Õâ¶ÎÊÇ¸ø×ÊÔ´µÄ´úÂë
-		--ÉèÖÃÁËµ¥ÕÂ½Ú×î´ó×ÊÔ´¼ÆÊıÖµ£¬Êµ¼ÊµÄÉÏÏŞ»áËæ×ÅÖ¸Õë¶ø¸Ä±ä
+		--è¿™æ®µæ˜¯ç»™èµ„æºçš„ä»£ç 
+		--è®¾ç½®äº†å•ç« èŠ‚æœ€å¤§èµ„æºè®¡æ•°å€¼ï¼Œå®é™…çš„ä¸Šé™ä¼šéšç€æŒ‡é’ˆè€Œæ”¹å˜
 		if abs(var.dr) >= K_dr_BonusLimit then
-			tmpv.bonus_count=tmpv.bonus_count+(abs(var.dr)-K_dr_BonusLimit)--Ö¸Õë¾ø¶ÔÖµ¶à³ö½±²Ğ½±À×ãĞÖµµÄ²¿·Ö»áÖ±½Ó¼Óµ½Õâ¸ö¼ÆÊı±äÁ¿Àï
-			--¾ßÌå½±ÀøÊıÁ¿ÔÚ(2,4)Õâ¸öÇø¼äÄÚ·Ö²¼£¬Æ«ÃÎ¾³²àÔò´óÓÚ3£¬Æ«ÏÖÊµ²àÔòĞ¡ÓÚ3£¬¾ßÌåÆ«ÒÆÁ¿ÓÉÖ¸ÕëÖµ¶¨¡£
-			--ÔÚ´Ë»ù´¡ÉÏ³ËÒ»¸öÏµÊıÓÃÀ´¿ØÖÆÔö³¤£¬ÏµÊıÊÇÕâ¸ö£º
+			tmpv.bonus_count=tmpv.bonus_count+(abs(var.dr)-K_dr_BonusLimit)--æŒ‡é’ˆç»å¯¹å€¼å¤šå‡ºå¥–æ®‹å¥–é›·é˜ˆå€¼çš„éƒ¨åˆ†ä¼šç›´æ¥åŠ åˆ°è¿™ä¸ªè®¡æ•°å˜é‡é‡Œ
+			--å…·ä½“å¥–åŠ±æ•°é‡åœ¨(2,4)è¿™ä¸ªåŒºé—´å†…åˆ†å¸ƒï¼Œåæ¢¦å¢ƒä¾§åˆ™å¤§äº3ï¼Œåç°å®ä¾§åˆ™å°äº3ï¼Œå…·ä½“åç§»é‡ç”±æŒ‡é’ˆå€¼å®šã€‚
+			--åœ¨æ­¤åŸºç¡€ä¸Šä¹˜ä¸€ä¸ªç³»æ•°ç”¨æ¥æ§åˆ¶å¢é•¿ï¼Œç³»æ•°æ˜¯è¿™ä¸ªï¼š
 			--( C_BOUNS_LIMIT_IN_CHAPTER   -   tmpv.bonus_count )   /   C_BOUNS_LIMIT_IN_CHAPTER
-			--Ò²¾ÍÊÇÒ»¸ö[0,1]ÄÚµÄÏµÊı£¬bonus_countÔ½¸ßÕâ¸öÏµÊıÔ½Ğ¡£¬µ½×îºó¼¸ºõÎª0
-			--ÏÂÒ»ĞĞ´úÂëºÜ³¤¡­¡­µ«ÊÇË¼Â·ÁĞÔÚÉÏÃæÓ¦¸ÃÄÜ¿´Ã÷°×
+			--ä¹Ÿå°±æ˜¯ä¸€ä¸ª[0,1]å†…çš„ç³»æ•°ï¼Œbonus_countè¶Šé«˜è¿™ä¸ªç³»æ•°è¶Šå°ï¼Œåˆ°æœ€åå‡ ä¹ä¸º0
+			--ä¸‹ä¸€è¡Œä»£ç å¾ˆé•¿â€¦â€¦ä½†æ˜¯æ€è·¯åˆ—åœ¨ä¸Šé¢åº”è¯¥èƒ½çœ‹æ˜ç™½
 			if tmpv.bonus_count>C_BOUNS_LIMIT_IN_CHAPTER then tmpv.bonus_count=C_BOUNS_LIMIT_IN_CHAPTER end
 			tmpv.bonus_rate = (  3.0 + sign(var.dr)*  (abs(var.dr)-K_dr_BonusLimit)/(5 - K_dr_BonusLimit) )* (C_BOUNS_LIMIT_IN_CHAPTER-tmpv.bonus_count)/C_BOUNS_LIMIT_IN_CHAPTER
 			
 			var.chip = var.chip + tmpv.bonus_rate 			* 0.01 	*(1 + min(0,sign(var.dr))* -1.5)
 			var.bombchip = var.bombchip + tmpv.bonus_rate 	* 0.01 	*(1 + max(0,sign(var.dr))*0.5)
-																	--ÕâÒ»¶Î£¬ÈôÆ«ÏòÏÖÊµ²àÔò²Ğ»ú½±Àø»á2.5±¶£¬ÈôÆ«ÏòÃÎ¾³²àÔò·û¿¨½±Àø¶à1.5±¶
+																	--è¿™ä¸€æ®µï¼Œè‹¥åå‘ç°å®ä¾§åˆ™æ®‹æœºå¥–åŠ±ä¼š2.5å€ï¼Œè‹¥åå‘æ¢¦å¢ƒä¾§åˆ™ç¬¦å¡å¥–åŠ±å¤š1.5å€
 		end
-		--Õâ¶ÎÊÇ¼ÓÁéÁ¦µÄ´úÂë
+		--è¿™æ®µæ˜¯åŠ çµåŠ›çš„ä»£ç 
 		if abs(var.dr) >= 1.0 then
 			GetPower(min((abs(var.dr)-1.0),2.0) * (-2 + sign(var.dr)) / -10 * 0.25) 
 		end
 	end
 end
-function DR_Pin:render() --×óÏÂ½Ç×ÖÌåäÖÈ¾
+function DR_Pin:render() --å·¦ä¸‹è§’å­—ä½“æ¸²æŸ“
 	local var=lstg.var
 	local x,y=-182,-204
 	SetImageState('white','',Color(255,255*0.75+var.dr*0.05,125,255*7/8-var.dr*0.025))
@@ -160,11 +162,11 @@ function DR_Pin:render() --×óÏÂ½Ç×ÖÌåäÖÈ¾
 	RenderText('bonus','graze_count:'..player.graze_c,x,y+40,0.35,8)
 	RenderRect('white',x,x+player.graze_c,y+28,y+30)
 	
-	RenderText('bonus','SpellCard:'..player.SpellCardHp,x,y+60,0.35,8) --·û¿¨²Û
+	RenderText('bonus','SpellCard:'..player.SpellCardHp,x,y+60,0.35,8) --ç¬¦å¡æ§½
 	RenderRect('white',x,x+player.SpellCardHp,y+48,y+50)
 	
 	
-	--------ÊÕµãÏßÎÄ×Ö
+	--------æ”¶ç‚¹çº¿æ–‡å­—
 	if self.timer<60 and self.timer%20==0 then 
 		SetImageState('UI_gaming_item_collect_word','',Color(255,255,255,255))
 	elseif self.timer<60 and (self.timer+10)%20==0 then 
@@ -173,10 +175,10 @@ function DR_Pin:render() --×óÏÂ½Ç×ÖÌåäÖÈ¾
 		SetImageState('UI_gaming_item_collect_word','',Color(255-int((self.timer-60)/60*255),255,255,255))
 		Render('UI_gaming_item_collect_word',0,player.collect_line+22) 
 	end
-	--------------------ÊÕµãÏßÖ»ÒªÓĞ±ä¶¯¾Í»áÍù²»Í¸Ã÷±ä£¬·ñÔòÂıÂı±ä»ØÍ¸Ã÷
+	--------------------æ”¶ç‚¹çº¿åªè¦æœ‰å˜åŠ¨å°±ä¼šå¾€ä¸é€æ˜å˜ï¼Œå¦åˆ™æ…¢æ…¢å˜å›é€æ˜
 	local y=min(112,player.collect_line+lstg.var.dr*K_dr_collectline)
-	self.collectline_y = self.collectline_y + (y - self.collectline_y)*0.25--Æ½»¬´¦Àí
-	self.collectline_a=max(20,min(200,self.collectline_a	-3	+abs(self.collectline_dy-self.collectline_y)*100)) --alphaÏŞÖÆÔÚ20µ½200
+	self.collectline_y = self.collectline_y + (y - self.collectline_y)*0.25--å¹³æ»‘å¤„ç†
+	self.collectline_a=max(20,min(200,self.collectline_a	-3	+abs(self.collectline_dy-self.collectline_y)*100)) --alphaé™åˆ¶åœ¨20åˆ°200
 	self.collectline_dy=self.collectline_y
 	SetImageState('UI_gaming_item_collect_line','',Color(self.collectline_a,255,255,255))
 	Render('UI_gaming_item_collect_line',0,self.collectline_y)
@@ -201,6 +203,18 @@ function DR_Pin:render() --×óÏÂ½Ç×ÖÌåäÖÈ¾
 			-- Render('UI_gaming_item_collect_line',0,self.collectline_y)
 		-- end
 	-- end
+	if player.SC_name~='' then
+		SetImageState('boss_spell_name_bg','',Color(255,255,255,255))
+	    if player.SpellTimer1<=90 then
+            Render('boss_spell_name_bg',-51,-100-player.SpellTimer1,0,1.5)
+            RenderTTF('sc_card',player.SC_name,-80,-80,-110-player.SpellTimer1,-110-player.SpellTimer1,Color(255,0,0,0),'right','noclip')
+            RenderTTF('sc_card',player.SC_name,-81,-81,-109-player.SpellTimer1,-109-player.SpellTimer1,Color(255,255,255,255),'right','noclip')
+		else
+			Render('boss_spell_name_bg',-51,-190,0,1.5)
+            RenderTTF('sc_card',player.SC_name,-80,-80,-200,-200,Color(255,0,0,0),'right','noclip')
+            RenderTTF('sc_card',player.SC_name,-81,-81,-199,-199,Color(255,255,255,255),'right','noclip')
+		end
+	end
 end
 
 bonus_par=Class(object)
@@ -238,25 +252,25 @@ function player_class:init()
 	self.dialog=false
 	self.nextshoot=0
 	self.nextspell=0
-	self.A=4        --×Ô»úÅĞ¶¨´óĞ¡
+	self.A=4        --è‡ªæœºåˆ¤å®šå¤§å°
 	self.B=4
-	--self.nextcollect=0--HZCÊÕµãÏµÍ³¡¾¿³ÁË¡¿
+	--self.nextcollect=0--HZCæ”¶ç‚¹ç³»ç»Ÿã€ç äº†ã€‘
 	self.item=1
 	self.death=0
 	self.protect=120
 	
 	self.graze_c=0
-	self.offset=0.0 --Áé»÷»ğÁ¦¼õËğÖµ
-	self.SpellCardHp=0 --ÆÁÄ»Êµ¼ÊÏÔÊ¾µÄ·û¿¨²ÛÄÍ¾ÃÊıÖµ
-	self.SpellCardHpMax=K_MaxSpell --µ±Ç°×î´óÄÍ¾ÃÖµ
-	self.NextSingleSpell=0 --·û¿¨ÊÍ·ÅÆÚ¼äµ¥´Î·û¿¨¹¥»÷¼ä¸ô
-	self.SpellTimer1=-1 --ÓÃÓÚ·û¿¨¿ªÊ¼ºóÖ¡¼ÆÊ±
-	self.KeyDownTimer1=0 --ÓÃÓÚ¼ÇÂ¼³ÖĞø°´Ñ¹Ê±³¤
+	self.offset=0.0 --çµå‡»ç«åŠ›å‡æŸå€¼
+	self.SpellCardHp=0 --å±å¹•å®é™…æ˜¾ç¤ºçš„ç¬¦å¡æ§½è€ä¹…æ•°å€¼
+	self.SpellCardHpMax=K_MaxSpell --å½“å‰æœ€å¤§è€ä¹…å€¼
+	self.NextSingleSpell=0 --ç¬¦å¡é‡Šæ”¾æœŸé—´å•æ¬¡ç¬¦å¡æ”»å‡»é—´éš”
+	self.SpellTimer1=-1 --ç”¨äºç¬¦å¡å¼€å§‹åå¸§è®¡æ—¶
+	self.KeyDownTimer1=0 --ç”¨äºè®°å½•æŒç»­æŒ‰å‹æ—¶é•¿
 	
-	self.maxPower=400 --ÁéÁ¦ÉÏÏŞ
-	self.PowerFlag=0 --ËæÃÎÏÖÖ¸Õë±ä»¯µÄ½×¶Î±êÖ¾£¬ÔÚ£¨-5,5£©·¶Î§ÄÚÓÉ-1ÖÁ2±ä»¯
-	self.PowerDelay1=-1 --ÉÏÏŞ¼õÉÙÊ±×Ó»ú´æÁôÊ±¼äµ¹¼ÆÊ±£¬-1±íÊ¾Ã»ÓĞÔÚµ¹¼ÆÊ±
-	--self.PowerDelay2=-1 --¡¾µ±³öÏÖÁ¬ÉäÁé»÷ºÍ·û¿¨µÄÇé¿öÊ±£¬ÓĞ¿ÉÄÜ³öÏÖÁ½¸ö×Ó»úÍ¬Ê±ÔÚ¼õËğÖĞµÄ×´Ì¬¡¿ĞÂ·½°¸¾ö¶¨µ±Í¬Ê±¼õËğÊ±Ö±½ÓÈ¥µôµÚÒ»¸öÔÚ¼õËğµÄ×Ó»ú
+	self.maxPower=400 --çµåŠ›ä¸Šé™
+	self.PowerFlag=0 --éšæ¢¦ç°æŒ‡é’ˆå˜åŒ–çš„é˜¶æ®µæ ‡å¿—ï¼Œåœ¨ï¼ˆ-5,5ï¼‰èŒƒå›´å†…ç”±-1è‡³2å˜åŒ–
+	self.PowerDelay1=-1 --ä¸Šé™å‡å°‘æ—¶å­æœºå­˜ç•™æ—¶é—´å€’è®¡æ—¶ï¼Œ-1è¡¨ç¤ºæ²¡æœ‰åœ¨å€’è®¡æ—¶
+	--self.PowerDelay2=-1 --ã€å½“å‡ºç°è¿å°„çµå‡»å’Œç¬¦å¡çš„æƒ…å†µæ—¶ï¼Œæœ‰å¯èƒ½å‡ºç°ä¸¤ä¸ªå­æœºåŒæ—¶åœ¨å‡æŸä¸­çš„çŠ¶æ€ã€‘æ–°æ–¹æ¡ˆå†³å®šå½“åŒæ—¶å‡æŸæ—¶ç›´æ¥å»æ‰ç¬¬ä¸€ä¸ªåœ¨å‡æŸçš„å­æœº
 	self.SpellIndex=0
 	self.SC_name=''
 	
@@ -273,9 +287,9 @@ function player_class:init()
 	
 	--RunSystem("on_player_init",self)
 	
-	self._wisys = PlayerWalkImageSystem(self)--by OLC£¬×Ô»úĞĞ×ßÍ¼ÏµÍ³
+	self._wisys = PlayerWalkImageSystem(self)--by OLCï¼Œè‡ªæœºè¡Œèµ°å›¾ç³»ç»Ÿ
 	
-	--self.collect_time=0  ¡¾¿³ÁË¡¿
+	--self.collect_time=0  ã€ç äº†ã€‘
 end
 
 function player_class:frame()
@@ -311,7 +325,7 @@ function player_class:frame()
 			--	self.nextcollect=90
 			--end
 
---------------------------------------------------------ĞÂµÄ·û¿¨Éè¼Æ
+--------------------------------------------------------æ–°çš„ç¬¦å¡è®¾è®¡
             if self.SpellCardHp==0 and self.SpellTimer1>=0 then self.SpellTimer1=-1 self.KeyDownTimer1=0 self.SC_name='' end
             if self.SpellCardHp>0 and self.SpellTimer1>90 then self.SpellCardHp=max(0,self.SpellCardHp-K_SpellDecay) end
 			if self.NextSingleSpell>0 then self.NextSingleSpell=self.NextSingleSpell-1 end
@@ -326,12 +340,12 @@ function player_class:frame()
 					if self.slow==1 then self.SpellIndex=lstg.var.bomb+3
 					else self.SpellIndex=lstg.var.bomb end
 					
-					if player.SpellIndex==1 then SpellName='Áé·û¡¸ÃÎÏëÃîÖé¡¹' end
-					if player.SpellIndex==2 then SpellName='Áé·û¡¸ÃÎÏë·âÓ¡¡¹' end
-					if player.SpellIndex==3 then SpellName='ÉñÁé¡¸ÃÎÏë·âÓ¡¡¤¼Å¡¹' end
-					if player.SpellIndex==4 then SpellName='Öé·û¡¸Ã÷Öé°µÍ¶¡¹' end
-					if player.SpellIndex==5 then SpellName='Óñ·û¡¸ÒõÑô±¦Óñ¡¹' end
-					if player.SpellIndex==6 then SpellName='±¦¾ß¡¸ÒõÑô·ÉÄñ¾®¡¹' end
+					if self.SpellIndex==1 then self.SC_name='çµç¬¦ã€Œæ¢¦æƒ³å¦™ç ã€' end
+					if self.SpellIndex==2 then self.SC_name='çµç¬¦ã€Œæ¢¦æƒ³å°å°ã€' end
+					if self.SpellIndex==3 then self.SC_name='ç¥çµã€Œæ¢¦æƒ³å°å°Â·å¯‚ã€' end
+					if self.SpellIndex==4 then self.SC_name='ç ç¬¦ã€Œæ˜ç æš—æŠ•ã€' end
+					if self.SpellIndex==5 then self.SC_name='ç‰ç¬¦ã€Œé˜´é˜³å®ç‰ã€' end
+					if self.SpellIndex==6 then self.SC_name='å®å…·ã€Œé˜´é˜³é£é¸Ÿäº•ã€' end
 					
 				    lstg.var.bomb=lstg.var.bomb-1
 					ui.menu.LoseSpell=15
@@ -387,9 +401,9 @@ function player_class:frame()
 		if self.fire<0 then self.fire=0 end
 		if self.fire>1 then self.fire=1 end
 		
-		-----------------------------------------------  ÁéÁ¦±ä»¯
+		-----------------------------------------------  çµåŠ›å˜åŒ–
 		if self.PowerDelay1>0 then self.PowerDelay1=self.PowerDelay1-1 end
-		--if self.PowerDelay2>0 then self.PowerDelay2=self.PowerDelay2-1 end --¡¾¾É·½°¸¡¿
+		--if self.PowerDelay2>0 then self.PowerDelay2=self.PowerDelay2-1 end --ã€æ—§æ–¹æ¡ˆã€‘
 		
 		if lstg.var.dr==5 then self.maxPower=300
 		else if lstg.var.dr==-5 then self.maxPower=600 
@@ -420,18 +434,18 @@ function player_class:frame()
 		end
 		-----------------------------------------------
 		
-		--Áé»÷
+		--çµå‡»
 		if KeyIsDown'special' and not self.dialog and self.graze_c>=K_graze_c_min and lstg.var.power>=100 and self.SpellTimer1==-1 then 
 		    self.offset = 100*(1.0 + K_graze_c_k * (self.graze_c - K_graze_c_min))
 			New(bullet_cleaner,player.x,player.y, 125, 20, 45, 1)
-			-- ´ı²¹³ä£ºÀà»ÔÕë³ÇÃÎAµÄBOMBÏòÍâÀ©É¢µÄÆø³¡µÄÌØĞ§
+			-- å¾…è¡¥å……ï¼šç±»è¾‰é’ˆåŸæ¢¦Açš„BOMBå‘å¤–æ‰©æ•£çš„æ°”åœºçš„ç‰¹æ•ˆ
 			GetPower(-self.offset)
 			self.graze_c = 0
 			PlaySound('ophide',0.1)
 			self.ccced_in_chapter=true
 			self.protect=max(20,self.protect)
-			self.class.ccc(self) -- ÊÍ·ÅÁé»÷
-			DR_Pin.pin_shift(K_dr_ccced)   --ÊÍ·ÅÁé»÷ÃÎÏÖÖ¸ÕëÔö¼Ó
+			self.class.ccc(self) -- é‡Šæ”¾çµå‡»
+			DR_Pin.pin_shift(K_dr_ccced)   --é‡Šæ”¾çµå‡»æ¢¦ç°æŒ‡é’ˆå¢åŠ 
 		end
 			
 		--item
@@ -500,7 +514,7 @@ function player_class:frame()
 		--	self.collecting=false
 		--end
 		--if self.collecting and not(self.itemed) then end
-	elseif self.death==90 then                                 --ËÀÍöµÄ90Ö¡ÄÚ·¢ÉúµÄÊÂ¼ş
+	elseif self.death==90 then                                 --æ­»äº¡çš„90å¸§å†…å‘ç”Ÿçš„äº‹ä»¶
 		if self.time_stop then self.death=self.death-1 end
 		item.PlayerMiss(self)
 		self.deathee={}
@@ -524,18 +538,18 @@ function player_class:frame()
 
 	end
 	if self.death<90 and self.death>=40 then
-		--¡¾ĞŞ¸Ä±ê¼Ç¡¿µôp
+		--ã€ä¿®æ”¹æ ‡è®°ã€‘æ‰p
 		if lstg.var.power>0 then lstg.var.power=lstg.var.power-1 end
 	end
 	--img
-	---¼ÓÉÏtime_stopµÄÏŞÖÆÀ´ÊµÏÖÍ¼ÏñÊ±Í£
+	---åŠ ä¸Štime_stopçš„é™åˆ¶æ¥å®ç°å›¾åƒæ—¶åœ
 	if not(self._wisys) then
 		self._wisys=PlayerWalkImageSystem(self)
 	end
 	if not(self.time_stop) then
-		self._wisys:frame(dx)--by OLC£¬×Ô»úĞĞ×ßÍ¼ÏµÍ³
+		self._wisys:frame(dx)--by OLCï¼Œè‡ªæœºè¡Œèµ°å›¾ç³»ç»Ÿ
 		
-	--if not(self.time_stop) then               ----¡¾²¢ÈëĞĞ×ßÍ¼ÏµÍ³¡¿
+	--if not(self.time_stop) then               ----ã€å¹¶å…¥è¡Œèµ°å›¾ç³»ç»Ÿã€‘
 	--if abs(self.lr)==1 then
 	--	self.img=self.imgs[int(self.ani/8)%8+1]
 	--elseif self.lr==-6 then
@@ -566,7 +580,7 @@ function player_class:frame()
 
 	if self.nextshoot>0 then self.nextshoot=self.nextshoot-1 end
 	if self.nextspell>0 then self.nextspell=self.nextspell-1 end
-	--if self.nextcollect>0 then self.nextcollect=self.nextcollect-1 end--HZCÊÕµãÏµÍ³
+	--if self.nextcollect>0 then self.nextcollect=self.nextcollect-1 end--HZCæ”¶ç‚¹ç³»ç»Ÿ
 
 	if self.support>int(lstg.var.power/100) then self.support=self.support-0.0625
 	elseif self.support<int(lstg.var.power/100) then self.support=self.support+0.0625 end
@@ -575,7 +589,7 @@ function player_class:frame()
 	self.supportx=self.x+(self.supportx-self.x)*0.6875
 	self.supporty=self.y+(self.supporty-self.y)*0.6875
 
-	if self.protect>0 then self.protect=self.protect-1 end --ÎŞµĞÊ±¼ä¼õÉÙ£¬ËÀÍö¼ÆÊ±¼õÉÙ
+	if self.protect>0 then self.protect=self.protect-1 end --æ— æ•Œæ—¶é—´å‡å°‘ï¼Œæ­»äº¡è®¡æ—¶å‡å°‘
 	if self.death>0 then self.death=self.death-1 end
 
 	lstg.var.pointrate=item.PointRateFunc(lstg.var)
@@ -612,11 +626,11 @@ function player_class:frame()
 end
 
 function player_class:render()
-	self._wisys:render()--by OLC£¬×Ô»úĞĞ×ßÍ¼ÏµÍ³
+	self._wisys:render()--by OLCï¼Œè‡ªæœºè¡Œèµ°å›¾ç³»ç»Ÿ
 	
 	if self.SpellCardHp>0 then
 	    for i=1,25 do SetImageState('player_aura_3D'..i,'mul+add',Color(255,255,255,255)) end
-	    Render('player_aura_3D'..self.ani%25+1,self.x,self.y,self.ani*0.75,0.6,0.6+0.05*sin(90+self.ani*0.75)) --Ãû×Ö£¬ÖĞĞÄµãxy£¬Ğı×ª¶È£¬xyËõ·Å£¬zÖáÉî¶ÈÄ¬ÈÏ0.5
+	    Render('player_aura_3D'..self.ani%25+1,self.x,self.y,self.ani*0.75,0.6,0.6+0.05*sin(90+self.ani*0.75)) --åå­—ï¼Œä¸­å¿ƒç‚¹xyï¼Œæ—‹è½¬åº¦ï¼Œxyç¼©æ”¾ï¼Œzè½´æ·±åº¦é»˜è®¤0.5
 		
 		if self.SpellTimer1<=90 then
 		    for i=1,16 do SetImageState('playerring1'..i,'mul+add',Color(255,255,255,255)) end
@@ -894,12 +908,12 @@ function deatheff:init(x,y,type_)
 	task.New(self,function()
 		local size=0
 		local size1=0
-		if self.type=='second' then task.Wait(35) end--¡¾ĞŞ¸Ä±ê¼Ç¡¿Ô­ÏÈÊÇ30
+		if self.type=='second' then task.Wait(35) end--ã€ä¿®æ”¹æ ‡è®°ã€‘åŸå…ˆæ˜¯30
 		for i=1,360 do
 			self.size=size
 			self.size1=size1
-			size=size+18--¡¾ĞŞ¸Ä±ê¼Ç¡¿Ô­ÏÈÊÇ12
-			size1=size1+12--¡¾ĞŞ¸Ä±ê¼Ç¡¿Ô­ÏÈÊÇ8
+			size=size+18--ã€ä¿®æ”¹æ ‡è®°ã€‘åŸå…ˆæ˜¯12
+			size1=size1+12--ã€ä¿®æ”¹æ ‡è®°ã€‘åŸå…ˆæ˜¯8
 			task.Wait(1)
 		end
 	end)
@@ -911,7 +925,7 @@ function deatheff:frame()
 end
 
 function deatheff:render()
-    --ÉÔÎ¢¼õÉÙÁËËÀÍö·´É«È¦µÄ·Ö¸îÊı£¬ÊÓ¾õĞ§¹û»ù±¾²»±ä£¬¼õÉÙĞÔÄÜÏûºÄ£¨Ô­·Ö¸îÊıÎª180£©
+    --ç¨å¾®å‡å°‘äº†æ­»äº¡åè‰²åœˆçš„åˆ†å‰²æ•°ï¼Œè§†è§‰æ•ˆæœåŸºæœ¬ä¸å˜ï¼Œå‡å°‘æ€§èƒ½æ¶ˆè€—ï¼ˆåŸåˆ†å‰²æ•°ä¸º180ï¼‰
 	if self.type=='first' then
 		rendercircle(self.x,self.y,self.size,60)
 		rendercircle(self.x+35,self.y+35,self.size1,60)
@@ -936,15 +950,15 @@ Include'THlib\\player\\sakuya\\sakuya.lua'
 Include'THlib\\player\\shababa\\shababa_player.lua'
 
 ----------------------------------------
----¼ÓÔØ×Ô»ú
+---åŠ è½½è‡ªæœº
 --[[
-local PLAYER_PATH="Library\\players\\"    --×Ô»ú²å¼şÂ·¾¶
-local PLAYER_PATH_1="Library\\"           --×Ô»ú²å¼şÂ·¾¶Ò»¼¶Â·¾¶
-local PLAYER_PATH_2="Library\\players\\"  --×Ô»ú²å¼şÂ·¾¶¶ş¼¶Â·¾¶
-local ENTRY_POINT_SCRIPT_PATH=""          --Èë¿ÚµãÎÄ¼şÂ·¾¶
-local ENTRY_POINT_SCRIPT="__init__.lua"   --Èë¿ÚµãÎÄ¼ş
+local PLAYER_PATH="Library\\players\\"    --è‡ªæœºæ’ä»¶è·¯å¾„
+local PLAYER_PATH_1="Library\\"           --è‡ªæœºæ’ä»¶è·¯å¾„ä¸€çº§è·¯å¾„
+local PLAYER_PATH_2="Library\\players\\"  --è‡ªæœºæ’ä»¶è·¯å¾„äºŒçº§è·¯å¾„
+local ENTRY_POINT_SCRIPT_PATH=""          --å…¥å£ç‚¹æ–‡ä»¶è·¯å¾„
+local ENTRY_POINT_SCRIPT="__init__.lua"   --å…¥å£ç‚¹æ–‡ä»¶
 
----¼ì²éÄ¿Â¼ÊÇ·ñ´æÔÚ£¬²»´æÔÚÔò´´½¨
+---æ£€æŸ¥ç›®å½•æ˜¯å¦å­˜åœ¨ï¼Œä¸å­˜åœ¨åˆ™åˆ›å»º
 local function check_directory()
 	if not plus.DirectoryExists(PLAYER_PATH_1) then
 		plus.CreateDirectory(PLAYER_PATH_1)
@@ -954,9 +968,9 @@ local function check_directory()
 	end
 end
 
----¼ì²éÒ»¸ö×Ô»ú²å¼ş°üÊÇ·ñºÏ·¨£¨ÓĞÈë¿ÚµãÎÄ¼ş£©
----¸Ãº¯Êı»á×°ÔØ×Ô»ú²å¼ş°ü£¬È»ºó½øĞĞ¼ì²é£¬Èç¹û²»ÊÇºÏ·¨µÄ×Ô»ú²å¼ş°ü£¬½«»áĞ¶ÔØµô
----@param player_plugin_path string @²å¼ş°üÂ·¾¶
+---æ£€æŸ¥ä¸€ä¸ªè‡ªæœºæ’ä»¶åŒ…æ˜¯å¦åˆæ³•ï¼ˆæœ‰å…¥å£ç‚¹æ–‡ä»¶ï¼‰
+---è¯¥å‡½æ•°ä¼šè£…è½½è‡ªæœºæ’ä»¶åŒ…ï¼Œç„¶åè¿›è¡Œæ£€æŸ¥ï¼Œå¦‚æœä¸æ˜¯åˆæ³•çš„è‡ªæœºæ’ä»¶åŒ…ï¼Œå°†ä¼šå¸è½½æ‰
+---@param player_plugin_path string @æ’ä»¶åŒ…è·¯å¾„
 ---@return boolean
 local function LoadAndCheckValidity(player_plugin_path)
 	lstg.LoadPack(player_plugin_path)
@@ -968,15 +982,15 @@ local function LoadAndCheckValidity(player_plugin_path)
 		end
 	end
 	lstg.UnloadPack(player_plugin_path)
-	lstg.Log(4,LOG_MODULE_NAME,"\""..player_plugin_path.."\"²»ÊÇÓĞĞ§µÄ×Ô»ú²å¼ş°ü£¬Ã»ÓĞÈë¿ÚµãÎÄ¼ş\""..ENTRY_POINT_SCRIPT.."\"")
+	lstg.Log(4,LOG_MODULE_NAME,"\""..player_plugin_path.."\"ä¸æ˜¯æœ‰æ•ˆçš„è‡ªæœºæ’ä»¶åŒ…ï¼Œæ²¡æœ‰å…¥å£ç‚¹æ–‡ä»¶\""..ENTRY_POINT_SCRIPT.."\"")
 	return false
 end
 
----´¢´æ×Ô»úµÄĞÅÏ¢±í
+---å‚¨å­˜è‡ªæœºçš„ä¿¡æ¯è¡¨
 ---@type table @{{displayname,classname,replayname}, ... }
 player_list={}
 --]]
----¶Ô×Ô»ú±í½øĞĞÅÅĞò
+---å¯¹è‡ªæœºè¡¨è¿›è¡Œæ’åº
 --local function PlayerListSort()
 --	local playerDisplayName={}--{displayname, ... }
 --	local pl2id={}--{[displayname]=player_list_pos, ... }
@@ -996,12 +1010,12 @@ player_list={}
 --	player_list=tmp_player_list
 --end
 
----Ìí¼Ó×Ô»úĞÅÏ¢µ½×Ô»úĞÅÏ¢±í
----@param displayname string @ÏÔÊ¾ÔÚ²Ëµ¥ÖĞµÄÃû×Ö
----@param classname string @È«¾ÖÖĞµÄ×Ô»úÀàÃû
----@param replayname string @ÏÔÊ¾ÔÚrepĞÅÏ¢ÖĞµÄÃû×Ö
----@param pos number @²åÈëµÄÎ»ÖÃ
----@param _replace boolean @ÊÇ·ñÈ¡´ú¸ÃÎ»ÖÃ
+---æ·»åŠ è‡ªæœºä¿¡æ¯åˆ°è‡ªæœºä¿¡æ¯è¡¨
+---@param displayname string @æ˜¾ç¤ºåœ¨èœå•ä¸­çš„åå­—
+---@param classname string @å…¨å±€ä¸­çš„è‡ªæœºç±»å
+---@param replayname string @æ˜¾ç¤ºåœ¨repä¿¡æ¯ä¸­çš„åå­—
+---@param pos number @æ’å…¥çš„ä½ç½®
+---@param _replace boolean @æ˜¯å¦å–ä»£è¯¥ä½ç½®
 --[[
 function AddPlayerToPlayerList(displayname,classname,replayname,pos,_replace)
 	if _replace then
@@ -1013,16 +1027,16 @@ function AddPlayerToPlayerList(displayname,classname,replayname,pos,_replace)
 	end
 end
 
----¼ÓÔØ×Ô»ú°ü
+---åŠ è½½è‡ªæœºåŒ…
 function LoadPlayerPacks()
-	player_list={}--ÏÈÇå¿ÕÒ»´Î
+	player_list={}--å…ˆæ¸…ç©ºä¸€æ¬¡
 	
 	check_directory()
-	local fs=lstg.FindFiles(PLAYER_PATH, "zip", "")--ÂŞÁĞ²å¼ş°ü
+	local fs=lstg.FindFiles(PLAYER_PATH, "zip", "")--ç½—åˆ—æ’ä»¶åŒ…
 	for _,v in pairs(fs) do
-		--³¢ÊÔ¼ÓÔØ²å¼ş°ü²¢¼ì²é²å¼ş°üºÏ·¨ĞÔ
+		--å°è¯•åŠ è½½æ’ä»¶åŒ…å¹¶æ£€æŸ¥æ’ä»¶åŒ…åˆæ³•æ€§
 		local result=LoadAndCheckValidity(v[1])
-		--¼ÓÔØÈë¿Úµã½Å±¾
+		--åŠ è½½å…¥å£ç‚¹è„šæœ¬
 		if result then
 			lstg.DoFile(ENTRY_POINT_SCRIPT, v[1])
 		end
