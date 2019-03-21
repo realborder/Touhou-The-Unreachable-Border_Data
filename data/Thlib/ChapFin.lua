@@ -21,14 +21,16 @@ function ChapFin:frame()
 		ClearAllEnemyAndBullet()
 		--残机结算
 		if lstg.var.chip>=100 and not self.flag then
-			lstg.var.lifeleft,lstg.var.chip=lstg.var.lifeleft+math.modf(lstg.var.chip),lstg.var.chip%100--这里的modf会返回参数的整数和小数部分，我就当fix()用了
+			lstg.var.lifeleft=min(11,lstg.var.lifeleft+int(lstg.var.chip/100))
+			lstg.var.chip=lstg.var.chip%100
 			PlaySound('extend',0.5)
 			New(hinter,'hint.extend',0.6,0,112,15,120)
 		end
 		--符卡结算
 		if lstg.var.bombchip>=100 and not self.flag then
-			lstg.var.bomb,lstg.var.bombchip=lstg.var.bomb+math.modf(lstg.var.bombchip),lstg.var.bombchip%100
-			if lstg.var.bomb==3 then lstg.var.bombchip=0 end
+			lstg.var.bomb=min(3,lstg.var.bomb+int(lstg.var.bombchip/100))
+			if lstg.var.bomb==3 then lstg.var.bombchip=0
+			else lstg.var.bombchip=lstg.var.bombchip%100 end
 			PlaySound('cardget',0.8)
 		end 
 	end
@@ -39,7 +41,10 @@ function ChapFin:render()
 	if self.timer<=30 then
 		self.hscale=self.hscale-1/60
 		self.vscale=self.vscale-1/60
-		SetImageState('chapFin','',Color(self.timer*255/30),255,255,255)
+		SetImageState('chapFin','',Color((self.timer*255/30),255,255,255))
+	end
+	if self.timer>=90 and self.timer<120 then
+		SetImageState('chapFin','',Color(((120-self.timer)*255/30),255,255,255))
 	end
 	Render('chapFin',self.x,self.y,0,self.hscale)
 end
