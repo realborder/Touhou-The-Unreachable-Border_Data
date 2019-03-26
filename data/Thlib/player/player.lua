@@ -61,6 +61,8 @@ function DR_Pin:init()
 	K_SpellCost=20 --单次符卡攻击消耗的符卡槽耐久
 	K_SpellDecay=0.1 --每帧符卡槽耐久衰减系数
 	
+	K_BossSpeedKill=1 --Boss速破奖励系数
+		
 	K_cp=0.2
 	K_dr_reduce=0.002
 	

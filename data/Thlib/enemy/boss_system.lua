@@ -340,7 +340,7 @@ function BossSystem:next()
             mode = 0
         elseif last and not(last.is_sc) then
             if (last.t1 ~= last.t3) then
-                mode = 2
+                mode = 0 --修改mode=2
             else
                 mode = 0
             end
@@ -350,7 +350,7 @@ function BossSystem:next()
     elseif not(now.is_sc) then
         if next and next.is_sc then
             if (next.t1 ~= next.t3) then
-                mode = 1
+                mode = 0 --修改mode=1
             else
                 mode = 0
             end

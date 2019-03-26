@@ -95,6 +95,8 @@ function boss:cast(cast_t)
 end
 
 function boss:take_damage(dmg)
+	local c = boss.GetCurrentCard(self)
+	if (c.takeDmg_inFrame) then c.takeDmg_inFrame=c.takeDmg_inFrame+dmg end
     if self.dmgmaxt then self.dmgt = self.dmgmaxt end
     if not self.protect then
         local dmg0 = dmg * self.dmg_factor

@@ -144,6 +144,7 @@ function boss_ui:render()
 end
 
 function boss_ui:render_hpbar()
+	local c = boss.GetCurrentCard(self.boss)
     if not(self.boss.time_sc) and self.drawhp then
         local mode, type
         if not(self.hpbarcolor1) and not(self.hpbarcolor2) then
@@ -162,7 +163,8 @@ function boss_ui:render_hpbar()
         if mode == -1 then
         elseif mode == 0 and type == 1 then
             misc.Renderhpbar(self.boss.x,self.boss.y,90,360,60,64,360,1)
-            misc.Renderhp(self.boss.x,self.boss.y,90,360,60,64,360,self.hpbarlen*min(1,self.boss.timer/60))
+            if self.boss.timer<=60 then misc.Renderhp(self.boss.x,self.boss.y,90,360,60,64,360,self.hpbarlen*min(1,self.boss.timer/60))
+			else misc.Renderhp2(self.boss.x,self.boss.y,90,360,60,64,360,self.hpbarlen,c.hplen) end
             Render('base_hp',self.boss.x,self.boss.y,0,0.274*2,0.274*2)
             Render('base_hp',self.boss.x,self.boss.y,0,0.256*2,0.256*2)
             if self.boss.sp_point and #self.boss.sp_point~=0 then
@@ -172,7 +174,8 @@ function boss_ui:render_hpbar()
             end
         elseif mode == 0 and type == 2 then
             misc.Renderhpbar(self.boss.x,self.boss.y,90,360,60,64,360,1)
-            misc.Renderhp(self.boss.x,self.boss.y,90,360,60,64,360,self.hpbarlen*min(1,self.boss.timer/60))
+            if self.boss.timer<=60 then misc.Renderhp(self.boss.x,self.boss.y,90,360,60,64,360,self.hpbarlen*min(1,self.boss.timer/60))
+			else misc.Renderhp2(self.boss.x,self.boss.y,90,360,60,64,360,self.hpbarlen,c.hplen) end
             Render('base_hp',self.boss.x,self.boss.y,0,0.274*2,0.274*2) -- 渲染时*2修改标记，后同
             Render('base_hp',self.boss.x,self.boss.y,0,0.256*2,0.256*2)
         elseif mode == 2 then

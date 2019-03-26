@@ -110,6 +110,9 @@ LoadTexture('magicsquare',patch..'eff_magicsquare.png')
 LoadImageGroup('boss_aura_3D','magicsquare',0,0,256,256,5,5)
 LoadImageFromFile('dialog_box',patch..'dialog_box.png')
 
+LoadImage('hpbar3','lifebar',4,0,2,2)
+SetImageState('hpbar3','',Color(255,255,100,100))
+
 Include(patch.."boss_system.lua")--boss行为逻辑
 Include(patch.."boss_function.lua")--boss额外函数
 Include(patch.."boss_card.lua")--boss非符、符卡

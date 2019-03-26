@@ -26,10 +26,30 @@ function boss.card.New(name, t1, t2, t3, hp, drop, is_extra)
     c.drop = drop
     c.is_extra = is_extra or false
     c.is_combat = true
+	
+	----速破相关
+	c.hploss=0
+	c.speed_kill_minus=0
+	c.virtualhp=0
+	c.hplen=0
+	c.takeDmg_inFrame=0
+	c.timer=0
+	
     return c
 end
 
-function boss.card:frame() end
+function boss.card:frame()
+	----速破相关
+	local c = boss.GetCurrentCard(self)
+	c.timer=c.timer+1
+	if c.timer>60 then
+		c.hploss=self.maxhp-self.hp
+		c.speed_kill_minus=c.speed_kill_minus+max(0,5.0/3.0-c.takeDmg_inFrame)
+		c.takeDmg_inFrame=0
+		c.virtualhp=max(0,c.hploss-c.speed_kill_minus)
+		c.hplen=c.virtualhp/self.maxhp
+	end
+end
 
 function boss.card:render()
     local c = boss.GetCurrentCard(self)
@@ -76,4 +96,9 @@ end
 
 function boss.card:init() end
 
-function boss.card:del() end
+function boss.card:del()
+	local c = boss.GetCurrentCard(self)
+	DR_Pin.pin_shift(-c.hplen)
+	c.timer=0
+	c.speed_kill_minus=0
+end

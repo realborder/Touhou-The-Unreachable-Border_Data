@@ -318,6 +318,28 @@ function misc.Renderhp(x,y,rot,la,r1,r2,n,c)--boss
 			r1*cos(a)+x,r1*sin(a)+y,0.5)
 	end
 end
+function misc.Renderhp2(x,y,rot,la,r1,r2,n,c,d)--boss
+	local da=la/n
+	local nn=int(n*c)
+	for i=1,nn do
+		local a=rot+da*i
+		Render4V('hpbar1',
+			r1*cos(a+da)+x,r1*sin(a+da)+y,0.5,
+			r2*cos(a+da)+x,r2*sin(a+da)+y,0.5,
+			r2*cos(a)+x,r2*sin(a)+y,0.5,
+			r1*cos(a)+x,r1*sin(a)+y,0.5)
+	end
+	
+	local nnn=nn+int(n*d)
+	for j=nn+1,nnn do
+		local b=rot+da*j
+		Render4V('hpbar3',
+			r1*cos(b+da)+x,r1*sin(b+da)+y,0.5,
+			r2*cos(b+da)+x,r2*sin(b+da)+y,0.5,
+			r2*cos(b)+x,r2*sin(b)+y,0.5,
+			r1*cos(b)+x,r1*sin(b)+y,0.5)
+	end
+end
 function misc.Renderhpbar(x,y,rot,la,r1,r2,n,c)--boss
 	local da=la/n
 	local nn=int(n*c)
