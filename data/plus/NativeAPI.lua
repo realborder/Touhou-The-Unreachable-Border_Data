@@ -379,3 +379,36 @@ function plus.EnumFiles(path)
 
     return ret
 end
+
+--------自己魔改的plus.EnumFiles(path)用于返回文件夹名字
+function plus.ReturnDirectory(path)
+    local ret = {}
+    local info = ffi.new("WIN32_FIND_DATAW")
+
+    local handle = kernel32.FindFirstFileW(UTF8ToUTF16LE(path.."\\*"), info)
+    if handle == INVALID_HANDLE_VALUE then
+        error("FindFirstFileW: "..FormatLastError())
+    end
+
+    while true do
+        local filename = UTF16LEToUTF8(info.cFileName)
+        local flag = plus.BAND(info.dwFileAttributes, FILE_ATTRIBUTE_DIRECTORY)
+        local size = info.nFileSizeLow + info.nFileSizeHigh * 0x100000000
+        local lastAccessTime = FileTimeToUnixTime(
+            info.ftLastAccessTime.dwLowDateTime + info.ftLastAccessTime.dwHighDateTime * 0x100000000)
+
+        if not (filename == "." or filename == "..") then
+            if flag ~= 0 then
+                table.insert(ret, filename)
+            -- else
+                -- table.insert(ret, { isDirectory = false, name = filename, size = size, lastAccessTime = lastAccessTime })
+            end
+        end
+
+        if FALSE == kernel32.FindNextFileW(handle, info) then
+            break
+        end
+    end
+
+    return ret
+end

@@ -153,7 +153,18 @@ function lstg.plugin.LoadConfig()
 		return ret
 	end
 end
-
+-----加载exani配置文件（自己魔改的）
+function lstg.LoadExaniConfig(path)
+	local f,msg
+	f,msg=io.open(path.."ExaniConfig","r")
+	if f==nil then
+		return {}
+	else
+		local ret=cjson.decode(f:read('*a'))
+		f:close()
+		return ret
+	end
+end
 ---保存配置文件
 ---@param cfg table @{{PluginName,PluginPath,Enable}, ... }
 function lstg.plugin.SaveConfig(cfg)
@@ -167,7 +178,17 @@ function lstg.plugin.SaveConfig(cfg)
 		f:close()
 	end
 end
-
+-----保存exani配置文件（自己魔改的）
+function lstg.SaveExaniConfig(cfg,path)
+	local f,msg
+	f,msg=io.open(path.."ExaniConfig","w")
+	if f==nil then
+		error(msg)
+	else
+		f:write(format_json(cjson.encode(cfg)))
+		f:close()
+	end
+end
 ---遍历插件目录下所有的插件，来获得一个配置表
 ---如果传入了一个配置表，则对传入的配置表进行刷新
 ---该方法没有对插件包合法性进行检测，即使插件中没有入口点脚本也会罗列出来
