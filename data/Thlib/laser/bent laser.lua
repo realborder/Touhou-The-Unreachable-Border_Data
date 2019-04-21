@@ -51,8 +51,9 @@ function laser_bent_meta_newindex(t,k,v)
 	else SetAttr(t,k,v) end
 end
 
+	
 function laser_bent:frame()
-	--[=[--by OLC
+--[=[--by OLC
 	if self.death and self.timer>=30 then--by OLC，死亡状态时的处理
 		self.hide=true
 		Del(self)
@@ -118,7 +119,6 @@ function laser_bent:frame()
 		self.listy[(self.timer/4)%_l]=self.y
 		end
 		self.data:Update(self,self.l,self.w,self.deactive)
-		--self._data:Update(self,self.l,self.w+48)
 	end
 	
 	if self.w ~= self._w then

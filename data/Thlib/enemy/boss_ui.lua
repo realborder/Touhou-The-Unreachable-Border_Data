@@ -69,11 +69,11 @@ function boss_ui:render()
                 if m >= 0 then
                     for i=0,m-1 do
                         for j=1,8 do
-                            Render('boss_sc_left',-194+j*12,207-i*12-dy1,0,2) --【临时修改】
+                            Render('boss_sc_left',-194+j*12,207-i*12-dy1,0,1) --【临时修改】
                         end
                     end
                     for i=1,int(self.sc_left-1-8*m) do
-                        Render('boss_sc_left',-194+i*12,207-m*12-dy1,0,2) --【临时修改】
+                        Render('boss_sc_left',-194+i*12,207-m*12-dy1,0,1) --【临时修改】
                     end
                 end
             end
@@ -165,34 +165,34 @@ function boss_ui:render_hpbar()
             misc.Renderhpbar(self.boss.x,self.boss.y,90,360,60,64,360,1)
             if self.boss.timer<=60 then misc.Renderhp(self.boss.x,self.boss.y,90,360,60,64,360,self.hpbarlen*min(1,self.boss.timer/60))
 			else misc.Renderhp2(self.boss.x,self.boss.y,90,360,60,64,360,self.hpbarlen,c.hplen) end
-            Render('base_hp',self.boss.x,self.boss.y,0,0.274*2,0.274*2)
-            Render('base_hp',self.boss.x,self.boss.y,0,0.256*2,0.256*2)
+            Render('base_hp',self.boss.x,self.boss.y,0,0.548,0.548)
+            Render('base_hp',self.boss.x,self.boss.y,0,0.512,0.512)
             if self.boss.sp_point and #self.boss.sp_point~=0 then
                 for i=1,#self.boss.sp_point do
-                    Render('life_node',self.boss.x+61*cos(self.boss.sp_point[i]),self.boss.y+61*sin(self.boss.sp_point[i]),self.boss.sp_point[i]-90)
+                    Render('life_node',self.boss.x+61*cos(self.boss.sp_point[i]),self.boss.y+61*sin(self.boss.sp_point[i]),self.boss.sp_point[i]-90,0.5)
                 end
             end
         elseif mode == 0 and type == 2 then
             misc.Renderhpbar(self.boss.x,self.boss.y,90,360,60,64,360,1)
             if self.boss.timer<=60 then misc.Renderhp(self.boss.x,self.boss.y,90,360,60,64,360,self.hpbarlen*min(1,self.boss.timer/60))
 			else misc.Renderhp2(self.boss.x,self.boss.y,90,360,60,64,360,self.hpbarlen,c.hplen) end
-            Render('base_hp',self.boss.x,self.boss.y,0,0.274*2,0.274*2) -- 渲染时*2修改标记，后同
-            Render('base_hp',self.boss.x,self.boss.y,0,0.256*2,0.256*2)
+            Render('base_hp',self.boss.x,self.boss.y,0,0.548,0.548)
+            Render('base_hp',self.boss.x,self.boss.y,0,0.512,0.512)
         elseif mode == 2 then
             misc.Renderhpbar(self.boss.x,self.boss.y,90,360,60,64,360,1)
             misc.Renderhp(self.boss.x,self.boss.y,90,self.boss.lifepoint-90,60,64,self.boss.lifepoint-88,self.hpbarlen)
-            Render('base_hp',self.boss.x,self.boss.y,0,0.274*2,0.274*2)
-            Render('base_hp',self.boss.x,self.boss.y,0,0.256*2,0.256*2)
+            Render('base_hp',self.boss.x,self.boss.y,0,0.548,0.548)
+            Render('base_hp',self.boss.x,self.boss.y,0,0.512,0.512)
         elseif mode == 1 then
             misc.Renderhpbar(self.boss.x,self.boss.y,90,360,60,64,360,1)
             if self.boss.timer<=60 then
                 misc.Renderhp(self.boss.x,self.boss.y,90,360,60,64,360,self.hpbarlen*min(1,self.boss.timer/60))
             else
                 misc.Renderhp(self.boss.x,self.boss.y,90,self.boss.lifepoint-90,60,64,self.boss.lifepoint-88,1)
-                misc.Renderhp(self.boss.x,self.boss.y,self.boss.lifepoint,450-self.boss.lifepoint,60,64,450-self.boss.lifepoint,self.hpbarlen)
+                misc.Renderhp(self.boss.x,self.boss.y,self.boss.lifepoint,450-self.boss.lifepoint,60,64,450-self.boss.lifepoint,self.hpbarlen,c.hplen)
             end
-            Render('base_hp',self.boss.x,self.boss.y,0,0.274*2,0.274*2)
-            Render('base_hp',self.boss.x,self.boss.y,0,0.256*2,0.256*2)
+            Render('base_hp',self.boss.x,self.boss.y,0,0.548,0.548)
+            Render('base_hp',self.boss.x,self.boss.y,0,0.512,0.512)
             Render('life_node',self.boss.x+61*cos(self.boss.lifepoint),self.boss.y+61*sin(self.boss.lifepoint),self.boss.lifepoint-90,0.55)
             SetFontState('bonus','',Color(255,255,255,255))
         end
@@ -218,7 +218,7 @@ function boss_ui:render_hpbar_ex()
     local rate=min(1,self.boss.ex.timer/60)
     
     SetImageState('base_hp','',Color(alpha1*255,255,0,0))
-    SetImageState('hpbar1','',Color(alpha1*255,255,100,100))
+    SetImageState('hpbar1','',Color(alpha1*255,155,0,0))
     SetImageState('hpbar2','',Color(alpha1*255,255,255,255))
     SetImageState('life_node','',Color(alpha1*255,255,255,255))
     local maxlife=0
