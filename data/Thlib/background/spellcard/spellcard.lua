@@ -3,6 +3,7 @@ function _spellcard_background:init()
 	background.init(self,true)
 	self.layers={}
 	self.fxsize=0
+	self.spr=0
 end
 function _spellcard_background:AddLayer(img,tile,x,y,rot,vx,vy,omiga,blend,hscale,vscale,init,frame,render)
 	table.insert(self.layers,{img=img,tile=tile,x=x,y=y,rot=rot,vx=vx,vy=vy,omiga=omiga,blend=blend,a=255,r=255,g=255,b=255,frame=frame,render=render,timer=0,hscale=hscale,vscale=vscale})
@@ -21,19 +22,23 @@ function _spellcard_background:frame()
 			self.fxsize=max(self.fxsize-2,0)
 		end
 	end
+	if IsValid(_boss) then 
+		if _boss.cards[_boss.card_num].is_sc then self.spr=min(1,self.spr+1/45) else self.spr=max(0,self.spr-1/45) end
+	end
+	Print('scbg_spr='..self.spr)
 end
 function _spellcard_background:render()
 	SetViewMode'world'
 	if self.alpha>0 then
-		local showboss = lstg.tmpvar.bg and lstg.tmpvar.bg.hide==true
-		if showboss then
+		-- local showboss = lstg.tmpvar.bg and lstg.tmpvar.bg.hide==true
+		-- if showboss then
 			background.WarpEffectCapture()
-		end
+		-- end
 		for i=#(self.layers),1,-1 do
 			local l=self.layers[i]
-			SetImageState(l.img,l.blend,Color(l.a*self.alpha,l.r,l.g,l.b))
+			SetImageState(l.img,l.blend,Color(l.a,l.r,l.g,l.b)) --【开卡特效修改】
 			local world=lstg.world
-			if l.tile then --修复：isTile为true时符卡背景渲染不正确的问题  PS：迫真玄学修BUG
+			if l.tile then
 				local w,h=GetTextureSize(l.img)
 				for i=-int((world.r+16+l.x)/w+1),int((world.r+16-l.x)/w+1),0.5 do
 					for j=-int((world.t+16+l.y)/h+1),int((world.t+16-l.y)/h+1),0.5 do
@@ -45,9 +50,9 @@ function _spellcard_background:render()
 			end
 			if l.render then l.render(l) end
 		end
-		if showboss then
-			background.WarpEffectApply()
-		end
+		-- if showboss then
+			background.WarpEffectApply(self.spr)
+		-- end
 	end
 end
 

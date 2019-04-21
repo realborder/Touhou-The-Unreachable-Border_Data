@@ -156,10 +156,15 @@ end
 ---一些效果
 
 LoadFX('boss_distortion', 'shader\\boss_distortion.fx')
+LoadFX('scbg_loaderV2', 'shader\\scbg_loaderV2.fx') --【开卡特效】
+LoadImageFromFile('default_scbg_loader_mask','Thlib\\enemy\\scbg_loader_mask.png') --【开卡特效】
 CreateRenderTarget("_boss_distortion_render_buffer")
+CreateRenderTarget("scbg_render_buffer")
 
 local RENDER_BUFFER_NAME="_boss_distortion_render_buffer"
 local WARP_EFFECT_NAME="boss_distortion"
+local SCBG_LOADER_BUFFER_NAME="scbg_render_buffer"
+local SCBG_LOADER_EFFECT_NAME="scbg_loaderV2"--【开卡特效】
 
 ---开始捕获用于执行扭曲特效的画面
 function background.WarpEffectCapture()
@@ -169,17 +174,18 @@ function background.WarpEffectCapture()
 	end
 end
 
----停止捕获用于执行扭曲特效的画面并应用扭曲特效、绘制出来
-function background.WarpEffectApply()
+---停止捕获用于执行扭曲特效的画面并应用扭曲特效、绘制出来，同时还有开卡特效
+function background.WarpEffectApply(scbg_spread)
+	local is_sc_bg = (scbg_spread~=0 and scbg_spread)--【开卡特效】
 	if IsValid(_boss) then
 		PopRenderTarget(RENDER_BUFFER_NAME)
-		
 		local x,y = WorldToScreen(_boss.x,_boss.y)
 		local x1 = x * screen.scale
 		local y1 = (screen.height - y) * screen.scale
 		local fxr = _boss.fxr or 163
 		local fxg = _boss.fxg or 73
 		local fxb = _boss.fxb or 164
+		if is_sc_bg then PushRenderTarget(SCBG_LOADER_BUFFER_NAME) end--【开卡特效】
 		PostEffect(RENDER_BUFFER_NAME,WARP_EFFECT_NAME, "", {
 			centerX = x1,
 			centerY = y1,
@@ -189,6 +195,22 @@ function background.WarpEffectApply()
 			arg=1500*_boss.aura_alpha/128*lstg.scale_3d,
 			timer = _boss.timer
 		})
+		--【开卡特效】
+		if is_sc_bg then
+			PopRenderTarget(SCBG_LOADER_BUFFER_NAME)
+			Print('scbg loading with'..scbg_spread)
+			local color1 =_boss.scbg_fx1 or Color(255,57,225,255)
+			local color2 =_boss.scbg_fx2 or Color(255,248,48,255)
+			local mask = _boss.scbg_fxmask or 'default_scbg_loader_mask'
+			PostEffect(SCBG_LOADER_BUFFER_NAME,SCBG_LOADER_EFFECT_NAME,'',{
+				h=280*scbg_spread,
+				wid=50,
+				col=color1,
+				col2=Color2,
+				-- h=150,
+				tex=mask
+			})
+		end
 	end
 end
 
