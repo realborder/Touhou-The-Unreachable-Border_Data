@@ -187,7 +187,7 @@ function reimu_player:newSpell()
 		    task.New(player,function()
 			    for i=1,9 do
 				    --New(reimu_orb_T,player.x,player.y,10,i*20,4+deep,0.7+0.3*deep,0.2,player)
-					New(reimu_orb_T,player.x,player.y,10,i*20,4+deep,0.35+0.15*deep,K_dr_SlowSpell,player)
+					New(reimu_orb_T,player.x,player.y,5,i*20,4+deep,0.35+0.15*deep,K_dr_SlowSpell,player)
 				    task.Wait(5)
 			    end
 		    end)
@@ -196,7 +196,7 @@ function reimu_player:newSpell()
 		    task.New(player,function()
 			    for i=1,3 do
 				    --New(reimu_orb_M,player.x,player.y,3,i*45,1+deep,0.7+0.3*deep,1,player)
-					New(reimu_orb_M,player.x,player.y,3,i*45,1+deep,0.35+0.15*deep,K_dr_SlowSpell*3,player)
+					New(reimu_orb_M,player.x,player.y,1.5,i*45,1+deep,0.35+0.15*deep,K_dr_SlowSpell*3,player)
 				    task.Wait(10)
 			    end
 		    end)
@@ -314,7 +314,7 @@ function reimu_ccc_stick:init(x,y,a,v)
 	self.group=GROUP_PLAYER_BULLET
 	self.layer=LAYER_PLAYER_BULLET
 	self.img='reimu_ccc_bullet1'
-	self.dmg=20
+	self.dmg=1
 end
 function reimu_ccc_stick:frame()
 	if self.timer<=6 and self.timer%2==0 then 
