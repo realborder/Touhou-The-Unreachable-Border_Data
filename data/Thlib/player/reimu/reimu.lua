@@ -35,16 +35,17 @@ function reimu_player:init(slot)
 	-----------------------------------------
 	--新旧素材分界
 	-----------------------------------------
+	local cf=0.5 --colli_fix
 	LoadTexture('reimu_bullet','THlib\\player\\reimu\\reimu_bullet.png')
-	LoadImage('reimu_orb_T','reimu_bullet',512,256,128,128,50,50)
+	LoadImage('reimu_orb_T','reimu_bullet',512,256,128,128,64*cf,64*cf)
 	LoadImageGroup('reimu_orb_T','reimu_bullet',832,128,192,128,1,4)
 	for i=1,4 do SetImageCenter('reimu_orb_T'..i,128,64) SetImageState('reimu_orb_T'..i,'',Color(255,255,255,255)) end
-	LoadImage('reimu_orb_M','reimu_bullet',512,384,256,256,100,100)
+	LoadImage('reimu_orb_M','reimu_bullet',512,384,256,256,128*cf,128*cf)
     LoadImageGroup('reimu_orb_M','reimu_bullet',0,640,512,256,2,2)
     for i=1,4 do SetImageCenter('reimu_orb_M'..i,384,128) SetImageState('reimu_orb_M'..i,'',Color(255,255,255,255)) end
 	
 	LoadImageFromFile('orb_huge_base','THlib\\player\\reimu\\orb_huge_base.png')
-	LoadImageFromFile('orb_huge','THlib\\player\\reimu\\orb_huge.png',false,500,500)
+	LoadImageFromFile('orb_huge','THlib\\player\\reimu\\orb_huge.png',false,500*cf,500*cf)
 	LoadImageFromFile('orb_huge_highlight','THlib\\player\\reimu\\orb_huge_highlight.png')
 	SetImageState('orb_huge_base','',Color(255,255,255,255))
     SetImageState('orb_huge','mul+add',Color(255,255,255,255))
@@ -53,19 +54,19 @@ function reimu_player:init(slot)
 	LoadPS('reimu_high_spell','THlib\\player\\reimu\\reimu_sp_ef.psi','parimg1',32,32)
 	LoadImageFromFile('reimu_bomb_ef','THlib\\player\\reimu\\reimu_bomb_ef.png')
 	-----------------------------------------
-	LoadImage('reimu_main_bullet','reimu_bullet',128,0,128,64,32,32)
+	LoadImage('reimu_main_bullet','reimu_bullet',128,0,128,64,32*cf,32*cf)
 	SetImageState('reimu_main_bullet','',Color(0xA0FFFFFF))
 	SetImageCenter('reimu_main_bullet',96,32)
 	LoadAnimation('reimu_main_bullet_ef','reimu_bullet',256,0,64,64,2,2,4)
 	SetAnimationState('reimu_main_bullet_ef','mul+add',Color(0xA0FFFFFF))
 	
-	LoadImage('reimu_side_bullet','reimu_bullet',384,0,64,64,32,32)
+	LoadImage('reimu_side_bullet','reimu_bullet',384,0,64,64,32*cf,32*cf)
 	SetImageState('reimu_side_bullet','',Color(0x80FFFFFF))
 	SetImageCenter('reimu_side_bullet',32,32)
 	LoadAnimation('reimu_side_bullet_ef','reimu_bullet',448,0,64,64,2,2,4)
 	SetAnimationState('reimu_side_bullet_ef','mul+add',Color(0x80FFFFFF))
 	
-	LoadImage('reimu_side_bullet2','reimu_bullet',128,64,128,64,64,16)
+	LoadImage('reimu_side_bullet2','reimu_bullet',128,64,128,64,64*cf,16*cf)
 	SetImageState('reimu_side_bullet2','',Color(0x80FFFFFF))
 	SetImageCenter('reimu_side_bullet2',64,32)
 	LoadImage('reimu_side_bullet_ef2','reimu_bullet',128,64,128,64)
