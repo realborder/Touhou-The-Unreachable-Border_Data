@@ -46,7 +46,7 @@ function boss_ui:render()
     local _dy=0
     local alpha1=1-self.boss.hp_flag/30
     
-    SetImageState('base_hp','',Color(alpha1*255,155,0,0))
+    SetImageState('base_hp','',Color(alpha1*255,255,0,0))
     SetImageState('hpbar1','',Color(alpha1*255,255,255,255))
     SetImageState('hpbar2','',Color(0,255,255,255))
     SetImageState('life_node','',Color(alpha1*255,255,255,255))
@@ -69,11 +69,11 @@ function boss_ui:render()
                 if m >= 0 then
                     for i=0,m-1 do
                         for j=1,8 do
-                            Render('boss_sc_left',-194+j*12,207-i*12-dy1,0,1)
+                            Render('boss_sc_left',-194+j*12,207-i*12-dy1,0,1) --【临时修改】
                         end
                     end
                     for i=1,int(self.sc_left-1-8*m) do
-                        Render('boss_sc_left',-194+i*12,207-m*12-dy1,0,1)
+                        Render('boss_sc_left',-194+i*12,207-m*12-dy1,0,1) --【临时修改】
                     end
                 end
             end
@@ -109,7 +109,7 @@ function boss_ui:render()
     if self.drawspell then
         if self.sc_name~='' then
             SetImageState('boss_spell_name_bg','',Color(alpha*255,255,255,255))
-            Render('boss_spell_name_bg',192+xoffset,236-dy2)
+            Render('boss_spell_name_bg',192+xoffset,236-dy2,0,2)  --这里*2了，之后换素材之后要改
             RenderTTF('sc_name',self.sc_name,193+xoffset,193+xoffset,226-dy2,226-dy2,Color(alpha*255,0,0,0),'right','noclip')
             RenderTTF('sc_name',self.sc_name,192+xoffset,192+xoffset,227-dy2,227-dy2,Color(alpha*255,255,255,255),'right','noclip')
         end
@@ -117,13 +117,13 @@ function boss_ui:render()
             local b
             if self.boss.sc_bonus>0 then b=string.format('%.0f',self.boss.sc_bonus-self.boss.sc_bonus%10) else b='FAILED ' end
             SetFontState('bonus','',Color(alpha*255,0,0,0))
-            RenderText('bonus',b,187+xoffset,207-dy2,0.5,'right')
-            RenderText('bonus',string.format('%d/%d',self.sc_hist[1],self.sc_hist[2]),97+xoffset,207-dy2,0.5,'right')
-            RenderText('bonus','HISTORY        BONUS',137+xoffset,207-dy2,0.5,'right')
+            RenderText('bonus',b,187+xoffset,207-dy2,0.5*2,'right')
+            RenderText('bonus',string.format('%d/%d',self.sc_hist[1],self.sc_hist[2]),97+xoffset,207-dy2,0.5*2,'right')
+            RenderText('bonus','HISTORY        BONUS',137+xoffset,207-dy2,0.5*2,'right')
             SetFontState('bonus','',Color(alpha*255,255,255,255))
-            RenderText('bonus',b,186+xoffset,208-dy2,0.5,'right')
-            RenderText('bonus',string.format('%d/%d',self.sc_hist[1],self.sc_hist[2]),96+xoffset,208-dy2,0.5,'right')
-            RenderText('bonus','HISTORY        BONUS',136+xoffset,208-dy2,0.5,'right')
+            RenderText('bonus',b,186+xoffset,208-dy2,0.5*2,'right')
+            RenderText('bonus',string.format('%d/%d',self.sc_hist[1],self.sc_hist[2]),96+xoffset,208-dy2,0.5*2,'right')
+            RenderText('bonus','HISTORY        BONUS',136+xoffset,208-dy2,0.5*2,'right')
         end
     end
     --非符、符卡时间
@@ -133,12 +133,12 @@ function boss_ui:render()
         if self.boss.sc_bonus then yoffset=max(20-self.boss.timer,0) else yoffset=min(20,(self.boss.timer+1)) end
         if self.countdown>=10.0 then
             SetFontState('time','',Color(alpha1*255,255,255,255))
-            RenderText('time',string.format('%d',int(self.countdown)),4,192+yoffset+_dy-dy2,0.5,'vcenter','right')
-            RenderText('time','.'..string.format('%d%d',min(9,cd/10),min(9,cd%10)),4,189+yoffset+_dy-dy2,0.3,'vcenter','left')
+            RenderText('time',string.format('%d',int(self.countdown)),4,192+yoffset+_dy-dy2,0.5*2,'vcenter','right')
+            RenderText('time','.'..string.format('%d%d',min(9,cd/10),min(9,cd%10)),4,189+yoffset+_dy-dy2,0.3*2,'vcenter','left')
         else
             SetFontState('time','',Color(alpha1*255,255,30,30))
-            RenderText('time',string.format('0%d',min(99.99,int(self.countdown))),4,192+yoffset+_dy-dy2,0.5,'vcenter','right')
-            RenderText('time','.'..string.format('%d%d',min(9,cd/10),min(9,cd%10)),4,189+yoffset+_dy-dy2,0.3,'vcenter','left')
+            RenderText('time',string.format('0%d',min(99.99,int(self.countdown))),4,192+yoffset+_dy-dy2,0.5*2,'vcenter','right')
+            RenderText('time','.'..string.format('%d%d',min(9,cd/10),min(9,cd%10)),4,189+yoffset+_dy-dy2,0.3*2,'vcenter','left')
         end
     end
 end
@@ -218,7 +218,7 @@ function boss_ui:render_hpbar_ex()
     local rate=min(1,self.boss.ex.timer/60)
     
     SetImageState('base_hp','',Color(alpha1*255,255,0,0))
-    SetImageState('hpbar1','',Color(alpha1*255,255,100,100))
+    SetImageState('hpbar1','',Color(alpha1*255,155,0,0))
     SetImageState('hpbar2','',Color(alpha1*255,255,255,255))
     SetImageState('life_node','',Color(alpha1*255,255,255,255))
     local maxlife=0
