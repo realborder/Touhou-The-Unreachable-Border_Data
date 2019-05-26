@@ -1,0 +1,10 @@
+[sp] installing
+[spboss] Installing
+[spboss] complete
+[spboss][card] Add a card for id "boss_dialog"
+[spboss] SpellCard Additional Library install
+ [spmisc] installing
+ [spmisc] complete
+[spstring] Installing
+[spstring] Complete
+[sp] install complete
