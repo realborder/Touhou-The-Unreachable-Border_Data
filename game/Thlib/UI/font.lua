@@ -1,5 +1,5 @@
-LoadTTF('boss_name','THlib\\UI\\font\\default_ttf',20)
-LoadTTF('sc_name','THlib\\UI\\font\\syst_heavy.otf',26)
+LoadTTF('boss_name','THlib\\UI\\font\\default_ttf',20*2)
+LoadTTF('sc_name','THlib\\UI\\font\\syst_heavy.otf',26*2)
 LoadTTF('sc_pr','THlib\\UI\\font\\default_ttf',30)
 LoadTTF('dialog','THlib\\UI\\font\\default_ttf',50)
 LoadTTF('menuttf','THlib\\UI\\font\\default_ttf',20)
