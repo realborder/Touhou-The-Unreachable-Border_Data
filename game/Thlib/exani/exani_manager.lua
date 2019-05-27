@@ -36,6 +36,8 @@ function exani_manager:init()
 	self.render_startx=-160 --渲染列表左端x坐标（world坐标系）
 	self.render_starty=160  --渲染列表上端y坐标（world坐标系）
 	self.render_dy=-20      --渲染列表项之间的y轴间隔
+	self.img_yn=18          --渲染img列表的行数
+	self.img_yoffset=0      --img列表的偏移量
 	
 	self.frame_startx=-140  --渲染帧开始的x坐标
 	self.frame_dx=5         --帧之间的x间隔
@@ -344,6 +346,41 @@ function exani_manager:frame()
 					self.change_timer=self.change_delay
 				end
 			end
+		end
+		-------M键改变当前exani所有图片位置(注意改变后需要移动一下才能反映出效果)
+		if self.key==nil then
+			if lstg.GetKeyState(KEY.M) then
+				if self.key_manager.k_up.state then
+					for k,v in pairs(self.exanis[self.choose_exani].picList) do
+						for key,value in pairs(v.keyFrames) do
+							value.y=value.y+1
+						end
+					end
+				exani_manager.UpdateRenderFrame(self)
+				elseif self.key_manager.k_down.state then
+					for k,v in pairs(self.exanis[self.choose_exani].picList) do
+						for key,value in pairs(v.keyFrames) do
+							value.y=value.y-1
+						end
+					end
+				exani_manager.UpdateRenderFrame(self)
+				end
+				if self.key_manager.k_right.state then
+					for k,v in pairs(self.exanis[self.choose_exani].picList) do
+						for key,value in pairs(v.keyFrames) do
+							value.x=value.x+1
+						end
+					end
+				exani_manager.UpdateRenderFrame(self)
+				elseif self.key_manager.k_left.state then
+					for k,v in pairs(self.exanis[self.choose_exani].picList) do
+						for key,value in pairs(v.keyFrames) do
+							value.x=value.x-1
+						end
+					end
+				exani_manager.UpdateRenderFrame(self)
+				end
+			end
 		end	
 		
 		-------回车键从头播放/+alt从当前帧播放
@@ -494,11 +531,21 @@ function exani_manager:DealWithInput(key)
 		if lstg.GetKeyState(KEY.DOWN) and self.check_timer==0 then
 			self.check_timer=self.check_delay
 			self.check_image=self.check_image+1
-			if self.check_image>(#ex) then self.check_image=1 end
+			if self.check_image>(#ex) then
+				self.check_image=1
+				self.img_yoffset=0
+			elseif self.check_image>self.img_yoffset+self.img_yn then
+				self.img_yoffset=self.img_yoffset+1
+			end
 		elseif lstg.GetKeyState(KEY.UP) and self.check_timer==0 then
 			self.check_timer=self.check_delay
 			self.check_image=self.check_image-1
-			if self.check_image<1 then self.check_image=(#ex) end
+			if self.check_image<1 then
+				self.check_image=(#ex)
+				self.img_yoffset=max(0,(#ex)-self.img_yn)
+			elseif self.check_image<(self.img_yoffset+1) then
+				self.img_yoffset=self.img_yoffset-1
+			end
 		end
 		-------I+回车键插入帧(+shift创建图层并插入帧)
 		if lstg.GetKeyState(KEY.ENTER) and not self.press_enter then
@@ -786,11 +833,11 @@ function exani_manager_diaplayer:render()
 		elseif self.key==KEY.I then 
 			RenderTTF('Word','ImageList',0,0,200,200,Color(200,255,255,255),'center','vcenter')
 			local ex=self.exanis[self.choose_exani].imgList
-			for i=1,#ex do
-				if i==self.check_image then
-					RenderTTF('Word',ex[i],self.render_startx,self.render_startx,self.render_starty+(i-1)*self.render_dy,self.render_starty+(i-1)*self.render_dy,Color(200,255,255,255),'left','vcenter')
+			for i=1,min(#ex,self.img_yn) do
+				if i==(self.check_image-self.img_yoffset) then
+					RenderTTF('Word',ex[i+self.img_yoffset],self.render_startx,self.render_startx,self.render_starty+(i-1)*self.render_dy,self.render_starty+(i-1)*self.render_dy,Color(200,255,255,255),'left','vcenter')
 				else
-					RenderTTF('Word',ex[i],self.render_startx,self.render_startx,self.render_starty+(i-1)*self.render_dy,self.render_starty+(i-1)*self.render_dy,Color(100,255,255,255),'left','vcenter')
+					RenderTTF('Word',ex[i+self.img_yoffset],self.render_startx,self.render_startx,self.render_starty+(i-1)*self.render_dy,self.render_starty+(i-1)*self.render_dy,Color(100,255,255,255),'left','vcenter')
 				end
 			end
 		elseif self.key==KEY.L then
@@ -818,7 +865,7 @@ function exani_manager_diaplayer:render()
 						Render('exani_editor_frame_nil',self.frame_startx+(j-1)*self.frame_dx,y)
 					end
 				end
-				for k,v in pairs(ex[i].keyFrames) do --渲染关键帧
+				for k,v in pairs(ex[i+self.frame_yoffset].keyFrames) do --渲染关键帧
 					if v.frame_at>self.frame_xoffset and v.frame_at<=(self.frame_xoffset+self.frame_xn) then
 						if i==(self.check_layer-self.frame_yoffset) and v.frame_at==self.check_frame then
 							-- SetImageState('exani_editor_frame_normal','mul+add',Color(255,255,255,255))
