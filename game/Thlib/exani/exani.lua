@@ -328,7 +328,7 @@ function exani:CheckShader()
 		local rtmname='RTM'..self.name	---RenderTargetMaskedName
 		CreateRenderTarget(rtsname)
 		CreateRenderTarget(rtmname)
-		local path='Thlib\\exani\\exani_data\\'..self.name'\\'..self.name..'FX.fx'
+		local path='Thlib\\exani\\exani_data\\'..self.name..'\\'..self.name..'FX.fx'
 		LoadFX(self.name..'FX',path)
 		for i=#self.picList,1,-1 do
 			if self.picList[i].attr=='shader' then self.picList[i].attr='final_shader' break end
