@@ -684,6 +684,17 @@ function exani_manager:DealWithInput(key)
 			end
 			self.press_J=true
 		end
+		-------L+M改变图层遮罩属性
+		if lstg.GetKeyState(KEY.M) and self.change_timer==0 then
+			if ex[self.check_layer].store_attr=='' then
+				ex[self.check_layer].store_attr='shader'
+			elseif ex[self.check_layer].store_attr=='shader' then
+				ex[self.check_layer].store_attr='masked'
+			elseif ex[self.check_layer].store_attr=='masked' then
+				ex[self.check_layer].store_attr=''
+			end
+			self.change_timer=self.change_delay
+		end
 		-------L+鼠标选中帧
 		if lstg.GetMouseState(0) then
 			--【修改 by OLC】修复鼠标和选中帧有偏移的问题
@@ -847,10 +858,13 @@ function exani_manager_diaplayer:render()
 			end
 			local ex=self.exanis[self.choose_exani].picList
 			for i=1,min(#ex,self.frame_yn) do
+				local shaderx=self.frame_startx+self.frame_dx*self.frame_xn
 				if i==(self.check_layer-self.frame_yoffset) then 
 					RenderTTF('Word',ex[i+self.frame_yoffset].Prio,self.render_startx,self.render_startx,self.frame_starty+(i-1)*self.frame_dy,self.frame_starty+(i-1)*self.frame_dy,Color(200,255,255,255),'left','vcenter')
+					RenderTTF('Word',ex[i+self.frame_yoffset].store_attr,shaderx,shaderx,self.frame_starty+(i-1)*self.frame_dy,self.frame_starty+(i-1)*self.frame_dy,Color(200,255,255,255),'left','vcenter')
 				else
 					RenderTTF('Word',ex[i+self.frame_yoffset].Prio,self.render_startx,self.render_startx,self.frame_starty+(i-1)*self.frame_dy,self.frame_starty+(i-1)*self.frame_dy,Color(100,255,255,255),'left','vcenter')
+					RenderTTF('Word',ex[i+self.frame_yoffset].store_attr,shaderx,shaderx,self.frame_starty+(i-1)*self.frame_dy,self.frame_starty+(i-1)*self.frame_dy,Color(100,255,255,255),'left','vcenter')
 				end
 				-----渲染帧
 				local y=self.frame_starty+(i-1)*self.frame_dy

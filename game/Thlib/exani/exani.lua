@@ -86,23 +86,25 @@ function layers:init(list)
 		end
 		table.sort(self.keyFrames,function(a,b) return a.frame_at<b.frame_at end)
 		if self.keyFrames[1].frame_at==current_manager.check_frame then layers.copyFrame(self,self.keyFrames[1]) end
-		--self.attr=list[4] or false
+		self.store_attr=list[4] or ''
 	else
 		self.Prio=50
 		self.screenMode='world'
 		self.keyFrames={}
-		--self.attr=false
+		self.store_attr=''
 	end
 	---为了适配旧保存文件
 	if self.screenMode==nil then self.screenMode='world' end
 	self.layer=LAYER_TOP+40
 	self.renderFlag=false
-	
+	self.attr=self.store_attr
 	---前一个关键帧
 	self.previousFrame=nil
 	---后一个关键帧
 	self.nextFrame=nil
 	
+	---最后发现还是得记录一下上级exani名字(用于遮罩),也许可以优化,这名字起的不好,其实是包含关系
+	self.parent=''
 end
 function layers:render()
 	if self.renderFlag then
@@ -118,6 +120,10 @@ function layers:render()
 				SetImageCenter(imgname1,self.renderFrame.cx,self.renderFrame.cy)
 				SetImageCenter(imgname2,self.renderFrame.cx,self.renderFrame.cy)
 			end
+			
+			if self.attr=='shader' or self.attr=='final_shader' then PushRenderTarget('RTS'..self.parent)
+			elseif self.attr=='masked' then PushRenderTarget('RTM'..self.parent) end
+			
 			if type(self.renderFrame.blend)=='string' then
 				if type(self.renderFrame.img)=='string' then
 					SetImageState(imgname,self.renderFrame.blend,Color(self.renderFrame.a,255,255,255))
@@ -141,6 +147,20 @@ function layers:render()
 					Render(imgname2,self.renderFrame.x,self.renderFrame.y,self.renderFrame.rot,self.renderFrame.hs,self.renderFrame.vs)
 				end				
 			end
+			
+			if self.attr=='shader' or self.attr=='final_shader' then PopRenderTarget('RTS'..self.parent)
+			elseif self.attr=='masked' then PopRenderTarget('RTM'..self.parent) end
+			
+			if self.attr=='final_shader' then
+				PostEffect('RTM'..self.parent,self.parent..'FX','',{tex='RTS'..self.parent})
+				PushRenderTarget('RTS'..self.parent)
+				RenderClear(Color(0,0,0,0))
+				PopRenderTarget('RTS'..self.parent)
+				PushRenderTarget('RTM'..self.parent)
+				RenderClear(Color(0,0,0,0))
+				PopRenderTarget('RTM'..self.parent)
+			end
+			
 		end
 	end
 end
@@ -150,6 +170,7 @@ function layers:save()
 	table.insert(t,self.Prio)
 	table.insert(t,self.screenMode)
 	table.insert(t,self.keyFrames)
+	table.insert(t,self.store_attr)
 	return t
 end
 
@@ -214,10 +235,12 @@ function exani:init(dir)
 	self.layerList=lstg.LoadExaniConfig(self.path)
 	self.picList={}
 	self.imgList={}
+	self.isContainShader=false
 	for k,v in pairs(self.layerList) do
 		table.insert(self.picList,New(layers,v))
 	end
 	table.sort(self.picList,function(a,b) return a.Prio<b.Prio end)
+	exani.CheckShader(self)
 	exani.LoadImgSources(self)
 end
 
@@ -284,5 +307,38 @@ end
 function exani:RangeLayer(l)
 	for i=1,#(self.picList) do
 		self.picList[i].layer=l+self.picList[i].Prio*0.01
+	end
+end
+
+---检查是否符合遮罩要求
+function exani:CheckShader()
+	local hasShader=false
+	local hasMasked=false
+	for k,v in pairs(self.picList) do
+		if v.store_attr=='shader' then self.hasShader=true end
+		if v.store_attr=='masked' then self.hasMasked=true end
+	end
+	if hasMasked and hasShader then
+		self.isContainShader=true
+	else
+		self.isContainShader=false
+	end
+	if self.isContainShader then
+		local rtsname='RTS'..self.name  ---RenderTargetShaderName
+		local rtmname='RTM'..self.name	---RenderTargetMaskedName
+		CreateRenderTarget(rtsname)
+		CreateRenderTarget(rtmname)
+		local path='Thlib\\exani\\exani_data\\'..self.name..'FX.fx'
+		LoadFX(self.name..'FX',path)
+		for i=#self.picList,1,-1 do
+			if self.picList[i].attr=='shader' then self.picList[i].attr='final_shader' break end
+		end
+		for k,v in pairs(self.picList) do
+			v.parent=self.name
+		end
+	elseif hasShader or hasMasked then
+		for k,v in pairs(self.picList) do
+			v.attr=''
+		end
 	end
 end
