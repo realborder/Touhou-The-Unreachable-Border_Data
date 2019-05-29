@@ -315,8 +315,8 @@ function exani:CheckShader()
 	local hasShader=false
 	local hasMasked=false
 	for k,v in pairs(self.picList) do
-		if v.store_attr=='shader' then self.hasShader=true end
-		if v.store_attr=='masked' then self.hasMasked=true end
+		if v.store_attr=='shader' then hasShader=true end
+		if v.store_attr=='masked' then hasMasked=true end
 	end
 	if hasMasked and hasShader then
 		self.isContainShader=true
