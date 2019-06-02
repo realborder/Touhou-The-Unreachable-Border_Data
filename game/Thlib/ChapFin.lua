@@ -7,18 +7,19 @@ function ChapFin:init(isInboss)
 	self.img='chapFin'
 	self.layer=LAYER_TOP
 	self.group=GROUP_GHOST
-	self.hscale=1
-	self.vscale=1
+	self.hscale=2
+	self.vscale=2
 	self.hide=false
 	self.bound=false
 	self.colli=false
 	self.flag=isInboss
+	if self.flag then self.hide=true end
 end
 
 function ChapFin:frame()
 	if self.timer==1 then
 		DR_Pin.reset()
-		ClearAllEnemyAndBullet()
+		if not self.flag then ClearAllEnemyAndBullet() end --击破boss一个阶段自带消弹了
 		--残机结算
 		if lstg.var.chip>=100 and not self.flag then
 			lstg.var.lifeleft=min(11,lstg.var.lifeleft+int(lstg.var.chip/100))
@@ -39,8 +40,8 @@ end
 
 function ChapFin:render()
 	if self.timer<=30 then
-		self.hscale=self.hscale-1/60
-		self.vscale=self.vscale-1/60
+		self.hscale=self.hscale-1/30
+		self.vscale=self.vscale-1/30
 		SetImageState('chapFin','',Color((self.timer*255/30),255,255,255))
 	end
 	if self.timer>=90 and self.timer<120 then
@@ -51,7 +52,7 @@ end
 
 function ClearAllEnemyAndBullet()
 	for _,unit in ObjList(GROUP_ENEMY) do
-		if unit~=_boss then
+		if not unit._bosssys then --靠有无挂载boss系统来判断是不是boss
 			unit.drop=false
 			Kill(unit)
 		end

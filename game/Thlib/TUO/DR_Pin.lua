@@ -13,7 +13,7 @@ function DR_Pin:init()
 	if not var.dr then var.dr=0.01 end--梦(dream)现(reality)指针值
 	var.cp=0.0--combo_point 连击点数，用来控制dr的减少
 	tmpv.bonus_count=0
-	C_BOUNS_LIMIT_IN_CHAPTER=5000
+	C_BOUNS_LIMIT_IN_CHAPTER=2000
 	K_dr=0.003--用于控制dr的增长，每个chapter可能都要微调，所以记在lstg.var里了
 	
 
@@ -130,17 +130,17 @@ end
 function DR_Pin:render() --左下角字体渲染
 	local var=lstg.var
 	local x,y=-182,-204
-	SetImageState('white','',Color(255,255*0.75+var.dr*0.05,125,255*7/8-var.dr*0.025))
-	RenderText('bonus','Pin_of_dream&reality:'..var.dr,x,y,0.35,8)
-	RenderRect('white',x+25,x+25+var.dr*5,y-12,y-10)
-	SetImageState('white','',Color(255,255,255,255))
-	RenderText('bonus','combo_point:'..var.cp,x,y+20,0.35,8)
-	RenderRect('white',x,x+var.cp,y+8,y+10)
-	RenderText('bonus','graze_count:'..player.graze_c,x,y+40,0.35,8)
-	RenderRect('white',x,x+player.graze_c,y+28,y+30)
+	-- SetImageState('white','',Color(255,255*0.75+var.dr*0.05,125,255*7/8-var.dr*0.025))
+	-- RenderText('bonus','Pin_of_dream&reality:'..var.dr,x,y,0.35,8)
+	-- RenderRect('white',x+25,x+25+var.dr*5,y-12,y-10)
+	-- SetImageState('white','',Color(255,255,255,255))
+	-- RenderText('bonus','combo_point:'..var.cp,x,y+20,0.35,8)
+	-- RenderRect('white',x,x+var.cp,y+8,y+10)
+	-- RenderText('bonus','graze_count:'..player.graze_c,x,y+40,0.35,16)
+	-- RenderRect('white',x,x+player.graze_c,y+28,y+30)
 	
-	RenderText('bonus','SpellCard:'..player.SpellCardHp,x,y+60,0.35,8) --符卡槽
-	RenderRect('white',x,x+player.SpellCardHp,y+48,y+50)
+	-- RenderText('bonus','SpellCard:'..player.SpellCardHp,x,y+60,0.35,8) --符卡槽
+	-- RenderRect('white',x,x+player.SpellCardHp,y+48,y+50)
 	
 	--------收点线文字
 	if self.timer<60 and self.timer%20==0 then 

@@ -57,7 +57,7 @@ function boss:render()
     for i=1,25 do
         SetImageState('boss_aura_3D'..i, 'mul+add', Color(self.aura_alpha, 255, 255, 255))
     end
-    Render('boss_aura_3D'..self.ani % 25 + 1, self.x, self.y, self.ani * 0.75, 0.92 * self.aura_scale, (0.8 + 0.12 * cos(self.ani * 0.75)) * self.aura_scale)
+    Render('boss_aura_3D'..self.ani % 25 + 1, self.x, self.y, self.ani * 0.75, 0.92 * self.aura_scale*2, (0.8 + 0.12 * cos(self.ani * 0.75)) * self.aura_scale*2)
     self._bosssys:render()
     self._wisys:render(self.dmgt, self.dmgmaxt) --by OLC，行走图系统
 end
