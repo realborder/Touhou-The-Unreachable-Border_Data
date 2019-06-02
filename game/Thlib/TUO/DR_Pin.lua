@@ -10,7 +10,7 @@ function DR_Pin:init()
 	self.layer=LAYER_TOP
 	self.x=0
 	self.y=0
-	var.dr=0.01--梦(dream)现(reality)指针值
+	if not var.dr then var.dr=0.01 end--梦(dream)现(reality)指针值
 	var.cp=0.0--combo_point 连击点数，用来控制dr的减少
 	tmpv.bonus_count=0
 	C_BOUNS_LIMIT_IN_CHAPTER=5000
