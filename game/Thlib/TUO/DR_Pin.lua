@@ -1,6 +1,6 @@
 LoadImageFromFile('UI_gaming_item_collect_word','THlib\\UI\\UI_gaming_item_collect_word.png')
 LoadImageFromFile('UI_gaming_item_collect_line','THlib\\UI\\UI_gaming_item_collect_line.png')
-LoadTTF('sc_card','THlib\\UI\\ttf\\杨任东竹石体-Heavy.ttf',40)
+LoadTTF('sc_card','THlib\\UI\\ttf\\ysszt.ttf',40)
 
 DR_Pin=Class(object)
 function DR_Pin:init()
@@ -8,8 +8,8 @@ function DR_Pin:init()
 	local tmpv=lstg.tmpvar
 	self.group=GROUP_GHOST
 	self.layer=LAYER_TOP
-	self.x=0
-	self.y=0
+	self.x=1000
+	self.y=1000
 	var.dr=0.01--梦(dream)现(reality)指针值
 	var.cp=0.0--combo_point 连击点数，用来控制dr的减少
 	tmpv.bonus_count=0
