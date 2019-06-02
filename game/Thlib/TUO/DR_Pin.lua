@@ -8,8 +8,9 @@ function DR_Pin:init()
 	local tmpv=lstg.tmpvar
 	self.group=GROUP_GHOST
 	self.layer=LAYER_TOP
-	self.x=1000
-	self.y=1000
+	self.x=0
+	self.y=0
+	self.img='img_void'
 	var.dr=0.01--梦(dream)现(reality)指针值
 	var.cp=0.0--combo_point 连击点数，用来控制dr的减少
 	tmpv.bonus_count=0
