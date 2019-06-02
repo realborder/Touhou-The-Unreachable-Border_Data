@@ -123,7 +123,7 @@ function DR_Pin:frame()
 		end
 		--这段是加灵力的代码
 		if abs(var.dr) >= 1.0 then
-			GetPower(min((abs(var.dr)-1.0),2.0) * (-2 + sign(var.dr)) / -10 * 0.25) 
+			DR_Pin.GetPower(min((abs(var.dr)-1.0),2.0) * (-2 + sign(var.dr)) / -10 * 0.25) 
 		end
 	end
 end
@@ -193,4 +193,11 @@ function DR_Pin:render() --左下角字体渲染
             RenderTTF('sc_card',player.SC_name,-81,-81,-199,-199,Color(255,255,255,255),'right','noclip')
 		end
 	end
+end
+
+function DR_Pin.GetPower(v)
+	local before=int(lstg.var.power/100)
+	lstg.var.power=min(player.maxPower,lstg.var.power+v)
+	local after=int(lstg.var.power/100)
+	if after>before then PlaySound('powerup1',0.5) end
 end

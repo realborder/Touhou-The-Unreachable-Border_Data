@@ -22,8 +22,8 @@ function ext.pausemenu:init()
 	
 	self.eff=0
 	self.mask_color=Color(0,255,255,255)
-	self.mask_alph={0,0,0}
-	self.mask_x={0,0,0}
+	self.mask_alph={0,0,0,0}
+	self.mask_x={0,0,0,0}
 	
 	self.text={
 		{'Return to Game','Return to Title','Give up and Retry'},
@@ -168,7 +168,9 @@ function ext.pausemenu:frame()
 		local lastkey=GetLastKey()
 		--关闭暂停菜单
 		if lastkey==setting.keysys.menu then
-			if not ext.rep_over then
+			if lstg.tmpvar.death then
+				ext.pause_menu_order='Quit and Save Replay'
+			elseif not ext.rep_over then
 				self.t=60
 				PlaySound('cancel00',0.3)
 				self.choose=false
@@ -294,7 +296,9 @@ function ext.pausemenu:render()
 		pause_menu_text = pm.text[m]
 	end
 	local textnumber=0
-	if pause_menu_text[3] then
+	if pause_menu_text[4] then
+		textnumber=4
+	elseif pause_menu_text[3] then
 		textnumber=3
 	else
 		textnumber=2
@@ -385,8 +389,8 @@ function ext.pausemenu:FlyIn()
 	
 	self.eff=0
 	self.mask_color=Color(0,255,255,255)
-	self.mask_alph={0,0,0}
-	self.mask_x={0,0,0}
+	self.mask_alph={0,0,0,0}
+	self.mask_x={0,0,0,0}
 	
 	task.New(self,function()
 		self:PauseSound()
@@ -398,10 +402,12 @@ function ext.pausemenu:FlyIn()
 				min(i*8,239),
 				max(min((i-10)*8,239),0),
 				max(min((i-20)*8,239),0),
+				max(min((i-20)*8,239),0),
 			}
 			self.mask_x={
 				min(-210+i,-180),
 				min(-220+i,-180),
+				min(-230+i,-180),
 				min(-230+i,-180),
 			}
 			task.Wait(1)
@@ -430,7 +436,7 @@ function ext.pausemenu:FlyOut()
 	task.New(self,function()
 		for i=30,1,-1 do
 			self.mask_color=Color(i*7,0,0,0)
-			for j=1,3 do
+			for j=1,4 do
 				self.mask_alph[j]=i*8
 			end
 			task.Wait(1)

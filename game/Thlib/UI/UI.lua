@@ -407,7 +407,7 @@ function ResetUI()
 			
 			RenderTTF('PointStyle1',string.format('%d',math.floor(lstg.var.power/100)),550.5,595,313.5,328.5,Color(255,253,223,223),'bottom','left')
 			RenderTTF('PointStyle1',string.format('/%d',player.maxPower/100),550.5,595,313.5,328.5,Color(255,253,223,223),'bottom','right')
-			RenderTTF('PointStyle2',string.format('.%d%d',math.floor((lstg.var.power%100)/10),lstg.var.power%10),560,615,313.5,328.5,Color(255,253,223,223),'bottom','left')
+			RenderTTF('PointStyle2',string.format('.%d%d',math.floor((lstg.var.power%100)/10),math.floor(lstg.var.power%10)),560,615,313.5,328.5,Color(255,253,223,223),'bottom','left')
 			RenderTTF('PointStyle2','.00',560,615,313.5,328.5,Color(255,253,223,223),'bottom','right')
 			--RenderTTF('PointStyle1',string.format('%d,%d%d%d',math.floor(lstg.var.pointrate/1000),math.floor(lstg.var.pointrate/100)%10,math.floor(lstg.var.pointrate/10)%10,lstg.var.pointrate%10),518.5,615,295.5,310.5,Color(255,221,235,210),'bottom','right')
 			local pointratebase=10000 + int(lstg.var.graze/10)*10 + int(lstg.var.faith/10)*10
