@@ -340,7 +340,7 @@ function EnemyWalkImageSystem:render(dmgt, dmgmaxt)
     
     --调换到低一层
 	if obj.style > 16 and obj.style <= 24 then
-        local img='ghost'..(obj.style-16)..int((obj.timer / 4) % 8) + 1
+        local img='ghost'..(obj.style-16)..'_'..int((obj.timer / 4) % 8) + 1
         if obj._blend and obj._a and obj._r and obj._g and obj._b then
             SetImageState(img, obj._blend, Color(obj._a, obj._r, obj._g, obj._b))
         end
