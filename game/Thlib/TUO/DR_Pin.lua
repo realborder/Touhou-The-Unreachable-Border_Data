@@ -1,6 +1,6 @@
 LoadImageFromFile('UI_gaming_item_collect_word','THlib\\UI\\UI_gaming_item_collect_word.png')
 LoadImageFromFile('UI_gaming_item_collect_line','THlib\\UI\\UI_gaming_item_collect_line.png')
-LoadTTF('sc_card','THlib\\UI\\ttf\\杨任东竹石体-Heavy.ttf',40)
+LoadTTF('sc_card','THlib\\UI\\ttf\\ysszt.ttf',40)
 
 DR_Pin=Class(object)
 function DR_Pin:init()
