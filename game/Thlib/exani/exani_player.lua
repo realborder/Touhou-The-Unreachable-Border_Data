@@ -8,6 +8,8 @@ function layers_player:init(list)
 		table.insert(self.keyFrames,t)
 	end
 	table.sort(self.keyFrames,function(a,b) return a.frame_at<b.frame_at end)
+	self.attr=list[4] or ''
+	self.parent=''
 	self.renderFrame={
 		flag=false,
 		img='',
@@ -41,6 +43,10 @@ function layers_player:render()
 				SetImageCenter(imgname1,self.renderFrame.cx,self.renderFrame.cy)
 				SetImageCenter(imgname2,self.renderFrame.cx,self.renderFrame.cy)
 			end
+			
+			if self.attr=='shader' or self.attr=='final_shader' then PushRenderTarget('RTS'..self.parent)
+			elseif self.attr=='masked' then PushRenderTarget('RTM'..self.parent) end
+			
 			if type(self.renderFrame.blend)=='string' then
 				if type(self.renderFrame.img)=='string' then
 					SetImageState(imgname,self.renderFrame.blend,Color(self.renderFrame.a,255,255,255))
@@ -64,6 +70,20 @@ function layers_player:render()
 					Render(imgname2,self.renderFrame.x,self.renderFrame.y,self.renderFrame.rot,self.renderFrame.hs,self.renderFrame.vs)
 				end				
 			end
+			
+			if self.attr=='shader' or self.attr=='final_shader' then PopRenderTarget('RTS'..self.parent)
+			elseif self.attr=='masked' then PopRenderTarget('RTM'..self.parent) end
+			
+			if self.attr=='final_shader' then
+				PostEffect('RTM'..self.parent,self.parent..'FX','',{tex='RTS'..self.parent})
+				PushRenderTarget('RTS'..self.parent)
+				RenderClear(Color(0,0,0,0))
+				PopRenderTarget('RTS'..self.parent)
+				PushRenderTarget('RTM'..self.parent)
+				RenderClear(Color(0,0,0,0))
+				PopRenderTarget('RTM'..self.parent)
+			end
+			
 		end
 	end
 end
@@ -128,10 +148,12 @@ function exani_player:init(name)
 	self.viewmode='world'
 	self.layerList=lstg.LoadExaniConfig(self.path)
 	self.picList={}
+	self.isContainShader=false
 	for k,v in pairs(self.layerList) do
 		table.insert(self.picList,New(layers_player,v))
 	end
 	table.sort(self.picList,function(a,b) return a.Prio<b.Prio end)
+	exani_player.CheckShader(self)
 	exani_player.LoadImgSources(self)
 	
 	self.isInPlay=false
@@ -219,5 +241,38 @@ function exani_player:UpdateLayers()
 	for k,v in pairs(self.picList) do
 		v.current_frame=self.current_frame
 		layers_player.CalculateFrame(v)
+	end
+end
+
+function exani_player:CheckShader()
+	Print('进入CheckShader')
+	local hasShader=false
+	local hasMasked=false
+	for k,v in pairs(self.picList) do
+		if v.attr=='shader' then hasShader=true end
+		if v.attr=='masked' then hasMasked=true end
+	end
+	if hasMasked and hasShader then
+		self.isContainShader=true
+	else
+		self.isContainShader=false
+	end
+	if self.isContainShader then
+		local rtsname='RTS'..self.name  ---RenderTargetShaderName
+		local rtmname='RTM'..self.name	---RenderTargetMaskedName
+		CreateRenderTarget(rtsname)
+		CreateRenderTarget(rtmname)
+		local path='Thlib\\exani\\exani_data\\'..self.name..'\\'..self.name..'FX.fx'
+		LoadFX(self.name..'FX',path)
+		for i=#self.picList,1,-1 do
+			if self.picList[i].attr=='shader' then self.picList[i].attr='final_shader' break end
+		end
+		for k,v in pairs(self.picList) do
+			v.parent=self.name
+		end
+	elseif hasShader or hasMasked then
+		for k,v in pairs(self.picList) do
+			v.attr=''
+		end
 	end
 end
