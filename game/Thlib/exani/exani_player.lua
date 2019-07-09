@@ -9,7 +9,8 @@ function layers_player:init(list)
 	end
 	table.sort(self.keyFrames,function(a,b) return a.frame_at<b.frame_at end)
 	self.attr=list[4] or ''
-	self.parent=''
+	self.manager_name=''
+	self.manager=nil
 	self.renderFrame={
 		flag=false,
 		img='',
@@ -44,47 +45,55 @@ function layers_player:render()
 				SetImageCenter(imgname2,self.renderFrame.cx,self.renderFrame.cy)
 			end
 			
-			if self.attr=='shader' or self.attr=='final_shader' then PushRenderTarget('RTS'..self.parent)
-			elseif self.attr=='masked' then PushRenderTarget('RTM'..self.parent) end
+			if self.attr=='shader' or self.attr=='final_shader' then PushRenderTarget('RTS'..self.manager_name)
+			elseif self.attr=='masked' then PushRenderTarget('RTM'..self.manager_name) end
 			
 			if type(self.renderFrame.blend)=='string' then
 				if type(self.renderFrame.img)=='string' then
 					SetImageState(imgname,self.renderFrame.blend,Color(self.renderFrame.a,255,255,255))
-					Render(imgname,self.renderFrame.x,self.renderFrame.y,self.renderFrame.rot,self.renderFrame.hs,self.renderFrame.vs)
+					layers_player.render_choose(self,imgname)
 				elseif type(self.renderFrame.img)=='number' then
 					SetImageState(imgname1,self.renderFrame.blend,Color(self.renderFrame.a*(1-self.renderFrame.img),255,255,255))
-					Render(imgname1,self.renderFrame.x,self.renderFrame.y,self.renderFrame.rot,self.renderFrame.hs,self.renderFrame.vs)
+					layers_player.render_choose(self,imgname1)
 					SetImageState(imgname2,self.renderFrame.blend,Color(self.renderFrame.a*self.renderFrame.img,255,255,255))
-					Render(imgname2,self.renderFrame.x,self.renderFrame.y,self.renderFrame.rot,self.renderFrame.hs,self.renderFrame.vs)
+					layers_player.render_choose(self,imgname2)
 				end
 			elseif type(self.renderFrame.blend)=='number' then
 				if type(self.renderFrame.img)=='string' then
 					SetImageState(imgname,self.previousFrame.blend,Color(self.renderFrame.a*(1-self.renderFrame.blend),255,255,255))
-					Render(imgname,self.renderFrame.x,self.renderFrame.y,self.renderFrame.rot,self.renderFrame.hs,self.renderFrame.vs)
+					layers_player.render_choose(self,imgname)
 					SetImageState(imgname,self.nextFrame.blend,Color(self.renderFrame.a*self.renderFrame.blend,255,255,255))
-					Render(imgname,self.renderFrame.x,self.renderFrame.y,self.renderFrame.rot,self.renderFrame.hs,self.renderFrame.vs)
+					layers_player.render_choose(self,imgname)
 				elseif type(self.renderFrame.img)=='number' then
 					SetImageState(imgname1,self.previousFrame.blend,Color(self.renderFrame.a*(1-self.renderFrame.blend),255,255,255))
-					Render(imgname1,self.renderFrame.x,self.renderFrame.y,self.renderFrame.rot,self.renderFrame.hs,self.renderFrame.vs)
+					layers_player.render_choose(self,imgname1)
 					SetImageState(imgname2,self.nextFrame.blend,Color(self.renderFrame.a*self.renderFrame.blend,255,255,255))
-					Render(imgname2,self.renderFrame.x,self.renderFrame.y,self.renderFrame.rot,self.renderFrame.hs,self.renderFrame.vs)
+					layers_player.render_choose(self,imgname2)
 				end				
 			end
 			
-			if self.attr=='shader' or self.attr=='final_shader' then PopRenderTarget('RTS'..self.parent)
-			elseif self.attr=='masked' then PopRenderTarget('RTM'..self.parent) end
+			if self.attr=='shader' or self.attr=='final_shader' then PopRenderTarget('RTS'..self.manager_name)
+			elseif self.attr=='masked' then PopRenderTarget('RTM'..self.manager_name) end
 			
 			if self.attr=='final_shader' then
-				PostEffect('RTM'..self.parent,self.parent..'FX','',{tex='RTS'..self.parent})
-				PushRenderTarget('RTS'..self.parent)
+				PostEffect('RTM'..self.manager_name,self.manager_name..'FX','',{tex='RTS'..self.manager_name})
+				PushRenderTarget('RTS'..self.manager_name)
 				RenderClear(Color(0,0,0,0))
-				PopRenderTarget('RTS'..self.parent)
-				PushRenderTarget('RTM'..self.parent)
+				PopRenderTarget('RTS'..self.manager_name)
+				PushRenderTarget('RTM'..self.manager_name)
 				RenderClear(Color(0,0,0,0))
-				PopRenderTarget('RTM'..self.parent)
+				PopRenderTarget('RTM'..self.manager_name)
 			end
 			
 		end
+	end
+end
+
+function layers_player:render_choose(img)
+	if self.manager.mode=='3d' then
+		Render(img,self.renderFrame.x+self.manager.3d_dx,self.renderFrame.y+self.manager.3d_dy,self.renderFrame.rot,self.renderFrame.hs*self.manager.3d_hscale,self.renderFrame.vs*self.manager.3d_vscale,self.manager.z)
+	else
+		Render(img,self.renderFrame.x,self.renderFrame.y,self.renderFrame.rot,self.renderFrame.hs,self.renderFrame.vs)
 	end
 end
 
@@ -153,6 +162,9 @@ function exani_player:init(name)
 		table.insert(self.picList,New(layers_player,v))
 	end
 	table.sort(self.picList,function(a,b) return a.Prio<b.Prio end)
+	for k,v in pairs(self.picList) do
+		v.manager=self
+	end
 	exani_player.CheckShader(self)
 	exani_player.LoadImgSources(self)
 	
@@ -164,6 +176,7 @@ function exani_player:init(name)
 	self.replay_round=0
 	self.play_interval=0
 	self.isdelete=true
+	self.mode=''
 end
 
 function exani_player:frame()
@@ -216,7 +229,7 @@ function exani_player:LoadImgSources()
 	end
 end
 
-function exani_player:play(start_frame,end_frame,layer,viewmode,replay_round,play_interval,isdelete)
+function exani_player:play(start_frame,end_frame,layer,viewmode,replay_round,play_interval,isdelete,mode,offset_x,offset_y,z,hscale,vscale)
 	self.start_frame=start_frame
 	self.end_frame=end_frame
 	self.layer=layer
@@ -224,6 +237,12 @@ function exani_player:play(start_frame,end_frame,layer,viewmode,replay_round,pla
 	self.replay_round=replay_round
 	self.play_interval=play_interval
 	self.isdelete=isdelete
+	self.mode=mode
+	self.3d_dx=offset_x
+	self.3d_dy=offset_y
+	self.z=z
+	self.3d_hscale=hscale
+	self.3d_vscale=vscale
 	
 	self.current_frame=self.start_frame
 	for k,v in pairs(self.picList) do
@@ -268,7 +287,7 @@ function exani_player:CheckShader()
 			if self.picList[i].attr=='shader' then self.picList[i].attr='final_shader' break end
 		end
 		for k,v in pairs(self.picList) do
-			v.parent=self.name
+			v.manager_name=self.name
 		end
 	elseif hasShader or hasMasked then
 		for k,v in pairs(self.picList) do
