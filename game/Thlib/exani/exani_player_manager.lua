@@ -17,6 +17,7 @@ function exani_player_manager:Del()
 	end
 end
 
+--创建单个exani对象
 function exani_player_manager:CreateSingleExani(exani_name)
 	for i=1,#self.exanis do
 		if self.exanis[i].name==exani_name then return i end
@@ -30,7 +31,12 @@ function exani_player_manager:CreateSingleExani(exani_name)
 	return false
 end
 
+--初始化exani播放状态
 function exani_player_manager:play_exani(exani_name,start_frame,end_frame,layer,viewmode,replay_round,play_interval,isdelete,mode,offset_x,offset_y,z,hscale,vscale)
+	if not exani_name or not start_frame or not end_frame then
+		Print("init exani play failed! need necessary param!")
+	end
+	
 	if mode=='3d' then
 		if offset_x==nil then offset_x=0 end
 		if offset_y==nil then offset_y=0 end
@@ -43,6 +49,7 @@ function exani_player_manager:play_exani(exani_name,start_frame,end_frame,layer,
 	if play_interval==nil then play_interval=1 end
 	if replay_round==nil then replay_round=1 end
 	if viewmode==nil then viewmode='world' end
+	if layer==nil then layer=LAYER_TOP end
 	
 	if start_frame>end_frame then
 		play_interval=-play_interval
@@ -56,6 +63,34 @@ function exani_player_manager:play_exani(exani_name,start_frame,end_frame,layer,
 		exani_player.play(self.exanis[j],start_frame,end_frame,layer,viewmode,replay_round,play_interval,isdelete,mode,offset_x,offset_y,z,hscale,vscale)
 	else
 		Print('创建exani对象'..exani_name..'失败')
+	end
+end
+
+--执行预定义动作(有瑕疵，建议先创建Set好属性再调用，或者之前play过也行，之后再改)
+function exani_player_manager:ExecuteExaniPredefine(exani_name,action)
+	local i=exani_player_manager.CreateSingleExani(self,exani_name)
+	if type(i)=='number' then
+		local ex=self.exanis[i]
+		for j=1,#ex.predefine[action] do
+			table.insert(ex.future_action,ex.predefine[action][j])
+		end
+		exani_player.DoPredefine(ex)
+	elseif i then
+		local ex=self.exanis[#self.exanis]
+		for j=1,#ex.predefine[action] do
+			table.insert(ex.future_action,ex.predefine[action][j])
+		end
+		exani_player.DoPredefine(ex)
+	else
+		Print('创建exani对象'..exani_name..'失败')
+	end
+end
+
+function exani_player_manager:SetExaniAttribute(exani_name,start_frame,end_frame,layer,viewmode,replay_round,play_interval,isdelete,mode,offset_x,offset_y,z,hscale,vscale)
+	for i=#self.exanis,1,-1 do
+		if self.exanis[i].name==exani_name then
+			exani_player.SetAttribute(self.exanis[i],start_frame,end_frame,layer,viewmode,replay_round,play_interval,isdelete,mode,offset_x,offset_y,z,hscale,vscale)
+		end
 	end
 end
 

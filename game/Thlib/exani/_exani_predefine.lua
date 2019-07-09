@@ -14,14 +14,18 @@
 ------choose事件，菜单项被确认的动画，如果菜单项为不可用，则使用此choose事件，值得注意的是，在该动画执行完之后播放头就不动了，和通常choose不同
 ---------------------------------------------------
 --在该脚本里定义一个表供播放头函数用，用的时候应该要DoFile一次
-_exani_predefine={}
+local _exani_predefine={}
+local _infinite=-1
+_exani_predefine['layer']=LAYER_TOP
+_exani_predefine['viewmode']='world'
+
 _exani_predefine['init']=				{{startf=1,		endf=26},						'keep'}
 _exani_predefine['keep']=				{{startf=26,	endf=146,	repeatc=_infinite}}
-_exani_predefine['kill']=				{'DEFAULT_FORCE_INTERPOLATION',{startf=26,	endf=1}}
+_exani_predefine['kill']=				{{'FORCE_INTERPOLATION',force_interpolation_time=10},{startf=26,	endf=1}}
 _exani_predefine['activate']=			{{startf=146,	endf=191},						'ignite'}
 _exani_predefine['ignite']=				{{startf=191,	endf=391,	repeatc=_infinite}}
-_exani_predefine['deactivate']=			{'DEFAULT_FORCE_INTERPOLATION',{startf=191,	endf=146}}
-_exani_predefine['choose']=				{{force_interpolation_time=3},{startf=391,	endf=399,	repeatc=3},{startf=191,endf=158}}
+_exani_predefine['deactivate']=			{{'FORCE_INTERPOLATION',force_interpolation_time=10},{startf=191,	endf=146}}
+_exani_predefine['choose']=				{{'FORCE_INTERPOLATION',force_interpolation_time=3},{startf=391,	endf=399,	repeatc=3},{startf=191,endf=158}}
 _exani_predefine['init_unable']=		{{startf=454,	endf=473}}
 _exani_predefine['ignite_unable']=		{{startf=473,	endf=548,	repeatc=_infinite}}
-_exani_predefine['choose_unable']=		{'DEFAULT_FORCE_INTERPOLATION',{startf=548,	endf=564}}
+_exani_predefine['choose_unable']=		{{'FORCE_INTERPOLATION',force_interpolation_time=10},{startf=548,	endf=564}}

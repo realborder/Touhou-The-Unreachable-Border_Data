@@ -126,27 +126,31 @@ function layers_player:CalculateFrame()
 		end
 	end
 	if not self.renderFrame.flag then
-		if self.previousFrame~=nil and self.nextFrame~=nil then
-			if self.previousFrame.img==self.nextFrame.img then
-				self.renderFrame.img=self.previousFrame.img
-			elseif self.previousFrame.img~='' and self.nextFrame.img~='' and self.previousFrame.img~=self.nextFrame.img then
-				self.renderFrame.img=(self.current_frame-self.previousFrame.frame_at)/(self.nextFrame.frame_at-self.previousFrame.frame_at)
-			end
-			self.renderFrame.x=exani_interpolation(self.previousFrame.x+ran:Float(-abs(self.previousFrame.x_ran),abs(self.previousFrame.x_ran)),self.nextFrame.x+ran:Float(-abs(self.nextFrame.x_ran),abs(self.nextFrame.x_ran)),self.current_frame,self.previousFrame.frame_at,self.nextFrame.frame_at,ReturnTypeName(self.previousFrame.v_type),ReturnTypeName(self.nextFrame.v_type))
-			self.renderFrame.y=exani_interpolation(self.previousFrame.y+ran:Float(-abs(self.previousFrame.y_ran),abs(self.previousFrame.y_ran)),self.nextFrame.y+ran:Float(-abs(self.nextFrame.y_ran),abs(self.nextFrame.y_ran)),self.current_frame,self.previousFrame.frame_at,self.nextFrame.frame_at,ReturnTypeName(self.previousFrame.v_type),ReturnTypeName(self.nextFrame.v_type))
-			self.renderFrame.cx=exani_interpolation(self.previousFrame.cx,self.nextFrame.cx,self.current_frame,self.previousFrame.frame_at,self.nextFrame.frame_at,ReturnTypeName(self.previousFrame.v_type),ReturnTypeName(self.nextFrame.v_type))
-			self.renderFrame.cy=exani_interpolation(self.previousFrame.cy,self.nextFrame.cy,self.current_frame,self.previousFrame.frame_at,self.nextFrame.frame_at,ReturnTypeName(self.previousFrame.v_type),ReturnTypeName(self.nextFrame.v_type))
-			self.renderFrame.rot=exani_interpolation(self.previousFrame.rot,self.nextFrame.rot,self.current_frame,self.previousFrame.frame_at,self.nextFrame.frame_at,ReturnTypeName(self.previousFrame.r_type),ReturnTypeName(self.nextFrame.r_type))
-			self.renderFrame.hs=exani_interpolation(self.previousFrame.hs,self.nextFrame.hs,self.current_frame,self.previousFrame.frame_at,self.nextFrame.frame_at,ReturnTypeName(self.previousFrame.h_type),ReturnTypeName(self.nextFrame.h_type))
-			self.renderFrame.vs=exani_interpolation(self.previousFrame.vs,self.nextFrame.vs,self.current_frame,self.previousFrame.frame_at,self.nextFrame.frame_at,ReturnTypeName(self.previousFrame.h_type),ReturnTypeName(self.nextFrame.h_type))
-			self.renderFrame.a=exani_interpolation(self.previousFrame.a,self.nextFrame.a,self.current_frame,self.previousFrame.frame_at,self.nextFrame.frame_at,ReturnTypeName(self.previousFrame.a_type),ReturnTypeName(self.nextFrame.a_type))
-			if self.previousFrame.blend==self.nextFrame.blend then
-				self.renderFrame.blend=self.previousFrame.blend
-			else
-				self.renderFrame.blend=(self.current_frame-self.previousFrame.frame_at)/(self.nextFrame.frame_at-self.previousFrame.frame_at)
-			end
-			self.renderFrame.flag=true
+		layers_player:CalculateInterpolation(self)
+	end
+end
+
+function layers_player:CalculateInterpolation()
+	if self.previousFrame~=nil and self.nextFrame~=nil then
+		if self.previousFrame.img==self.nextFrame.img then
+			self.renderFrame.img=self.previousFrame.img
+		elseif self.previousFrame.img~='' and self.nextFrame.img~='' and self.previousFrame.img~=self.nextFrame.img then
+			self.renderFrame.img=(self.current_frame-self.previousFrame.frame_at)/(self.nextFrame.frame_at-self.previousFrame.frame_at)
 		end
+		self.renderFrame.x=exani_interpolation(self.previousFrame.x+ran:Float(-abs(self.previousFrame.x_ran),abs(self.previousFrame.x_ran)),self.nextFrame.x+ran:Float(-abs(self.nextFrame.x_ran),abs(self.nextFrame.x_ran)),self.current_frame,self.previousFrame.frame_at,self.nextFrame.frame_at,ReturnTypeName(self.previousFrame.v_type),ReturnTypeName(self.nextFrame.v_type))
+		self.renderFrame.y=exani_interpolation(self.previousFrame.y+ran:Float(-abs(self.previousFrame.y_ran),abs(self.previousFrame.y_ran)),self.nextFrame.y+ran:Float(-abs(self.nextFrame.y_ran),abs(self.nextFrame.y_ran)),self.current_frame,self.previousFrame.frame_at,self.nextFrame.frame_at,ReturnTypeName(self.previousFrame.v_type),ReturnTypeName(self.nextFrame.v_type))
+		self.renderFrame.cx=exani_interpolation(self.previousFrame.cx,self.nextFrame.cx,self.current_frame,self.previousFrame.frame_at,self.nextFrame.frame_at,ReturnTypeName(self.previousFrame.v_type),ReturnTypeName(self.nextFrame.v_type))
+		self.renderFrame.cy=exani_interpolation(self.previousFrame.cy,self.nextFrame.cy,self.current_frame,self.previousFrame.frame_at,self.nextFrame.frame_at,ReturnTypeName(self.previousFrame.v_type),ReturnTypeName(self.nextFrame.v_type))
+		self.renderFrame.rot=exani_interpolation(self.previousFrame.rot,self.nextFrame.rot,self.current_frame,self.previousFrame.frame_at,self.nextFrame.frame_at,ReturnTypeName(self.previousFrame.r_type),ReturnTypeName(self.nextFrame.r_type))
+		self.renderFrame.hs=exani_interpolation(self.previousFrame.hs,self.nextFrame.hs,self.current_frame,self.previousFrame.frame_at,self.nextFrame.frame_at,ReturnTypeName(self.previousFrame.h_type),ReturnTypeName(self.nextFrame.h_type))
+		self.renderFrame.vs=exani_interpolation(self.previousFrame.vs,self.nextFrame.vs,self.current_frame,self.previousFrame.frame_at,self.nextFrame.frame_at,ReturnTypeName(self.previousFrame.h_type),ReturnTypeName(self.nextFrame.h_type))
+		self.renderFrame.a=exani_interpolation(self.previousFrame.a,self.nextFrame.a,self.current_frame,self.previousFrame.frame_at,self.nextFrame.frame_at,ReturnTypeName(self.previousFrame.a_type),ReturnTypeName(self.nextFrame.a_type))
+		if self.previousFrame.blend==self.nextFrame.blend then
+			self.renderFrame.blend=self.previousFrame.blend
+		else
+			self.renderFrame.blend=(self.current_frame-self.previousFrame.frame_at)/(self.nextFrame.frame_at-self.previousFrame.frame_at)
+		end
+		self.renderFrame.flag=true
 	end
 end
 ---------------------------------------------------------------------------------------------------------------
@@ -168,6 +172,9 @@ function exani_player:init(name)
 	exani_player.CheckShader(self)
 	exani_player.LoadImgSources(self)
 	
+	self.isforce=false --强制补间
+	self.force_time=10 --补间时长
+	
 	self.isInPlay=false
 	self.isStop=false
 	self.current_frame=0
@@ -177,6 +184,9 @@ function exani_player:init(name)
 	self.play_interval=0
 	self.isdelete=true
 	self.mode=''
+	lstg.DoFile(self.path.."_exani_predefine.lua")
+	self.predefine=_exani_predefine
+	self.future_action={}
 end
 
 function exani_player:frame()
@@ -192,8 +202,12 @@ function exani_player:frame()
 					v.renderFlag=false
 				end
 				self.isInPlay=false
+				if self.isforce then self.isforce=false end
 				if self.isdelete then
 					Del(self)
+				else
+					if next(self.future_action) then table.remove(self.future_action,1) end
+					if next(self.future_action) then DoPredefine(self) end
 				end
 			else
 				self.current_frame=self.start_frame
@@ -254,12 +268,96 @@ function exani_player:play(start_frame,end_frame,layer,viewmode,replay_round,pla
 	end
 	self.isInPlay=true
 	self.isStop=false
+	if next(self.future_action) then self.future_action={} end
+end
+
+function exani_player:DoPredefine()
+	exani_player.GetActionValue(self)
+	if type(self.future_action[1][1])==string then --默认强制补间后面的不是action字符串
+		self.isforce=true
+		self.replay_round=1
+		self.play_interval=1
+		self.current_frame=1
+		self.force_time=self.future_action[1].force_interpolation_time
+		for k,v in pairs(self.picList) do
+			v.renderFlag=true
+			v.previousFrame=v.renderFrame
+			v.previousFrame.frame_at=1
+			for i=1,#v.keyFrames do
+				if v.keyFrames[i].frame_at==self.future_action[2].startf then
+					v.nextFrame=v.keyFrames[i]
+					v.nextFrame.frame_at=self.force_time+1
+				end
+			end
+			v.current_frame=self.current_frame
+		end
+		self.start_frame=1
+		self.end_frame=self.force_time+1
+		self.isInPlay=true
+		self.isStop=false
+	else
+		self.start_frame=self.future_action[1].startf
+		self.end_frame=self.future_action[1].endf
+		self.replay_round=self.future_action[1].repeatc or 1
+		self.current_frame=self.start_frame
+		for k,v in pairs(self.picList) do
+			v.current_frame=self.current_frame
+			layers_player.CalculateFrame(v)
+			v.renderFlag=true
+		end
+		self.isInPlay=true
+		self.isStop=false
+	end
+end
+
+function exani_player:SetAttribute(start_frame,end_frame,layer,viewmode,replay_round,play_interval,isdelete,mode,offset_x,offset_y,z,hscale,vscale)
+	self.start_frame=start_frame or self.start_frame
+	self.end_frame=end_frame or self.end_frame
+	self.layer=layer or self.layer
+	self.viewmode=viewmode or self.viewmode
+	self.replay_round=replay_round or self.replay_round
+	self.play_interval=play_interval or self.play_interval
+	if isdelete~=nil then self.isdelete=isdelete end
+	self.mode=mode or self.mode
+	self.center_dx=offset_x or self.center_dx
+	self.center_dy=offset_y or self.center_dy
+	self.z=z or self.z
+	self._hscale=hscale or self._hscale
+	self._vscale=vscale or self._vscale
+	
+	if layer~=nil or viewmode~=nil then
+		for k,v in pairs(self.picList) do
+			v.layer=self.layer+v.Prio*0.01
+			v.viewmode=self.viewmode
+			layers_player.CalculateFrame(v)
+		end
+	end
+end
+
+function exani_player:GetActionValue()
+	local is_ok=false
+	while(not is_ok)
+	do
+		is_ok=true
+		if type(self.future_action[1])==string then
+			is_ok=false
+			local action=self.future_action[1]
+			table.remove(self.future_action,1)
+			for i=#self.predefine[action],1,-1 do
+				table.insert(self.future_action,1,self.predefine[action][i])
+			end
+		end
+	end
 end
 
 function exani_player:UpdateLayers()
 	for k,v in pairs(self.picList) do
 		v.current_frame=self.current_frame
-		layers_player.CalculateFrame(v)
+		if not self.isforce then
+			layers_player.CalculateFrame(v)
+		else
+			layers_player:CalculateInterpolation(v)
+		end
 	end
 end
 
