@@ -30,7 +30,15 @@ function exani_player_manager:CreateSingleExani(exani_name)
 	return false
 end
 
-function exani_player_manager:play_exani(exani_name,start_frame,end_frame,layer,viewmode,replay_round,play_interval,isdelete)
+function exani_player_manager:play_exani(exani_name,start_frame,end_frame,layer,viewmode,replay_round,play_interval,isdelete,mode,offset_x,offset_y,z,hscale,vscale)
+	if mode=='3d' then
+		if offset_x==nil then offset_x=0 end
+		if offset_y==nil then offset_y=0 end
+		if z==nil then z=0.5 end
+		if hscale==nil then hscale=1 end
+		if vscale==nil then vscale=1 end
+	end
+	
 	if isdelete==nil then isdelete=true end
 	if play_interval==nil then play_interval=1 end
 	if replay_round==nil then replay_round=1 end
@@ -42,10 +50,10 @@ function exani_player_manager:play_exani(exani_name,start_frame,end_frame,layer,
 	
 	local i=exani_player_manager.CreateSingleExani(self,exani_name)
 	if type(i)=='number' then
-		exani_player.play(self.exanis[i],start_frame,end_frame,layer,viewmode,replay_round,play_interval,isdelete)
+		exani_player.play(self.exanis[i],start_frame,end_frame,layer,viewmode,replay_round,play_interval,isdelete,mode,offset_x,offset_y,z,hscale,vscale)
 	elseif i then
 		local j=#self.exanis
-		exani_player.play(self.exanis[j],start_frame,end_frame,layer,viewmode,replay_round,play_interval,isdelete)
+		exani_player.play(self.exanis[j],start_frame,end_frame,layer,viewmode,replay_round,play_interval,isdelete,mode,offset_x,offset_y,z,hscale,vscale)
 	else
 		Print('创建exani对象'..exani_name..'失败')
 	end
