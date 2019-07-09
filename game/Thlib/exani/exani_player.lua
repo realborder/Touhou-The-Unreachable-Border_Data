@@ -91,7 +91,7 @@ end
 
 function layers_player:render_choose(img)
 	if self.manager.mode=='3d' then
-		Render(img,self.renderFrame.x+self.manager.3d_dx,self.renderFrame.y+self.manager.3d_dy,self.renderFrame.rot,self.renderFrame.hs*self.manager.3d_hscale,self.renderFrame.vs*self.manager.3d_vscale,self.manager.z)
+		Render(img,self.renderFrame.x+self.manager.center_dx,self.renderFrame.y+self.manager.center_dy,self.renderFrame.rot,self.renderFrame.hs*self.manager._hscale,self.renderFrame.vs*self.manager._vscale,self.manager.z)
 	else
 		Render(img,self.renderFrame.x,self.renderFrame.y,self.renderFrame.rot,self.renderFrame.hs,self.renderFrame.vs)
 	end
@@ -238,11 +238,11 @@ function exani_player:play(start_frame,end_frame,layer,viewmode,replay_round,pla
 	self.play_interval=play_interval
 	self.isdelete=isdelete
 	self.mode=mode
-	self.3d_dx=offset_x
-	self.3d_dy=offset_y
+	self.center_dx=offset_x
+	self.center_dy=offset_y
 	self.z=z
-	self.3d_hscale=hscale
-	self.3d_vscale=vscale
+	self._hscale=hscale
+	self._vscale=vscale
 	
 	self.current_frame=self.start_frame
 	for k,v in pairs(self.picList) do
