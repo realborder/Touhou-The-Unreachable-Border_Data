@@ -176,7 +176,7 @@ end
 
 ---停止捕获用于执行扭曲特效的画面并应用扭曲特效、绘制出来，同时还有开卡特效
 function background.WarpEffectApply(scbg_spread)
-	local is_sc_bg = (scbg_spread~=0 and scbg_spread)--【开卡特效】
+	local is_sc_bg = (scbg_spread and scbg_spread~=0 and scbg_spread~=1)--【卡背展开】
 	if IsValid(_boss) then
 		PopRenderTarget(RENDER_BUFFER_NAME)
 		local x,y = WorldToScreen(_boss.x,_boss.y)
@@ -185,7 +185,7 @@ function background.WarpEffectApply(scbg_spread)
 		local fxr = _boss.fxr or 163
 		local fxg = _boss.fxg or 73
 		local fxb = _boss.fxb or 164
-		if is_sc_bg then PushRenderTarget(SCBG_LOADER_BUFFER_NAME) end--【开卡特效】
+		if is_sc_bg then PushRenderTarget(SCBG_LOADER_BUFFER_NAME) end--【卡背展开】
 		PostEffect(RENDER_BUFFER_NAME,WARP_EFFECT_NAME, "", {
 			centerX = x1,
 			centerY = y1,
