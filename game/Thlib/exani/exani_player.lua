@@ -209,7 +209,7 @@ function exani_player:frame()
 					Del(self)
 				else
 					if next(self.future_action) then table.remove(self.future_action,1) end
-					if next(self.future_action) then DoPredefine(self) end
+					if next(self.future_action) then exani_player.DoPredefine(self) end
 				end
 			else
 				self.current_frame=self.start_frame
