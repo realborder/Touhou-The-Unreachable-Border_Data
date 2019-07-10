@@ -1,3 +1,5 @@
+local EXANI_PATH="Thlib\\exani\\exani_data\\"
+
 layers_player=Class(object)
 function layers_player:init(list)
 	self.Prio=list[1]
@@ -113,9 +115,9 @@ end
 
 function layers_player:CalculateFrame()
 	self.renderFrame.flag=false
-	if self.current_frame==self.previousFrame.frame_at then layers_player.copyFrame(self,self.previousFrame)
-	elseif self.current_frame==self.nextFrame.frame_at then layers_player.copyFrame(self,self.nextFrame)
-	elseif self.current_frame>self.nextFrame.frame_at and self.current_frame<self.nextFrame.frame_at then
+	if self.previousFrame and self.current_frame==self.previousFrame.frame_at then layers_player.copyFrame(self,self.previousFrame)
+	elseif self.nextFrame and self.current_frame==self.nextFrame.frame_at then layers_player.copyFrame(self,self.nextFrame)
+	elseif self.previousFrame and self.nextFrame and self.current_frame>self.previousFrame.frame_at and self.current_frame<self.nextFrame.frame_at then
 	else
 		self.previousFrame=nil
 		self.nextFrame=nil
@@ -126,7 +128,7 @@ function layers_player:CalculateFrame()
 		end
 	end
 	if not self.renderFrame.flag then
-		layers_player:CalculateInterpolation(self)
+		layers_player.CalculateInterpolation(self)
 	end
 end
 
@@ -157,7 +159,7 @@ end
 exani_player=Class(object)
 function exani_player:init(name)
 	self.name=name
-	self.path="Thlib\\exani\\exani_data\\"..name.."\\"
+	self.path=EXANI_PATH..name.."\\"
 	self.viewmode='world'
 	self.layerList=lstg.LoadExaniConfig(self.path)
 	self.picList={}
@@ -356,7 +358,7 @@ function exani_player:UpdateLayers()
 		if not self.isforce then
 			layers_player.CalculateFrame(v)
 		else
-			layers_player:CalculateInterpolation(v)
+			layers_player.CalculateInterpolation(v)
 		end
 	end
 end
