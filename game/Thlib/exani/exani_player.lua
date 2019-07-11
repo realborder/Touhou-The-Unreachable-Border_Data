@@ -263,7 +263,7 @@ function exani_player:play(start_frame,end_frame,layer,viewmode,replay_round,pla
 	self.current_frame=self.start_frame
 	for k,v in pairs(self.picList) do
 		v.layer=self.layer+v.Prio*0.01
-		v.viewmode=self.viewmode
+		v.screenMode=self.viewmode
 		v.current_frame=self.current_frame
 		layers_player.CalculateFrame(v)
 		v.renderFlag=true
@@ -330,7 +330,7 @@ function exani_player:SetAttribute(start_frame,end_frame,layer,viewmode,replay_r
 	if layer~=nil or viewmode~=nil then
 		for k,v in pairs(self.picList) do
 			v.layer=self.layer+v.Prio*0.01
-			v.viewmode=self.viewmode
+			v.screenMode=self.viewmode
 			layers_player.CalculateFrame(v)
 		end
 	end
