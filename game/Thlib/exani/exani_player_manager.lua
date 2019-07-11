@@ -86,11 +86,18 @@ function exani_player_manager:ExecuteExaniPredefine(exani_name,action)
 	end
 end
 
+--设置exani属性
 function exani_player_manager:SetExaniAttribute(exani_name,start_frame,end_frame,layer,viewmode,replay_round,play_interval,isdelete,mode,offset_x,offset_y,z,hscale,vscale)
 	for i=#self.exanis,1,-1 do
 		if self.exanis[i].name==exani_name then
 			exani_player.SetAttribute(self.exanis[i],start_frame,end_frame,layer,viewmode,replay_round,play_interval,isdelete,mode,offset_x,offset_y,z,hscale,vscale)
 		end
+	end
+end
+
+function exani_player_manager:GetExani(exani_name)
+	for k,v in pairs(self.exanis) do
+		if v.name==exani_name then return v end
 	end
 end
 
