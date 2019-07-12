@@ -72,12 +72,22 @@ function exani_player_manager:ExecuteExaniPredefine(exani_name,action)
 	if type(i)=='number' then
 		local ex=self.exanis[i]
 		for j=1,#ex.predefine[action] do
+			if next(ex.future_action) then
+				for k=#ex.future_action,1,-1 do
+					table.remove(ex.future_action,k)
+				end
+			end
 			table.insert(ex.future_action,ex.predefine[action][j])
 		end
 		exani_player.DoPredefine(ex)
 	elseif i then
 		local ex=self.exanis[#self.exanis]
 		for j=1,#ex.predefine[action] do
+			if next(ex.future_action) then
+				for k=#ex.future_action,1,-1 do
+					table.remove(ex.future_action,k)
+				end
+			end
 			table.insert(ex.future_action,ex.predefine[action][j])
 		end
 		exani_player.DoPredefine(ex)

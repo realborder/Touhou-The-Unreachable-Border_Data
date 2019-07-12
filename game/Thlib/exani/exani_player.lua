@@ -186,8 +186,10 @@ function exani_player:init(name)
 	self.play_interval=0
 	self.isdelete=true
 	self.mode=''
-	lstg.DoFile(self.path.."_exani_predefine.lua")
-	self.predefine=_exani_predefine
+	if next(FindFiles(self.path,"lua","")) then
+		lstg.DoFile(self.path.."_exani_predefine.lua")
+		self.predefine=_exani_predefine
+	end
 	self.future_action={}
 end
 
@@ -270,7 +272,11 @@ function exani_player:play(start_frame,end_frame,layer,viewmode,replay_round,pla
 	end
 	self.isInPlay=true
 	self.isStop=false
-	if next(self.future_action) then self.future_action={} end
+	if next(self.future_action) then
+		for i=#self.future_action,1,-1 do
+			table.remove(self.future_action,i)
+		end
+	end
 end
 
 function exani_player:DoPredefine()
