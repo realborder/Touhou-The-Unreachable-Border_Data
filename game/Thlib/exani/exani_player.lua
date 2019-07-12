@@ -161,6 +161,7 @@ function exani_player:init(name)
 	self.name=name
 	self.path=EXANI_PATH..name.."\\"
 	self.viewmode='world'
+	self.layer=LAYER_TOP --默认最顶层
 	self.layerList=lstg.LoadExaniConfig(self.path)
 	self.picList={}
 	self.isContainShader=false
@@ -182,9 +183,9 @@ function exani_player:init(name)
 	self.current_frame=0
 	self.start_frame=0
 	self.end_frame=0
-	self.replay_round=0
-	self.play_interval=0
-	self.isdelete=true
+	self.replay_round=1 --默认播放次数1
+	self.play_interval=1 --默认播放间隔1（即正常速度）
+	self.isdelete=false --默认播完不自毁
 	self.mode=''
 	lstg.DoFile(self.path.."_exani_predefine.lua")
 	self.predefine=_exani_predefine
