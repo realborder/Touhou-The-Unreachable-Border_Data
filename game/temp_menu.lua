@@ -1,7 +1,7 @@
 menus={}
 
 base_menu=Class(object)
---options格式为含有多个('exani','next_menu_name',function())的表,其中next_menu_name和function()可为''
+--options格式为含有多个('exani','next_menu_name',function(),enable)的表,其中next_menu_name和function()可为''
 function base_menu:init(name,title,options,pre_menu)
 	self.layer=LAYER_TOP
 	self.group=GROUP_GHOST
@@ -11,10 +11,12 @@ function base_menu:init(name,title,options,pre_menu)
 	self.exani_names={}
 	self.menu_names={}
 	self.functions={}
+	self.enables={}
 	for i=1,#options do
 		self.exani_names[i]=options[i][1]
 		self.menu_names[i]=options[i][2]
 		self.functions[i]=options[i][3]
+		self.enables[i]=options[i][4]
 	end
 	self.pre_menu=pre_menu
 	
@@ -23,22 +25,26 @@ function base_menu:init(name,title,options,pre_menu)
 	self.changed=false --更换选项
 	self.choosed=false --选中选项(包括z和x)
 	
-	self.delay=30 --选中后播放选中动画的时间以便于跳转下一个菜单
-	self.timer=-1
+	self.init_delay=30 --init时间
+	self.init_timer=0 --init后的计时
+	
+	self.choose_delay=30 --选中后播放选中动画的时间以便于跳转下一个菜单
+	self.choose_timer=-1
 	
 	menus[name]=self
 end
 
 function base_menu:frame()
 	if self.locked then return end
-	if self.timer>=0 then self.timer=self.timer-1 end
+	self.init_timer=self.init_timer+1
+	if self.choose_timer>=0 then self.choose_timer=self.choose_timer-1 end
 	
-	if self.timer=-1 then
+	if self.choose_timer=-1 and self.init_timer>30 then
 		if not self.changed and lstg.GetKeyStat(KEY.UP) then self.choose=self.choose-1 end
 		if not self.changed and lstg.GetKeyStat(KEY.DOWN) then self.choose=self.choose+1 end
 		if self.choose<1 then self.choose=#self.exani_names end
 		if self.choose>#self.exani_names then self.choose=1 end
-		if not self.choosed and lstg.GetKeyStat(KEY.Z) then self.choosed=true self.timer=self.delay end
+		if not self.choosed and lstg.GetKeyStat(KEY.Z) then self.choosed=true self.choose_timer=self.choose_delay end
 		if not self.choosed and lstg.GetKeyStat(KEY.X) then self.choosed=true end
 	end
 end
@@ -46,23 +52,34 @@ end
 function base_menu:render()
 	if self.locked then return end
 	
-	--还差一个常时'keep'和'ignite'状态
+	if self.init_timer=30 then
+		if self.title~='' then exani_player_manager.ExecuteExaniPredefine(player_manager,self.title,'activate') end
+		local action
+		if self.enables[self.choose] then action='activate' else action='activate_unable' end
+		exani_player_manager.ExecuteExaniPredefine(player_manager,self.exani_names[self.choose],action)
+	end
 	
 	if self.choosed then
 		if lstg.GetKeyStat(KEY.Z) then
-			exani_player_manager.ExecuteExaniPredefine(player_manager,self.exani_names[self.choose],'choose')
+			local action
+			if self.enables[self.choose] then action='choose' else action='choose_unable' end
+			exani_player_manager.ExecuteExaniPredefine(player_manager,self.exani_names[self.choose],action)
 		elseif lstg.GetKeyStat(KEY.X) then
-			ChangeLocked(menus[pre_menu])
+			if pre_menu~='' then ChangeLocked(menus[pre_menu]) end
 		end
 		self.choosed=false
 	end
 	
-	if self.timer==0 then
+	if self.choose_timer==0 then
 		ChangeLocked(self)
+		if self.menu_names[self.choose]~='' then ChangeLocked(menus[self.menu_names[self.choose]]) end
+		if self.functions[self.choose]~='' then self.functions[self.choose]() end
 	end
 	
 	if self.changed then
-		exani_player_manager.ExecuteExaniPredefine(player_manager,self.exani_names[self.choose],'activate')
+		local action
+		if self.enables[self.choose] then action='activate' else action='activate_unable' end
+		exani_player_manager.ExecuteExaniPredefine(player_manager,self.exani_names[self.choose],action)
 		local pos=self.choose
 		if lstg.GetKeyStat(KEY.UP) then
 			pos=self.choose+1
@@ -80,8 +97,10 @@ end
 function base_menu:ChangeLocked()
 	self.locked=not self.locked
 	local action
-	if self.locked then action='kill' else action='init' end
+	if self.locked then action='kill' self.init_timer=0 self.choose_timer=-1 else action='init' end
+	if self.title~='' then exani_player_manager.ExecuteExaniPredefine(player_manager,self.title,action) end
 	for i=1,#self.exani_names do
+		if self.enables[i] then action='init' else action='init_unable' end
 		exani_player_manager.ExecuteExaniPredefine(player_manager,self.exani_names[i],action)
 	end
 end

@@ -152,7 +152,7 @@ function exani_player_manager:StopExani(exani_name)
 end
 
 ---将停止播放的exani继续播放
-function exani_player_manager:ReStart(exani_name)
+function exani_player_manager:Resume(exani_name)
 	if exani_name=='' then
 		for i=1,#self.exanis do
 			if self.exanis[i].isStop then

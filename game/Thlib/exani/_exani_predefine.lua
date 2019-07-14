@@ -11,7 +11,7 @@
 ------choose事件，菜单项被确认的动画，在执行这个动画过后通常都会消失，{force_interpolation_time=3},指代3帧强制补间
 ------init_unable事件，如果菜单项为不可用，则使用此init事件，值得注意的是，在该动画执行完之后播放头就不动了，和通常init不同
 ------ignitet_unable事件，即菜单项处于被选中的状态时的动画，如果菜单项为不可用则，使用此ignite事件，无限循环
-------choose事件，菜单项被确认的动画，如果菜单项为不可用，则使用此choose事件，值得注意的是，在该动画执行完之后播放头就不动了，和通常choose不同
+------choose_unable事件，菜单项被确认的动画，如果菜单项为不可用，则使用此choose事件，值得注意的是，在该动画执行完之后播放头就不动了，和通常choose不同
 ---------------------------------------------------
 --在该脚本里定义一个表供播放头函数用，用的时候应该要DoFile一次
 local _exani_predefine={}
@@ -25,7 +25,7 @@ _exani_predefine['kill']=				{{'FORCE_INTERPOLATION',force_interpolation_time=10
 _exani_predefine['activate']=			{{startf=146,	endf=191},						'ignite'}
 _exani_predefine['ignite']=				{{startf=191,	endf=391,	repeatc=_infinite}}
 _exani_predefine['deactivate']=			{{'FORCE_INTERPOLATION',force_interpolation_time=10},{startf=191,	endf=146}}
-_exani_predefine['choose']=				{{'FORCE_INTERPOLATION',force_interpolation_time=3},{startf=391,	endf=399,	repeatc=3},{startf=191,endf=158}}
+_exani_predefine['choose']=				{{'FORCE_INTERPOLATION',force_interpolation_time=5},{startf=391,	endf=399,	repeatc=3},{startf=191,endf=158}}
 _exani_predefine['init_unable']=		{{startf=454,	endf=473}}
-_exani_predefine['ignite_unable']=		{{startf=473,	endf=548,	repeatc=_infinite}}
+_exani_predefine['activate_unable']=	{{startf=473,	endf=548,	repeatc=_infinite}}
 _exani_predefine['choose_unable']=		{{'FORCE_INTERPOLATION',force_interpolation_time=10},{startf=548,	endf=564}}
