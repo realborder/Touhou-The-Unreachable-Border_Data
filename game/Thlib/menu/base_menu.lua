@@ -49,6 +49,8 @@ function base_menu:frame()
 	end
 end
 
+--理论上这些应该都要放在frame里,因为执行预定义的函数并不直接涉及渲染函数
+--但是为了看起来清楚，就放到render里了
 function base_menu:render()
 	if self.locked then return end
 	
@@ -65,14 +67,14 @@ function base_menu:render()
 			if self.enables[self.choose] then action='choose' else action='choose_unable' end
 			exani_player_manager.ExecuteExaniPredefine(player_manager,self.exani_names[self.choose],action)
 		elseif lstg.GetKeyStat(KEY.X) then
-			if pre_menu~='' then ChangeLocked(menus[pre_menu]) end
+			if self.pre_menu~='' then base_menu.ChangeLocked(self) base_menu.ChangeLocked(menus[self.pre_menu]) end
 		end
 		self.choosed=false
 	end
 	
 	if self.choose_timer==0 then
-		ChangeLocked(self)
-		if self.menu_names[self.choose]~='' then ChangeLocked(menus[self.menu_names[self.choose]]) end
+		base_menu.ChangeLocked(self)
+		if self.menu_names[self.choose]~='' then base_menu.ChangeLocked(menus[self.menu_names[self.choose]]) end
 		if self.functions[self.choose]~='' then self.functions[self.choose]() end
 	end
 	
