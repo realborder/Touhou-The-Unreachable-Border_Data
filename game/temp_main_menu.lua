@@ -112,7 +112,7 @@ function stage_launcher:init()
 	--这里创建logo，背景可以考虑放在render里
 	
 	start_menu=New(base_menu,'start_menu','Title_Menu_item_Start',{
-			{'ChooseMode_item_StoryMode','',function end,true},
+			{'ChooseMode_item_StoryMode','',function () end,true},
 			{'ChooseMode_item_StagePrac','stage_menu','',true},
 			{'ChooseMode_item_SpellCardPrac','','',false},
 			{'ChooseMode_item_NightmareEcli','','',false},
@@ -129,8 +129,8 @@ function stage_launcher:init()
 			{'Title_Menu_item_Musicroom','','',false},
 			{'Title_Menu_item_Gallery','','',false},
 			{'Title_Menu_item_Manual','manual_menu','',true},
-			{'Title_Menu_item_Option','',function menu.FlyIn(menu_other,'right') menu_other.pos=1 end,true},
-			{'Title_Menu_item_Exit','',ExitGame(),true}
+			{'Title_Menu_item_Option','',function () menu.FlyIn(menu_other,'right'); menu_other.pos=1 end,true},
+			{'Title_Menu_item_Exit','',ExitGame(),true}	
 		},
 		''
 	)
