@@ -5,6 +5,7 @@ function special_manual:init()
 	
 	self.title='Manual_title'
 	self.pre_menu='main_menu'
+	self.has_logo=false
 	self.locked=true
 	
 	self.choose=1

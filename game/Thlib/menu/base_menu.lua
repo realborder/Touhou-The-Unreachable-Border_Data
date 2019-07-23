@@ -2,7 +2,7 @@ menus={}
 
 base_menu=Class(object)
 --options格式为含有多个('exani','next_menu_name',function(),enable)的表,其中next_menu_name和function()可为''
-function base_menu:init(name,title,options,pre_menu)
+function base_menu:init(name,title,options,pre_menu,has_logo)
 	self.layer=LAYER_TOP
 	self.group=GROUP_GHOST
 	
@@ -19,6 +19,7 @@ function base_menu:init(name,title,options,pre_menu)
 		self.enables[i]=options[i][4]
 	end
 	self.pre_menu=pre_menu
+	if has_logo then self.has_logo=true else self.has_logo=false end
 	
 	self.locked=true
 	self.choose=1
@@ -101,6 +102,7 @@ function base_menu:ChangeLocked()
 	local action
 	if self.locked then action='kill' self.init_timer=0 self.choose_timer=-1 else action='init' end
 	if self.title~='' then exani_player_manager.ExecuteExaniPredefine(player_manager,self.title,action) end
+	if self.has_logo then exani_player_manager.ExecuteExaniPredefine(player_manager,'Title_Menu_LOGO',action) end
 	for i=1,#self.exani_names do
 		if self.enables[i] then action='init' else action='init_unable' end
 		exani_player_manager.ExecuteExaniPredefine(player_manager,self.exani_names[i],action)
