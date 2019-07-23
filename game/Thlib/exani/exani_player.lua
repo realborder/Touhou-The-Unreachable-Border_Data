@@ -122,8 +122,9 @@ function layers_player:CalculateFrame()
 		self.previousFrame=nil
 		self.nextFrame=nil
 		for k,v in pairs(self.keyFrames) do
+			if not self.current_frame then error('How is it happend? \"self.current_frame\" is nil') end
 			if v.frame_at<self.current_frame then self.previousFrame=v
-			elseif v.frame_at==self.current_frame then layers_player.copyFrame(self,v)
+			elseif v.frame_at== self.current_frame then layers_player.copyFrame(self,v)
 			elseif v.frame_at>self.current_frame then self.nextFrame=v break end
 		end
 	end
@@ -188,8 +189,8 @@ function exani_player:init(name)
 	self.isdelete=false --默认播完不自毁
 	self.mode=''
 	if next(FindFiles(self.path,"lua","")) then
-		lstg.DoFile(self.path.."_exani_predefine.lua")
-		self.predefine=_exani_predefine
+		self.predefine=lstg.DoFile(self.path.."_exani_predefine.lua")
+		if not self.predefine then error('Oops! Load exani['..self.name..'] predefine failed! We do not know why, please check it!') end
 	end
 	self.future_action={}
 end
@@ -298,7 +299,9 @@ function exani_player:DoPredefine()
 					v.nextFrame.frame_at=self.force_time+1
 				end
 			end
-			v.current_frame=self.current_frame
+			v.current_frame=1
+			--v.current_frame=self.current_frame
+			--if not v.current_frame then error('Dont ya kidding me!') end
 		end
 		self.start_frame=1
 		self.end_frame=self.force_time+1
@@ -310,7 +313,9 @@ function exani_player:DoPredefine()
 		self.replay_round=self.future_action[1].repeatc or 1
 		self.current_frame=self.start_frame
 		for k,v in pairs(self.picList) do
-			v.current_frame=self.current_frame
+			v.current_frame=1
+			--v.current_frame=self.current_frame
+			--if not v.current_frame then error('You\'ve got be kidding me!') end
 			layers_player.CalculateFrame(v)
 			v.renderFlag=true
 		end

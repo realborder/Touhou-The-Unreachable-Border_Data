@@ -89,7 +89,7 @@ end
 stage_launcher=stage.New('settings',true,true)
 
 function stage_launcher:init()
-	LoadTTF('menuttfs','THlib\\UI\\font\\default_ttf',40)
+		LoadTTF('menuttfs','THlib\\UI\\font\\default_ttf',40)
 	--
 	local f,msg
 	f,msg=io.open(settingfile,'r')
@@ -108,7 +108,7 @@ function stage_launcher:init()
 	end
 	--
 	New(mask_fader,'open')
-	
+	New(exani_player_manager)
 	start_menu=New(base_menu,'start_menu','Title_Menu_item_Start',{
 			{'ChooseMode_item_StoryMode','','',true},
 			{'ChooseMode_item_StagePrac','stage_menu','',true},
@@ -149,7 +149,7 @@ function stage_launcher:init()
 	
 	main_menu=New(base_menu,'main_menu','',{
 			{'Title_Menu_item_Start','start_menu','',true},
-			{'Title_Menu_item_Reply','reply_menu','',true},
+			{'Title_Menu_item_Replay','reply_menu','',true},
 			{'Title_Menu_item_PlayerData','','',false},
 			{'Title_Menu_item_Musicroom','','',false},
 			{'Title_Menu_item_Gallery','','',false},

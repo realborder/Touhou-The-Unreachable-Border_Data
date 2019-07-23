@@ -41,12 +41,12 @@ function base_menu:frame()
 	if self.choose_timer>=0 then self.choose_timer=self.choose_timer-1 end
 	
 	if self.choose_timer==-1 and self.init_timer>30 then
-		if not self.changed and lstg.GetKeyStat(KEY.UP) then self.choose=self.choose-1 end
-		if not self.changed and lstg.GetKeyStat(KEY.DOWN) then self.choose=self.choose+1 end
+		if not self.changed and lstg.GetKeyState(KEY.UP) then self.choose=self.choose-1 end
+		if not self.changed and lstg.GetKeyState(KEY.DOWN) then self.choose=self.choose+1 end
 		if self.choose<1 then self.choose=#self.exani_names end
 		if self.choose>#self.exani_names then self.choose=1 end
-		if not self.choosed and lstg.GetKeyStat(KEY.Z) then self.choosed=true self.choose_timer=self.choose_delay end
-		if not self.choosed and lstg.GetKeyStat(KEY.X) then self.choosed=true end
+		if not self.choosed and lstg.GetKeyState(KEY.Z) then self.choosed=true self.choose_timer=self.choose_delay end
+		if not self.choosed and lstg.GetKeyState(KEY.X) then self.choosed=true end
 	end
 end
 
@@ -56,18 +56,18 @@ function base_menu:render()
 	if self.locked then return end
 	
 	if self.init_timer==30 then
-		if self.title~='' then exani_player_manager.ExecuteExaniPredefine(player_manager,self.title,'activate') end
+		if self.title~='' then exani_player_manager.ExecuteExaniPredefine(play_manager,self.title,'activate') end
 		local action
 		if self.enables[self.choose] then action='activate' else action='activate_unable' end
-		exani_player_manager.ExecuteExaniPredefine(player_manager,self.exani_names[self.choose],action)
+		exani_player_manager.ExecuteExaniPredefine(play_manager,self.exani_names[self.choose],action)
 	end
 	
 	if self.choosed then
-		if lstg.GetKeyStat(KEY.Z) then
+		if lstg.GetKeyState(KEY.Z) then
 			local action
 			if self.enables[self.choose] then action='choose' else action='choose_unable' end
-			exani_player_manager.ExecuteExaniPredefine(player_manager,self.exani_names[self.choose],action)
-		elseif lstg.GetKeyStat(KEY.X) then
+			exani_player_manager.ExecuteExaniPredefine(play_manager,self.exani_names[self.choose],action)
+		elseif lstg.GetKeyState(KEY.X) then
 			if self.pre_menu~='' then base_menu.ChangeLocked(self) base_menu.ChangeLocked(menus[self.pre_menu]) end
 		end
 		self.choosed=false
@@ -82,16 +82,16 @@ function base_menu:render()
 	if self.changed then
 		local action
 		if self.enables[self.choose] then action='activate' else action='activate_unable' end
-		exani_player_manager.ExecuteExaniPredefine(player_manager,self.exani_names[self.choose],action)
+		exani_player_manager.ExecuteExaniPredefine(play_manager,self.exani_names[self.choose],action)
 		local pos=self.choose
-		if lstg.GetKeyStat(KEY.UP) then
+		if lstg.GetKeyState(KEY.UP) then
 			pos=self.choose+1
 			if pos>#self.exani_names then pos=1 end
-		elseif lstg.GetKeyStat(KEY.DOWN) then
+		elseif lstg.GetKeyState(KEY.DOWN) then
 			pos=self.choose-1
 			if pos<1 then pos=#self.exani_names end
 		end
-		exani_player_manager.ExecuteExaniPredefine(player_manager,self.exani_names[pos],'deactivate')
+		exani_player_manager.ExecuteExaniPredefine(play_manager,self.exani_names[pos],'deactivate')
 		self.changed=false
 	end
 	
@@ -101,10 +101,10 @@ function base_menu:ChangeLocked()
 	self.locked=not self.locked
 	local action
 	if self.locked then action='kill' self.init_timer=0 self.choose_timer=-1 else action='init' end
-	if self.title~='' then exani_player_manager.ExecuteExaniPredefine(player_manager,self.title,action) end
-	if self.has_logo then exani_player_manager.ExecuteExaniPredefine(player_manager,'Title_Menu_LOGO',action) end
+	if self.title~='' then exani_player_manager.ExecuteExaniPredefine(play_manager,self.title,action) end
+	if self.has_logo then exani_player_manager.ExecuteExaniPredefine(play_manager,'Title_Menu_LOGO',action) end
 	for i=1,#self.exani_names do
 		if self.enables[i] then action='init' else action='init_unable' end
-		exani_player_manager.ExecuteExaniPredefine(player_manager,self.exani_names[i],action)
+		exani_player_manager.ExecuteExaniPredefine(play_manager,self.exani_names[i],action)
 	end
 end

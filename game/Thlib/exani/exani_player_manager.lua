@@ -62,7 +62,8 @@ function exani_player_manager:play_exani(exani_name,start_frame,end_frame,layer,
 		local j=#self.exanis
 		exani_player.play(self.exanis[j],start_frame,end_frame,layer,viewmode,replay_round,play_interval,isdelete,mode,offset_x,offset_y,z,hscale,vscale)
 	else
-		Print('创建exani对象'..exani_name..'失败')
+		error('create exani object named: '..exani_name..' failed')
+		--Print('创建exani对象'..exani_name..'失败')
 	end
 end
 
@@ -71,28 +72,30 @@ function exani_player_manager:ExecuteExaniPredefine(exani_name,action)
 	local i=exani_player_manager.CreateSingleExani(self,exani_name)
 	if type(i)=='number' then
 		local ex=self.exanis[i]
-		for j=1,#ex.predefine[action] do
-			if next(ex.future_action) then
-				for k=#ex.future_action,1,-1 do
-					table.remove(ex.future_action,k)
-				end
+		if next(ex.future_action) then
+			for k=#ex.future_action,1,-1 do
+				table.remove(ex.future_action,k)
 			end
+		end
+		for j=1,#ex.predefine[action] do
 			table.insert(ex.future_action,ex.predefine[action][j])
 		end
 		exani_player.DoPredefine(ex)
 	elseif i then
 		local ex=self.exanis[#self.exanis]
-		for j=1,#ex.predefine[action] do
-			if next(ex.future_action) then
-				for k=#ex.future_action,1,-1 do
-					table.remove(ex.future_action,k)
-				end
+		if not ex.predefine or not ex.predefine[action] then error('[ERROR] You do not leave any predefine in current exani object, please check the object named: '..exani_name) end
+		if next(ex.future_action) then
+			for k=#ex.future_action,1,-1 do
+				table.remove(ex.future_action,k)
 			end
+		end
+		for j=1,#ex.predefine[action] do
 			table.insert(ex.future_action,ex.predefine[action][j])
 		end
 		exani_player.DoPredefine(ex)
 	else
-		Print('创建exani对象'..exani_name..'失败')
+		error('create exani object named:'..exani_name..' failed')
+		--Print('创建exani对象'..exani_name..'失败')
 	end
 end
 
