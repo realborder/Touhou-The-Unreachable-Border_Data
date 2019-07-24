@@ -1,28 +1,28 @@
 LoadTexture('enemy1','THlib\\enemy\\enemy1.png')
 --function LoadImageGroup(prefix,texname,x,y,w,h,cols,rows,a,b,rect)
 --参数表：前缀，纹理名称，单个图像资源x，y，w，h，列数，行数，a，b，是否为方形判定
-
+local size_offset=0.5
 --前四行敌机图像资源的加载,enemy1~8
 for j=0,1 do
 	for i=1,4 do
-		LoadImageGroup('enemy'..(j*4+i)..'_','enemy1',768*j,64*(i-1),64,64,12,1,16,16)
+		LoadImageGroup('enemy'..(j*4+i)..'_','enemy1',768*j,64*(i-1),64,64,12,1,16*size_offset,16*size_offset)
 	end
 end
 for i=1,4 do--96x敌机图像资源的加载
-	LoadImageGroup('enemy'..(8+i)..'_','enemy1',0,256+96*(i-1),96,96,12,1,16,16)
+	LoadImageGroup('enemy'..(8+i)..'_','enemy1',0,256+96*(i-1),96,96,12,1,16*size_offset,16*size_offset)
 end
 for i=1,4 do--128x敌机图像资源的加载
-	LoadImageGroup('enemy'..(12+i)..'_','enemy1',0,640+128*(i-1),128,128,12,1,16,16)
+	LoadImageGroup('enemy'..(12+i)..'_','enemy1',0,640+128*(i-1),128,128,12,1,16*size_offset,16*size_offset)
 end--神灵型敌机的加载
 for i=1,8 do
-	LoadImageGroup('ghost'..i..'_','enemy1',0,1152+64*(i-1),64,64,8,1,16,16)
+	LoadImageGroup('ghost'..i..'_','enemy1',0,1152+64*(i-1),64,64,8,1,16*size_offset,16*size_offset)
 	LoadPS('ghost_fire'..i,'THlib\\enemy\\ghost_fire'..i..'.psi','parimg1',16,16)
 end
 --阴阳玉的加载
-LoadImageGroup('enemy_orb','enemy1',512,1152,64,64,1,8,16,16)
-LoadImageGroup('enemy_orb_ring','enemy1',576,1152,64,64,1,8,16,16)
+LoadImageGroup('enemy_orb','enemy1',512,1152,64,64,1,8,16*size_offset,16*size_offset)
+LoadImageGroup('enemy_orb_ring','enemy1',576,1152,64,64,1,8,16*size_offset,16*size_offset)
 --毛玉敌机的加载
-LoadImageGroup('kedama','enemy1',640,1152,64,64,1,8,16,16)
+LoadImageGroup('kedama','enemy1',640,1152,64,64,1,8,16*size_offset,16*size_offset)
 
 enemybase=Class(object)
 
