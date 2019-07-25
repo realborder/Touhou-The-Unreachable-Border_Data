@@ -122,9 +122,8 @@ function layers_player:CalculateFrame()
 		self.previousFrame=nil
 		self.nextFrame=nil
 		for k,v in pairs(self.keyFrames) do
-			if not self.current_frame then error('How is it happend? \"self.current_frame\" is nil') end
 			if v.frame_at<self.current_frame then self.previousFrame=v
-			elseif v.frame_at== self.current_frame then layers_player.copyFrame(self,v)
+			elseif v.frame_at==self.current_frame then layers_player.copyFrame(self,v)
 			elseif v.frame_at>self.current_frame then self.nextFrame=v break end
 		end
 	end
@@ -190,8 +189,9 @@ function exani_player:init(name)
 	self.mode=''
 	if next(FindFiles(self.path,"lua","")) then
 		self.predefine=lstg.DoFile(self.path.."_exani_predefine.lua")
-		if not self.predefine then error('Oops! Load exani['..self.name..'] predefine failed! We do not know why, please check it!') end
 	end
+	if self.predefine and self.predefine['layer'] then self.layer=self.predefine['layer'] end
+	if self.predefine and self.predefine['viewmode'] then self.viewmode=self.predefine['viewmode'] end
 	self.future_action={}
 end
 

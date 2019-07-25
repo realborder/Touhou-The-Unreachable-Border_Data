@@ -83,7 +83,6 @@ function exani_player_manager:ExecuteExaniPredefine(exani_name,action)
 		exani_player.DoPredefine(ex)
 	elseif i then
 		local ex=self.exanis[#self.exanis]
-		if not ex.predefine or not ex.predefine[action] then error('[ERROR] You do not leave any predefine in current exani object, please check the object named: '..exani_name) end
 		if next(ex.future_action) then
 			for k=#ex.future_action,1,-1 do
 				table.remove(ex.future_action,k)

@@ -86,9 +86,9 @@ end
 
 ---------------------------------------
 
-stage_launcher=stage.New('settings',true,true)
+stage_main_menu=stage.New('menu',true,true)
 
-function stage_launcher:init()
+function stage_main_menu:init()
 		LoadTTF('menuttfs','THlib\\UI\\font\\default_ttf',40)
 	--
 	local f,msg
@@ -110,8 +110,8 @@ function stage_launcher:init()
 	New(mask_fader,'open')
 	New(exani_player_manager)
 	start_menu=New(base_menu,'start_menu','Title_Menu_item_Start',{
-			{'ChooseMode_item_StoryMode','','',true},
-			{'ChooseMode_item_StagePrac','stage_menu','',true},
+			{'ChooseMode_item_StoryMode','',function() practice=nil end,true},
+			{'ChooseMode_item_StagePrac','stage_menu',function() practice='stage' end,true},
 			{'ChooseMode_item_SpellCardPrac','','',false},
 			{'ChooseMode_item_NightmareEcli','','',false},
 		},
@@ -119,11 +119,7 @@ function stage_launcher:init()
 		true
 	)
 	
-	reply_menu=New(base_menu,'reply_menu','Replay_titleAndTable',{
-			{'Replay_tablePointer','','',true}
-		},
-		'main_menu'
-	)
+	replay_menu=New(special_reply)
 	
 	manual_menu=New(special_manual)
 	
@@ -149,7 +145,7 @@ function stage_launcher:init()
 	
 	main_menu=New(base_menu,'main_menu','',{
 			{'Title_Menu_item_Start','start_menu','',true},
-			{'Title_Menu_item_Replay','reply_menu','',true},
+			{'Title_Menu_item_Replay','replay_menu',function() menu.FadeIn2(replay_menu,'right') end,true},
 			{'Title_Menu_item_PlayerData','','',false},
 			{'Title_Menu_item_Musicroom','','',false},
 			{'Title_Menu_item_Gallery','','',false},
@@ -160,6 +156,9 @@ function stage_launcher:init()
 		'',
 		true
 	)
+	
+	start_game()
+	
 	base_menu.ChangeLocked(menus['main_menu'])
 	
 	exani_player_manager.ExecuteExaniPredefine(play_manager,'Title_Menu_bg','init')
@@ -170,7 +169,7 @@ function stage_launcher:init()
 	
 end
 
-function stage_launcher:render()
+function stage_main_menu:render()
 	--执行exani动画,主要是背景
 	--然后发现不是在这里运行的
 end
@@ -270,5 +269,4 @@ function start_game()
 	InitScoreData()--initialize score data--Lscoredata
 	jstg.ChangeInput() --20180516 bind new keys
 	ext.reload()
-	stage.Set('none','init')
 end

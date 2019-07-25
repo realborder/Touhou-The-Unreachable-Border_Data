@@ -69,6 +69,7 @@ function base_menu:render()
 			exani_player_manager.ExecuteExaniPredefine(play_manager,self.exani_names[self.choose],action)
 		elseif lstg.GetKeyState(KEY.X) then
 			if self.pre_menu~='' then base_menu.ChangeLocked(self) base_menu.ChangeLocked(menus[self.pre_menu]) end
+			PlaySound('cancel00', 0.3)
 		end
 		self.choosed=false
 	end
@@ -100,7 +101,7 @@ end
 function base_menu:ChangeLocked()
 	self.locked=not self.locked
 	local action
-	if self.locked then action='kill' self.init_timer=0 self.choose_timer=-1 else action='init' end
+	if self.locked then action='kill' self.init_timer=0 self.choose_timer=-1 else action='init' self.choose=1 end
 	if self.title~='' then exani_player_manager.ExecuteExaniPredefine(play_manager,self.title,action) end
 	if self.has_logo then exani_player_manager.ExecuteExaniPredefine(play_manager,'Title_Menu_LOGO',action) end
 	for i=1,#self.exani_names do
