@@ -324,6 +324,7 @@ function exani_player:DoPredefine()
 	else
 		self.start_frame=self.future_action[1].startf
 		self.end_frame=self.future_action[1].endf
+		if self.start_frame>end_frame then self.play_interval=abs(self.play_interval) else self.play_interval=-abs(self.play_interval) end
 		self.replay_round=self.future_action[1].repeatc or 1
 		self.current_frame=self.start_frame
 		for k,v in pairs(self.picList) do
