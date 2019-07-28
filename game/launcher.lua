@@ -148,8 +148,8 @@ function stage_main_menu:init()
 			{'Title_Menu_item_Replay','replay_menu',function() menu.FadeIn2(replay_menu,'right') end,true},
 			{'Title_Menu_item_PlayerData','','',false},
 			{'Title_Menu_item_Musicroom','','',false},
-			{'Title_Menu_item_Gallery','','',false},
 			{'Title_Menu_item_Manual','manual_menu','',true},
+			{'Title_Menu_item_Gallery','','',false},
 			{'Title_Menu_item_Option','',function() menu.FlyIn(menu_other,'right') menu_other.pos=1 end,true},
 			{'Title_Menu_item_Exit','',ExitGame,true}
 		},

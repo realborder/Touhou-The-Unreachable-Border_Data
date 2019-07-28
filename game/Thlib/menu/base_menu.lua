@@ -26,6 +26,9 @@ function base_menu:init(name,title,options,pre_menu,has_logo)
 	self.changed=false --更换选项
 	self.choosed=false --选中选项(包括z和x)
 	
+	self.change_delay=10
+	self.change_timer=0
+	
 	self.init_delay=30 --init时间
 	self.init_timer=0 --init后的计时
 	
@@ -33,16 +36,18 @@ function base_menu:init(name,title,options,pre_menu,has_logo)
 	self.choose_timer=-1
 	
 	menus[self.name]=self
+	
 end
 
 function base_menu:frame()
 	if self.locked then return end
 	self.init_timer=self.init_timer+1
 	if self.choose_timer>=0 then self.choose_timer=self.choose_timer-1 end
+	if self.change_timer>0 then self.change_timer=self.change_timer-1 end
 	
 	if self.choose_timer==-1 and self.init_timer>30 then
-		if not self.changed and lstg.GetKeyState(KEY.UP) then self.choose=self.choose-1 end
-		if not self.changed and lstg.GetKeyState(KEY.DOWN) then self.choose=self.choose+1 end
+		if self.change_timer==0 and lstg.GetKeyState(KEY.UP) then self.choose=self.choose-1 self.changed=true self.change_timer=self.change_delay end
+		if self.change_timer==0 and lstg.GetKeyState(KEY.DOWN) then self.choose=self.choose+1 self.changed=true self.change_timer=self.change_delay end
 		if self.choose<1 then self.choose=#self.exani_names end
 		if self.choose>#self.exani_names then self.choose=1 end
 		if not self.choosed and lstg.GetKeyState(KEY.Z) then self.choosed=true self.choose_timer=self.choose_delay end
@@ -67,6 +72,7 @@ function base_menu:render()
 			local action
 			if self.enables[self.choose] then action='choose' else action='choose_unable' end
 			exani_player_manager.ExecuteExaniPredefine(play_manager,self.exani_names[self.choose],action)
+			PlaySound('cancel00', 0.3)
 		elseif lstg.GetKeyState(KEY.X) then
 			if self.pre_menu~='' then base_menu.ChangeLocked(self) base_menu.ChangeLocked(menus[self.pre_menu]) end
 			PlaySound('cancel00', 0.3)
@@ -81,8 +87,9 @@ function base_menu:render()
 	end
 	
 	if self.changed then
-		local action
-		if self.enables[self.choose] then action='activate' else action='activate_unable' end
+		local action=''
+		if self.enables[self.choose] then action='activate' else action='ignite_unable' end
+		Print('执行'..self.exani_names[self.choose]..'的activate')
 		exani_player_manager.ExecuteExaniPredefine(play_manager,self.exani_names[self.choose],action)
 		local pos=self.choose
 		if lstg.GetKeyState(KEY.UP) then
@@ -92,7 +99,9 @@ function base_menu:render()
 			pos=self.choose-1
 			if pos<1 then pos=#self.exani_names end
 		end
-		exani_player_manager.ExecuteExaniPredefine(play_manager,self.exani_names[pos],'deactivate')
+		Print()
+		Print('执行'..self.exani_names[pos]..'的deactivate')
+		if self.enables[pos] then exani_player_manager.ExecuteExaniPredefine(play_manager,self.exani_names[pos],'deactivate') end
 		self.changed=false
 	end
 	
@@ -101,11 +110,11 @@ end
 function base_menu:ChangeLocked()
 	self.locked=not self.locked
 	local action
-	if self.locked then action='kill' self.init_timer=0 self.choose_timer=-1 else action='init' self.choose=1 end
+	if self.locked then action='kill' self.init_timer=0 self.choose_timer=-1 self.change_timer=0 else action='init' self.choose=1 end
 	if self.title~='' then exani_player_manager.ExecuteExaniPredefine(play_manager,self.title,action) end
 	if self.has_logo then exani_player_manager.ExecuteExaniPredefine(play_manager,'Title_Menu_LOGO',action) end
 	for i=1,#self.exani_names do
-		if self.enables[i] then action='init' else action='init_unable' end
+		if (not self.enables[i]) and action=='init' then action='init_unable' end
 		exani_player_manager.ExecuteExaniPredefine(play_manager,self.exani_names[i],action)
 	end
 end

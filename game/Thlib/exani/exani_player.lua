@@ -213,7 +213,19 @@ function exani_player:frame()
 					Del(self)
 				else
 					if next(self.future_action) then table.remove(self.future_action,1) end
-					if next(self.future_action) then Print('执行'..self.name..'后续action') exani_player.DoPredefine(self) end
+					if next(self.future_action) then
+						Print('执行'..self.name..'后续action')
+						for k,v in pairs(self.future_action) do
+							if(type(v)=='string') then
+								Print(v)
+							else
+								Print(v.startf)
+								Print(v.endf)
+								Print(v.repeatc)
+							end
+						end
+						exani_player.DoPredefine(self)
+					end
 				end
 			else
 				self.current_frame=self.start_frame
@@ -291,8 +303,11 @@ function exani_player:DoPredefine()
 		self.force_time=self.future_action[1].force_interpolation_time
 		for k,v in pairs(self.picList) do
 			v.renderFlag=true
-			v.previousFrame=v.renderFrame
+			v.previousFrame.x,v.previousFrame.y,v.previousFrame.cx,v.previousFrame.cy=v.renderFrame.x,v.renderFrame.y,v.renderFrame.cx,v.renderFrame.cy
+			v.previousFrame.rot,v.previousFrame.hs,v.previousFrame.vs,v.previousFrame.a=v.renderFrame.rot,v.renderFrame.hs,v.renderFrame.vs,v.renderFrame.a
 			v.previousFrame.frame_at=1
+			v.previousFrame.blend='mul+add'
+			v.previousFrame.x_ran,v.previousFrame.y_ran,v.previousFrame.v_type,v.previousFrame.h_type,v.previousFrame.r_type,v.previousFrame.a_type=0,0,2,2,2,2
 			for i=1,#v.keyFrames do
 				if v.keyFrames[i].frame_at==self.future_action[2].startf then
 					v.nextFrame=v.keyFrames[i]
