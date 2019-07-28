@@ -1,6 +1,6 @@
 Include'THlib\\ui\\uiconfig.lua'
 Include'THlib\\ui\\font.lua'
-Include'THlib\\ui\\title.lua'
+--Include'THlib\\ui\\title.lua'
 Include'THlib\\ui\\sc_pr.lua'
 ui={}
 

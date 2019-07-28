@@ -51,6 +51,43 @@ end
 
 -------------------------------------------------
 
+local function FetchReplaySlots()
+	local ret = {}
+	ext.replay.RefreshReplay()
+
+	for i = 1, ext.replay.GetSlotCount() do
+		local text={}
+		local slot = ext.replay.GetSlot(i)
+		if slot then
+			-- 使用第一关的时间作为录像时间
+			local date = os.date("!%Y/%m/%d", slot.stages[1].stageDate + setting.timezone * 3600)
+
+			-- 统计总分数
+			local totalScore = 0
+			local diff,stage_num=0,0
+			local tmp
+			for i, k in ipairs(slot.stages) do
+				totalScore = totalScore + slot.stages[i].score
+				diff=string.match(k.stageName,'^.+@(.+)$')
+				tmp=string.match(k.stageName,'^(.+)@.+$')
+				if string.match(tmp,'%d+')==nil then
+					stage_num=tmp
+				else
+					stage_num='St'..string.match(tmp,'%d+')
+				end
+			end
+			if diff=='Spell Practice' then diff='SpellCard' end
+			if tmp=='Spell Practice' then stage_num='SC' end
+			if slot.group_finish == 1 then stage_num='All' end
+			text = {string.format('No.%02d',i), slot.userName, date, slot.stages[1].stagePlayer, diff, stage_num}
+		else
+			text = {string.format('No.%02d',i), '--------', '----/--/--', '--------', '--------', '---'}
+		end
+		table.insert(ret, text)
+	end
+	return ret
+end
+
 special_replay=Class(object)
 
 function special_replay:init()
@@ -199,41 +236,4 @@ function menu:FadeOut2()
 			end
 		end)
 	end
-end
-
-local function FetchReplaySlots()
-	local ret = {}
-	ext.replay.RefreshReplay()
-
-	for i = 1, ext.replay.GetSlotCount() do
-		local text={}
-		local slot = ext.replay.GetSlot(i)
-		if slot then
-			-- 使用第一关的时间作为录像时间
-			local date = os.date("!%Y/%m/%d", slot.stages[1].stageDate + setting.timezone * 3600)
-
-			-- 统计总分数
-			local totalScore = 0
-			local diff,stage_num=0,0
-			local tmp
-			for i, k in ipairs(slot.stages) do
-				totalScore = totalScore + slot.stages[i].score
-				diff=string.match(k.stageName,'^.+@(.+)$')
-				tmp=string.match(k.stageName,'^(.+)@.+$')
-				if string.match(tmp,'%d+')==nil then
-					stage_num=tmp
-				else
-					stage_num='St'..string.match(tmp,'%d+')
-				end
-			end
-			if diff=='Spell Practice' then diff='SpellCard' end
-			if tmp=='Spell Practice' then stage_num='SC' end
-			if slot.group_finish == 1 then stage_num='All' end
-			text = {string.format('No.%02d',i), slot.userName, date, slot.stages[1].stagePlayer, diff, stage_num}
-		else
-			text = {string.format('No.%02d',i), '--------', '----/--/--', '--------', '--------', '---'}
-		end
-		table.insert(ret, text)
-	end
-	return ret
 end

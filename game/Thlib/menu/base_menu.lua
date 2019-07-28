@@ -32,7 +32,7 @@ function base_menu:init(name,title,options,pre_menu,has_logo)
 	self.choose_delay=30 --选中后播放选中动画的时间以便于跳转下一个菜单
 	self.choose_timer=-1
 	
-	menus[name]=self
+	menus[self.name]=self
 end
 
 function base_menu:frame()

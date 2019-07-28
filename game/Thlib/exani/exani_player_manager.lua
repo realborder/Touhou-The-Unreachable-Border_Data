@@ -80,6 +80,16 @@ function exani_player_manager:ExecuteExaniPredefine(exani_name,action)
 		for j=1,#ex.predefine[action] do
 			table.insert(ex.future_action,ex.predefine[action][j])
 		end
+		Print('查看'..exani_name..'future_action')
+		for k,v in pairs(ex.future_action) do
+			if(type(v)=='string') then
+				Print(v)
+			else
+				Print(v.startf)
+				Print(v.endf)
+				Print(v.repeatc)
+			end
+		end
 		exani_player.DoPredefine(ex)
 	elseif i then
 		local ex=self.exanis[#self.exanis]
@@ -90,6 +100,16 @@ function exani_player_manager:ExecuteExaniPredefine(exani_name,action)
 		end
 		for j=1,#ex.predefine[action] do
 			table.insert(ex.future_action,ex.predefine[action][j])
+		end
+		Print('查看'..exani_name..'future_action')
+		for k,v in pairs(ex.future_action) do
+			if(type(v)=='string') then
+				Print(v)
+			else
+				Print(v.startf)
+				Print(v.endf)
+				Print(v.repeatc)
+			end
 		end
 		exani_player.DoPredefine(ex)
 	else

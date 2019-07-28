@@ -213,7 +213,7 @@ function exani_player:frame()
 					Del(self)
 				else
 					if next(self.future_action) then table.remove(self.future_action,1) end
-					if next(self.future_action) then exani_player.DoPredefine(self) end
+					if next(self.future_action) then Print('执行'..self.name..'后续action') exani_player.DoPredefine(self) end
 				end
 			else
 				self.current_frame=self.start_frame
@@ -283,7 +283,7 @@ end
 
 function exani_player:DoPredefine()
 	exani_player.GetActionValue(self)
-	if type(self.future_action[1][1])==string then --默认强制补间后面的不是action字符串
+	if type(self.future_action[1][1])=='string' then --默认强制补间后面的不是action字符串
 		self.isforce=true
 		self.replay_round=1
 		self.play_interval=1
@@ -299,9 +299,7 @@ function exani_player:DoPredefine()
 					v.nextFrame.frame_at=self.force_time+1
 				end
 			end
-			v.current_frame=1
-			--v.current_frame=self.current_frame
-			--if not v.current_frame then error('Dont ya kidding me!') end
+			v.current_frame=self.current_frame
 		end
 		self.start_frame=1
 		self.end_frame=self.force_time+1
@@ -313,9 +311,9 @@ function exani_player:DoPredefine()
 		self.replay_round=self.future_action[1].repeatc or 1
 		self.current_frame=self.start_frame
 		for k,v in pairs(self.picList) do
-			v.current_frame=1
-			--v.current_frame=self.current_frame
-			--if not v.current_frame then error('You\'ve got be kidding me!') end
+			v.current_frame=self.current_frame
+			v.layer=self.layer+v.Prio*0.01
+			v.screenMode=self.viewmode
 			layers_player.CalculateFrame(v)
 			v.renderFlag=true
 		end
@@ -353,12 +351,19 @@ function exani_player:GetActionValue()
 	while(not is_ok)
 	do
 		is_ok=true
-		if type(self.future_action[1])==string then
+		if type(self.future_action[1])=='string' then
 			is_ok=false
 			local action=self.future_action[1]
+			Print(self.name..' string action '..action)
 			table.remove(self.future_action,1)
 			for i=#self.predefine[action],1,-1 do
 				table.insert(self.future_action,1,self.predefine[action][i])
+			end
+			Print('查看'..self.name..'转换action')
+			for k,v in pairs(self.future_action) do
+				Print(v.startf)
+				Print(v.endf)
+				Print(v.repeatc)
 			end
 		end
 	end
