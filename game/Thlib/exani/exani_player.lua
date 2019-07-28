@@ -303,6 +303,7 @@ function exani_player:DoPredefine()
 		self.force_time=self.future_action[1].force_interpolation_time
 		for k,v in pairs(self.picList) do
 			v.renderFlag=true
+			if not v.previousFrame then v.previousFrame={} end
 			v.previousFrame.x,v.previousFrame.y,v.previousFrame.cx,v.previousFrame.cy=v.renderFrame.x,v.renderFrame.y,v.renderFrame.cx,v.renderFrame.cy
 			v.previousFrame.rot,v.previousFrame.hs,v.previousFrame.vs,v.previousFrame.a=v.renderFrame.rot,v.renderFrame.hs,v.renderFrame.vs,v.renderFrame.a
 			v.previousFrame.frame_at=1

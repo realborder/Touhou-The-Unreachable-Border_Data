@@ -11,15 +11,20 @@ function special_manual:init()
 	self.choose=1
 	self.changed=false --更换选项
 	
+	self.exani_names={'Manual_item'}
+	self.enables={true}
+	
 	menus['manual_menu']=self
 end
 
 function special_manual:frame()
 	if self.locked then return end
 	
+	if self.changed and not lstg.GetKeyState(KEY.UP) and not lstg.GetKeyState(KEY.DOWN) then self.changed=false end
+	
 	if not self.changed then
 		local action
-		if lstg.GetKeyStat(KEY.UP) then
+		if lstg.GetKeyState(KEY.UP) then
 			self.choose=self.choose-1
 			if self.choose<1 then
 				self.choose=10
@@ -27,7 +32,9 @@ function special_manual:frame()
 			else
 				action=(self.choose+1)..'to'..self.choose
 			end
-		elseif lstg.GetKeyStat(KEY.DOWN) then
+			exani_player_manager.ExecuteExaniPredefine(play_manager,'Manual_item',action)
+			self.changed=true
+		elseif lstg.GetKeyState(KEY.DOWN) then
 			self.choose=self.choose+1
 			if self.choose>10 then
 				self.choose=1
@@ -35,17 +42,17 @@ function special_manual:frame()
 			else
 				action=(self.choose-1)..'to'..self.choose
 			end
+			exani_player_manager.ExecuteExaniPredefine(play_manager,'Manual_item',action)
+			self.changed=true
 		end
-		exani_player_manager.ExecuteExaniPredefine(player_manager,'Manual_item',action)
-		self.changed=true
 	end
 	
 	if not self.changed then
-		if lstg.GetKeyStat(KEY.X) then
+		if lstg.GetKeyState(KEY.X) then
 			if self.pre_menu~='' then base_menu.ChangeLocked(self) base_menu.ChangeLocked(menus[self.pre_menu]) end
 			PlaySound('cancel00', 0.3)
+			self.changed=true
 		end
-		self.changed=true
 	end
 end
 

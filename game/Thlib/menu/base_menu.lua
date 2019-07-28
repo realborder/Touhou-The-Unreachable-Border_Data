@@ -50,8 +50,8 @@ function base_menu:frame()
 		if self.change_timer==0 and lstg.GetKeyState(KEY.DOWN) then self.choose=self.choose+1 self.changed=true self.change_timer=self.change_delay end
 		if self.choose<1 then self.choose=#self.exani_names end
 		if self.choose>#self.exani_names then self.choose=1 end
-		if not self.choosed and lstg.GetKeyState(KEY.Z) then self.choosed=true self.choose_timer=self.choose_delay end
-		if not self.choosed and lstg.GetKeyState(KEY.X) then self.choosed=true end
+		if lstg.GetKeyState(KEY.Z) then self.choosed=true self.choose_timer=self.choose_delay end
+		if lstg.GetKeyState(KEY.X) then self.choosed=true end
 	end
 end
 
@@ -113,8 +113,10 @@ function base_menu:ChangeLocked()
 	if self.locked then action='kill' self.init_timer=0 self.choose_timer=-1 self.change_timer=0 else action='init' self.choose=1 end
 	if self.title~='' then exani_player_manager.ExecuteExaniPredefine(play_manager,self.title,action) end
 	if self.has_logo then exani_player_manager.ExecuteExaniPredefine(play_manager,'Title_Menu_LOGO',action) end
-	for i=1,#self.exani_names do
-		if (not self.enables[i]) and action=='init' then action='init_unable' end
-		exani_player_manager.ExecuteExaniPredefine(play_manager,self.exani_names[i],action)
+	if self.exani_names then
+		for i=1,#self.exani_names do
+			if (not self.enables[i]) and action=='init' then action='init_unable' end
+			exani_player_manager.ExecuteExaniPredefine(play_manager,self.exani_names[i],action)
+		end
 	end
 end
