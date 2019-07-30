@@ -1,5 +1,6 @@
+LoadImageFromFile('graze_par','THlib\\player\\graze_par.png')
 LoadPS('player_death_ef','THlib\\player\\player_death_ef.psi','parimg1')
-LoadPS('graze','THlib\\player\\graze.psi','parimg6')
+LoadPS('graze','THlib\\player\\graze.psi','graze_par')
 LoadImageFromFile('player_spell_mask','THlib\\player\\spellmask.png')
 
 LoadTexture('magicsquare','THlib\\player\\player_magicsquare.png')
@@ -478,10 +479,11 @@ function grazer:init(player)
 	self.group=GROUP_PLAYER
 	self.player=player or lstg.player
 	self.grazed=false
+	self.graze_count=0
 	self.img='graze'
 	ParticleStop(self)
-	self.a=24
-	self.b=24
+	self.a=32
+	self.b=32
 	self.aura=0
 end
 
@@ -495,6 +497,8 @@ function grazer:frame()
 	if self.grazed then
 		PlaySound('graze',0.3,self.x/200)
 		self.grazed=false
+		ParticleSetEmission(self,self.graze_count*60)
+		self.graze_count=0
 		ParticleFire(self)
 	else ParticleStop(self) end
 end
@@ -512,6 +516,7 @@ function grazer:colli(other)
 		item.PlayerGraze()
 		--lstg.player.grazer.grazed=true
 		self.grazed=true
+		self.graze_count=self.graze_count+1
 		other._graze=true
 	end
 end
