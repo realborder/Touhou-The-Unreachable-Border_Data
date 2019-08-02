@@ -258,18 +258,39 @@ function special_difficulty:init()
 	self.has_logo=false
 	self.locked=true
 	self.init_timer=0
+	self.init_delay=30
 	
 	self.choose=1
+	self.pre_choose=0
 	self.changed=false
+	
+	self.choose_timer=0
+	self.choose_delay=25
+	
+	self.activate_timer=0
+	self.activate_delay=49
+	self.deactivate_timer=0
+	self.deactivate_delay=59
 	
 	self.is_choose=false
 	
 	self.pics={'ChooseDiff_Easy','ChooseDiff_Normal','ChooseDiff_Hard','ChooseDiff_Lunatic'} --exani名字刚好和图片相同
 	self.gap=280
-	self.repeats=4
+	self.repeats=3
 	self.speed=0.5
 	self.y=200
 	self.z=1.5
+	self.tmpdx=0
+	
+	self.x_offset={}
+	for i=(#self.pics)*self.repeats/2,1,-1 do
+		local dx=-self.gap*(i-0.5)
+		table.insert(self.x_offset,dx)
+	end
+	for i=1,(#self.pics)*self.repeats/2 do
+		local dx=self.gap*(i-0.5)
+		table.insert(self.x_offset,dx)
+	end
 	
 	menus['diff_menu']=self
 end
@@ -279,40 +300,94 @@ function special_difficulty:frame()
 	self.init_timer=self.init_timer+1
 	if self.changed and not lstg.GetKeyState(KEY.LEFT) and not lstg.GetKeyState(KEY.RIGHT) then self.changed=false end
 	
-	if self.init_timer>0 and self.init_timer<=30 then
-		
+	if self.activate_timer>0 then self.activate_timer=self.activate_timer-1 end
+	if self.deactivate_timer>0 then self.deactivate_timer=self.deactivate_timer-1 end
+	if self.choose_timer>0 then self.choose_timer=self.choose_timer-1 end
+	
+	if self.init_timer>0 and self.init_timer<=self.init_delay then
+		local z=exani_interpolation(0,self.z-0.5,self.init_timer,1,self.init_delay,'smooth','smooth')
+		Set3D('at',0,0,z)
 	end
 	
-	if self.init_timer==30 then
+	if self.init_timer==self.init_delay then
+		self.activate_timer=self.activate_delay
 		exani_player_manager.ExecuteExaniPredefine(play_manager,self.pics[self.choose],'activate')
 	end
+	if self.activate_timer>0 then
+		local choosen=(#self.pics)*(self.repeats-1)/2+self.choose
+		local dx=exani_interpolation(self.x_offset[choosen],0,self.activate_delay-self.activate_timer+1,1,self.activate_delay,'smooth','smooth')
+		exani_player_manager.SetExaniAttribute(play_manager,self.pics[self.choose],nil,nil,nil,nil,nil,nil,nil,'3d',dx,0,self.z,1,1)
+	end
 	
-	if self.init_timer>30 then
+	if self.init_timer>self.init_delay and self.activate_timer==0 and self.deactivate_timer==0 and not self.is_choose then
 		if lstg.GetKeyState(KEY.LEFT) then
 			if self.choose~=1 then
+				self.pre_choose=self.choose
 				self.choose=self.choose-1
+				self.activate_timer=self.activate_delay
+				self.deactivate_timer=self.deactivate_delay
 				exani_player_manager.ExecuteExaniPredefine(play_manager,self.pics[self.choose],'activate')
+				exani_player_manager.ExecuteExaniPredefine(play_manager,self.pics[self.pre_choose],'deactivate')
+				self.changed=true
 			end
-		elseif
-		
+		elseif lstg.GetKeyState(KEY.RIGHT) then
+			if self.choose~=#self.pics then
+				self.pre_choose=self.choose
+				self.choose=self.choose+1
+				self.activate_timer=self.activate_delay
+				self.deactivate_timer=self.deactivate_delay
+				exani_player_manager.ExecuteExaniPredefine(play_manager,self.pics[self.choose],'activate')
+				exani_player_manager.ExecuteExaniPredefine(play_manager,self.pics[self.pre_choose],'deactivate')
+				self.changed=true
+			end
+		elseif lstg.GetKeyState(KEY.Z) then
+			self.is_choose=true
+			exani_player_manager.ExecuteExaniPredefine(play_manager,self.pics[self.choose],'choose')
+			self.choose_timer=self.choose_delay
 		end
+	end
+	
+	if self.deactivate_timer>0 then
+		if pre_choose~=0 then
+			local choosen=(#self.pics)*(self.repeats-1)/2+self.pre_choose
+			local dx=exani_interpolation(0,self.x_offset[choosen],self.deactivate_delay-self.deactivate_timer+1,1,self.deactivate_delay,'smooth','smooth')
+			exani_player_manager.SetExaniAttribute(play_manager,self.pics[self.pre_choose],nil,nil,nil,nil,nil,nil,nil,'3d',dx,0,self.z,1,1)
+		end
+	end
+	
+	if self.choose_timer==0 then
+		self.locked=true
 	end
 end
 
 function special_difficulty:render()
 	if self.locked and not self.is_choose then
 		SetViewMode('ui')
-		for i=1,#self.pics do
-			local dx=(self.gap*(i-self.repeats*(#self.pics)/2))
-			Render(self.pics[i],x,self.y,0,1,1,self.z)
-			if x>560 then Render(self.pics[i],x-640,self.y,0,1,1,self.z) end
+		local dx=(self.timer*self.speed)%((#self.pics)*self.gap)
+		self.tmpdx=dx
+		for i=1,(#self.pics)*self.repeats do
+			local x=self.x_offset[i]+dx
+			local n=i%(#self.pics)
+			if n=0 then n=#self.pics end
+			Render(self.pics[n],x,self.y,0,1,1,self.z)
+		end
+	elseif not self.locked and self.init_timer>0 and self.init_timer<=self.init_delay then
+		SetViewMode('ui')
+		local dx=exani_interpolation(self.tmpdx,0,self.init_timer,1,self.init_delay,'smooth','smooth')
+		for i=1,(#self.pics)*self.repeats do
+			local x=self.x_offset[i]+dx
+			local n=i%(#self.pics)
+			if n=0 then n=#self.pics end
+			Render(self.pics[n],x,self.y,0,1,1,self.z)
 		end
 	elseif not self.locked then
-		for i=1,#self.pics do
-			if i~=self.choose then
-				local x=80+160*(i-1)
-				Render(self.pics[i],x,self.y,0,1,1,self.z)
-			end
+		local startn=(#self.pics)*(self.repeats-1)/2+1
+		local endn=(#self.pics)*(self.repeats+1)/2
+		for i=startn,endn do
+			local x=self.x_offset[i]
+			local n=i%(#self.pics)
+			if n=0 then n=#self.pics end
+			if n~=self.choose then Render(self.pics[n],x,self.y,0,1,1,self.z) end
 		end
 	end
 end
