@@ -45,13 +45,13 @@ function base_menu:frame()
 	if self.choose_timer>=0 then self.choose_timer=self.choose_timer-1 end
 	if self.change_timer>0 then self.change_timer=self.change_timer-1 end
 	
-	if self.choose_timer==-1 and self.init_timer>30 then
-		if self.change_timer==0 and lstg.GetKeyState(KEY.UP) then self.choose=self.choose-1 self.changed=true self.change_timer=self.change_delay end
-		if self.change_timer==0 and lstg.GetKeyState(KEY.DOWN) then self.choose=self.choose+1 self.changed=true self.change_timer=self.change_delay end
+	if self.choose_timer==-1 and self.change_timer==0 and self.init_timer>30 then
+		if lstg.GetKeyState(KEY.UP) then self.choose=self.choose-1 self.changed=true self.change_timer=self.change_delay end
+		if lstg.GetKeyState(KEY.DOWN) then self.choose=self.choose+1 self.changed=true self.change_timer=self.change_delay end
 		if self.choose<1 then self.choose=#self.exani_names end
 		if self.choose>#self.exani_names then self.choose=1 end
 		if lstg.GetKeyState(KEY.Z) then self.choosed=true self.choose_timer=self.choose_delay end
-		if lstg.GetKeyState(KEY.X) then self.choosed=true end
+		if lstg.GetKeyState(KEY.X) then self.choosed=true self.change_timer=self.change_delay end
 	end
 end
 
@@ -61,7 +61,7 @@ function base_menu:render()
 	if self.locked then return end
 	
 	if self.init_timer==30 then
-		if self.title~='' then exani_player_manager.ExecuteExaniPredefine(play_manager,self.title,'activate') end
+		if self.title~='' then exani_player_manager.ExecuteExaniPredefine(play_manager,self.title,'ignite') end
 		local action
 		if self.enables[self.choose] then action='activate' else action='activate_unable' end
 		exani_player_manager.ExecuteExaniPredefine(play_manager,self.exani_names[self.choose],action)
@@ -72,7 +72,7 @@ function base_menu:render()
 			local action
 			if self.enables[self.choose] then action='choose' else action='choose_unable' end
 			exani_player_manager.ExecuteExaniPredefine(play_manager,self.exani_names[self.choose],action)
-			PlaySound('cancel00', 0.3)
+			PlaySound('select00',0.3)
 		elseif lstg.GetKeyState(KEY.X) then
 			if self.pre_menu~='' then base_menu.ChangeLocked(self) base_menu.ChangeLocked(menus[self.pre_menu]) end
 			PlaySound('cancel00', 0.3)

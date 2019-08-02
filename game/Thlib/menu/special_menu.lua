@@ -244,3 +244,75 @@ function menu:FadeOut2()
 		end)
 	end
 end
+
+-------------------------------------
+
+special_difficulty=Class(object)
+function special_difficulty:init()
+	self.layer=LAYER_TOP
+	self.group=GROUP_GHOST
+	self.bound=false
+	
+	self.title='ChooseDiff_title'
+	self.pre_menu='start_menu'
+	self.has_logo=false
+	self.locked=true
+	self.init_timer=0
+	
+	self.choose=1
+	self.changed=false
+	
+	self.is_choose=false
+	
+	self.pics={'ChooseDiff_Easy','ChooseDiff_Normal','ChooseDiff_Hard','ChooseDiff_Lunatic'} --exani名字刚好和图片相同
+	self.gap=280
+	self.repeats=4
+	self.speed=0.5
+	self.y=200
+	self.z=1.5
+	
+	menus['diff_menu']=self
+end
+
+function special_difficulty:frame()
+	if self.locked then return end
+	self.init_timer=self.init_timer+1
+	if self.changed and not lstg.GetKeyState(KEY.LEFT) and not lstg.GetKeyState(KEY.RIGHT) then self.changed=false end
+	
+	if self.init_timer>0 and self.init_timer<=30 then
+		
+	end
+	
+	if self.init_timer==30 then
+		exani_player_manager.ExecuteExaniPredefine(play_manager,self.pics[self.choose],'activate')
+	end
+	
+	if self.init_timer>30 then
+		if lstg.GetKeyState(KEY.LEFT) then
+			if self.choose~=1 then
+				self.choose=self.choose-1
+				exani_player_manager.ExecuteExaniPredefine(play_manager,self.pics[self.choose],'activate')
+			end
+		elseif
+		
+		end
+	end
+end
+
+function special_difficulty:render()
+	if self.locked and not self.is_choose then
+		SetViewMode('ui')
+		for i=1,#self.pics do
+			local dx=(self.gap*(i-self.repeats*(#self.pics)/2))
+			Render(self.pics[i],x,self.y,0,1,1,self.z)
+			if x>560 then Render(self.pics[i],x-640,self.y,0,1,1,self.z) end
+		end
+	elseif not self.locked then
+		for i=1,#self.pics do
+			if i~=self.choose then
+				local x=80+160*(i-1)
+				Render(self.pics[i],x,self.y,0,1,1,self.z)
+			end
+		end
+	end
+end
