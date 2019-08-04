@@ -194,6 +194,7 @@ function special_replay:frame()
 end
 
 function special_replay:render()
+	if self.locked then return end
 	SetViewMode('ui')
 	if self.state == 0 then
 		ui.DrawRepText(
@@ -264,13 +265,16 @@ function special_difficulty:init()
 	self.pre_choose=0
 	self.changed=false
 	
-	self.choose_timer=0
+	self.choose_timer=-1
 	self.choose_delay=25
 	
 	self.activate_timer=0
 	self.activate_delay=49
 	self.deactivate_timer=0
 	self.deactivate_delay=59
+	
+	self.cancel_timer=0
+	self.cancel_delay=30
 	
 	self.is_choose=false
 	
@@ -296,13 +300,19 @@ function special_difficulty:init()
 end
 
 function special_difficulty:frame()
+	if self.cancel_timer>0 then
+		self.cancel_timer=self.cancel_timer-1
+		local z=exani_interpolation(self.z-0.5,0,self.cancel_delay-self.cancel_timer+1,1,self.cancel_delay,'smooth','smooth')
+		Set3D('at',0,0,z)
+	end
+
 	if self.locked then return end
 	self.init_timer=self.init_timer+1
 	if self.changed and not lstg.GetKeyState(KEY.LEFT) and not lstg.GetKeyState(KEY.RIGHT) then self.changed=false end
 	
 	if self.activate_timer>0 then self.activate_timer=self.activate_timer-1 end
 	if self.deactivate_timer>0 then self.deactivate_timer=self.deactivate_timer-1 end
-	if self.choose_timer>0 then self.choose_timer=self.choose_timer-1 end
+	if self.choose_timer>=0 then self.choose_timer=self.choose_timer-1 end
 	
 	if self.init_timer>0 and self.init_timer<=self.init_delay then
 		local z=exani_interpolation(0,self.z-0.5,self.init_timer,1,self.init_delay,'smooth','smooth')
@@ -344,6 +354,13 @@ function special_difficulty:frame()
 			self.is_choose=true
 			exani_player_manager.ExecuteExaniPredefine(play_manager,self.pics[self.choose],'choose')
 			self.choose_timer=self.choose_delay
+		elseif lstg.GetKeyState(KEY.X) then
+			base_menu.ChangeLocked(self)
+			self.cancel_timer=self.cancel_delay
+			self.timer=0
+			if self.pre_menu~='' then base_menu.ChangeLocked(menus[self.pre_menu]) end
+			exani_player_manager.ExecuteExaniPredefine(play_manager,self.pics[self.choose],'deactivate')
+			PlaySound('cancel00', 0.3)
 		end
 	end
 	
@@ -355,8 +372,10 @@ function special_difficulty:frame()
 		end
 	end
 	
-	if self.choose_timer==0 then
-		self.locked=true
+	if self.choose_timer==0 and self.is_choose then
+		base_menu.ChangeLocked(self)
+		base_menu.ChangeLocked(menus['player_menu']) end
+		exani_player_manager.ExecuteExaniPredefine(play_manager,'ChooseChar_reimu','init')
 	end
 end
 
@@ -390,4 +409,117 @@ function special_difficulty:render()
 			if n~=self.choose then Render(self.pics[n],x,self.y,0,1,1,self.z) end
 		end
 	end
+end
+
+-------------------------------------
+
+special_player=Class(object)
+function special_player:init()
+	self.layer=LAYER_TOP
+	self.group=GROUP_GHOST
+	self.bound=false
+	
+	self.title='ChoosePlayer_title'
+	self.pre_menu='start_menu'
+	self.has_logo=false
+	self.locked=true
+	self.init_timer=0
+	self.init_delay=30
+	
+	self.choose=1
+	self.choose_timer=-1
+	self.choose_delay=48
+	
+	self.cancel_timer=0
+	self.cancel_delay=30
+	
+	self.z=1
+	
+	self.player={'ChooseChar_reimu','ChooseChar_marisa'}
+	
+	menus['player_menu']=self
+end
+
+function special_player:frame()
+	if self.cancel_timer>0 then
+		self.cancel_timer=self.cancel_timer-1
+		local z=exani_interpolation(self.z-0.5,menus[diff_menu].z-0.5,self.cancel_delay-self.cancel_timer+1,1,self.cancel_delay,'smooth','smooth')
+		Set3D('at',0,0,z)
+	end
+
+	if self.locked then return end
+	self.init_timer=self.init_timer+1
+	if self.changed and not lstg.GetKeyState(KEY.LEFT) and not lstg.GetKeyState(KEY.RIGHT) and not lstg.GetKeyState(KEY.UP) and not lstg.GetKeyState(KEY.DOWN) then self.changed=false end
+	
+	if self.choose_timer>=0 then self.choose_timer=self.choose_timer-1 end
+	
+	if self.init_timer>0 and self.init_timer<=self.init_delay then
+		local z=exani_interpolation(menus[diff_menu].z-0.5,self.z-0.5,self.init_timer,1,self.init_delay,'smooth','smooth')
+		Set3D('at',0,0,z)
+	end
+	
+	if self.init_timer>self.init_delay and not self.changed and self.cancel_timer==0 and self.choose_timer==0 then
+		if lstg.GetKeyState(KEY.DOWN) then
+			if (self.choose%2)==1 then
+				self.changed=true
+				self.choose=self.choose+1
+				exani_player_manager.ExecuteExaniPredefine(play_manager,self.player[self.choose/2],'AtoB')
+			end
+		elseif lstg.GetKeyState(KEY.UP) then
+			if (self.choose%2)==0 then
+				self.changed=true
+				self.choose=self.choose-1
+				exani_player_manager.ExecuteExaniPredefine(play_manager,self.player[(self.choose+1)/2],'BtoA')
+			end
+		elseif lstg.GetKeyState(KEY.RIGHT) then
+			if self.choose<3 then
+				self.changed=true
+				local action=''
+				if self.choose==1 then action='killA' else action='killB' end
+				exani_player_manager.ExecuteExaniPredefine(play_manager,self.player[1],action)
+				self.choose=3
+				exani_player_manager.ExecuteExaniPredefine(play_manager,self.player[2],'init')
+			end
+		elseif lstg.GetKeyState(KEY.LEFT) then
+			if self.choose>2 then
+				self.changed=true
+				local action=''
+				if self.choose==3 then action='killA' else action='killB' end
+				exani_player_manager.ExecuteExaniPredefine(play_manager,self.player[2],action)
+				self.choose=1
+				exani_player_manager.ExecuteExaniPredefine(play_manager,self.player[1],'init')
+			end
+		elseif lstg.GetKeyState(KEY.X) then
+			self.cancel_timer=self.cancel_delay
+			base_menu.ChangeLocked(self)
+			local diff=menus['diff_menu']
+			diff.locked=false
+			exani_player_manager.ExecuteExaniPredefine(play_manager,diff.title,'init')
+			exani_player_manager.ExecuteExaniPredefine(play_manager,diff.pics[diff.choose],'unchoose')
+			if self.choose==1 then exani_player_manager.ExecuteExaniPredefine(play_manager,self.player[1],'killA')
+			elseif self.choose==2 then exani_player_manager.ExecuteExaniPredefine(play_manager,self.player[1],'killB')
+			elseif self.choose==3 then exani_player_manager.ExecuteExaniPredefine(play_manager,self.player[2],'killA')
+			elseif self.choose==4 then exani_player_manager.ExecuteExaniPredefine(play_manager,self.player[2],'killB')
+			end
+			PlaySound('cancel00', 0.3)
+		elseif lstg.GetKeyState(KEY.Y) then
+			self.choose_timer=self.choose_delay
+			if self.choose==1 then exani_player_manager.ExecuteExaniPredefine(play_manager,self.player[1],'chooseA')
+			elseif self.choose==2 then exani_player_manager.ExecuteExaniPredefine(play_manager,self.player[1],'chooseB')
+			elseif self.choose==3 then exani_player_manager.ExecuteExaniPredefine(play_manager,self.player[2],'chooseA')
+			elseif self.choose==4 then exani_player_manager.ExecuteExaniPredefine(play_manager,self.player[2],'chooseB')
+			end
+		end
+	end
+	
+	if self.choose_timer==0 then
+		base_menu.ChangeLocked(self)
+		
+		
+		
+	end
+end
+
+function special_player:render()
+
 end
