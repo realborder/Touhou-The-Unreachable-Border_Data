@@ -34,7 +34,7 @@ function item:render()
 end
 
 function item:frame()
-	-- local player=self.target
+	local player=self.target
 	if self.timer<24 then
 		self.rot=self.rot+45
 		self.hscale=(self.timer+25)/48
@@ -228,30 +228,30 @@ function item.DropItem(x,y,drop,attract)
 	if drop[1] >= 400 then
 		local r2=sqrt(ran:Float(1,4))*r
 		local a=ran:Float(0,360)
-		last=New(item_power_full,x+r2*cos(a),y+r2*sin(a)) if attract then last.attract=8 end
+		last=New(item_power_full,x+r2*cos(a),y+r2*sin(a)) if attract then last.attract=8 last.target=player end
 	else
 		drop[4] = drop[1] / 100
 		drop[1] = drop[1] % 100
 		for i=1,drop[4] do
 			local r2=sqrt(ran:Float(1,4))*r
 			local a=ran:Float(0,360)
-			last=New(item_power_large,x+r2*cos(a),y+r2*sin(a)) if attract then last.attract=8 end
+			last=New(item_power_large,x+r2*cos(a),y+r2*sin(a)) if attract then last.attract=8 last.target=player end
 		end
 		for i=1,drop[1] do
 			local r2=sqrt(ran:Float(1,4))*r
 			local a=ran:Float(0,360)
-			last=New(item_power,x+r2*cos(a),y+r2*sin(a)) if attract then last.attract=8 end
+			last=New(item_power,x+r2*cos(a),y+r2*sin(a)) if attract then last.attract=8 last.target=player end
 		end
 	end
 	for i=1,drop[2] do
 		local r2=sqrt(ran:Float(1,4))*r
 		local a=ran:Float(0,360)
-		last=New(item_faith,x+r2*cos(a),y+r2*sin(a)) if attract then last.attract=8 end
+		last=New(item_faith,x+r2*cos(a),y+r2*sin(a)) if attract then last.attract=8 last.target=player end
 	end
 	for i=1,drop[3] do
 		local r2=sqrt(ran:Float(1,4))*r
 		local a=ran:Float(0,360)
-		last=New(item_point,x+r2*cos(a),y+r2*sin(a)) if attract then last.attract=8 end
+		last=New(item_point,x+r2*cos(a),y+r2*sin(a)) if attract then last.attract=8 last.target=player end
 	end
 end
 

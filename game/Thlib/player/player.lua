@@ -5,6 +5,8 @@ LoadPS('player_death_ef1','THlib\\player\\player_death_ef1.psi','player_death_pa
 LoadPS('player_death_ef2','THlib\\player\\player_death_ef2.psi','player_death_par')
 LoadPS('graze','THlib\\player\\graze.psi','graze_par')
 LoadImageFromFile('player_spell_mask','THlib\\player\\spellmask.png')
+for i=1,3 do LoadImageFromFile('player_indicator'..i,'THlib\\player\\player_indicator'..i..'.png') end
+for i=1,3 do SetImageState('player_indicator'..i,'',Color(0x80FFFFFF)) end
 
 LoadTexture('magicsquare','THlib\\player\\player_magicsquare.png')
 LoadImageGroup('player_aura_3D','magicsquare',0,0,256,256,5,5)
@@ -23,6 +25,11 @@ LoadImage('spellbar1','spellbar',4,0,2,2)
 SetImageState('spellbar1','',Color(0xFFFFFFFF))
 LoadImage('spellbar2','player',116,0,2,2)
 SetImageState('spellbar2','',Color(0x77D5CFFF))
+
+-----符卡环参数
+		local ring_radius=180
+		local ring_width=16
+---------
 
 ----Base class of all player characters (abstract)----
 
@@ -53,6 +60,8 @@ function player_class:init()
 	self.protect=120
 	
 	self.graze_c=0
+	self.graze_c_before=0
+	self.ccc_state=1--指代必杀充能状态，1代表不能释放，2代表可以释放，3代表擦弹计数到达最大值
 	self.offset=0.0 --灵击火力减损值
 	self.SpellCardHp=0 --屏幕实际显示的符卡槽耐久数值
 	self.SpellCardHpMax=K_MaxSpell --当前最大耐久值
@@ -66,6 +75,13 @@ function player_class:init()
 	--self.PowerDelay2=-1 --【当出现连射灵击和符卡的情况时，有可能出现两个子机同时在减损中的状态】新方案决定当同时减损时直接去掉第一个在减损的子机
 	self.SpellIndex=0
 	self.SC_name=''
+	
+	self.itemcollect_dist=32 --道具收集范围半径
+	self.ringX_aim,self.ringY_aim=self.x,self.y --用于显示自机符卡环的三组变量
+	self.ringX,self.ringY=self.ringX_aim,self.ringY_aim
+	self.ringR_aim,self.ringR=0,0
+	self.ringW_aim,self.ringW=ring_width,ring_width
+	self.ringWithdraw=false --自机被弹用
 	
 	New(DR_Pin)
 		
@@ -91,7 +107,8 @@ function player_class:frame()
 		KeyStatePre=self.keypre
 	end
 
-
+	local boss_in_nonsc=IsValid(_boss) and (not boss.GetCurrentCard(_boss).is_sc) --判断boss是否处在非符状态
+	
 	--find target
 	if ((not IsValid(self.target)) or (not self.target.colli)) then player_class.findtarget(self) end
 	if not KeyIsDown'shoot' then self.target=nil end
@@ -100,13 +117,13 @@ function player_class:frame()
 	local dy=0
 	local v=self.hspeed
 	if (self.death==0 or self.death>90) and (not self.lock) and not(self.time_stop) then
-		--slow
+		--低速判定
 		if KeyIsDown'slow' then self.slow=1 else self.slow=0 end
-		--shoot and spell
+		--射击和释放符卡
 		if not self.dialog then
 			if KeyIsDown'shoot' and self.nextshoot<=0 then self.class.shoot(self) end
 
---------------------------------------------------------新的符卡设计
+		----新的符卡设计
 			if self.SpellCardHp==0 and self.SpellTimer1>=0 then self.SpellTimer1=-1 self.KeyDownTimer1=0 self.SC_name='' end
             if self.SpellCardHp>0 and self.SpellTimer1>90 then self.SpellCardHp=max(0,self.SpellCardHp-K_SpellDecay) end
 			if self.NextSingleSpell>0 then self.NextSingleSpell=self.NextSingleSpell-1 end
@@ -114,7 +131,7 @@ function player_class:frame()
 			
 			if self.SpellTimer1==90 then self.class.newSpell(self) end
 			
-			if KeyIsDown'spell' and not lstg.var.block_spell then
+			if KeyIsDown'spell' and not lstg.var.block_spell and self.protect==0 then  --新增了无敌期间不能开卡
 			    if self.SpellTimer1>90 then self.KeyDownTimer1=self.KeyDownTimer1+1 end
 				if (lstg.var.bomb>0 and self.death>90) or (self.SpellCardHp==0 and self.nextspell<=0 and self.NextSingleSpell==0 and lstg.var.bomb>0) then
 			        item.PlayerSpell()
@@ -139,7 +156,7 @@ function player_class:frame()
 					New(player_spell_mask,64,64,200,30,60,30)
 					New(bullet_cleaner,player.x,player.y, 270, 60, 90, 1)
 					self.protect=90
-						 
+					
 				    self.death=0
 				    self.nextcollect=90
 					self.NextSingleSpell=180
@@ -154,11 +171,10 @@ function player_class:frame()
 			else if self.KeyDownTimer1>0 then self.KeyDownTimer1=0 end
 			end
 
---------------------------------------------------------
-		else self.nextshoot=15 self.nextspell=30 self.NextSingleSpell=30
-		end
+		------------------------------------------------
+		else self.nextshoot=15 self.nextspell=30 self.NextSingleSpell=30 end
 		
-		--move
+		--自机移动
 		if self.death==0 and not self.lock then
 		if self.slowlock then self.slow=1 end
 		if self.slow==1 then v=self.lspeed end
@@ -183,7 +199,7 @@ function player_class:frame()
 		if self.fire<0 then self.fire=0 end
 		if self.fire>1 then self.fire=1 end
 		
-		-----------------------------------------------  灵力变化
+		--- 灵力变化
 		if self.PowerDelay1>0 then self.PowerDelay1=self.PowerDelay1-1 end
 		--if self.PowerDelay2>0 then self.PowerDelay2=self.PowerDelay2-1 end --【旧方案】
 		
@@ -216,7 +232,10 @@ function player_class:frame()
 		end
 		-----------------------------------------------
 		
-		--灵击
+		--必杀技（以前叫灵击）
+		if self.graze_c>=K_graze_c_min and self.graze_c_before<K_graze_c_min then self.ccc_state=2 New(player_indicator_eff,2)
+		elseif self.graze_c>=K_graze_c_max and self.graze_c_before<K_graze_c_max then self.ccc_state=3 New(player_indicator_eff,3) end
+		self.graze_c_before=self.graze_c
 		if KeyIsDown'special' and (not self.dialog) and self.graze_c>=K_graze_c_min and lstg.var.power>=100 and self.SpellTimer1==-1 then 
 		    self.offset = 100*(1.0 + K_graze_c_k * (self.graze_c - K_graze_c_min))
 			New(bullet_cleaner,player.x,player.y, 125, 20, 45, 1)
@@ -228,19 +247,23 @@ function player_class:frame()
 			self.protect=max(20,self.protect)
 			self.class.ccc(self) -- 释放灵击
 			DR_Pin.pin_shift(K_dr_ccced)   --释放灵击梦现指针增加
+			self.ccc_state=1
 		end
 			
-		--item
+		--道具收集
+		local dist_coe
 		local line = 0.0
-		local distant=1.0
 		if(lstg.var.dr<0) then 
 		    line = K_dr_collectline
-			distant = 1 + K_dr_dist*abs(lstg.var.dr)
+			dist_coe = 1 - K_dr_dist*min(0,lstg.var.dr)  --dr值为负（现实侧）则增大道具收集范围，最大为(1+5*K_dr_dist)，目前为最大两倍
 		else 
 		    line=0
-			distant=1
+			dist_coe=1
 		end
-		
+		--道具收集范围的平滑变化，其中56和24分别对应低速和高速收点基础范围
+		if KeyIsDown'slow' then self.itemcollect_dist=self.itemcollect_dist+0.1*(56*dist_coe-self.itemcollect_dist)
+		else self.itemcollect_dist=self.itemcollect_dist+0.1*(24*dist_coe-self.itemcollect_dist) end
+
 		if self.y>(self.collect_line + line*lstg.var.dr) or (self.SpellTimer1>0 and self.SpellTimer1<=90) then
 			for i,o in ObjList(GROUP_ITEM) do 
 				local flag=false
@@ -260,7 +283,7 @@ function player_class:frame()
 		else
 			if KeyIsDown'slow' then
 				for i,o in ObjList(GROUP_ITEM) do
-					if Dist(self,o)<(48*distant) then
+					if Dist(self,o)<self.itemcollect_dist then
 						if o.attract<3 then
 							o.attract=max(o.attract,3) 
 							o.target=self
@@ -269,7 +292,7 @@ function player_class:frame()
 				end
 			else
 				for i,o in ObjList(GROUP_ITEM) do
-					if Dist(self,o)<(24*distant) then 
+					if Dist(self,o)<self.itemcollect_dist then 
 						if o.attract<3 then
 							o.attract=max(o.attract,3) 
 							o.target=self
@@ -278,17 +301,41 @@ function player_class:frame()
 				end
 			end
 		end
+		
+		--符卡圈参数控制
+		local k=0
+		if self.SpellTimer1>0 and self.SpellCardHp and self.SpellCardHpMax then k=self.SpellCardHp/self.SpellCardHpMax end
+		self.ringX_aim=player.x
+		self.ringY_aim=player.y
+		self.ringR_aim=ring_radius*k+ring_width
+		self.ringW_aim=ring_width*(0.5+0.5*k)
+		self.ringWithdraw=false
 	elseif self.death==90 then                                 --死亡的90帧内发生的事件
 		if self.time_stop then self.death=self.death-1 end
 		item.PlayerMiss(self)
+		
+		if self.SpellTimer1>0 then 
+			self.ringWithdraw=true
+			if boss_in_nonsc then --自机被敌机收卡
+				self.ringR_aim=ring_radius
+				self.ringW_aim=ring_width
+			else
+				self.ringX_aim=player.x
+				self.ringY_aim=player.y
+				self.ringR_aim=0
+				self.ringW_aim=0
+			end
+		end
 		lstg.var.power=max(0,lstg.var.power-50)
 		New(player_death_ef,self.x,self.y,1)
 		New(player_death_ef,self.x,self.y,2)
+
 	elseif self.death==84 then
 		if self.time_stop then self.death=self.death-1 end
-		self.hide=true
+		-- self.hide=true
 		self.support=int(lstg.var.power/100)
 	elseif self.death==65 then
+		if not boss_in_nonsc then self.ringWithdraw=false end --自机收回符卡圈到这儿结束
 		self.deathee={}
 		self.deathee[1]=New(deatheff,self.x,self.y,'first')
 		self.deathee[2]=New(deatheff,self.x,self.y,'second')
@@ -302,8 +349,17 @@ function player_class:frame()
 		New(bullet_deleter,self.x,self.y)
 	elseif self.death<50 and not(self.lock) and not(self.time_stop) then
 		self.y=-176-1.2*self.death
-
 	end
+	if boss_in_nonsc and self.death<90 and self.death>0 then 
+		self.ringX_aim=_boss.x
+		self.ringY_aim=_boss.y
+		if self.death<65 then 
+			local k=(self.death-1)/65
+			self.ringR_aim=ring_radius*k
+			self.ringW_aim=ring_width*k
+		end
+	end
+	
 	--img
 	---加上time_stop的限制来实现图像时停
 	if not(self._wisys) then
@@ -360,38 +416,63 @@ function player_class:frame()
 		KeyStatePre=_temp_keyp
 	end
 	
+	-------符卡环参数的丝滑
+	local dx=self.ringX-self.ringX_aim
+	local dy=self.ringY-self.ringY_aim
+	local dr=self.ringR-self.ringR_aim
+	local dw=self.ringW-self.ringW_aim
+	if abs(dx)<0.5 	then self.ringX=self.ringX_aim else self.ringX=self.ringX+(self.ringX_aim-self.ringX)*0.15 end --符卡圈每帧都会向自机靠近7%，如果距离只有0.5则直接贴脸
+	if abs(dy)<0.5 	then self.ringY=self.ringY_aim else self.ringY=self.ringY+(self.ringY_aim-self.ringY)*0.15 end
+	if abs(dr)<1 	then self.ringR=self.ringR_aim else self.ringR=self.ringR+(self.ringR_aim-self.ringR)*0.07 end
+	if abs(dw)<0.05 then self.ringW=self.ringW_aim else self.ringW=self.ringW+(self.ringW_aim-self.ringW)*0.07 end
+	
 end
 
 function player_class:render()
+	SetImageState('player_indicator'..self.ccc_state,'',Color(0x80FFFFFF))
+	Render('player_indicator'..self.ccc_state,self.x,self.y,self.ani*0.5,self.itemcollect_dist/112)
+	-- misc.Renderhp(self.x,self.y,0,360,self.itemcollect_dist,self.itemcollect_dist+2,32,1)	 --测试用
 	self._wisys:render()--by OLC，自机行走图系统
 	
-	if self.SpellCardHp>0 then
-	    for i=1,25 do SetImageState('player_aura_3D'..i,'mul+add',Color(255,255,255,255)) end
-	    Render('player_aura_3D'..self.ani%25+1,self.x,self.y,self.ani*0.75,0.3,0.3+0.05*sin(90+self.ani*0.75)) --名字，中心点xy，旋转度，xy缩放，z轴深度默认0.5
-		
+	if self.SpellCardHp>0 or self.ringWithdraw then
+		-- for i=1,25 do SetImageState('player_aura_3D'..i,'mul+add',Color(255,255,255,255)) end
+	    -- Render('player_aura_3D'..self.ani%25+1,self.x,self.y,self.ani*0.75,0.6,0.6+0.05*sin(90+self.ani*0.75)) --名字，中心点xy，旋转度，xy缩放，z轴深度默认0.5
+	    local alpha=255* min(1,(self.ringR/ring_radius)*2) --也就是说自机符卡血量低于50%之后符卡环会越来越透明
+			for i=1,16 do SetImageState('playerring1'..i,'mul+add',Color(alpha,255,255,255)) end
+			for i=1,16 do SetImageState('playerring2'..i,'mul+add',Color(alpha,255,255,255)) end
 		if self.SpellTimer1<=90 then
-		    for i=1,16 do SetImageState('playerring1'..i,'mul+add',Color(255,255,255,255)) end
-		    for i=1,16 do SetImageState('playerring2'..i,'mul+add',Color(255,255,255,255)) end
-		    misc.RenderRing('playerring1',self.x,self.y,self.SpellTimer1*2+100*sin(self.SpellTimer1*2),self.SpellTimer1*2+100*sin(self.SpellTimer1*2)+16, self.ani*3,32,16)
-		    misc.RenderRing('playerring2',self.x,self.y,90+self.SpellTimer1*1,-180+self.SpellTimer1*4-16,-self.ani*3,32,16)
+			local k=self.SpellTimer1/90
+		    misc.RenderRing('playerring1',self.x,self.y,
+				ring_radius*k+ring_radius*0.75*sin(180*k),
+				ring_radius*k+ring_radius*0.75*sin(180*k)+ring_width,
+				self.ani*3,32,16)
+		    misc.RenderRing('playerring2',self.x,self.y,
+				ring_radius*0.5+ring_radius*0.5*k,
+				-ring_radius+ring_radius*2*k-ring_width,
+				-self.ani*3,32,16)
+			self.ringR=ring_radius--强行锁定为最大值，以便之后平滑过渡
 		else
-		    if self.SpellTimer1<=180 then
-			    for i=1,16 do SetImageState('playerring1'..i,'mul+add',Color(255-(self.SpellTimer1-90),255,255,255)) end
-		        for i=1,16 do SetImageState('playerring2'..i,'mul+add',Color(255-(self.SpellTimer1-90),255,255,255)) end
-		        misc.RenderRing('playerring1',self.x,self.y,180-(self.SpellTimer1-90)*130/90,180-(self.SpellTimer1-90)*130/90+16-(self.SpellTimer1-90)/10, self.ani*3*self.SpellTimer1/90,32,16)
-				misc.RenderRing('playerring2',self.x,self.y,180-(self.SpellTimer1-90)*130/90,180-(self.SpellTimer1-90)*130/90-16+(self.SpellTimer1-90)/10, self.ani*3*self.SpellTimer1/90,32,16)
+			--这里完全由那些参数控制
+			misc.RenderRing('playerring1',self.ringX,self.ringY,self.ringR,self.ringR+self.ringW, self.ani*3*2,32,16)
+			misc.RenderRing('playerring2',self.ringX,self.ringY,self.ringR,self.ringR-self.ringW, self.ani*3*2,32,16)		
+			-- if self.SpellTimer1<=180 then
+			    -- for i=1,16 do SetImageState('playerring1'..i,'mul+add',Color(255-(self.SpellTimer1-90),255,255,255)) end
+		        -- for i=1,16 do SetImageState('playerring2'..i,'mul+add',Color(255-(self.SpellTimer1-90),255,255,255)) end
+		        -- misc.RenderRing('playerring1',self.x,self.y,180-(self.SpellTimer1-90)*130/90,180-(self.SpellTimer1-90)*130/90+16-(self.SpellTimer1-90)/10, self.ani*3*self.SpellTimer1/90,32,16)
+				-- misc.RenderRing('playerring2',self.x,self.y,180-(self.SpellTimer1-90)*130/90,180-(self.SpellTimer1-90)*130/90-16+(self.SpellTimer1-90)/10, self.ani*3*self.SpellTimer1/90,32,16)
 				
-			    --misc.RenderRing('playerring2',self.x,self.y,(1000-self.SpellTimer1)/(1000-90)*180,(1000-self.SpellTimer1)/(1000-90)*180-16,-self.ani*3,32,16)
-			else
-			    misc.RenderRing('playerring1',self.x,self.y,50,57, self.ani*3*2,32,16)
-				misc.RenderRing('playerring2',self.x,self.y,50,43, self.ani*3*2,32,16)
-			end
+			    -- --misc.RenderRing('playerring2',self.x,self.y,(1000-self.SpellTimer1)/(1000-90)*180,(1000-self.SpellTimer1)/(1000-90)*180-16,-self.ani*3,32,16)
+			-- else
+			    -- misc.RenderRing('playerring1',self.x,self.y,50,57, self.ani*3*2,32,16)
+				-- misc.RenderRing('playerring2',self.x,self.y,50,43, self.ani*3*2,32,16)
+			-- end
 		end
+
         Renderspellbar(self.x,self.y,90,360,60,64,360,1)
 		Renderspellhp(self.x,self.y,90,360*self.SpellCardHp/self.SpellCardHpMax,60,64,360*self.SpellCardHp/self.SpellCardHpMax+2,1)
 		Render('base_spell_hp',self.x,self.y,0,0.548,0.548)
         Render('base_spell_hp',self.x,self.y,0,0.512,0.512)
-		Render('life_node',self.x-63*cos(K_SpellCost/self.SpellCardHpMax),self.y+63*sin(K_SpellCost/self.SpellCardHpMax),K_SpellCost/self.SpellCardHpMax-90,1.1)
+		-- Render('life_node',self.x-63*cos(K_SpellCost/self.SpellCardHpMax),self.y+63*sin(K_SpellCost/self.SpellCardHpMax),K_SpellCost/self.SpellCardHpMax-90,1.1)
 	end
 end
 
@@ -676,6 +757,26 @@ function deatheff:render()
 	end
 end
 ---
+---指示必杀充能
+player_indicator_eff=Class(object)
+
+function player_indicator_eff:init(index)
+	self.img='player_indicator'..index
+	self.layer=LAYER_PLAYER+1
+	self.group=GROUP_GHOST
+	self.x=player.x self.y=player.y
+end
+function player_indicator_eff:frame() 
+	if self.timer==60 then RawDel(self) end
+	self.scale=1+self.timer/60
+	self.x=player.x self.y=player.y
+end
+function player_indicator_eff:render() 	
+	SetImageState(self.img,'mul+add',Color(255*(1-self.timer/60),255,255,255))
+	Render(self.img,self.x,self.y,0,self.scale*player.itemcollect_dist/122) 
+end
+
+
 --列表里的三项分别代表被展示名称，类名和类的name值
 player_list={
 	{'Hakurei Reimu typeA','reimu_playerA','ReimuA'},
