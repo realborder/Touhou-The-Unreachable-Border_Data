@@ -87,14 +87,14 @@ end
 local patch="Thlib\\enemy\\"
 
 LoadTexture('boss',patch..'boss.png')
-LoadImageGroup('bossring1','boss',80,0,16,8,1,16)
+LoadImageGroup('bossring1','boss',80*4,0,16*4,8*4,1,16)
 for i=1,16 do SetImageState('bossring1'..i,'mul+add',Color(0x80FFFFFF)) end
-LoadImageGroup('bossring2','boss',48,0,16,8,1,16)
+LoadImageGroup('bossring2','boss',48*4,0,16*4,8*4,1,16)
 for i=1,16 do SetImageState('bossring2'..i,'mul+add',Color(0x80FFFFFF)) end
-LoadImage('spell_card_ef','boss',96,0,16,128)
-LoadImage('hpbar','boss',116,0,8,128)
+LoadImage('spell_card_ef','boss',96*4,0,16*4,128*4)
+LoadImage('hpbar','boss',116*4,0,8*4,128*4)
 --LoadImage('hpbar1','boss',116,0,2,2)
-LoadImage('hpbar2','boss',116,0,2,2)
+LoadImage('hpbar2','boss',116*4,0,2*4,2*4)
 SetImageCenter('hpbar',0,0)
 LoadTexture('undefined',patch..'undefined.png')
 LoadImage('undefined','undefined',0,0,128,128,32,32)
@@ -109,6 +109,57 @@ SetImageState('hpbar2','',Color(0x77D5CFFF))
 LoadTexture('magicsquare',patch..'eff_magicsquare.png')
 LoadImageGroup('boss_aura_3D','magicsquare',0,0,256,256,5,5)
 LoadImageFromFile('dialog_box',patch..'dialog_box.png')
+
+------对话气泡，来自olc
+LoadTexture("dialog_balloon", patch .. "dialog_balloon.png")
+local _head = {
+    { 108, 0, 90, 96 },
+    { 108, 96, 90, 112 },
+    { 108, 231, 90, 96 },
+    { 108, 343, 90, 96 },
+    { 108, 448, 90, 128 },
+    { 108, 576, 90, 144 },
+    { 108, 743, 90, 128 },
+    { 108, 887, 90, 128 }
+}
+--1-4用于单行文字，5-8用于多行文字（2行）
+for i = 1, 4 do
+    LoadImage("balloonHead" .. i, "dialog_balloon", --40
+            _head[i][1], _head[i][2], 90, _head[i][4])
+
+    LoadImage("balloonBody" .. i, "dialog_balloon", --32
+            0, _head[i][2], 32, _head[i][4])
+
+    LoadImage("balloonTail" .. i, "dialog_balloon", --4
+            32, _head[i][2], 64, _head[i][4])
+    local yy = 0
+    if i > 2 then
+        yy = -7
+    end
+    SetImageCenter("balloonHead" .. i, 36, yy)
+    SetImageCenter("balloonBody" .. i, 0, yy)
+    SetImageCenter("balloonTail" .. i, 0, yy)
+end
+for i = 5, 8 do
+    LoadImage("balloonHead" .. i, "dialog_balloon",
+            _head[i][1], _head[i][2], 90, _head[i][4])
+
+    LoadImage("balloonBody" .. i, "dialog_balloon",
+            0, _head[i][2], 32, _head[i][4])
+
+    LoadImage("balloonTail" .. i, "dialog_balloon",
+            32, _head[i][2], 64, _head[i][4])
+    local yy = 0
+    if i > 6 then
+        yy = -7
+    end
+    SetImageCenter("balloonHead" .. i, 36, yy)
+    SetImageCenter("balloonBody" .. i, 0, yy)
+    SetImageCenter("balloonTail" .. i, 0, yy)
+end
+LoadTTF("balloon_font", patch .. "balloon_font.ttf", 32)
+---------
+
 
 LoadImage('hpbar3','lifebar',4,0,2,2)
 SetImageState('hpbar3','',Color(255,255,100,100))

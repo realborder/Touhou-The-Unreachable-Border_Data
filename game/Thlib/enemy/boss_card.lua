@@ -49,12 +49,21 @@ function boss.card:frame()
 		c.virtualhp=max(0,c.hploss-c.speed_kill_minus)
 		c.hplen=c.virtualhp/self.maxhp
 	end
+	if self.timer >= 90 then --符卡圈的平滑移动
+		local dx=self.x-self.ringX
+		local dy=self.y-self.ringY
+		if abs(dx)<0.5 then self.ringX=self.x else self.ringX=self.ringX+(self.x-self.ringX)*0.07 end --符卡圈每帧都会向boss靠近7%，如果距离只有0.5则直接贴脸
+		if abs(dy)<0.5 then self.ringY=self.y else self.ringY=self.ringY+(self.y-self.ringY)*0.07 end
+	end
 end
 
 function boss.card:render()
     local c = boss.GetCurrentCard(self)
     local alpha = self.aura_alpha or 255
     local timer = self.timer
+	local ringWidth = 20 --符卡环的宽度
+	local ringMaxRadius = 240 --符卡环最大半径
+	local ringMinRadius = 45
     if c and c.is_sc and c.t1 ~= c.t3 then
         for i = 1, 16 do
             SetImageState('bossring1'..i, 'mul+add', Color(alpha, 255, 255, 255))
@@ -70,8 +79,9 @@ function boss.card:render()
                     SetImageState('bossring2'..i, 'mul+add', Color(alpha, 255, 255, 255))
                 end
             end
-            misc.RenderRing('bossring1', self.x, self.y, timer * 2 + 270 * sin(timer * 2), timer * 2 + 270 * sin(timer * 2) + 16, self.ani * 3, 32, 16)
-            misc.RenderRing('bossring2', self.x, self.y, 90 + timer * 1, -180 + timer * 4 - 16, -self.ani * 3, 32, 16)
+            misc.RenderRing('bossring1', self.x, self.y, ringMaxRadius*timer/90 + ringMaxRadius * sin(timer * 2)+ringMinRadius, ringMaxRadius*timer/90 + ringMaxRadius * sin(timer * 2) + ringWidth+ringMinRadius, self.ani * 5, 32, 16)
+			timer=90*sin(timer)
+            misc.RenderRing('bossring2', self.x, self.y, ringMaxRadius*0.25 + ringMaxRadius*0.75*timer/90+ringMinRadius, -0.5*ringMaxRadius + 1.5*ringMaxRadius*timer/90 - ringWidth+ringMinRadius, -self.ani * 5, 32, 16)
 			self.ringX=self.x self.ringY=self.y
         else
             if self.fxr and self.fxg and self.fxb then
@@ -83,13 +93,9 @@ function boss.card:render()
                     SetImageState('bossring2'..i, 'mul+add', Color( alpha, 255, 255, 255))
                 end
             end
-			local dx=self.x-self.ringX
-			local dy=self.y-self.ringY
-			if dx~=0 then self.ringX=self.ringX+sign(dx)*min(0.3,abs(dx)) end
-			if dy~=0 then self.ringY=self.ringY+sign(dy)*min(0.3,abs(dy)) end
             local t = c.t3
-            misc.RenderRing('bossring1', self.ringX, self.ringY, (t - timer) / (t - 90) * 180, (t - timer) / (t - 90) * 180 + 16, self.ani * 3, 32, 16)
-            misc.RenderRing('bossring2', self.ringX, self.ringY, (t - timer) / (t - 90) * 180, (t - timer) / (t - 90) * 180 - 16, -self.ani * 3, 32, 16)
+            misc.RenderRing('bossring1', self.ringX, self.ringY, (t - timer) / (t - 90) * ringMaxRadius+ringMinRadius, (t - timer) / (t - 90) * ringMaxRadius + ringWidth+ringMinRadius, self.ani * 5, 32, 16)
+            misc.RenderRing('bossring2', self.ringX, self.ringY, (t - timer) / (t - 90) * ringMaxRadius+ringMinRadius, (t - timer) / (t - 90) * ringMaxRadius - ringWidth+ringMinRadius, -self.ani * 5, 32, 16)
         end
     end
 end

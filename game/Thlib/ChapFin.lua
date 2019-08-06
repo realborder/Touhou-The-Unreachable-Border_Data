@@ -1,4 +1,4 @@
-LoadImageFromFile('chapFin','THlib\\chapFin.png')
+	LoadImageFromFile('chapFin','THlib\\chapFin.png')
 --用于结算点的obj，奖励chapter分数，结算残机和符卡，以及重置计数
 ChapFin=Class(object)
 function ChapFin:init(isInboss)
@@ -17,7 +17,8 @@ function ChapFin:init(isInboss)
 end
 
 function ChapFin:frame()
-	if self.timer==30 then
+	if ext.sc_pr then RawDel(self) end --如果在符卡练习那就跳过，我知道这种写法很蠢，但是要去每张卡下面改太麻烦了
+	if self.timer==0 then
 		DR_Pin.reset()
 		if not self.flag then ClearAllEnemyAndBullet() end --击破boss一个阶段自带消弹了
 		--残机结算

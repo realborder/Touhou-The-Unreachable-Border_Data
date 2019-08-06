@@ -34,13 +34,14 @@ function item:render()
 end
 
 function item:frame()
-	local player=self.target
+	-- local player=self.target
 	if self.timer<24 then
 		self.rot=self.rot+45
 		self.hscale=(self.timer+25)/48
 		self.vscale=self.hscale
 		if self.timer==22 then self.vy=min(self.v,2) self.vx=0 end
 	elseif self.attract>0 then
+		if not IsValid(player) then error('I have a question') end
 		local a=Angle(self,player)
 		self.vx=self.attract*cos(a)+player.dx*0.5
 		self.vy=self.attract*sin(a)+player.dy*0.5
@@ -163,7 +164,7 @@ function item_faith_minor:init(x,y)
 end
 function item_faith_minor:frame()
 	local player=self.target
-	if player.death>80 and player.death<90 then
+	if player.death>50 and player.death<90 then
 		self.flag=0
 		self.attract=0
 	end
@@ -211,7 +212,7 @@ function item_point:collect()
 	end
 end
 
-function item.DropItem(x,y,drop)
+function item.DropItem(x,y,drop,attract)
 	local m
 	if lstg.var.power==400 then
 		m = drop[1]
@@ -227,30 +228,30 @@ function item.DropItem(x,y,drop)
 	if drop[1] >= 400 then
 		local r2=sqrt(ran:Float(1,4))*r
 		local a=ran:Float(0,360)
-		New(item_power_full,x+r2*cos(a),y+r2*sin(a))
+		last=New(item_power_full,x+r2*cos(a),y+r2*sin(a)) if attract then last.attract=8 end
 	else
 		drop[4] = drop[1] / 100
 		drop[1] = drop[1] % 100
 		for i=1,drop[4] do
 			local r2=sqrt(ran:Float(1,4))*r
 			local a=ran:Float(0,360)
-			New(item_power_large,x+r2*cos(a),y+r2*sin(a))
+			last=New(item_power_large,x+r2*cos(a),y+r2*sin(a)) if attract then last.attract=8 end
 		end
 		for i=1,drop[1] do
 			local r2=sqrt(ran:Float(1,4))*r
 			local a=ran:Float(0,360)
-			New(item_power,x+r2*cos(a),y+r2*sin(a))
+			last=New(item_power,x+r2*cos(a),y+r2*sin(a)) if attract then last.attract=8 end
 		end
 	end
 	for i=1,drop[2] do
 		local r2=sqrt(ran:Float(1,4))*r
 		local a=ran:Float(0,360)
-		New(item_faith,x+r2*cos(a),y+r2*sin(a))
+		last=New(item_faith,x+r2*cos(a),y+r2*sin(a)) if attract then last.attract=8 end
 	end
 	for i=1,drop[3] do
 		local r2=sqrt(ran:Float(1,4))*r
 		local a=ran:Float(0,360)
-		New(item_point,x+r2*cos(a),y+r2*sin(a))
+		last=New(item_point,x+r2*cos(a),y+r2*sin(a)) if attract then last.attract=8 end
 	end
 end
 
