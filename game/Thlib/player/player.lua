@@ -1,5 +1,8 @@
 LoadImageFromFile('graze_par','THlib\\player\\graze_par.png')
+LoadImageFromFile('player_death_par','THlib\\player\\player_death_par.png')
 LoadPS('player_death_ef','THlib\\player\\player_death_ef.psi','parimg1')
+LoadPS('player_death_ef1','THlib\\player\\player_death_ef1.psi','player_death_par')
+LoadPS('player_death_ef2','THlib\\player\\player_death_ef2.psi','player_death_par')
 LoadPS('graze','THlib\\player\\graze.psi','graze_par')
 LoadImageFromFile('player_spell_mask','THlib\\player\\spellmask.png')
 
@@ -7,9 +10,9 @@ LoadTexture('magicsquare','THlib\\player\\player_magicsquare.png')
 LoadImageGroup('player_aura_3D','magicsquare',0,0,256,256,5,5)
 
 LoadTexture('player','THlib\\player\\player.png')
-LoadImageGroup('playerring1','player',80,0,16,8,1,16)
+LoadImageGroup('playerring1','player',80*4,0,16*4,8*4,1,16)
 for i=1,16 do SetImageState('playerring1'..i,'mul+add',Color(0x80FFFFFF)) end
-LoadImageGroup('playerring2','player',48,0,16,8,1,16)
+LoadImageGroup('playerring2','player',48*4,0,16*4,8*4,1,16)
 for i=1,16 do SetImageState('playerring2'..i,'mul+add',Color(0x80FFFFFF)) end
 
 LoadImageFromFile('base_spell_hp','THlib\\player\\ring00.png')
@@ -279,14 +282,16 @@ function player_class:frame()
 		if self.time_stop then self.death=self.death-1 end
 		item.PlayerMiss(self)
 		lstg.var.power=max(0,lstg.var.power-50)
-		self.deathee={}
-		self.deathee[1]=New(deatheff,self.x,self.y,'first')
-		self.deathee[2]=New(deatheff,self.x,self.y,'second')
-		New(player_death_ef,self.x,self.y)
+		New(player_death_ef,self.x,self.y,1)
+		New(player_death_ef,self.x,self.y,2)
 	elseif self.death==84 then
 		if self.time_stop then self.death=self.death-1 end
 		self.hide=true
 		self.support=int(lstg.var.power/100)
+	elseif self.death==65 then
+		self.deathee={}
+		self.deathee[1]=New(deatheff,self.x,self.y,'first')
+		self.deathee[2]=New(deatheff,self.x,self.y,'second')
 	elseif self.death==50 then
 		if self.time_stop then self.death=self.death-1 end
 		self.x=0
@@ -382,8 +387,6 @@ function player_class:render()
 				misc.RenderRing('playerring2',self.x,self.y,50,43, self.ani*3*2,32,16)
 			end
 		end
-		
-		
         Renderspellbar(self.x,self.y,90,360,60,64,360,1)
 		Renderspellhp(self.x,self.y,90,360*self.SpellCardHp/self.SpellCardHpMax,60,64,360*self.SpellCardHp/self.SpellCardHpMax+2,1)
 		Render('base_spell_hp',self.x,self.y,0,0.548,0.548)
@@ -622,12 +625,12 @@ end
 
 player_death_ef=Class(object)
 
-function player_death_ef:init(x,y)
-	self.x=x self.y=y self.img='player_death_ef' self.layer=LAYER_PLAYER+50
+function player_death_ef:init(x,y,i)
+	self.x=x self.y=y self.img='player_death_ef' self.layer=LAYER_PLAYER+50 if i then self.img='player_death_ef'..i end
 end
 
 function player_death_ef:frame()
-	if self.timer==4 then ParticleStop(self) end
+	if self.timer==25 then ParticleStop(self) end
 	if self.timer==60 then Del(self) end
 end
 
@@ -673,17 +676,16 @@ function deatheff:render()
 	end
 end
 ---
+--列表里的三项分别代表被展示名称，类名和类的name值
 player_list={
-	{'Hakurei Reimu','reimu_player','Reimu'},
-	{'Kirisame Marisa','marisa_player','Marisa'},
-	{'Izayoi Sakuya','sakuya_player','Sakuya'},
-	{'shababa','shababa_player','Shababa'}
+	{'Hakurei Reimu typeA','reimu_playerA','ReimuA'},
+	{'Hakurei Reimu typeB','reimu_playerB','ReimuB'}--[[,
+	{'Kirisame Marisa typeA','marisa_playerA','MarisaA'},
+	{'Kirisame Marisa typeB','marisa_playerB','MarisaB'}]]
 }
 
 Include'THlib\\player\\reimu\\reimu.lua'
 Include'THlib\\player\\marisa\\marisa.lua'
-Include'THlib\\player\\sakuya\\sakuya.lua'
-Include'THlib\\player\\shababa\\shababa_player.lua'
 
 ----------------------------------------
 ---加载自机
