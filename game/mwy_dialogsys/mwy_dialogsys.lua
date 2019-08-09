@@ -17,7 +17,7 @@ function dialogsys.init()
 	dialogsys.data={}
 	for k,v in pairs(STAGE) do
 		local ch,dia=lstg.DoFile(PATH..v..'\\_init.lua')
-		if ch or dia then dialogsys.data[v]={}
+		if ch or dia then dialogsys.data[v]={} end
 		if ch then dialogsys.data[v].character={} end
 		for k,v in pairs(ch) do dialogsys.data[v].character[k]=v end
 		if dia then dialogsys.data[v].dialog={} end
