@@ -224,11 +224,11 @@ function kill_timer:render()
     SetViewMode'world'
     local alpha=self.alph
     SetFontState('time','',Color(alpha*255,0,0,0))
-    RenderText('time',string.format("%.2f", self.t/60)..'s',41,self.y-1,0.5,'centerpoint')
+    RenderText('time',string.format("%.2f", self.t/60)..'s',41,self.y-11,1,'centerpoint')
     SetFontState('time','',Color(alpha*255,200,200,200))
-    RenderText('time',string.format("%.2f", self.t/60)..'s',40,self.y,0.5,'centerpoint')
+    RenderText('time',string.format("%.2f", self.t/60)..'s',40,self.y-10,1,'centerpoint')
     SetImageState('kill_time','',Color(alpha*255,255,255,255))
-    Render('kill_time',-40,self.y-2,0.6,0.6)
+    Render('kill_time',-40,self.y-12,1,1)
 end
 
 hinter_bonus=Class(object)
@@ -241,9 +241,10 @@ function hinter_bonus:init(img,size,x,y,t1,t2,fade,bonus)
     self.fade=fade
     self.group=GROUP_GHOST
     self.layer=LAYER_TOP
-    self.size=size
+    self.size=size*2
     self.t=0
     self.hscale=self.size
+    self.vscale=self.size
     self.bonus=bonus
 end
 function hinter_bonus:frame()
@@ -262,15 +263,87 @@ function hinter_bonus:render()
         SetImageState(self.img,'',Color(self.t*255,255,255,255))
         self.vscale=self.size
         SetFontState('score3','',Color(self.t*255,255,255,255))
-        RenderScore('score3',self.bonus,self.x+1,self.y-41,0.7,'centerpoint')
+        RenderScore('score3',self.bonus,self.x+1,self.y-55,0.7*2,'centerpoint')
         object.render(self)
     else
         SetImageState(self.img,'',Color(0xFFFFFFFF))
         self.vscale=self.t*self.size
         SetFontState('score3','',Color(255,255,255,255))
-        RenderScore('score3',self.bonus,self.x+1,self.y-41,0.7,'centerpoint')
+        RenderScore('score3',self.bonus,self.x+1,self.y-55,0.7*2,'centerpoint')
         object.render(self)
     end
+end
+
+--符卡环收回效果
+	local ringWidth = 20 --符卡环的宽度
+	local ringMaxRadius = 240 --符卡环最大半径
+	local ringMinRadius = 45
+--专门用于显示符卡环后续动作的obj
+boss_card_ring=Class(object)
+function boss_card_ring:init(b,getcard) --利用ringx和y以及radius控制环的渲染
+	local c=boss.GetCurrentCard(b)
+	self.x,self.y=b.x,b.y
+	self.bx,self.by=b.x,b.y
+	self.img='leaf'
+	if IsValid(b) then self.boss=b end
+	self.group=GROUP_GHOST
+	self.layer=b.layer or LAYER_BG+1
+	self.bound=false
+	self.getcard=getcard
+	self.radius= (c.t3 - b.timer) / (c.t3 - 90)*ringMaxRadius
+	self.timerA=b.ani or 1
+	self.ringX,self.ringY=self.boss.ring,self.boss.ringY or self.x,self.y
+	if b.fxr and b.fxg and b.fxb then self.fxr,self.fxg,self.fxb=b.fxr,b.fxg,b.fxb end
+	if b.aura_alpha then self.aura_alpha=b.aura_alpha end
+	
+end
+
+function boss_card_ring:frame()
+	self.timerA=self.timerA+1
+	if self.getcard then
+		if self.timer<=45 then
+			local t=sin(self.timer*2)
+			self.ringX,self.ringY=self.bx+(player.x-self.bx)*t,self.y+(player.y-self.by)*t
+			self.radius=min(ringMaxRadius,self.radius+1/45*ringMaxRadius)
+		elseif self.timer<=90 then
+			self.ringX,self.ringY=player.x,player.y
+			self.radius=self.radius-1/25*ringMaxRadius
+			if self.timer>=68 then self.aura_alpha=max(0,self.aura_alpha-255/20) end
+		else RawDel(self)
+		end
+	else
+		if IsValid(self.boss) then self.x,self.y=self.boss.x,self.boss.y self.ringX,self.ringY=self.boss.ringX,self.boss.ringY 
+		else 
+			local dx=self.x-self.ringX
+			local dy=self.y-self.ringY
+			if abs(dx)<0.5 then self.ringX=self.x else self.ringX=self.ringX+(self.x-self.ringX)*0.07 end --符卡圈每帧都会向boss靠近7%，如果距离只有0.5则直接贴脸
+			if abs(dy)<0.5 then self.ringY=self.y else self.ringY=self.ringY+(self.y-self.ringY)*0.07 end
+		end
+		self.radius=max(0,self.radius-1/45*ringMaxRadius)
+		if self.timer==45 then RawDel(self) end
+	end
+end
+
+function boss_card_ring:render()
+	if not self.getcard then if IsValid(self.boss) then self.boss.radius=self.radius self.boss.timerA=self.timerA self=self.boss  end end
+	local alpha = self.aura_alpha or 255
+	local timer = self.timer
+	for i = 1, 16 do
+		SetImageState('bossring1'..i, 'mul+add', Color(alpha, 255, 255, 255))
+	end
+	local offset = timer / 90
+	if self.fxr and self.fxg and self.fxb then
+		for i = 1, 16 do
+			SetImageState('bossring2'..i, 'mul+add', Color(alpha, self.fxr *offset, self.fxg *offset, self.fxb *offset))
+		end
+	else
+		for i = 1, 16 do
+			SetImageState('bossring2'..i, 'mul+add', Color(alpha, 255, 255, 255))
+		end
+	end
+	misc.RenderRing('bossring1', self.ringX, self.ringY,self.radius+ringMinRadius, self.radius + ringWidth+ringMinRadius, self.timerA * 5, 32, 16)
+	misc.RenderRing('bossring2', self.ringX, self.ringY,self.radius+ringMinRadius, self.radius - ringWidth+ringMinRadius, -self.timerA * 5, 32, 16)
+
 end
 
 ----------------------------------------

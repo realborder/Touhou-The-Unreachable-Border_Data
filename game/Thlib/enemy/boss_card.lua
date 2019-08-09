@@ -6,6 +6,10 @@
 --boss card
 --~细节：大多数时候只会用到New、init、render和del，其中init、del在编辑器中重载
 
+local ringWidth = 20 --符卡环的宽度
+local ringMaxRadius = 240 --符卡环最大半径
+local ringMinRadius = 45
+
 boss.card = {}
 
 function boss.card.New(name, t1, t2, t3, hp, drop, is_extra)
@@ -57,13 +61,10 @@ function boss.card:frame()
 	end
 end
 
-function boss.card:render()
+function boss.card:render() 
     local c = boss.GetCurrentCard(self)
     local alpha = self.aura_alpha or 255
     local timer = self.timer
-	local ringWidth = 20 --符卡环的宽度
-	local ringMaxRadius = 240 --符卡环最大半径
-	local ringMinRadius = 45
     if c and c.is_sc and c.t1 ~= c.t3 then
         for i = 1, 16 do
             SetImageState('bossring1'..i, 'mul+add', Color(alpha, 255, 255, 255))
@@ -100,7 +101,7 @@ function boss.card:render()
     end
 end
 
-function boss.card:init() end
+function boss.card:init()  end
 
 function boss.card:del()
 	local c = boss.GetCurrentCard(self)
@@ -108,3 +109,5 @@ function boss.card:del()
 	c.timer=0
 	c.speed_kill_minus=0
 end
+
+
