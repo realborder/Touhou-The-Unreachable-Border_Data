@@ -46,7 +46,8 @@ end
 ----------------------------------------
 ---extra game loop
 
-function GameStateChange() end
+function GameStateChange()
+	ResetWorldOffset() end
 
 function DoFrameEx()
 	if ext.replay.IsReplay() then

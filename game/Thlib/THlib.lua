@@ -32,3 +32,5 @@ Include'THlib\\TUO\\DR_pin.lua'
 
 Include'THlib\\menu\\base_menu.lua'
 Include'THlib\\menu\\special_menu.lua'
+
+Include("mwy_player\\mwy_player.lua")
