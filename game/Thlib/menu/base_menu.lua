@@ -25,6 +25,7 @@ function base_menu:init(name,title,options,pre_menu,has_logo)
 	self.choose=1
 	self.changed=false --更换选项
 	self.choosed=false --选中选项(包括z和x)
+	self.pre_choose=1
 	
 	self.change_delay=10
 	self.change_timer=0
@@ -46,12 +47,35 @@ function base_menu:frame()
 	if self.change_timer>0 then self.change_timer=self.change_timer-1 end
 	
 	if self.choose_timer==-1 and self.change_timer==0 and self.init_timer>30 then
-		if lstg.GetKeyState(KEY.UP) then self.choose=self.choose-1 self.changed=true self.change_timer=self.change_delay end
-		if lstg.GetKeyState(KEY.DOWN) then self.choose=self.choose+1 self.changed=true self.change_timer=self.change_delay end
-		if self.choose<1 then self.choose=#self.exani_names end
-		if self.choose>#self.exani_names then self.choose=1 end
-		if lstg.GetKeyState(KEY.Z) then self.choosed=true self.choose_timer=self.choose_delay end
-		if lstg.GetKeyState(KEY.X) then self.choosed=true self.change_timer=self.change_delay end
+		if lstg.GetKeyState(KEY.UP) then
+			self.pre_choose=self.choose
+			self.choose=self.choose-1
+			if self.choose<1 then self.choose=#self.exani_names end
+			while(not self.enables[self.choose])
+			do
+				self.choose=self.choose-1
+				if self.choose<1 then self.choose=#self.exani_names end
+			end
+			self.changed=true
+			self.change_timer=self.change_delay
+		elseif lstg.GetKeyState(KEY.DOWN) then
+			self.pre_choose=self.choose
+			self.choose=self.choose+1
+			if self.choose>#self.exani_names then self.choose=1 end
+			while(not self.enables[self.choose])
+			do
+				self.choose=self.choose+1
+				if self.choose>#self.exani_names then self.choose=1 end
+			end
+			self.changed=true
+			self.change_timer=self.change_delay
+		elseif lstg.GetKeyState(KEY.Z) then
+			self.choosed=true
+			self.choose_timer=self.choose_delay
+		elseif lstg.GetKeyState(KEY.X) then
+			self.choosed=true
+			self.change_timer=self.change_delay
+		end
 	end
 end
 
@@ -91,16 +115,8 @@ function base_menu:render()
 			Print('执行'..self.exani_names[self.choose]..'的activate')
 			exani_player_manager.ExecuteExaniPredefine(play_manager,self.exani_names[self.choose],action)
 		end --else action='ignite_unable' 
-		local pos=self.choose
-		if lstg.GetKeyState(KEY.UP) then
-			pos=self.choose+1
-			if pos>#self.exani_names then pos=1 end
-		elseif lstg.GetKeyState(KEY.DOWN) then
-			pos=self.choose-1
-			if pos<1 then pos=#self.exani_names end
-		end
-		Print('执行'..self.exani_names[pos]..'的deactivate')
-		if self.enables[pos] then exani_player_manager.ExecuteExaniPredefine(play_manager,self.exani_names[pos],'deactivate') end
+		Print('执行'..self.exani_names[self.pre_choose]..'的deactivate')
+		if self.enables[self.pre_choose] then exani_player_manager.ExecuteExaniPredefine(play_manager,self.exani_names[self.pre_choose],'deactivate') end
 		self.changed=false
 	end
 	
