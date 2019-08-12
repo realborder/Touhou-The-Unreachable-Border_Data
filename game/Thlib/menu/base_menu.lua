@@ -58,8 +58,6 @@ end
 --理论上这些应该都要放在frame里,因为执行预定义的函数并不直接涉及渲染函数
 --但是为了看起来清楚，就放到render里了
 function base_menu:render()
-	if self.locked then return end
-	
 	if self.init_timer==30 then
 		if self.title~='' then exani_player_manager.ExecuteExaniPredefine(play_manager,self.title,'ignite') end
 		local action
@@ -88,9 +86,11 @@ function base_menu:render()
 	
 	if self.changed then
 		local action=''
-		if self.enables[self.choose] then action='activate' else action='ignite_unable' end
-		Print('执行'..self.exani_names[self.choose]..'的activate')
-		exani_player_manager.ExecuteExaniPredefine(play_manager,self.exani_names[self.choose],action)
+		if self.enables[self.choose] then 
+			action='activate'
+			Print('执行'..self.exani_names[self.choose]..'的activate')
+			exani_player_manager.ExecuteExaniPredefine(play_manager,self.exani_names[self.choose],action)
+		end --else action='ignite_unable' 
 		local pos=self.choose
 		if lstg.GetKeyState(KEY.UP) then
 			pos=self.choose+1
@@ -99,7 +99,6 @@ function base_menu:render()
 			pos=self.choose-1
 			if pos<1 then pos=#self.exani_names end
 		end
-		Print()
 		Print('执行'..self.exani_names[pos]..'的deactivate')
 		if self.enables[pos] then exani_player_manager.ExecuteExaniPredefine(play_manager,self.exani_names[pos],'deactivate') end
 		self.changed=false
@@ -115,8 +114,9 @@ function base_menu:ChangeLocked()
 	if self.has_logo then exani_player_manager.ExecuteExaniPredefine(play_manager,'Title_Menu_LOGO',action) end
 	if self.exani_names then
 		for i=1,#self.exani_names do
-			if (not self.enables[i]) and action=='init' then action='init_unable' end
-			exani_player_manager.ExecuteExaniPredefine(play_manager,self.exani_names[i],action)
+			local tmp=action
+			if (not self.enables[i]) and tmp=='init' then tmp='init_unable' end
+			exani_player_manager.ExecuteExaniPredefine(play_manager,self.exani_names[i],tmp)
 		end
 	end
 end

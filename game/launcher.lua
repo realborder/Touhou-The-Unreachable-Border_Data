@@ -109,8 +109,13 @@ function stage_main_menu:init()
 	--
 	New(mask_fader,'open')
 	New(exani_player_manager)
+	
+	player_menu=New(special_player)
+	
+	diff_menu=New(special_difficulty)
+	
 	start_menu=New(base_menu,'start_menu','Title_Menu_item_Start',{
-			{'ChooseMode_item_StoryMode','',function() practice=nil end,true},
+			{'ChooseMode_item_StoryMode','diff_menu',function() practice=nil end,true},
 			{'ChooseMode_item_StagePrac','stage_menu',function() practice='stage' end,true},
 			{'ChooseMode_item_SpellCardPrac','','',false},
 			{'ChooseMode_item_NightmareEcli','','',false},
@@ -119,7 +124,7 @@ function stage_main_menu:init()
 		true
 	)
 	
-	--replay_menu=New(special_replay)
+	replay_menu=New(special_replay)
 	
 	manual_menu=New(special_manual)
 	
@@ -130,12 +135,20 @@ function stage_main_menu:init()
 		{'Vsync',function() cur_setting.vsync=not cur_setting.vsync end},
 		{'Sound Volume',function() end},
 		{'Music Volume',function() end},
-		{'Return To Title',function() menu.FlyIn(menu_title,'left') menu.FlyOut(menu_other,'right') save_setting() end},
+		{'Return To Title',function()
+			menu.FlyOut(menu_other,'right')
+			save_setting()
+			-- ChangeVideoMode(setting.resx,setting.resy,setting.windowed,setting.vsync)
+			-- SetSEVolume(setting.sevolume/100)
+			-- SetBGMVolume(setting.bgmvolume/100)
+			-- ResetScreen()
+			-- ResetUI()
+			base_menu.ChangeLocked(menus['main_menu'])
+		end},
 		{'exit',function()
 			if menu_other.pos~=7 then
 				menu_other.pos=7
 			else
-				menu.FlyIn(menu_title,'left')
 				menu.FlyOut(menu_other,'right')
 				save_setting()
 				base_menu.ChangeLocked(menus['main_menu'])

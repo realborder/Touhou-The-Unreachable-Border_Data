@@ -41,6 +41,7 @@ function layers_player:render()
 				imgname=string.sub(self.renderFrame.img,1,-5)
 				SetImageCenter(imgname,self.renderFrame.cx,self.renderFrame.cy)
 			elseif type(self.renderFrame.img)=='number' then
+				Print("check img:"..self.manager.name.."-"..self.Prio.."-"..self.current_frame)
 				imgname1=string.sub(self.previousFrame.img,1,-5)
 				imgname2=string.sub(self.nextFrame.img,1,-5)
 				SetImageCenter(imgname1,self.renderFrame.cx,self.renderFrame.cy)
@@ -154,6 +155,77 @@ function layers_player:CalculateInterpolation()
 		end
 		self.renderFrame.flag=true
 	end
+end
+
+function layers_player:CalculateForceInterpolation(frame,timer)
+	if self.renderFrame.flag==false then return end
+	
+	local pf=layers_player.DecideFrame(self)
+	pf.frame_at=1
+	
+	self.current_frame=frame
+	layers_player.CalculateFrame(self)
+	
+	if self.renderFrame.flag==false then return end
+	
+	local ef=layers_player.DecideFrame(self)
+	ef.frame_at=timer+1
+	
+	self.previousFrame=pf
+	self.nextFrame=ef
+end
+
+function layers_player:DecideFrame()
+	local rf={}
+	
+	if self.previousFrame and self.current_frame==self.previousFrame.frame_at then rf=layers_player.Copy(self.previousFrame)
+	elseif self.nextFrame and self.current_frame==self.nextFrame.frame_at then rf=layers_player.Copy(self.nextFrame)
+	else
+		rf=layers_player.Copy(self.renderFrame)
+		if type(rf.img)=='number' or type(rf.blend)=='number' then
+			for i=#(self.keyFrames),1,-1 do
+				if self.keyFrames[i].frame_at<=self.current_frame then
+					if type(rf.img)=='number' then rf.img=self.keyFrames[i].img end
+					if type(rf.blend)=='number' then rf.blend=self.keyFrames[i].blend end
+					break
+				end
+			end
+		end
+		if self.previousFrame==nil then
+			rf.x_ran,rf.y_ran,rf.v_type,rf.h_type,rf.r_type,rf.a_type=0,0,2,2,2,2
+		else
+			rf.x_ran,rf.y_ran,rf.v_type,rf.h_type,rf.r_type,rf.a_type=self.previousFrame.x_ran,self.previousFrame.y_ran,self.previousFrame.v_type,self.previousFrame.h_type,self.previousFrame.r_type,self.previousFrame.a_type
+		end
+	end
+	
+	return rf
+end
+
+function layers_player.Copy(tab)
+	local tmp={}
+	
+	--这里因为没有bool值才这样写
+	if tab.img then tmp.img=tab.img end
+	if tab.x then tmp.x=tab.x end
+	if tab.x_ran then tmp.x_ran=tab.x_ran end
+	if tab.y then tmp.y=tab.y end
+	if tab.y_ran then tmp.y_ran=tab.y_ran end
+	if tab.cx then tmp.cx=tab.cx end
+	if tab.cy then tmp.cy=tab.cy end
+	if tab.rot then tmp.rot=tab.rot end
+	if tab.hs then tmp.hs=tab.hs end
+	if tab.vs then tmp.vs=tab.vs end
+	if tab.a then tmp.a=tab.a end
+	if tab.frame_at then tmp.frame_at=tab.frame_at end
+	if tab.blend then tmp.blend=tab.blend end
+	if tab.frame_type then tmp.frame_type=tab.frame_type end
+	if tab.v_type then tmp.v_type=tab.v_type end
+	if tab.h_type then tmp.h_type=tab.h_type end
+	if tab.r_type then tmp.r_type=tab.r_type end
+	if tab.a_type then tmp.a_type=tab.a_type end
+	if tab.b_type then tmp.b_type=tab.b_type end
+	
+	return tmp
 end
 ---------------------------------------------------------------------------------------------------------------
 exani_player=Class(object)
@@ -296,36 +368,26 @@ end
 function exani_player:DoPredefine()
 	exani_player.GetActionValue(self)
 	if type(self.future_action[1][1])=='string' then --默认强制补间后面的不是action字符串
-		self.isforce=true
 		self.replay_round=1
 		self.play_interval=1
 		self.current_frame=1
 		self.force_time=self.future_action[1].force_interpolation_time
 		for k,v in pairs(self.picList) do
-			v.renderFlag=true
-			if not v.previousFrame then v.previousFrame={} end
-			v.previousFrame.x,v.previousFrame.y,v.previousFrame.cx,v.previousFrame.cy=v.renderFrame.x,v.renderFrame.y,v.renderFrame.cx,v.renderFrame.cy
-			v.previousFrame.rot,v.previousFrame.hs,v.previousFrame.vs,v.previousFrame.a=v.renderFrame.rot,v.renderFrame.hs,v.renderFrame.vs,v.renderFrame.a
-			v.previousFrame.frame_at=1
-			v.previousFrame.blend='mul+add'
-			v.previousFrame.x_ran,v.previousFrame.y_ran,v.previousFrame.v_type,v.previousFrame.h_type,v.previousFrame.r_type,v.previousFrame.a_type=0,0,2,2,2,2
-			for i=1,#v.keyFrames do
-				if v.keyFrames[i].frame_at==self.future_action[2].startf then
-					v.nextFrame=v.keyFrames[i]
-					v.nextFrame.frame_at=self.force_time+1
-				end
-			end
-			v.current_frame=self.current_frame
+			layers_player.DecideFrame(v,self.future_action[2].startf,self.force_time)
 		end
 		self.start_frame=1
 		self.end_frame=self.force_time+1
 		self.isInPlay=true
 		self.isStop=false
+		self.isforce=true
 	else
 		self.start_frame=self.future_action[1].startf
 		self.end_frame=self.future_action[1].endf
-		if self.start_frame>end_frame then self.play_interval=abs(self.play_interval) else self.play_interval=-abs(self.play_interval) end
+		if self.start_frame>=self.end_frame then self.play_interval=-1
+		elseif self.start_frame< self.end_frame then self.play_interval=1 end
+		Print("action's interval is "..self.play_interval)
 		self.replay_round=self.future_action[1].repeatc or 1
+		Print("action's repeat is "..self.replay_round)
 		self.current_frame=self.start_frame
 		for k,v in pairs(self.picList) do
 			v.current_frame=self.current_frame

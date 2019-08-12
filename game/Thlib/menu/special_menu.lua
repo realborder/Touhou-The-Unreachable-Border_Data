@@ -102,7 +102,7 @@ function special_replay:init()
 	self.group = GROUP_GHOST
 	self.bound = false
 	self.x = screen.width * 0.5 + screen.width
-	self.y = screen.height * 0.5
+	self.y = screen.height * 0.5-100
 	
 	self.title='Replay_titleAndTable'
 	self.pre_menu='main_menu'
@@ -199,7 +199,7 @@ function special_replay:render()
 	if self.state == 0 then
 		ui.DrawRepText(
 			"replayfnt",
-			"replay_title",
+			"",
 			self.state1Text,
 			self.state1Selected,
 			self.x,
@@ -211,7 +211,7 @@ function special_replay:render()
 	elseif self.state == 1 then
 		ui.DrawRepText2(
 			"replayfnt",
-			"replay_title",
+			"",
 			self.state2Text,
 			self.state2Selected,
 			self.x,
@@ -250,7 +250,7 @@ end
 
 special_difficulty=Class(object)
 function special_difficulty:init()
-	self.layer=LAYER_TOP
+	self.layer=LAYER_TOP-5
 	self.group=GROUP_GHOST
 	self.bound=false
 	
@@ -279,11 +279,15 @@ function special_difficulty:init()
 	self.is_choose=false
 	
 	self.pics={'ChooseDiff_Easy','ChooseDiff_Normal','ChooseDiff_Hard','ChooseDiff_Lunatic'} --exani名字刚好和图片相同
+	for i=1,#self.pics do
+		LoadImageFromFile(self.pics[i],"Thlib\\exani\\exani_data\\"..self.pics[i].."\\"..self.pics[i]..".png")
+	end
+	
 	self.gap=280
 	self.repeats=3
 	self.speed=0.5
 	self.y=200
-	self.z=1.5
+	self.z=10
 	self.tmpdx=0
 	
 	self.x_offset={}
@@ -374,7 +378,7 @@ function special_difficulty:frame()
 	
 	if self.choose_timer==0 and self.is_choose then
 		base_menu.ChangeLocked(self)
-		base_menu.ChangeLocked(menus['player_menu']) end
+		base_menu.ChangeLocked(menus['player_menu'])
 		exani_player_manager.ExecuteExaniPredefine(play_manager,'ChooseChar_reimu','init')
 	end
 end
@@ -387,7 +391,7 @@ function special_difficulty:render()
 		for i=1,(#self.pics)*self.repeats do
 			local x=self.x_offset[i]+dx
 			local n=i%(#self.pics)
-			if n=0 then n=#self.pics end
+			if n==0 then n=#self.pics end
 			Render(self.pics[n],x,self.y,0,1,1,self.z)
 		end
 	elseif not self.locked and self.init_timer>0 and self.init_timer<=self.init_delay then
@@ -396,7 +400,7 @@ function special_difficulty:render()
 		for i=1,(#self.pics)*self.repeats do
 			local x=self.x_offset[i]+dx
 			local n=i%(#self.pics)
-			if n=0 then n=#self.pics end
+			if n==0 then n=#self.pics end
 			Render(self.pics[n],x,self.y,0,1,1,self.z)
 		end
 	elseif not self.locked then
@@ -405,7 +409,7 @@ function special_difficulty:render()
 		for i=startn,endn do
 			local x=self.x_offset[i]
 			local n=i%(#self.pics)
-			if n=0 then n=#self.pics end
+			if n==0 then n=#self.pics end
 			if n~=self.choose then Render(self.pics[n],x,self.y,0,1,1,self.z) end
 		end
 	end
@@ -420,7 +424,6 @@ function special_player:init()
 	self.bound=false
 	
 	self.title='ChoosePlayer_title'
-	self.pre_menu='start_menu'
 	self.has_logo=false
 	self.locked=true
 	self.init_timer=0
@@ -433,6 +436,8 @@ function special_player:init()
 	self.cancel_timer=0
 	self.cancel_delay=30
 	
+	self.changed=false
+	
 	self.z=1
 	
 	self.player={'ChooseChar_reimu','ChooseChar_marisa'}
@@ -443,22 +448,23 @@ end
 function special_player:frame()
 	if self.cancel_timer>0 then
 		self.cancel_timer=self.cancel_timer-1
-		local z=exani_interpolation(self.z-0.5,menus[diff_menu].z-0.5,self.cancel_delay-self.cancel_timer+1,1,self.cancel_delay,'smooth','smooth')
+		local z=exani_interpolation(self.z-0.5,menus['diff_menu'].z-0.5,self.cancel_delay-self.cancel_timer+1,1,self.cancel_delay,'smooth','smooth')
 		Set3D('at',0,0,z)
 	end
 
 	if self.locked then return end
+	
 	self.init_timer=self.init_timer+1
 	if self.changed and not lstg.GetKeyState(KEY.LEFT) and not lstg.GetKeyState(KEY.RIGHT) and not lstg.GetKeyState(KEY.UP) and not lstg.GetKeyState(KEY.DOWN) then self.changed=false end
 	
 	if self.choose_timer>=0 then self.choose_timer=self.choose_timer-1 end
 	
 	if self.init_timer>0 and self.init_timer<=self.init_delay then
-		local z=exani_interpolation(menus[diff_menu].z-0.5,self.z-0.5,self.init_timer,1,self.init_delay,'smooth','smooth')
+		local z=exani_interpolation(menus['diff_menu'].z-0.5,self.z-0.5,self.init_timer,1,self.init_delay,'smooth','smooth')
 		Set3D('at',0,0,z)
 	end
 	
-	if self.init_timer>self.init_delay and not self.changed and self.cancel_timer==0 and self.choose_timer==0 then
+	if self.init_timer>self.init_delay and not self.changed and self.cancel_timer==0 and self.choose_timer==-1 then
 		if lstg.GetKeyState(KEY.DOWN) then
 			if (self.choose%2)==1 then
 				self.changed=true
@@ -502,7 +508,7 @@ function special_player:frame()
 			elseif self.choose==4 then exani_player_manager.ExecuteExaniPredefine(play_manager,self.player[2],'killB')
 			end
 			PlaySound('cancel00', 0.3)
-		elseif lstg.GetKeyState(KEY.Y) then
+		elseif lstg.GetKeyState(KEY.Z) then
 			self.choose_timer=self.choose_delay
 			if self.choose==1 then exani_player_manager.ExecuteExaniPredefine(play_manager,self.player[1],'chooseA')
 			elseif self.choose==2 then exani_player_manager.ExecuteExaniPredefine(play_manager,self.player[1],'chooseB')
