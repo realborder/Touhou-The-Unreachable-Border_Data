@@ -14,7 +14,9 @@ function boss:PopSpellResult(c) --boss行为结束逻辑，弹出提示文字、
             item.EndChipBonus(self,self.x,self.y)
             if self.sc_bonus and not c.fake then
                 if self.sc_bonus>0 then
-                    lstg.var.score=lstg.var.score+self.sc_bonus-self.sc_bonus%10
+                    --收卡】
+					New(boss_card_ring,self,true)--符卡环被玩家收取
+					lstg.var.score=lstg.var.score+self.sc_bonus-self.sc_bonus%10
                     PlaySound('cardget',1.0,0)
                     New(hinter_bonus,'hint.getbonus',0.6,0,112,15,120,true,self.sc_bonus-self.sc_bonus%10)
                     New(kill_timer,0,30,self.timer)
@@ -23,7 +25,9 @@ function boss:PopSpellResult(c) --boss行为结束逻辑，弹出提示文字、
                     end
                     self.spell_get=true
                 else
-                    New(hinter,'hint.bonusfail',0.6,0,112,15,120)
+                    --【未收卡】
+					New(boss_card_ring,self,false)
+					New(hinter,'hint.bonusfail',0.6,0,112,15,120)
                     New(kill_timer,0,60,self.timer)
                 end
             end

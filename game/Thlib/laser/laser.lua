@@ -16,13 +16,31 @@ function LoadLaserTexture(text,l1,l2,l3)
 	laser_data[n] = {l1,l2,l3}
 	laser_texture_num = n + 1
 end
+function LoadLaserTextureNew(text,l1,l2,l3)
+	local n = laser_texture_num
+	local texture = 'laser'..n
+	LoadTexture(texture,'THlib\\laser\\'..text..'.png')
+	LoadImageGroup(texture..1,texture,    0,0, l1,32,1,16)
+	LoadImageGroup(texture..2,texture,   l1,0, l2,32,1,16)
+	LoadImageGroup(texture..3,texture,l1+l2,0, l3,32,1,16)
+	LoadImageGroup('laserfull',texture,0,0,512,32,1,16,256,16)
+	for i=1,16 do SetImageState('laserfull'..i,"mul+add",Color(0xFFFFFFFF)) end
+	for i=1,3 do
+		for j=1,16 do
+			SetImageCenter(texture..i..j,0,8)
+		end
+	end
+	laser_data[n] = {l1,l2,l3}
+	laser_texture_num = n + 1
+end
 
-LoadLaserTexture('laser1', 64,128, 64)
+LoadLaserTexture('laser0', 64,128, 64)
+LoadLaserTextureNew('laser1', 384,256, 384)
 LoadLaserTexture('laser2',  5,236, 15)
 LoadLaserTexture('laser3',127,  1,128)
 LoadLaserTexture('laser4',  1,254,  1)
 
-LoadImageGroup('laser_node','bullet1',80,0,32,32,1,8)
+LoadImageGroup('laser_node','bullet1',80*2,0,32*2,32*2,1,8)
 
 laser=Class(object)
 

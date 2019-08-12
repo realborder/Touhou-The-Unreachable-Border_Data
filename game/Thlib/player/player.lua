@@ -153,7 +153,8 @@ function player_class:frame()
 					self.SpellTimer1=1
 					self.KeyDownTimer1=0
 					PlaySound('cat00',0.7)
-					New(player_spell_mask,64,64,200,30,60,30)
+					self.class.spell(self)
+					-- New(player_spell_mask,64,64,200,30,60,30)
 					New(bullet_cleaner,player.x,player.y, 270, 60, 90, 1)
 					self.protect=90
 					
@@ -237,9 +238,8 @@ function player_class:frame()
 		elseif self.graze_c>=K_graze_c_max and self.graze_c_before<K_graze_c_max then self.ccc_state=3 New(player_indicator_eff,3) end
 		self.graze_c_before=self.graze_c
 		if KeyIsDown'special' and (not self.dialog) and self.graze_c>=K_graze_c_min and lstg.var.power>=100 and self.SpellTimer1==-1 then 
-		    self.offset = 100*(1.0 + K_graze_c_k * (self.graze_c - K_graze_c_min))
-			New(bullet_cleaner,player.x,player.y, 125, 20, 45, 1)
-			-- 待补充：类辉针城梦A的BOMB向外扩散的气场的特效
+		    self.offset = 100*(1.0 + K_graze_c_k * (self.graze_c - K_graze_c_min)) 
+			New(bullet_cleaner,player.x,player.y, 125, 20, 45, 1)  New(player_indicator_explode,3) New(player_indicator_explode,1)
 			GetPower(-self.offset)
 			self.graze_c = 0
 			PlaySound('ophide',0.1)
@@ -762,18 +762,49 @@ player_indicator_eff=Class(object)
 
 function player_indicator_eff:init(index)
 	self.img='player_indicator'..index
+	self.index=index
 	self.layer=LAYER_PLAYER+1
 	self.group=GROUP_GHOST
 	self.x=player.x self.y=player.y
 end
 function player_indicator_eff:frame() 
 	if self.timer==60 then RawDel(self) end
-	self.scale=1+self.timer/60
 	self.x=player.x self.y=player.y
+	self.scale=1+self.timer/60
 end
+
 function player_indicator_eff:render() 	
 	SetImageState(self.img,'mul+add',Color(255*(1-self.timer/60),255,255,255))
 	Render(self.img,self.x,self.y,0,self.scale*player.itemcollect_dist/122) 
+end
+
+player_indicator_explode=Class(object)
+
+function player_indicator_explode:init(index)
+	self.img='player_indicator'..index
+	self.index=index
+	self.layer=LAYER_PLAYER+1
+	self.group=GROUP_GHOST
+	self.x=player.x self.y=player.y
+end
+function player_indicator_explode:frame() 
+	if self.timer==20 then RawDel(self) end
+	self.x=player.x self.y=player.y
+	if self.index==1 then self.scale=1+(1-self.timer/20)*0.5
+	else self.scale=1+self.timer/20*0.5
+	end
+end
+
+function player_indicator_explode:render() 	
+	if self.index==1 then
+		if self.timer<10 then 	SetImageState(self.img,'mul+add',Color(255*(self.timer/10),255,255,255))
+		else 					SetImageState(self.img,'mul+add',Color(255*(1-(self.timer-10)/10),255,255,255)) end
+	else
+		SetImageState(self.img,'mul+add',Color(255*(1-self.timer/20),255,255,255))
+	end
+	local s=(player.itemcollect_dist/122)+(2-player.itemcollect_dist/122)*(self.scale-1)
+	Render(self.img,self.x,self.y,0,s)
+	
 end
 
 
