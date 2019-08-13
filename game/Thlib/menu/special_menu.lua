@@ -44,11 +44,7 @@ function special_manual:frame()
 			end
 			exani_player_manager.ExecuteExaniPredefine(play_manager,'Manual_item',action)
 			self.changed=true
-		end
-	end
-	
-	if not self.changed then
-		if lstg.GetKeyState(KEY.X) then
+		elseif lstg.GetKeyState(KEY.X) then
 			if self.pre_menu~='' then base_menu.ChangeLocked(self) base_menu.ChangeLocked(menus[self.pre_menu]) end
 			PlaySound('cancel00', 0.3)
 			self.changed=true
@@ -416,6 +412,8 @@ function special_difficulty:render()
 end
 
 -------------------------------------
+stage_groups={'Easy','Normal','Hard','Lunatic'}
+
 
 special_player=Class(object)
 function special_player:init()
@@ -446,6 +444,7 @@ function special_player:init()
 end
 
 function special_player:frame()
+	task.Do(self)
 	if self.cancel_timer>0 then
 		self.cancel_timer=self.cancel_timer-1
 		local z=exani_interpolation(self.z-0.5,menus['diff_menu'].z-0.5,self.cancel_delay-self.cancel_timer+1,1,self.cancel_delay,'smooth','smooth')
@@ -500,6 +499,7 @@ function special_player:frame()
 			base_menu.ChangeLocked(self)
 			local diff=menus['diff_menu']
 			diff.locked=false
+			diff.is_choose=false
 			exani_player_manager.ExecuteExaniPredefine(play_manager,diff.title,'init')
 			exani_player_manager.ExecuteExaniPredefine(play_manager,diff.pics[diff.choose],'unchoose')
 			if self.choose==1 then exani_player_manager.ExecuteExaniPredefine(play_manager,self.player[1],'killA')
@@ -520,9 +520,21 @@ function special_player:frame()
 	
 	if self.choose_timer==0 then
 		base_menu.ChangeLocked(self)
-		
-		
-		
+		scoredata.player_select=self.choose
+		lstg.var.player_name=player_list[self.choose][2]
+        lstg.var.rep_player=player_list[self.choose][3]
+		exani_player_manager.ExecuteExaniPredefine(play_manager,'Title_Menu_bg','kill')
+		local diff=menus['diff_menu']
+		task.New(player_menu,function()
+			task.Wait(30)
+			New(mask_fader,'close')
+			task.Wait(30)
+			if practice=='stage' then
+				stage.group.PracticeStart('Normal@Stage 1')
+			else
+				stage.group.Start(stage.groups[stage_groups[diff.choose]])
+			end
+        end)
 	end
 end
 
