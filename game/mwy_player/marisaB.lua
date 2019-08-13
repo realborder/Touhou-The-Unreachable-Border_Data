@@ -3,7 +3,7 @@
 ---模板来自Xiliusha
 
 ---=====================================
-
+_lastSpark={}
 -------------------------------------------
 ---support shoot
 
@@ -335,18 +335,21 @@ end
 
 marisa_spark=Class(object)
 
-function marisa_spark:init(x,y,rot,turnOnTime,wait,turnOffTime,p)
+function marisa_spark:init(x,y,rot,turnOnTime,wait,turnOffTime,p,index)
 	self.player=p
 	self.x=x
 	self.y=y
 	self.rot=rot
+	self.index=index
 	self.img='_marisa_spark'
 	self.group=GROUP_GHOST
 	self.layer=LAYER_PLAYER_BULLET
 	self.hscale=2.5
 	self.life=92
 	self.player.slowlock=true
-	lstg.var.block_spell=true
+	_lastSpark[index]=self
+	Print("[spark]"..index..": "..tostring(IsValid(_lastSpark[index])))
+	-- lstg.var.block_spell=true
 	task.New(self,function()
 		for i=0,turnOnTime do
 			self.vscale=2*i/turnOnTime
@@ -355,20 +358,21 @@ function marisa_spark:init(x,y,rot,turnOnTime,wait,turnOffTime,p)
 		for i=0,90*3-turnOnTime do
 			self.vscale=self.vscale+0.007
 			SetImageState(self.img,"mul+add",Color(160+45*i/(90*3-turnOnTime),255,255,255))
-			task.Wait()
+			task.Wait(1)
 		end
 		local vs=self.vscale
 		for i=1,10 do
 			self.vscale=vs*(1-i/10)
-			task.Wait()
+			task.Wait(1)
 		end
-
 		RawDel(self)
 	end)
 end
 
 function marisa_spark:frame()
 	task.Do(self)
+	if self.timer%90==1 then misc.ShakeScreen(90,5) end
+	Print("[life]"..self.life)
 	self.x=self.player.x
 	self.y=self.player.y
 	if self.timer%10==0 then
@@ -377,16 +381,26 @@ function marisa_spark:frame()
 	self.life=self.life-1
 	if self.life==0 then 
 		task.Clear(self)
+		_lastSpark[self.index]=nil
 		task.New(self,function ()
 			local vs=self.vscale
 			for i=1,10 do
 				self.vscale=vs*(1-i/10)
-				task.Wait()
+				task.Wait(1)
 			end
 			self.player.slowlock=false
-			lstg.var.block_spell=false
 			RawDel(self)
 		end)
+
+	end
+	for j,o in ObjList(GROUP_NONTJT) do
+		o.y=min(224,o.y+1)
+	end
+	for j,o in ObjList(GROUP_ENEMY) do
+		o.y=min(224,o.y+1)
+	end
+	for j,o in ObjList(GROUP_ITEM) do
+		o.y=min(226,o.y+2)
 	end
 end
 
@@ -442,6 +456,15 @@ function marisa_spark2:frame()
 	self.y=self.player.y
 	if self.timer>=75 and self.timer%10==0 then
 		New(marisa_spark_wave2,self.x,self.y,self.rot,12,0.9,self.player,self.vscale)
+	end
+	for j,o in ObjList(GROUP_NONTJT) do
+		o.y=min(224,o.y+1)
+	end
+	for j,o in ObjList(GROUP_ENEMY) do
+		o.y=min(224,o.y+1)
+	end
+	for j,o in ObjList(GROUP_ITEM) do
+		o.y=min(226,o.y+2)
 	end
 end
 
@@ -509,14 +532,14 @@ end
 local releaseMasterSpark=function (self,rot,index)
 	self.slowlock=true
 	-- New(player_spell_mask,255,255,0,30,240,30)
-	if IsValid(_lastSpark[index]) then _lastSpark[index].life=92 return end
-
+	Print(IsValid(_lastSpark[index]))
+	if _lastSpark[index] --[[and _lastSpark[index].life>0--]] then _lastSpark[index].life=_lastSpark[index].life+90 return end
 	PlaySound('slash',1.0)
 	PlaySound('nep00',1.0)
-	self.nextspell=300
-	self.nextshoot=300
+	-- self.nextspell=300
+	self.nextshoot=self.nextshoot+90
 	-- self.protect=360
-	_lastSpark[index]=New(marisa_spark,self.x,self.y,rot,30,240,30,self)
+	_lastSpark[index]=New(marisa_spark,self.x,self.y,rot,30,240,30,self,index)
 	New(tasker,function()
 		
 		for i=1,27 do
@@ -527,17 +550,14 @@ local releaseMasterSpark=function (self,rot,index)
 		-- PlaySound('slash',1.0)
 		self.slowlock=false
 	end)
-	misc.ShakeScreen(270,5)
 end
 
 local releaseUnlimitedSpark=function (self)
 	self.slowlock=true
-	-- New(player_spell_mask,255,255,0,30,240,30)
-	if IsValid(_lastSpark) then return end
 	PlaySound('slash',1.0)
 	PlaySound('nep00',1.0)
-	self.nextspell=300
-	self.nextshoot=300
+	-- self.nextspell=300
+	self.nextshoot=self.nextshoot+90
 	self.protect=360
 	New(marisa_spark2,self.x,self.y,90,15,int(self.SpellCardHpMax/(1.5*K_SpellDecay)),30,self)
 	New(tasker,function()
@@ -550,11 +570,33 @@ local releaseUnlimitedSpark=function (self)
 		-- PlaySound('slash',1.0)
 		
 	end)
-	misc.ShakeScreen(270,5)
+	misc.ShakeScreen(7.5*60,5)
 end
 
 ----------------------------------------------------
 ---SpellCard high1
+ray_bullet_killer=Class(object)
+function ray_bullet_killer:init(x,y,a,b,rot,kill_indes)
+	self.x=x self.y=y
+	self.a=a self.b=b
+	self.rot=rot
+	if self.a~=self.b then self.rect=true end
+	self.group=GROUP_PLAYER
+	self.hide=true
+	self.kill_indes=kill_indes
+end
+function ray_bullet_killer:frame()
+	if self.timer==1 then Del(self) end
+end
+function ray_bullet_killer:colli(other)
+	if self.kill_indes then
+		if other.group==GROUP_INDES then
+			Kill(other)
+		end
+	end
+	if other.group==GROUP_ENEMY_BULLET then Kill(other) end
+end
+
 marisa_ray=Class(object)
 
 function marisa_ray:init(x,y,rot,w,index,dmg,turnOnTime,remainTime,length)
@@ -593,17 +635,8 @@ end
 
 function marisa_ray:frame()
 	task.Do(self)
-	for i,o in ObjList(GROUP_ENEMY_BULLET) do  --蠢办法消弹
-		local x,y=self.x,self.y
-		local theta=atan2(self.y,self.x)
-		local dist=Dist(0,0,x,y)
-		local theta2=atan2(o.y,o.x)
-		local dist2=Dist(0,0,o.x,o.y)
-		local theta3=theta2-theta
-		local x2,y2=dist2*cos(theta3),dist2*sin(theta3)
-		local flag=(x2>dist-self.a and x2<dist+self.a) and (abs(y2)<=self.b)
-		if flag then Kill(o) end
-	end
+	New(ray_bullet_killer,self.x,self.y,self.a,self.b,self.rot,false)
+	
 	if abs(self.y)>224+self.length/2 then RawDel(self) end
 end
 
@@ -853,7 +886,7 @@ function marisa_playerB:spell()
 
 	if self.slow == 1 then ----低速符卡
 		if self.SpellIndex == 5 or self.SpellIndex == 4 then
-			_lastSpark={}
+			
 		end
 		if self.SpellIndex == 6 then
 			releaseUnlimitedSpark(self)

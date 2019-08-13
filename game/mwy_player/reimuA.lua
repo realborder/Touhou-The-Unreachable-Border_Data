@@ -82,6 +82,351 @@ function reimu_side_bullet2:kill()
 	New(reimu_side_bullet_ef2,
 			self.x,self.y,self.rot+180+ran:Float(-15,15))
 end
+---------------------------------------
+---
+---
+
+-------------------------------------------------------
+reimu_sp_ef1=Class(object)
+function reimu_sp_ef1:init(img,x,y,v,angle,target,trail,dmg,t,player,scale,radius,flag)
+	self.killflag=true
+	self.group=GROUP_PLAYER_BULLET
+	self.layer=LAYER_PLAYER_BULLET
+	self.img=img
+	self.vscale=1.2*scale
+	self.hscale=1.2*scale
+	self.a=self.a*1.2*scale
+	self.b=self.b*1.2*scale
+	self.x=x
+	self.y=y
+	self.rot=angle
+	self.angle=angle
+	self.v=v
+	self.target=target
+	self.trail=trail
+	self.dmg=dmg
+	self.DMG=dmg
+	self.bound=false
+	self.tflag=t
+	self.player=player
+	self.radius=radius
+	self.flag=flag
+end
+function reimu_sp_ef1:frame()
+	if BoxCheck(self,-192,192,-224,224) then self.inscreen=true end
+	if self.timer<120+self.tflag then
+	self.rot=(self.angle-4*self.timer-90)*self.flag
+	self.x=self.timer*1.5*cos(self.rot+90)*self.radius+self.player.x
+	self.y=self.timer*1.5*sin(self.rot+90)*self.radius+self.player.y
+	end
+	player_class.findtarget(self)
+	if self.timer>120+self.tflag then
+		self.killflag=false
+		self.dmg=20
+		if IsValid(self.target) and self.target.colli then
+		local a=math.mod(Angle(self,self.target)-self.rot+720,360)
+		if a>180 then a=a-360 end
+		local da=self.trail/(Dist(self,self.target)+1)
+		if da>=abs(a) then self.rot=Angle(self,self.target)
+		else self.rot=self.rot+sign(a)*da end
+		end
+		self.vx=8*cos(self.rot)
+		self.vy=8*sin(self.rot)
+		if self.inscreen then
+			if self.x>192 then self.x=192 self.vx=0 self.vy=0 end
+			if self.x<-192 then self.x=-192 self.vx=0 self.vy=0 end
+			if self.y>224 then self.y=224 self.vx=0 self.vy=0 end
+			if self.y<-224 then self.y=-224 self.vx=0 self.vy=0 end
+		end
+	end
+	if self.timer>190 then
+		self.killflag=true
+		self.dmg=0.4*self.DMG
+		self.a=2*self.a
+		self.b=2*self.b
+		self.vscale=(self.timer-190)*0.5+1
+		self.hscale=(self.timer-190)*0.5+1
+	end
+	if self.timer>200 then
+		Kill(self)
+	end
+	New(bomb_bullet_killer,self.x,self.y,self.a*1.5,self.b*1.5,false)
+end
+
+function reimu_sp_ef1:kill()
+	misc.ShakeScreen(5,5)
+	PlaySound('explode',0.3)
+	New(bubble,'parimg12',self.x,self.y,30,4,6,Color(0xFFFFFFFF),Color(0x00FFFFFF),LAYER_ENEMY_BULLET_EF,'')
+	local a=ran:Float(0,360)
+	for i=1,12 do
+		New(reimu_sp_ef2,self.x,self.y,ran:Float(4,6),a+i*30,2,ran:Int(1,3))
+	end
+	self.vscale=2
+	self.hscale=2
+end
+
+function reimu_sp_ef1:del()
+	PlaySound('explode',0.3)
+	New(bubble,'parimg12',self.x,self.y,30,4,6,Color(0xFFFFFFFF),Color(0x00FFFFFF),LAYER_ENEMY_BULLET_EF,'')
+	misc.KeepParticle(self)
+	self.vscale=6
+	self.hscale=6
+end
+-------------------------------------------------------
+reimu_sp_ef2=Class(object)
+
+function reimu_sp_ef2:init(x,y,v,angle,scale,index)
+	self.img='reimu_bomb_ef'
+	self.group=GROUP_GHOST
+	self.layer=LAYER_PLAYER_BULLET
+	self.colli=false
+	self.x=x
+	self.y=y
+	self.rot=angle
+	self.vx=v*cos(angle)
+	self.vy=v*sin(angle)
+	self.dmg=dmg
+	self.hide=false
+	self.scale=scale
+	self.hscale=scale self.vscale=scale
+	self.rbg={{255,0,0},{0,255,0},{0,0,255}}
+	self.index=index
+--	ParticleSetEmission(self,10)
+end
+
+function reimu_sp_ef2:frame()
+	self.vscale=self.scale*(1-self.timer/60)
+	self.hscale=self.scale*(1-self.timer/60)
+	if self.timer>=30 then Del(self) end
+end
+
+function reimu_sp_ef2:render()
+	SetImageState(self.img,'mul+add',Color(255-255*self.timer/30,self.rbg[self.index][1],self.rbg[self.index][2],self.rbg[self.index][3]))
+	Render(self.img,self.x,self.y)
+	SetImageState(self.img,'mul+add',Color(255,255,255,255))
+end
+-------------------------------------------------------
+
+-------------------------------------------------------
+reimu_sp_ef=Class(player_bullet_trail)
+
+function reimu_sp_ef:kill()
+	PlaySound('explode',0.3)
+	New(bubble,'parimg12',self.x,self.y,30,4,6,Color(0xFFFFFFFF),Color(0x00FFFFFF),LAYER_ENEMY_BULLET_EF,'')
+	for i=1,16 do
+		New(reimu_sp_ef2,16,16,self.x,self.y,3,360/16*i,0.25,4,30)
+	end
+	misc.KeepParticle(self)
+end
+
+function reimu_sp_ef:del()
+	misc.KeepParticle(self)
+end
+-------------------------------------------------------
+
+-------------------------------------------------------
+
+reimu_kekkai=Class(object)
+
+function reimu_kekkai:init(x,y,dmg,dr,n,t)
+	self.x=x
+	self.y=y
+	self.dmg=dmg
+	SetImageState('reimu_kekkai','mul+add',Color(0x804040FF))
+	self.killflag=true
+	self.group=GROUP_PLAYER_BULLET
+	self.layer=LAYER_PLAYER_BULLET
+	self.r=0
+	self.a=0
+	self.b=0
+	self.dr=dr
+	self.ds=dr/256
+	self.n=0
+	self.mute=true
+	self.list={}
+	task.New(self,function()
+		for i=1,n do
+			self.list[i]={scale=0,rot=0}
+			self.n=self.n+1
+			task.Wait(t)
+		end
+		self.dmg=0
+		PlaySound('slash',1.0)
+		for i=128,0,-4 do
+			SetImageState('reimu_kekkai','mul+add',Color(0x004040FF)+i*Color(0x01000000))
+			task.Wait(1)
+		end
+		Del(self)
+	end)
+end
+
+function reimu_kekkai:frame()
+	task.Do(self)
+	if self.timer%6==0 then self.mute=false else self.mute=true end
+	self.r=self.r+self.dr
+	self.a=self.r
+	self.b=self.r
+	for i=1,self.n do
+		self.list[i].scale=self.list[i].scale+self.ds
+		self.list[i].rot=self.list[i].rot+(-1)^i
+	end
+	New(bomb_bullet_killer,self.x,self.y,self.a/1.25,self.b/1.25,false)
+end
+
+function reimu_kekkai:render()
+	for i=1,self.n do
+		Render('reimu_kekkai',self.x,self.y,self.list[i].rot,self.list[i].scale)
+	end
+end
+-------------------------------------
+function reboundCheck(self)--边界反弹仍然需要改的更自然一点
+	if not BoxCheck(self,lstg.world.boundl,lstg.world.boundr,lstg.world.boundb,lstg.world.boundt) then
+		if self.rebound == nil then return
+		elseif self.rebound <= 0 then --这边过完之后rebound就是负的，不会再进这个循环了
+			self.bound=true
+			--task.New(self, function() task.Wait(5) RawDel(self) end) --避免出屏即消突然不见的尴尬
+		else
+			if abs(self.y)>224 then
+				self.y = sign(self.y)*(224*2-abs(self.y))
+				self.rot=-self.rot
+			elseif abs(self.x)>196 then
+				self.x = sign(self.x)*(196*2-abs(self.x))
+				self.rot=sign(self.rot)*(180-abs(self.rot))
+			end
+		end
+		self.rebound = self.rebound - 1
+	end
+end
+-------------------------------------
+
+-------------------------------------
+
+-------------------------------------
+reimu_orb_T = Class(object)
+-- function reimu_orb_T:init(x,y,v,angle,rebound,s,dmg,player)
+function reimu_orb_T:init(x,y,v,angle,rebound,s,dmg,player,delay)
+	self.group=GROUP_PLAYER_BULLET
+	self.layer=LAYER_PLAYER_BULLET
+	self.vscale=0
+	self.hscale=0
+	self.s=s --scale的最终值
+	self.x=x
+	self.y=y
+	self.rot=angle
+	self.v=v
+	self.rebound=rebound
+	self.dmg=dmg
+	self.bound=false
+	self.player=player
+	self.img='reimu_orb_T'
+	self.imgs='reimu_orb_T1'
+	self.killflag=true
+	self.delay=delay
+	self.tmpa=self.a
+	self.tmpb=self.b
+end
+
+function reimu_orb_T:frame()
+	if self.timer>self.delay then
+		self.x=self.x+self.v*cos(self.rot)
+		self.y=self.y+self.v*sin(self.rot)
+		reboundCheck(self)
+	end
+	local t = max(0,self.timer-self.delay)
+	if self.timer<=10+self.delay and self.timer>self.delay then 
+	    self.vscale,self.hscale = t/10*self.s,t/10*self.s 
+		self.a,self.b = self.tmpa*t/10*self.s,self.tmpb*t/10*self.s 
+	end
+	self.imgs='reimu_orb_T'..int(t/5%4+1)
+	New(bomb_bullet_killer,self.x,self.y,self.a*1.2,self.b*1.2,false)
+end
+
+function reimu_orb_T:render()
+	Render(self.imgs,self.x,self.y,self.rot,self.vscale)
+	Render(self.img,self.x,self.y,max(0,self.timer-self.delay)*4,self.vscale)
+end
+-------------------------------------
+reimu_orb_M = Class(object)
+-- function reimu_orb_M:init(x,y,v,angle,rebound,s,dmg,player)
+function reimu_orb_M:init(x,y,v,angle,rebound,s,dmg,player,delay)
+	self.group=GROUP_PLAYER_BULLET
+	self.layer=LAYER_PLAYER_BULLET
+	self.vscale=0
+	self.hscale=0
+	self.s=s --scale的最终值
+	self.x=x
+	self.y=y
+	self.rot=angle
+	self.v=v
+	self.rebound=rebound
+	self.dmg=dmg
+	self.bound=false
+	self.player=player
+	self.img='reimu_orb_M'
+	self.imgs='reimu_orb_M1'
+	self.killflag=true
+	self.delay=delay
+	self.tmpa=self.a
+	self.tmpb=self.b
+end
+
+function reimu_orb_M:frame()
+	if self.timer>self.delay then
+		self.x=self.x+self.v*cos(self.rot)
+		self.y=self.y+self.v*sin(self.rot)
+		reboundCheck(self)
+	end
+	local t = max(0,self.timer-self.delay)
+	if self.timer<=10+self.delay and self.timer>self.delay then 
+	    self.vscale,self.hscale = t/10*self.s,t/10*self.s 
+		self.a,self.b = self.tmpa*t/10*self.s,self.tmpb*t/10*self.s 
+	end
+	self.imgs='reimu_orb_M'..int(t/3%4+1)
+	New(bomb_bullet_killer,self.x,self.y,self.a*1.2,self.b*1.2,false)
+end
+
+function reimu_orb_M:render()
+	Render(self.img,self.x,self.y,max(0,self.timer-self.delay)*4,self.vscale)
+	Render(self.imgs,self.x,self.y,self.rot,self.vscale)
+end
+-------------------------------------
+reimu_orb_H = Class(object)
+function reimu_orb_H:init(x,y,dmg)
+	self.group=GROUP_PLAYER_BULLET
+	self.layer=LAYER_PLAYER_BULLET
+	self.vscale=0
+	self.hscale=0
+	self.s=0 --scale的最终值
+	self.x=x
+	self.y=y
+	self.rot=0
+	self.omiga=6
+	self.v=v
+	self.dmg=dmg
+	self.bound=false
+	self.player=player
+	self.img='orb_huge'
+	self.released=false
+	self.killflag=true
+end
+
+function reimu_orb_H:frame() 
+	if self.released then 
+		misc.ShakeScreen(10,3)
+		self.y=self.y+2
+	end 
+	New(bomb_bullet_killer,self.x,self.y,self.a*1.2,self.b*1.2,false)
+end
+
+function reimu_orb_H:render()
+	Render('orb_huge_base',self.x,self.y,self.rot,self.s)
+	Render('orb_huge',self.x,self.y,self.rot,self.s)
+	Render('orb_huge_highlight',self.x,self.y,0,self.s)
+end
+
+
+
+
 
 ----------------------------------------
 ---player class
@@ -196,7 +541,6 @@ function reimu_playerA:spell()
 end
 
 function reimu_playerA:newSpell()
-	do return end
 	--发动符卡攻击
 	local deep = min(int(self.KeyDownTimer1 / 90) + 1, 3) --用于指示X键持续按下的时长，<90时为阶段1，每过90增加一个阶段,最多阶段三
 	if self.SpellIndex > 3 then
@@ -209,24 +553,12 @@ function reimu_playerA:newSpell()
 			for i = 1, 9 do
 				New(reimu_orb_T, player.x, player.y, 10, i * 20, 4 + deep, 0.35 + 0.15 * deep, K_dr_SlowSpell, player, (i - 1) * 5)
 			end
-			-- task.New(player,function()
-			-- for i=1,9 do
-			-- New(reimu_orb_T,player.x,player.y,10,i*20,4+deep,0.35+0.15*deep,K_dr_SlowSpell,player)
-			-- task.Wait(5)
-			-- end
-			-- end)
 		end
 		if self.SpellIndex == 5 then
 			--低速符卡2
 			for i = 1, 3 do
 				New(reimu_orb_M, player.x, player.y, 3, i * 45, 1 + deep, 0.35 + 0.15 * deep, K_dr_SlowSpell * 3, player, (i - 1) * 10)
 			end
-			-- task.New(player,function()
-			-- for i=1,3 do
-			-- New(reimu_orb_M,player.x,player.y,3,i*45,1+deep,0.35+0.15*deep,K_dr_SlowSpell*3,player)
-			-- task.Wait(10)
-			-- end
-			-- end)
 		end
 		if self.SpellIndex == 6 then
 			--低速符卡3
@@ -267,37 +599,19 @@ function reimu_playerA:newSpell()
 			end
 		end
 		if self.SpellIndex == 1 then
-			if deep == 1 then
-				n = 10
-			end
-			if deep == 2 then
-				n = 12
-			end
-			if deep == 3 then
-				n = 14
-			end
+			if deep == 1 then n = 10 end
+			if deep == 2 then n = 12 end
+			if deep == 3 then n = 14 end
 		end
 		if self.SpellIndex == 2 then
-			if deep == 1 then
-				n = 14
-			end
-			if deep == 2 then
-				n = 18
-			end
-			if deep == 3 then
-				n = 22
-			end
+			if deep == 1 then n = 14 end
+			if deep == 2 then n = 18 end
+			if deep == 3 then n = 22 end
 		end
 		if self.SpellIndex == 3 then
-			if deep == 1 then
-				n = 10
-			end
-			if deep == 2 then
-				n = 12
-			end
-			if deep == 3 then
-				n = 14
-			end
+			if deep == 1 then n = 10 end
+			if deep == 2 then n = 12 end
+			if deep == 3 then n = 14 end
 		end
 		for i = 1, n do
 			New(reimu_sp_ef1, 'reimu_sp_ef', self.x, self.y, 8, rot + i * (360 / n), tar1, 1200, K_dr_HighSpell, n * 3 - 6 * i, self, scale, radius, 1) --高速符卡，图像，横坐标，纵坐标，速度，角度，目标，控制释放，伤害，控制时间，符卡中心
