@@ -182,35 +182,26 @@ function shaker_maker:init(time,size)
 	lstg.tmpvar.shaker=self
 	self.time=time
 	self.size=size
-	self.l=lstg.world.l
-	self.r=lstg.world.r
-	self.bb=lstg.world.b
-	self.t=lstg.world.t
+	-- self.l=lstg.world.l
+	-- self.r=lstg.world.r
+	-- self.bb=lstg.world.b
+	-- self.t=lstg.world.t
 end
 function shaker_maker:frame()
 	local a=int(self.timer/3)*360/5*2
 	local x=self.size*cos(a)
 	local y=self.size*sin(a)
-	lstg.world.l=self.l+x
-	lstg.world.r=self.r+x
-	lstg.world.b=self.bb+y
-	lstg.world.t=self.t+y
+	SetWorldOffset(x,y,1,1)
 	if self.timer==self.time then
 		Del(self)
 	end
 end
 function shaker_maker:del()
-	lstg.world.l=self.l
-	lstg.world.r=self.r
-	lstg.world.b=self.bb
-	lstg.world.t=self.t
+	ResetWorldOffset()
 	lstg.tmpvar.shaker=nil
 end
 function shaker_maker:kill()
-	lstg.world.l=self.l
-	lstg.world.r=self.r
-	lstg.world.b=self.bb
-	lstg.world.t=self.t
+	ResetWorldOffset()
 	lstg.tmpvar.shaker=nil
 end
 
