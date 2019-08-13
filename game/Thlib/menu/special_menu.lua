@@ -524,6 +524,7 @@ function special_player:frame()
 		lstg.var.player_name=player_list[self.choose][2]
         lstg.var.rep_player=player_list[self.choose][3]
 		exani_player_manager.ExecuteExaniPredefine(play_manager,'Title_Menu_bg','kill')
+		task.New(stage_menu,function() for i=1,60 do SetBGMVolume('menu',1-i/60) task.Wait() end end)
 		local diff=menus['diff_menu']
 		task.New(player_menu,function()
 			task.Wait(30)

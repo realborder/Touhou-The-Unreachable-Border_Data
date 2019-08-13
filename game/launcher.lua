@@ -89,7 +89,7 @@ end
 stage_main_menu=stage.New('menu',true,true)
 
 function stage_main_menu:init()
-		LoadTTF('menuttfs','THlib\\UI\\font\\default_ttf',40)
+	LoadTTF('menuttfs','THlib\\UI\\font\\default_ttf',40)
 	--
 	local f,msg
 	f,msg=io.open(settingfile,'r')
@@ -188,6 +188,9 @@ function stage_main_menu:init()
 	
 	exani_player_manager.ExecuteExaniPredefine(play_manager,'Title_Menu_bg','init')
 	exani_player_manager.SetExaniAttribute(play_manager,'Title_Menu_bg',nil,nil,nil,'ui')
+	
+	LoadMusic('menu',music_list.menu[1],music_list.menu[2],music_list.menu[3])
+    PlayMusic('menu')
 	
 end
 
