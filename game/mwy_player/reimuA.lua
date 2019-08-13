@@ -225,7 +225,7 @@ end
 -------------------------------------------------------
 
 -------------------------------------------------------
-
+--[[
 reimu_kekkai=Class(object)
 
 function reimu_kekkai:init(x,y,dmg,dr,n,t)
@@ -278,6 +278,8 @@ function reimu_kekkai:render()
 		Render('reimu_kekkai',self.x,self.y,self.list[i].rot,self.list[i].scale)
 	end
 end
+--]]
+
 -------------------------------------
 function reboundCheck(self)--边界反弹仍然需要改的更自然一点
 	if not BoxCheck(self,lstg.world.boundl,lstg.world.boundr,lstg.world.boundb,lstg.world.boundt) then
@@ -330,8 +332,9 @@ function reimu_orb_T:frame()
 	if self.timer>self.delay then
 		self.x=self.x+self.v*cos(self.rot)
 		self.y=self.y+self.v*sin(self.rot)
-		reboundCheck(self)
+		-- reboundCheck(self)
 	end
+	if Dist(self.x,self.y,0,0)>450 then RawDel(self) end
 	local t = max(0,self.timer-self.delay)
 	if self.timer<=10+self.delay and self.timer>self.delay then 
 	    self.vscale,self.hscale = t/10*self.s,t/10*self.s 
@@ -365,6 +368,7 @@ function reimu_orb_M:init(x,y,v,angle,rebound,s,dmg,player,delay)
 	self.img='reimu_orb_M'
 	self.imgs='reimu_orb_M1'
 	self.killflag=true
+	self.bound=false
 	self.delay=delay
 	self.tmpa=self.a
 	self.tmpb=self.b
@@ -374,8 +378,9 @@ function reimu_orb_M:frame()
 	if self.timer>self.delay then
 		self.x=self.x+self.v*cos(self.rot)
 		self.y=self.y+self.v*sin(self.rot)
-		reboundCheck(self)
+		-- reboundCheck(self)
 	end
+	if Dist(self.x,self.y,0,0)>450 then RawDel(self) end
 	local t = max(0,self.timer-self.delay)
 	if self.timer<=10+self.delay and self.timer>self.delay then 
 	    self.vscale,self.hscale = t/10*self.s,t/10*self.s 
@@ -391,7 +396,7 @@ function reimu_orb_M:render()
 end
 -------------------------------------
 reimu_orb_H = Class(object)
-function reimu_orb_H:init(x,y,dmg)
+function reimu_orb_H:init(x,y,dmg,player)
 	self.group=GROUP_PLAYER_BULLET
 	self.layer=LAYER_PLAYER_BULLET
 	self.vscale=0
@@ -405,16 +410,24 @@ function reimu_orb_H:init(x,y,dmg)
 	self.dmg=dmg
 	self.bound=false
 	self.player=player
+	player.slowlock=true
 	self.img='orb_huge'
 	self.released=false
+	self.released_pre=false
 	self.killflag=true
 end
 
 function reimu_orb_H:frame() 
+	if self.timer%10==0 then misc.ShakeScreen(10,2) end
 	if self.released then 
-		misc.ShakeScreen(10,3)
 		self.y=self.y+2
 	end 
+	if self.released~=self.released_pre then
+		misc.ShakeScreen(10,5)
+		player.slowlock=false
+	end
+	self.released_pre=self.released
+	if self.y-self.a>=350 then RawDel(self) end
 	New(bomb_bullet_killer,self.x,self.y,self.a*1.2,self.b*1.2,false)
 end
 
@@ -551,20 +564,20 @@ function reimu_playerA:newSpell()
 		if self.SpellIndex == 4 then
 			--低速符卡1
 			for i = 1, 9 do
-				New(reimu_orb_T, player.x, player.y, 10, i * 20, 4 + deep, 0.35 + 0.15 * deep, K_dr_SlowSpell, player, (i - 1) * 5)
+				New(reimu_orb_T, player.x, player.y, 10, i * 20, 2 + deep, 0.7 + 0.3 * deep, K_dr_SlowSpell*0.7, player, (i - 1) * 5)
 			end
 		end
 		if self.SpellIndex == 5 then
 			--低速符卡2
 			for i = 1, 3 do
-				New(reimu_orb_M, player.x, player.y, 3, i * 45, 1 + deep, 0.35 + 0.15 * deep, K_dr_SlowSpell * 3, player, (i - 1) * 10)
+				New(reimu_orb_M, player.x, player.y, 2.5, i * 45, 0, 0.7 + 0.3 * deep, K_dr_SlowSpell*0.5, player, (i - 1) * 10)
 			end
 		end
 		if self.SpellIndex == 6 then
 			--低速符卡3
 			task.New(player, function()
 				if deep == 1 then
-					lstg.tmpvar.orb = New(reimu_orb_H, player.x, player.y, K_dr_SlowSpell * 10)
+					lstg.tmpvar.orb = New(reimu_orb_H, player.x, player.y, K_dr_SlowSpell,self)
 				end
 				local orb = lstg.tmpvar.orb
 				orb.released = false
@@ -614,11 +627,11 @@ function reimu_playerA:newSpell()
 			if deep == 3 then n = 14 end
 		end
 		for i = 1, n do
-			New(reimu_sp_ef1, 'reimu_sp_ef', self.x, self.y, 8, rot + i * (360 / n), tar1, 1200, K_dr_HighSpell, n * 3 - 6 * i, self, scale, radius, 1) --高速符卡，图像，横坐标，纵坐标，速度，角度，目标，控制释放，伤害，控制时间，符卡中心
+			New(reimu_sp_ef1, 'reimu_high_spell', self.x, self.y, 8, rot + i * (360 / n), tar1, 1200, K_dr_HighSpell, n * 3 - 6 * i, self, scale, radius, 1) --高速符卡，图像，横坐标，纵坐标，速度，角度，目标，控制释放，伤害，控制时间，符卡中心
 		end
 		if self.SpellIndex == 3 then
 			for i = 1, n do
-				New(reimu_sp_ef1, 'reimu_sp_ef', self.x, self.y, 8, rot + i * (360 / n), tar1, 1200, K_dr_HighSpell, n * 3 - 6 * i, self, scale, 0.6 * radius, -1) --高速符卡，图像，横坐标，纵坐标，速度，角度，目标，控制释放，伤害，控制时间，符卡中心
+				New(reimu_sp_ef1, 'reimu_high_spell', self.x, self.y, 8, rot + i * (360 / n), tar1, 1200, K_dr_HighSpell, n * 3 - 6 * i, self, scale, 0.6 * radius, -1) --高速符卡，图像，横坐标，纵坐标，速度，角度，目标，控制释放，伤害，控制时间，符卡中心
 			end
 		end
 	end

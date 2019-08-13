@@ -50,28 +50,29 @@ function reimu_player.load_res_A(self)
 	LoadImage("_reimu_support_1",texname,0,0,64,64)
 	LoadImage("_reimu_support_2",texname,64,0,64,64)
 	
-	--[[
-	LoadImage('reimu_orb_T','reimu_bullet',512,256,128,128,32,32)
-	LoadImageGroup('reimu_orb_T','reimu_bullet',832,128,192,128,1,4)
+
+
+	LoadImage('reimu_orb_T',texname,512,256,128,128,32,32)
+	LoadImageGroup('reimu_orb_T',texname,832,128,192,128,1,4)
 	for i=1,4 do SetImageCenter('reimu_orb_T'..i,128,64) SetImageState('reimu_orb_T'..i,'',Color(255,255,255,255)) end
-	LoadImage('reimu_orb_M','reimu_bullet',512,384,256,256,64,64)
-	LoadImageGroup('reimu_orb_M','reimu_bullet',0,640,512,256,2,2)
+	LoadImage('reimu_orb_M',texname,512,384,256,256,64,64)
+	LoadImageGroup('reimu_orb_M',texname,0,640,512,256,2,2)
 	for i=1,4 do SetImageCenter('reimu_orb_M'..i,384,128) SetImageState('reimu_orb_M'..i,'',Color(255,255,255,255)) end
-	LoadImageFromFile('orb_huge_base','THlib\\player\\reimu\\orb_huge_base.png')
-	LoadImageFromFile('orb_huge','THlib\\player\\reimu\\orb_huge.png',false,500,500)
-	LoadImageFromFile('orb_huge_highlight','THlib\\player\\reimu\\orb_huge_highlight.png')
+	LoadImageFromFile('orb_huge_base',path..'orb_huge_base.png')
+	LoadImageFromFile('orb_huge',path..'orb_huge.png',false,500,500)
+	LoadImageFromFile('orb_huge_highlight',path..'orb_huge_highlight.png')
 	SetImageState('orb_huge_base','',Color(255,255,255,255))
 	SetImageState('orb_huge','mul+add',Color(255,255,255,255))
 	SetImageState('orb_huge_highlight','mul+add',Color(255,255,255,255))
-	LoadPS('reimu_high_spell','THlib\\player\\reimu\\reimu_sp_ef.psi','parimg1',32,32)
-	LoadImageFromFile('reimu_bomb_ef','THlib\\player\\reimu\\reimu_bomb_ef.png')
+	LoadPS('reimu_high_spell',path..'reimu_sp_ef.psi','parimg1',32,32)
+	LoadImageFromFile('reimu_bomb_ef',path..'reimu_bomb_ef.png')
 	-----------------------------------------
 	-----------------------------------------
 	-- 必杀技所用素材 --
-	LoadImageGroup('reimu_ccc_gap','reimu_bullet',0,128,64*4,64,1,8)
-	LoadImageGroup('reimu_ccc_bullet','reimu_bullet',256,128,64*4,64,1,8,90*sf,10*sf)
+	LoadImageGroup('reimu_ccc_gap',texname,0,128,64*4,64,1,8)
+	LoadImageGroup('reimu_ccc_bullet',texname,256,128,64*4,64,1,8,45,5)
 	----------------------
-	--]]
+	
 end
 
 function reimu_player.load_res_B(self)
