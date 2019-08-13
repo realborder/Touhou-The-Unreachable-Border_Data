@@ -46,7 +46,7 @@ function marisa_player.load_res_A(self)
 	LoadImageGroup("_marisa_slow_shoot_trail",texname,768,192,256,128,1,3)
 	for i=1,3 do 
 		SetImageState("_marisa_slow_shoot_trail"..i,"mul+add",Color(0x70FFFFFF)) 
-		SetImageCenter("_marisa_slow_shoot_trail"..i,64*3,64*2)
+		SetImageCenter("_marisa_slow_shoot_trail"..i,64*3,64)
 	end
 	
 	LoadPS("_marisa_slow_shoot_ef",path.."marisa_playerA_slowshoot_eff.psi","parimg6")
@@ -54,7 +54,12 @@ function marisa_player.load_res_A(self)
 	LoadImage("_marisa_support_1",texname,768,0,64,64)
 	LoadImage("_marisa_support_2",texname,832,0,64,64)
 	----符卡所用素材
-	
+	LoadImageFromFile("_marisa_playerA_star_fog",path.."marisa_playerA_star_fog.png")
+	LoadFX("_marisa_blackhole","shader\\edge_of_blackhole.fx")
+	LoadImage("_marisa_orb2",texname,768,128,64,64)
+	LoadImage("_marisa_orb1",texname,768+64,128,64,64)
+	SetImageState("_marisa_orb1","mul+add",Color(0xA0FFFFFF))
+	SetImageState("_marisa_orb2","mul+add",Color(0xA0FFFFFF))
 	
 end
 

@@ -262,6 +262,12 @@ function reimu_bullet_purple:render()
 	DefaultRenderFunc(self)
 end
 
+---------------------------------------
+---高速雷
+
+
+
+
 ----------------------------------------
 ---player class
 
