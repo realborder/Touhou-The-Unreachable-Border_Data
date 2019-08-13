@@ -8,7 +8,7 @@ local GetLastKey=lstg.GetLastKey--_GetLastKey
 
 local _key_code_to_name=KeyCodeToName()--Linput
 local setting_item={'resx','resy','windowed','vsync','sevolume','bgmvolume','res'}
-local Resolution={{640,480},{800,600},{960,720},{1024,768},{1280,960}}
+local Resolution={{640,360},{800,450},{960,540},{1024,576},{1280,720},{1600,900},{1920,1080}}
 
 local settingfile="Library\\setting"
 
@@ -114,6 +114,18 @@ function stage_main_menu:init()
 	
 	diff_menu=New(special_difficulty)
 	
+	stage_menu=New(base_menu,'stage_menu','',{
+			{'ChooseStage_item_Stage1','','',true},
+			{'ChooseBoss_item_Boss1','','',true},
+			{'ChooseStage_item_Stage2','','',true},
+			{'ChooseBoss_item_Boss2','','',true},
+			{'ChooseStage_item_Stage3','','',true},
+			{'ChooseBoss_item_Boss3','','',true},
+		},
+		'start_menu',
+		true
+	)
+	
 	start_menu=New(base_menu,'start_menu','Title_Menu_item_Start',{
 			{'ChooseMode_item_StoryMode','diff_menu',function() practice=nil end,true},
 			{'ChooseMode_item_StagePrac','stage_menu',function() practice='stage' end,true},
@@ -218,7 +230,7 @@ function other_setting_menu:frame()
 					cur_setting.resy=Resolution[cur_setting.res][2]
 					PlaySound('cancel00',0.3)
 				end
-				self.posx=max(1,min(self.posx,5))
+				self.posx=max(1,min(self.posx,#Resolution))
 				cur_setting.res=self.posx
 				cur_setting.resx=Resolution[cur_setting.res][1]
 				cur_setting.resy=Resolution[cur_setting.res][2]
