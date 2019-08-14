@@ -544,8 +544,8 @@ function special_player:frame()
 			New(mask_fader,'close')
 			task.Wait(30)
 			if practice=='stage' then
-				Print("关卡练习参数是 "..stage_diffs[diff.choose]..'@'..stage_choices[stage_pr.choose])
-				stage.group.PracticeStart(stage_diffs[diff.choose]..'@'..stage_choices[stage_pr.choose])
+				Print("关卡练习参数是 "..stage_choices[stage_pr.choose]..'@'..stage_diffs[diff.choose])
+				stage.group.PracticeStart(stage_choices[stage_pr.choose]..'@'..stage_diffs[diff.choose])
 			else
 				stage.group.Start(stage.groups[stage_diffs[diff.choose]])
 			end

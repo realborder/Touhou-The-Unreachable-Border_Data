@@ -144,6 +144,7 @@ function stage.Set(mode, path, stageName)
 		--ran:Seed(lstg.var.ran_seed)
 		-- 开始执行录像
 		local sg=string.match(stageName,'^.+@(.+)$')
+		Print("sg value is "..sg)
 		replayWriter = plus.ReplayFrameWriter()
 		replayStages[stageName] = {
 			stageName = stageName, score = 0, randomSeed = lstg.var.ran_seed,
