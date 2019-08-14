@@ -283,7 +283,8 @@ function ext.pausemenu:render()
 	--绘制黑色遮罩
 	SetViewMode'ui'
 	SetImageState('white','',pm.mask_color)
-	RenderRect('white',0,screen.width,0,screen.height)
+	local extra=(screen.height/9*16-screen.width)/2
+	RenderRect('white',-extra,screen.width+extra,0,screen.height)
 	--渲染底图
 	SetImageState('pause_eff','',Color(pm.mask_alph[1]/3,200*self.eff/15+55,200*(1-self.eff/15)+55,200*(1-self.eff/15)+55))
 	Render('pause_eff',-150+180*self.eff/15+dx,-90+dy,4+4*sin(self.timer*3),0.4,0.6)

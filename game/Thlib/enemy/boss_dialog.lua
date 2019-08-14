@@ -135,7 +135,7 @@ end
 --！警告：未适配宽屏等非传统版面
 dialog_displayer = Class(object)
 function dialog_displayer:init(p_dialog)
-    self.layer = LAYER_TOP + 9
+    self.layer = LAYER_TOP -10
     self.char = {}
     self.char[1] = {}
     self.char[-1] = {}
@@ -226,13 +226,16 @@ end
 ---@param vscale number @图像纵向缩放比
 ---@param tpic number @气泡样式
 ---@param num string|number @方位图像编号
+---@param emo string @表情图像，如果此项不为nil则会额外渲染表情
+---@param rx number @表情图像相对本体的x坐标
+---@param ry number @表情图像相对本体的y坐标
 ---@param px number @方位图像x坐标(ADD UP
 ---@param py number @方位图像y坐标(ADD UP
 ---@param tx number @气泡x坐标(ADD UP
 ---@param ty number @气泡y坐标(ADD UP
 ---@param tn number @语句保留条数
 ---@param stay boolean @对话后是否保持激活
-function boss.dialog:sentence(img, pos, text, t, hscale, vscale, tpic, num, px, py, tx, ty, tn, stay)
+function boss.dialog:sentence(img, pos, text, t, hscale, vscale, tpic, num, emo, rx, ry, px, py, tx, ty, tn, stay)
     if pos == "left" then
         pos = 1
     else
@@ -250,7 +253,7 @@ function boss.dialog:sentence(img, pos, text, t, hscale, vscale, tpic, num, px, 
     master.active = true
     --------
     if not IsValid(master.char[pos][num]) then
-        master.char[pos][num] = New(boss.dialog.character, img, pos, px, py, vscale, hscale, num)
+        master.char[pos][num] = New(boss.dialog.character, img, pos, px, py, emo, rx, ry, vscale, hscale, num)
     else
         master.char[pos][num].act = true
         master.char[pos][num].img = img
@@ -258,6 +261,11 @@ function boss.dialog:sentence(img, pos, text, t, hscale, vscale, tpic, num, px, 
         master.char[pos][num].y = py
         master.char[pos][num].vscale = vscale
         master.char[pos][num].hscale = hscale
+		if emo and type(emo)=='string' then 
+			master.char[pos][num].emo=emo
+			master.char[pos][num].rx=rx
+			master.char[pos][num].ry=ry
+		end
     end
     lastdialogpic = master.char[pos][num]
     task.Wait()
@@ -296,7 +304,7 @@ end
 boss.dialog.balloon = Class(object)
 local balloon = boss.dialog.balloon
 function balloon:init(x, y, hpos, vpos, pic, text, n)
-    self.layer = LAYER_TOP + 233 --无上至尊（啥
+    self.layer = LAYER_TOP +233 --无上至尊（啥
     self.x, self.y = x, y
     self.bound = false
     self.alpha = 255
@@ -375,16 +383,18 @@ function balloon:render()
 end
 
 ---对话角色
----改进（不）自EVA（v1.0）
+---云绝改进自(改进（不）自EVA（v1.0）)，支持将立绘分为两部分以节省游戏体积。本体必须没有面部表情，表情必须是透明的，且所有表情相对本体的坐标必须是相等的。
 ---@class boss.dialog_character
 ---@return boss.dialog_character
 boss.dialog.character = Class(object)
 local character = boss.dialog.character
-function character:init(img, pos, x, y, vs, hs, num)
-    self.layer = LAYER_TOP + 9
+function character:init(img, pos, x, y, emo, rx, ry, vs, hs, num) --rx,ry是立绘脸部图像中心相对立绘整体的相对位置
+    self.layer = LAYER_TOP -50
     self.bound = false
     self.pos = pos
     self.x, self.y = x, y
+	self.emo = emo
+	self.rx, self.ry = rx, ry
     self.vs = vs or 1
     self.hs = hs or pos
     self.rot = 0
@@ -423,12 +433,22 @@ function character:render()
         local t = self.cnm --函数式改变
         SetImageState(self.img, "", Color(alpha, dc, dc, dc) + t * Color(alpha, 255 - dc, 255 - dc, 255 - dc) - (self.death / 30) * Color(0xFF000000))
         local t1 = sin(self.death * 3)
-        Render(self.img, x + t * move_dis - dead_dis * t1, y + t * 16 - dead_dis * t1, 0, self.hscale, self.vscale)--self.death*12是什么沙雕，丑死了（
+        Render(self.img, x + t * move_dis - dead_dis * t1, y + t * 16 - dead_dis * t1, 0, self.hscale, self.vscale)
+		if self.emo then 
+			local rx,ry=self.rx,self.ry
+			SetImageState(self.emo, "", Color(alpha, dc, dc, dc) + t * Color(alpha, 255 - dc, 255 - dc, 255 - dc) - (self.death / 30) * Color(0xFF000000))
+			Render(self.emo, x+rx + t * move_dis - dead_dis * t1, y+ry + t * 16 - dead_dis * t1, 0, self.hscale, self.vscale)
+		end
     else
         local t = self.cnm --函数式改变
         SetImageState(self.img, "", Color(alpha, dc, dc, dc) + t * Color(alpha, 255 - dc, 255 - dc, 255 - dc) - (self.death / 30) * Color(0xFF000000))
         local t1 = sin(self.death * 3)
         Render(self.img, x - t * move_dis + dead_dis * t1, y + t * 16 - dead_dis * t1, 0, self.hscale, self.vscale)
+		if self.emo then
+			local rx,ry=self.rx,self.ry
+			SetImageState(self.emo, "", Color(alpha, dc, dc, dc) + t * Color(alpha, 255 - dc, 255 - dc, 255 - dc) - (self.death / 30) * Color(0xFF000000))
+			Render(self.emo, x+rx - t * move_dis + dead_dis * t1, y+ry + t * 16 - dead_dis * t1, 0, self.hscale, self.vscale)		
+		end
     end
     SetViewMode "world"
 end

@@ -15,7 +15,7 @@ function stage_clear_bonus:init(bonus)
     self.t=0
     self.bonus=bonus
 	self.alpha=0
-	lstg.var.point=lstg.var.point+bonus
+	lstg.var.score=lstg.var.score+bonus
 end
 
 function stage_clear_bonus:frame()

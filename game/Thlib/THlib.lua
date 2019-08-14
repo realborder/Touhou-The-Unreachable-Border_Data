@@ -34,3 +34,4 @@ Include'THlib\\menu\\base_menu.lua'
 Include'THlib\\menu\\special_menu.lua'
 
 Include("mwy_player\\mwy_player.lua")
+-- Include("mwy_dialogsys\\mwy_dialogsys_sub.lua")

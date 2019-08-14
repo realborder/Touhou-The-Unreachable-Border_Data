@@ -1,7 +1,8 @@
 Include'THlib\\ui\\uiconfig.lua'
 Include'THlib\\ui\\font.lua'
---Include'THlib\\ui\\title.lua'
+Include'THlib\\ui\\title.lua'
 Include'THlib\\ui\\sc_pr.lua'
+Include'THlib\\ui\\stage_clear_bonus.lua'
 ui={}
 
 LoadTTF('WordStyle','THlib\\UI\\ttf\\yrdzst.ttf',20)
@@ -19,8 +20,10 @@ LoadImage('boss_sc_left','boss_ui',64,64,32,32)
 SetImageState('boss_sc_left','',Color(0xFF80FF80))
 
 LoadTexture('hint','THlib\\ui\\hint.png',true)
-LoadImage('hint.bonusfail','hint',0,64,256,64)
-LoadImage('hint.getbonus','hint',0,128,396,64)
+LoadTexture('hint2','THlib\\ui\\hint2.png',true)
+LoadImage('hint.stageclear','hint2',0,0,784,289)
+LoadImage('hint.bonusfail','hint2',0,567,784,137)
+LoadImage('hint.getbonus','hint2',0,290,784,277)
 LoadImage('hint.extend','hint',0,192,160,64)
 --LoadImage('hint.power','hint',0,12,84,32)
 --LoadImage('hint.graze','hint',86,12,74,32)
@@ -35,7 +38,7 @@ SetImageCenter('player_life',0,5.5)
 LoadImageFromFile('spell_life','THlib\\ui\\UI_gaming_spell.png')
 SetImageCenter('spell_life',0,5.5)
 
-LoadImage('kill_time','hint',232,200,152,56,16,16)
+LoadImage('kill_time','hint2',0,704,161,41,16,16)
 
 LoadImageFromFile('UI_gaming_item_collect_line','THlib\\ui\\UI_gaming_item_collect_line.png')
 LoadImageFromFile('UI_gaming_item_collect_word','THlib\\ui\\UI_gaming_item_collect_word.png')
@@ -91,6 +94,13 @@ ui.menu={
 	LoseLife=0,
 	LoseSpell=0,
 }
+
+function RenderTTFplus(ttfname,text,left,right,bottom,top,color,...) 
+	local a,r,g,b=lstgColor.ARGB(color)
+	r,g,b=r*0.15,g*0.15,b*0.15
+	RenderTTF(ttfname,text,left+1,right+1,bottom-1,top-1,Color(a,r,g,b),...)
+	RenderTTF(ttfname,text,left,right,bottom,top,color,...)
+end
 
 function ui.DrawMenu(title,text,pos,x,y,alpha,timer,shake,align)
 	align=align or 'center'
