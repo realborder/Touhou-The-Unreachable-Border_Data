@@ -328,57 +328,57 @@ function ResetUI()
 			--Render('hint.graze',470,208,0,0.5,0.5)
 			--RenderText('score','HiScore\nScore\nPlayer\nSpell\nGraze',432,424,0.5,'left')
 			--for i=1,8 do
-			--	Render('hint.life',505+13*i,371,0,1,1)
+			--	Render('hint.life',518+13*i,371,0,1,1)
 			--end
 			if ui.menu.LoseLife>0 then
 			    SetImageState('player_life','mul+add',Color(255,255,255,255))
-			    for i=1,lstg.var.lifeleft do Render('player_life',469.5+12*i,376.3,0,0.5) end
-				Render('player_life',469.5+12*(lstg.var.lifeleft+1),376.3,0,0.5*(ui.menu.LoseLife/15),1.5-ui.menu.LoseLife/15)
+			    for i=1,lstg.var.lifeleft do Render('player_life',518+12*i,376.3,0,0.5) end
+				Render('player_life',518+12*(lstg.var.lifeleft+1),376.3,0,0.5*(ui.menu.LoseLife/15),1.5-ui.menu.LoseLife/15)
 				if lstg.var.lifeleft<10 then
 				    local chipNum=lstg.var.chip/100
 				    SetImageState('player_life','mul+add',Color(125,255,255,255))
 					for i=1,(11-(lstg.var.lifeleft+1)) do
-			            Render('player_life',469.5+12*(12-i),376.3,0,0.5*min(1,max(0,(lstg.var.lifeleft+1)+chipNum-(11-i))),0.5)
+			            Render('player_life',518+12*(12-i),376.3,0,0.5*min(1,max(0,(lstg.var.lifeleft+1)+chipNum-(11-i))),0.5)
 					end
 				end
 				ui.menu.LoseLife=ui.menu.LoseLife-1
 			else
 			    SetImageState('player_life','mul+add',Color(255,255,255,255))
-			    for i=1,lstg.var.lifeleft do Render('player_life',469.5+12*i,376.3,0,0.5) end
+			    for i=1,lstg.var.lifeleft do Render('player_life',518+12*i,376.3,0,0.5) end
 				if lstg.var.lifeleft<11 then
 				    local chipNum=lstg.var.chip/100
 				    SetImageState('player_life','mul+add',Color(125,255,255,255))
 					for i=1,(11-lstg.var.lifeleft) do
-			            Render('player_life',469.5+12*(12-i),376.3,0,0.5*min(1,max(0,lstg.var.lifeleft+chipNum-(11-i))),0.5)
+			            Render('player_life',518+12*(12-i),376.3,0,0.5*min(1,max(0,lstg.var.lifeleft+chipNum-(11-i))),0.5)
 					end
 				end
 			end
 			--for i=1,8 do
-			--	Render('hint.bomb',505+13*i,334,0,1,1)
+			--	Render('hint.bomb',518+13*i,334,0,1,1)
 			--end
 			if ui.menu.LoseSpell>0 then
 			    SetImageState('spell_life','mul+add',Color(255,255,255,255))
-			    for i=1,lstg.var.bomb do Render('spell_life',469.5+12*i,356.8,0,0.5) end
-				Render('spell_life',469.5+12*(lstg.var.bomb+1),356.8,0,0.5*(ui.menu.LoseSpell/15),1.5-ui.menu.LoseSpell/15)
+			    for i=1,lstg.var.bomb do Render('spell_life',518+12*i,356.8,0,0.5) end
+				Render('spell_life',518+12*(lstg.var.bomb+1),356.8,0,0.5*(ui.menu.LoseSpell/15),1.5-ui.menu.LoseSpell/15)
 				if lstg.var.bomb<2 then
 				    local chipNum=lstg.var.bombchip/100
 				    SetImageState('spell_life','mul+add',Color(125,255,255,255))
 					if lstg.var.bomb==1 then
-			            Render('spell_life',469.5+12*(lstg.var.bomb+2),356.8,0,0.5*min(1,chipNum),0.5)
+			            Render('spell_life',518+12*(lstg.var.bomb+2),356.8,0,0.5*min(1,chipNum),0.5)
 					else
-					    if chipNum>1 then Render('spell_life',469.5+12*(lstg.var.bomb+3),356.8,0,0.5*min(1,chipNum-1),0.5) end
-					    Render('spell_life',469.5+12*(lstg.var.bomb+2),356.8,0,0.5*min(1,chipNum),0.5)
+					    if chipNum>1 then Render('spell_life',518+12*(lstg.var.bomb+3),356.8,0,0.5*min(1,chipNum-1),0.5) end
+					    Render('spell_life',518+12*(lstg.var.bomb+2),356.8,0,0.5*min(1,chipNum),0.5)
 					end
 				end
 				ui.menu.LoseSpell=ui.menu.LoseSpell-1
 			else
 			    SetImageState('spell_life','mul+add',Color(255,255,255,255))
-			    for i=1,lstg.var.bomb do Render('spell_life',469.5+12*i,356.8,0,0.5) end
+			    for i=1,lstg.var.bomb do Render('spell_life',518+12*i,356.8,0,0.5) end
 				if lstg.var.bomb<3 then
 				    local chipNum=lstg.var.bombchip/100
 				    SetImageState('spell_life','mul+add',Color(125,255,255,255))
 					for i=1,(3-lstg.var.bomb) do
-			            Render('spell_life',469.5+12*(4-i),356.8,0,0.5*min(1,max(0,lstg.var.bomb+chipNum-(3-i))),0.5)
+			            Render('spell_life',518+12*(4-i),356.8,0,0.5*min(1,max(0,lstg.var.bomb+chipNum-(3-i))),0.5)
 					end
 				end
 			end
@@ -400,19 +400,19 @@ function ResetUI()
 				    end	
 				end
 			end
-			RenderTTF('WordStyle',SpellName,518,605.5,352.5,361.5,Color(255,233,255,233),'center','vcenter')
+			RenderTTF('WordStyle',SpellName,576,663.5,352.5,361.5,Color(255,233,255,233),'center','vcenter')
 			
-			RenderTTF('PointStyle1',int(max(lstg.tmpvar.hiscore or 0,lstg.var.score)),501,615,422,437,Color(255,208,216,255),'bottom','right')
-			RenderTTF('PointStyle1',int(lstg.var.score),501,615,404,419,Color(255,208,245,253),'bottom','right')
+			RenderTTF('PointStyle1',int(max(lstg.tmpvar.hiscore or 0,lstg.var.score)),551,665,422,437,Color(255,208,216,255),'bottom','right')
+			RenderTTF('PointStyle1',int(lstg.var.score),551,665,404,419,Color(255,208,245,253),'bottom','right')
 			
-			RenderTTF('PointStyle1',string.format('%d',math.floor(lstg.var.power/100)),550.5,595,313.5,328.5,Color(255,253,223,223),'bottom','left')
-			RenderTTF('PointStyle1',string.format('/%d',player.maxPower/100),550.5,595,313.5,328.5,Color(255,253,223,223),'bottom','right')
-			RenderTTF('PointStyle2',string.format('.%d%d',math.floor((lstg.var.power%100)/10),math.floor(lstg.var.power%10)),560,615,313.5,328.5,Color(255,253,223,223),'bottom','left')
-			RenderTTF('PointStyle2','.00',560,615,313.5,328.5,Color(255,253,223,223),'bottom','right')
+			RenderTTF('PointStyle1',string.format('%d',math.floor(lstg.var.power/100)),600.5,645,313.5,328.5,Color(255,253,223,223),'bottom','left')
+			RenderTTF('PointStyle1',string.format('/%d',player.maxPower/100),600.5,645,313.5,328.5,Color(255,253,223,223),'bottom','right')
+			RenderTTF('PointStyle2',string.format('.%d%d',math.floor((lstg.var.power%100)/10),math.floor(lstg.var.power%10)),610,665,313.5,328.5,Color(255,253,223,223),'bottom','left')
+			RenderTTF('PointStyle2','.00',610,665,313.5,328.5,Color(255,253,223,223),'bottom','right')
 			--RenderTTF('PointStyle1',string.format('%d,%d%d%d',math.floor(lstg.var.pointrate/1000),math.floor(lstg.var.pointrate/100)%10,math.floor(lstg.var.pointrate/10)%10,lstg.var.pointrate%10),518.5,615,295.5,310.5,Color(255,221,235,210),'bottom','right')
 			local pointratebase=10000 + int(lstg.var.graze/10)*10 + int(lstg.var.faith/10)*10
-			RenderTTF('PointStyle1',string.format('%.1f×%d,%d%d%d',max(1.0,-lstg.var.dr),math.floor(pointratebase/1000),math.floor(pointratebase/100)%10,math.floor(pointratebase/10)%10,pointratebase%10),518.5,615,295.5,310.5,Color(255,221,235,210),'bottom','right')
-			RenderTTF('PointStyle1',string.format('%d',lstg.var.graze),518.5,615,277.5,292.5,Color(255,217,217,217),'bottom','right')
+			RenderTTF('PointStyle1',string.format('%.1f×%d,%d%d%d',max(1.0,-lstg.var.dr),math.floor(pointratebase/1000),math.floor(pointratebase/100)%10,math.floor(pointratebase/10)%10,pointratebase%10),580.5,666,295.5,310.5,Color(255,221,235,210),'bottom','right')
+			RenderTTF('PointStyle1',string.format('%d',lstg.var.graze),580.5,666,277.5,292.5,Color(255,217,217,217),'bottom','right')
 		end
 	else
 		LoadImageFromFile('ui_bg2','THlib\\ui\\ui_bg_2.png')

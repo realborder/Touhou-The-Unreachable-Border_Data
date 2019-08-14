@@ -115,20 +115,20 @@ function stage_main_menu:init()
 	diff_menu=New(special_difficulty)
 	
 	stage_menu=New(base_menu,'stage_menu','',{
-			{'ChooseStage_item_Stage1','','',true},
-			{'ChooseBoss_item_Boss1','','',true},
-			{'ChooseStage_item_Stage2','','',true},
-			{'ChooseBoss_item_Boss2','','',true},
-			{'ChooseStage_item_Stage3','','',true},
-			{'ChooseBoss_item_Boss3','','',true},
+			{'ChooseStage_item_Stage1','diff_menu','',true},
+			{'ChooseBoss_item_Boss1','diff_menu','',true},
+			{'ChooseStage_item_Stage2','diff_menu','',true},
+			{'ChooseBoss_item_Boss2','diff_menu','',true},
+			{'ChooseStage_item_Stage3','diff_menu','',true},
+			{'ChooseBoss_item_Boss3','diff_menu','',true},
 		},
 		'start_menu',
 		true
 	)
 	
 	start_menu=New(base_menu,'start_menu','Title_Menu_item_Start',{
-			{'ChooseMode_item_StoryMode','diff_menu',function() practice=nil end,true},
-			{'ChooseMode_item_StagePrac','stage_menu',function() practice='stage' end,true},
+			{'ChooseMode_item_StoryMode','diff_menu',function() practice=nil diff_menu.menu_back=1 end,true},
+			{'ChooseMode_item_StagePrac','stage_menu',function() practice='stage' diff_menu.menu_back=2 end,true},
 			{'ChooseMode_item_SpellCardPrac','','',false},
 			{'ChooseMode_item_NightmareEcli','','',false},
 		},

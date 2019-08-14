@@ -33,6 +33,7 @@ function special_manual:frame()
 				action=(self.choose+1)..'to'..self.choose
 			end
 			exani_player_manager.ExecuteExaniPredefine(play_manager,'Manual_item',action)
+			PlaySound('select00', 0.3)
 			self.changed=true
 		elseif lstg.GetKeyState(KEY.DOWN) then
 			self.choose=self.choose+1
@@ -43,6 +44,7 @@ function special_manual:frame()
 				action=(self.choose-1)..'to'..self.choose
 			end
 			exani_player_manager.ExecuteExaniPredefine(play_manager,'Manual_item',action)
+			PlaySound('select00', 0.3)
 			self.changed=true
 		elseif lstg.GetKeyState(KEY.X) then
 			if self.pre_menu~='' then base_menu.ChangeLocked(self) base_menu.ChangeLocked(menus[self.pre_menu]) end
@@ -251,7 +253,8 @@ function special_difficulty:init()
 	self.bound=false
 	
 	self.title='ChooseDiff_title'
-	self.pre_menu='start_menu'
+	self.pre_menu={'start_menu','stage_menu'}
+	self.menu_back=1
 	self.has_logo=false
 	self.locked=true
 	self.init_timer=0
@@ -336,6 +339,7 @@ function special_difficulty:frame()
 				self.choose=self.choose-1
 				self.activate_timer=self.activate_delay
 				self.deactivate_timer=self.deactivate_delay
+				PlaySound('select00', 0.3)
 				exani_player_manager.ExecuteExaniPredefine(play_manager,self.pics[self.choose],'activate')
 				exani_player_manager.ExecuteExaniPredefine(play_manager,self.pics[self.pre_choose],'deactivate')
 				self.changed=true
@@ -346,6 +350,7 @@ function special_difficulty:frame()
 				self.choose=self.choose+1
 				self.activate_timer=self.activate_delay
 				self.deactivate_timer=self.deactivate_delay
+				PlaySound('select00', 0.3)
 				exani_player_manager.ExecuteExaniPredefine(play_manager,self.pics[self.choose],'activate')
 				exani_player_manager.ExecuteExaniPredefine(play_manager,self.pics[self.pre_choose],'deactivate')
 				self.changed=true
@@ -354,11 +359,12 @@ function special_difficulty:frame()
 			self.is_choose=true
 			exani_player_manager.ExecuteExaniPredefine(play_manager,self.pics[self.choose],'choose')
 			self.choose_timer=self.choose_delay
+			PlaySound('ok00', 0.3)
 		elseif lstg.GetKeyState(KEY.X) then
 			base_menu.ChangeLocked(self)
 			self.cancel_timer=self.cancel_delay
 			self.timer=0
-			if self.pre_menu~='' then base_menu.ChangeLocked(menus[self.pre_menu]) end
+			if self.pre_menu[self.menu_back]~='' then base_menu.ChangeLocked(menus[self.pre_menu[self.menu_back]]) end
 			exani_player_manager.ExecuteExaniPredefine(play_manager,self.pics[self.choose],'deactivate')
 			PlaySound('cancel00', 0.3)
 		end
@@ -412,7 +418,8 @@ function special_difficulty:render()
 end
 
 -------------------------------------
-stage_groups={'Easy','Normal','Hard','Lunatic'}
+stage_diffs={'Easy','Normal','Hard','Lunatic'}
+stage_choices={'Stage 1','','Stage 2','','Stage 3',''}
 
 
 special_player=Class(object)
@@ -468,17 +475,20 @@ function special_player:frame()
 			if (self.choose%2)==1 then
 				self.changed=true
 				self.choose=self.choose+1
+				PlaySound('select00', 0.3)
 				exani_player_manager.ExecuteExaniPredefine(play_manager,self.player[self.choose/2],'AtoB')
 			end
 		elseif lstg.GetKeyState(KEY.UP) then
 			if (self.choose%2)==0 then
 				self.changed=true
 				self.choose=self.choose-1
+				PlaySound('select00', 0.3)
 				exani_player_manager.ExecuteExaniPredefine(play_manager,self.player[(self.choose+1)/2],'BtoA')
 			end
 		elseif lstg.GetKeyState(KEY.RIGHT) then
 			if self.choose<3 then
 				self.changed=true
+				PlaySound('select00', 0.3)
 				local action=''
 				if self.choose==1 then action='killA' else action='killB' end
 				exani_player_manager.ExecuteExaniPredefine(play_manager,self.player[1],action)
@@ -488,6 +498,7 @@ function special_player:frame()
 		elseif lstg.GetKeyState(KEY.LEFT) then
 			if self.choose>2 then
 				self.changed=true
+				PlaySound('select00', 0.3)
 				local action=''
 				if self.choose==3 then action='killA' else action='killB' end
 				exani_player_manager.ExecuteExaniPredefine(play_manager,self.player[2],action)
@@ -510,6 +521,7 @@ function special_player:frame()
 			PlaySound('cancel00', 0.3)
 		elseif lstg.GetKeyState(KEY.Z) then
 			self.choose_timer=self.choose_delay
+			PlaySound('ok00', 0.3)
 			if self.choose==1 then exani_player_manager.ExecuteExaniPredefine(play_manager,self.player[1],'chooseA')
 			elseif self.choose==2 then exani_player_manager.ExecuteExaniPredefine(play_manager,self.player[1],'chooseB')
 			elseif self.choose==3 then exani_player_manager.ExecuteExaniPredefine(play_manager,self.player[2],'chooseA')
@@ -524,16 +536,18 @@ function special_player:frame()
 		lstg.var.player_name=player_list[self.choose][2]
         lstg.var.rep_player=player_list[self.choose][3]
 		exani_player_manager.ExecuteExaniPredefine(play_manager,'Title_Menu_bg','kill')
-		task.New(stage_menu,function() for i=1,60 do SetBGMVolume('menu',1-i/60) task.Wait() end end)
+		task.New(player_menu,function() for i=1,60 do SetBGMVolume('menu',1-i/60) task.Wait() end end)
 		local diff=menus['diff_menu']
+		local stage_pr=menus['stage_menu']
 		task.New(player_menu,function()
 			task.Wait(30)
 			New(mask_fader,'close')
 			task.Wait(30)
 			if practice=='stage' then
-				stage.group.PracticeStart('Normal@Stage 1')
+				Print("关卡练习参数是 "..stage_diffs[diff.choose]..'@'..stage_choices[stage_pr.choose])
+				stage.group.PracticeStart(stage_diffs[diff.choose]..'@'..stage_choices[stage_pr.choose])
 			else
-				stage.group.Start(stage.groups[stage_groups[diff.choose]])
+				stage.group.Start(stage.groups[stage_diffs[diff.choose]])
 			end
         end)
 	end

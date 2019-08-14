@@ -56,6 +56,7 @@ function base_menu:frame()
 				self.choose=self.choose-1
 				if self.choose<1 then self.choose=#self.exani_names end
 			end
+			PlaySound('select00', 0.3)
 			self.changed=true
 			self.change_timer=self.change_delay
 		elseif lstg.GetKeyState(KEY.DOWN) then
@@ -67,14 +68,17 @@ function base_menu:frame()
 				self.choose=self.choose+1
 				if self.choose>#self.exani_names then self.choose=1 end
 			end
+			PlaySound('select00', 0.3)
 			self.changed=true
 			self.change_timer=self.change_delay
 		elseif lstg.GetKeyState(KEY.Z) then
 			self.choosed=true
 			self.choose_timer=self.choose_delay
+			PlaySound('ok00', 0.3)
 		elseif lstg.GetKeyState(KEY.X) then
 			self.choosed=true
 			self.change_timer=self.change_delay
+			PlaySound('cancel00', 0.3)
 		end
 	end
 end
