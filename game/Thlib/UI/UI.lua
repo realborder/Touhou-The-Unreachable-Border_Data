@@ -1,7 +1,8 @@
 Include'THlib\\ui\\uiconfig.lua'
 Include'THlib\\ui\\font.lua'
---Include'THlib\\ui\\title.lua'
+Include'THlib\\ui\\title.lua'
 Include'THlib\\ui\\sc_pr.lua'
+Include'THlib\\ui\\stage_clear_bonus.lua'
 ui={}
 
 LoadTTF('WordStyle','THlib\\UI\\ttf\\yrdzst.ttf',20)
@@ -19,8 +20,10 @@ LoadImage('boss_sc_left','boss_ui',64,64,32,32)
 SetImageState('boss_sc_left','',Color(0xFF80FF80))
 
 LoadTexture('hint','THlib\\ui\\hint.png',true)
-LoadImage('hint.bonusfail','hint',0,64,256,64)
-LoadImage('hint.getbonus','hint',0,128,396,64)
+LoadTexture('hint2','THlib\\ui\\hint2.png',true)
+LoadImage('hint.stageclear','hint2',0,0,784,289)
+LoadImage('hint.bonusfail','hint2',0,567,784,137)
+LoadImage('hint.getbonus','hint2',0,290,784,277)
 LoadImage('hint.extend','hint',0,192,160,64)
 --LoadImage('hint.power','hint',0,12,84,32)
 --LoadImage('hint.graze','hint',86,12,74,32)
@@ -35,7 +38,7 @@ SetImageCenter('player_life',0,5.5)
 LoadImageFromFile('spell_life','THlib\\ui\\UI_gaming_spell.png')
 SetImageCenter('spell_life',0,5.5)
 
-LoadImage('kill_time','hint',232,200,152,56,16,16)
+LoadImage('kill_time','hint2',0,704,161,41,16,16)
 
 LoadImageFromFile('UI_gaming_item_collect_line','THlib\\ui\\UI_gaming_item_collect_line.png')
 LoadImageFromFile('UI_gaming_item_collect_word','THlib\\ui\\UI_gaming_item_collect_word.png')
@@ -91,6 +94,13 @@ ui.menu={
 	LoseLife=0,
 	LoseSpell=0,
 }
+
+function RenderTTFplus(ttfname,text,left,right,bottom,top,color,...) 
+	local a,r,g,b=lstgColor.ARGB(color)
+	r,g,b=r*0.15,g*0.15,b*0.15
+	RenderTTF(ttfname,text,left+1,right+1,bottom-1,top-1,Color(a,r,g,b),...)
+	RenderTTF(ttfname,text,left,right,bottom,top,color,...)
+end
 
 function ui.DrawMenu(title,text,pos,x,y,alpha,timer,shake,align)
 	align=align or 'center'
@@ -400,19 +410,19 @@ function ResetUI()
 				    end	
 				end
 			end
-			RenderTTF('WordStyle',SpellName,518,605.5,352.5,361.5,Color(255,233,255,233),'center','vcenter')
+			RenderTTFplus('WordStyle',SpellName,518,605.5,352.5,361.5,Color(255,233,255,233),'center','vcenter')
 			
-			RenderTTF('PointStyle1',int(max(lstg.tmpvar.hiscore or 0,lstg.var.score)),501,615,422,437,Color(255,208,216,255),'bottom','right')
-			RenderTTF('PointStyle1',int(lstg.var.score),501,615,404,419,Color(255,208,245,253),'bottom','right')
+			RenderTTFplus('PointStyle1',int(max(lstg.tmpvar.hiscore or 0,lstg.var.score)),501,615,422,437,Color(255,208,216,255),'bottom','right')
+			RenderTTFplus('PointStyle1',int(lstg.var.score),501,615,404,419,Color(255,208,245,253),'bottom','right')
 			
-			RenderTTF('PointStyle1',string.format('%d',math.floor(lstg.var.power/100)),550.5,595,313.5,328.5,Color(255,253,223,223),'bottom','left')
-			RenderTTF('PointStyle1',string.format('/%d',player.maxPower/100),550.5,595,313.5,328.5,Color(255,253,223,223),'bottom','right')
-			RenderTTF('PointStyle2',string.format('.%d%d',math.floor((lstg.var.power%100)/10),math.floor(lstg.var.power%10)),560,615,313.5,328.5,Color(255,253,223,223),'bottom','left')
-			RenderTTF('PointStyle2','.00',560,615,313.5,328.5,Color(255,253,223,223),'bottom','right')
+			RenderTTFplus('PointStyle1',string.format('%d',math.floor(lstg.var.power/100)),550.5,595,313.5,328.5,Color(255,253,223,223),'bottom','left')
+			RenderTTFplus('PointStyle1',string.format('/%d',player.maxPower/100),550.5,595,313.5,328.5,Color(255,253,223,223),'bottom','right')
+			RenderTTFplus('PointStyle2',string.format('.%d%d',math.floor((lstg.var.power%100)/10),math.floor(lstg.var.power%10)),560,615,313.5,328.5,Color(255,253,223,223),'bottom','left')
+			RenderTTFplus('PointStyle2','.00',560,615,313.5,328.5,Color(255,253,223,223),'bottom','right')
 			--RenderTTF('PointStyle1',string.format('%d,%d%d%d',math.floor(lstg.var.pointrate/1000),math.floor(lstg.var.pointrate/100)%10,math.floor(lstg.var.pointrate/10)%10,lstg.var.pointrate%10),518.5,615,295.5,310.5,Color(255,221,235,210),'bottom','right')
 			local pointratebase=10000 + int(lstg.var.graze/10)*10 + int(lstg.var.faith/10)*10
-			RenderTTF('PointStyle1',string.format('%.1f×%d,%d%d%d',max(1.0,-lstg.var.dr),math.floor(pointratebase/1000),math.floor(pointratebase/100)%10,math.floor(pointratebase/10)%10,pointratebase%10),518.5,615,295.5,310.5,Color(255,221,235,210),'bottom','right')
-			RenderTTF('PointStyle1',string.format('%d',lstg.var.graze),518.5,615,277.5,292.5,Color(255,217,217,217),'bottom','right')
+			RenderTTFplus('PointStyle1',string.format('%.1f×%d,%d%d%d',max(1.0,-lstg.var.dr),math.floor(pointratebase/1000),math.floor(pointratebase/100)%10,math.floor(pointratebase/10)%10,pointratebase%10),518.5,615,295.5,310.5,Color(255,221,235,210),'bottom','right')
+			RenderTTFplus('PointStyle1',string.format('%d',lstg.var.graze),518.5,615,277.5,292.5,Color(255,217,217,217),'bottom','right')
 		end
 	else
 		LoadImageFromFile('ui_bg2','THlib\\ui\\ui_bg_2.png')

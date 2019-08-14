@@ -176,7 +176,7 @@ local UpdateLaser=function(self)
 			self.nodelist_aim[i][2]=self.targetlist[i].y end 
 		end
 		if enemyExist then --有敌机
-			local l=#self.nodelist_aim  --糊把这个表的最后一个节点作为出屏节点，接下来就是要算这个出屏节点
+			local l=#self.nodelist_aim  --把这个表的最后一个节点作为出屏节点，接下来就是要算这个出屏节点
 			local t=self.nodelist_aim
 			local sx=t[l][1] --s = Source
 			local sy=t[l][2]
@@ -205,7 +205,7 @@ local UpdateLaser=function(self)
 		else--无敌机则重置为初始值
 			for i=1,self.target_num+2 do
 				if not self.nodelist_aim[i] then self.nodelist_aim[i]={} end
-				self.nodelist_aim[i][1],self.nodelist_aim[i][2]=self.x,self.y+180*(i-1) 
+				self.nodelist_aim[i][1],self.nodelist_aim[i][2]=self.x,self.y+270*(i-1) 
 			end
 		end
 		--Print("[debug][player]#self.nodelist_aim="..#self.nodelist_aim)
@@ -226,7 +226,8 @@ local UpdateLaser=function(self)
 		end
 	
 	end
-	
+	--将目标点集的第二项置为玩家前面一个店
+
 	----------目标值已经设定，接下来丝滑化和计算点集
 	local t=self.nodelist_aim
 	for i=1,self.target_num+2 do 
@@ -235,23 +236,32 @@ local UpdateLaser=function(self)
 			self.nodelist[i][1]=t[i][1]
 			self.nodelist[i][2]=t[i][2]
 		else
-			self.nodelist[i][1]=self.nodelist[i][1]+(self.nodelist_aim[i][1]-self.nodelist[i][1])*0.2
-			self.nodelist[i][2]=self.nodelist[i][2]+(self.nodelist_aim[i][2]-self.nodelist[i][2])*0.2
+			self.nodelist[i][1]=self.nodelist[i][1]+(self.nodelist_aim[i][1]-self.nodelist[i][1])*0.1
+			self.nodelist[i][2]=self.nodelist[i][2]+(self.nodelist_aim[i][2]-self.nodelist[i][2])*0.1
 		end
 	end
-	
+
+
 	--丝滑化完毕的激光节点拿去补间，得到一系列用来渲染的坐标 捎带把激光的宽度给算了
 	for i=1,6 do
 		if self.sp[i] and self.sp[i][3] > 0.5 then
+			
 			----如果这个子机是有效的那么就将第一个节点移到子机上，否则照常
 			self.nodelist[1][1],self.nodelist[1][2]=self.supportx+self.sp[i][1],self.supporty+self.sp[i][2]
+			table.insert(self.nodelist,2,{self.x,self.y+128})
 		else
+			
 		end
 		--Print("[debug][player]#self.nodelist="..#self.nodelist)
 
 		--PrintSimpleTable(self.nodelist[i],"self.nodelist")
 		-- error("go to log.txt plzzzzzz")
 		self.highlaser_data[i]=InterpolationByCatmullRom(self.nodelist[1][1],self.nodelist[1][2],self.laserNode_num,self.nodelist)
+		if self.sp[i] and self.sp[i][3] > 0.5 then
+			table.remove(self.nodelist,2)
+		end
+
+	
 	end
 	for i=1,6 do 
 		marisa_high_laser.Update(self.highlaser[i],self,i) 
@@ -317,7 +327,7 @@ local RenderLaser=function(self)
 	for i=1,6 do 
 		local l=self.highlaser[i]
 		-- if l.w>0 then l.data:Render("_marisa_highlaser","mul+add",Color(0x80FFFFFF),0,64*(int(0.5*l.timer)%4),512,28) end
-		if self.highlaserWidth>0 then
+		if self.highlaserWidth>0 and self.sp[i] and self.sp[i][3] > 0.5  then
 			l.data:Render("_marisa_highlaser","mul+add",Color(0x30FFFFFF),512*((self.timer/20)%1),0,512,32)
 		end
 	end
