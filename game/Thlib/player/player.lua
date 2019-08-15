@@ -600,7 +600,7 @@ function grazer:colli(other)
 		item.PlayerGraze()
 		--lstg.player.grazer.grazed=true
 		self.grazed=true
-		self.graze_count=self.graze_count+1
+		if not ext.sc_pr then self.graze_count=self.graze_count+1 end
 		other._graze=true
 	end
 end

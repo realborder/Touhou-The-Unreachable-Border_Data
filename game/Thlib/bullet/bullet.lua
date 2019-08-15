@@ -58,7 +58,7 @@ for i=1,8 do SetImageState('ball_light'..i,'mul+add') end
 LoadTexture('bullet_ball_huge','THlib\\bullet\\bullet_ball_huge.png')
 LoadImageGroup('ball_huge','bullet_ball_huge',0,0,64*2,64*2,4,2,27*bk,27*bk)
 LoadImageGroup('fade_ball_huge','bullet_ball_huge',0,0,64*2,64*2,4,2,27*bk,27*bk)
-LoadImageGroup('ball_huge_dark','bullet_ball_huge',0,0,64*2,64*2,4,2,27*bk,27*bk*bk)
+LoadImageGroup('ball_huge_dark','bullet_ball_huge',0,0,64*2,64*2,4,2,27*bk,27*bk)
 LoadImageGroup('fade_ball_huge_dark','bullet_ball_huge',0,0,64*2,64*2,4,2,27*bk,27*bk)
 for i=1,8 do SetImageState('ball_huge'..i,'mul+add') end
 --------------------------

@@ -133,6 +133,10 @@ function marisa_slow_bullet:init(x,y,v,size,dmg)
 	self.dmg=dmg*1.08
 	self.omiga=5
 end
+function marisa_slow_bullet:render()
+	SetImageState("_marisa_slow_shoot","mul+add",Color(0x60FFFFFF))
+	object.render(self)
+end
 function marisa_slow_bullet:kill()
 	New(marisa_slow_bullet_ef,self.x,self.y,self.hscale)
 end
@@ -827,8 +831,8 @@ function marisa_playerA:frame()
 	local sup=self.support
 	local max_n=6
 	local i=1
-	local E_Dist=28 --每个子机之间的间距
-	local magnet=0.09
+	local E_Dist=24 --每个子机之间的间距
+	local magnet=0.18
 	if not self.sp then self.sp={} end
 	while sup>0 do
 		local x_aim,y_aim --子机坐标的目标值
@@ -851,8 +855,8 @@ function marisa_playerA:frame()
 				self.sp[i][1]=self.sp[i][1]+(x_aim-self.sp[i][1])*magnet
 				self.sp[i][2]=self.sp[i][2]+(y_aim-self.sp[i][2])*magnet
 			elseif self.slow==1 then
-				self.sp[i][1]=self.sp[i][1]+(x_aim-self.sp[i][1])*magnet*2
-				self.sp[i][2]=self.sp[i][2]+(y_aim-self.sp[i][2])*magnet*2
+				self.sp[i][1]=self.sp[i][1]+(x_aim-self.sp[i][1])*magnet
+				self.sp[i][2]=self.sp[i][2]+(y_aim-self.sp[i][2])*magnet
 			end
 		end
 		self.sp[i][3]=min(1,sup)
