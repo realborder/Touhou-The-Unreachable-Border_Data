@@ -17,10 +17,10 @@ function ChapFin:init(isInboss)
 end
 
 function ChapFin:frame()
-	if ext.sc_pr then RawDel(self) end --如果在符卡练习那就跳过，我知道这种写法很蠢，但是要去每张卡下面改太麻烦了
-	if self.timer==0 then
+	if ext.sc_pr then RawDel(self) return end --如果在符卡练习那就跳过，我知道这种写法很蠢，但是要去每张卡下面改太麻烦了
+	if self.timer==40 then
 		DR_Pin.reset()
-		if not self.flag then ClearAllEnemyAndBullet() end --击破boss一个阶段自带消弹了
+		
 		--残机结算
 		if lstg.var.chip>=100 and not self.flag then
 			lstg.var.lifeleft=min(11,lstg.var.lifeleft+int(lstg.var.chip/100))
@@ -53,6 +53,7 @@ function ChapFin:frame()
 	end
 	if self.timer==1 and not self.flag then 
 		-----【动画实装】
+		if not self.flag then ClearAllEnemyAndBullet() end --击破boss一个阶段自带消弹了
 		exani_player_manager.ExecuteExaniPredefine(play_manager,'ChapterFinished','init') 
 		-- if not explrmgr_chapfin then
 			-- exani_player_manager.SetExaniAttribute(play_manager,'ChapterFinished',1,66,LAYER_TOP,'world',1,1,false) 

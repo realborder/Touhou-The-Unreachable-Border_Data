@@ -410,19 +410,19 @@ function ResetUI()
 				    end	
 				end
 			end
-			RenderTTF('WordStyle',SpellName,576,663.5,352.5,361.5,Color(255,233,255,233),'center','vcenter')
+			RenderTTFplus('WordStyle',SpellName,576,663.5,352.5,361.5,Color(255,233,255,233),'center','vcenter')
 			
-			RenderTTF('PointStyle1',int(max(lstg.tmpvar.hiscore or 0,lstg.var.score)),551,665,422,437,Color(255,208,216,255),'bottom','right')
-			RenderTTF('PointStyle1',int(lstg.var.score),551,665,404,419,Color(255,208,245,253),'bottom','right')
+			RenderTTFplus('PointStyle1',int(max(lstg.tmpvar.hiscore or 0,lstg.var.score)),551,665,422,437,Color(255,208,216,255),'bottom','right')
+			RenderTTFplus('PointStyle1',int(lstg.var.score),551,665,404,419,Color(255,208,245,253),'bottom','right')
 			
-			RenderTTF('PointStyle1',string.format('%d',math.floor(lstg.var.power/100)),600.5,645,313.5,328.5,Color(255,253,223,223),'bottom','left')
-			RenderTTF('PointStyle1',string.format('/%d',player.maxPower/100),600.5,645,313.5,328.5,Color(255,253,223,223),'bottom','right')
-			RenderTTF('PointStyle2',string.format('.%d%d',math.floor((lstg.var.power%100)/10),math.floor(lstg.var.power%10)),610,665,313.5,328.5,Color(255,253,223,223),'bottom','left')
-			RenderTTF('PointStyle2','.00',610,665,313.5,328.5,Color(255,253,223,223),'bottom','right')
-			--RenderTTF('PointStyle1',string.format('%d,%d%d%d',math.floor(lstg.var.pointrate/1000),math.floor(lstg.var.pointrate/100)%10,math.floor(lstg.var.pointrate/10)%10,lstg.var.pointrate%10),518.5,615,295.5,310.5,Color(255,221,235,210),'bottom','right')
+			RenderTTFplus('PointStyle1',string.format('%d',math.floor(lstg.var.power/100)),600.5,645,313.5,328.5,Color(255,253,223,223),'bottom','left')
+			RenderTTFplus('PointStyle1',string.format('/%d',player.maxPower/100),600.5,645,313.5,328.5,Color(255,253,223,223),'bottom','right')
+			RenderTTFplus('PointStyle2',string.format('.%d%d',math.floor((lstg.var.power%100)/10),math.floor(lstg.var.power%10)),610,665,313.5,328.5,Color(255,253,223,223),'bottom','left')
+			RenderTTFplus('PointStyle2','.00',610,665,313.5,328.5,Color(255,253,223,223),'bottom','right')
+			--RenderTTFplus('PointStyle1',string.format('%d,%d%d%d',math.floor(lstg.var.pointrate/1000),math.floor(lstg.var.pointrate/100)%10,math.floor(lstg.var.pointrate/10)%10,lstg.var.pointrate%10),518.5,615,295.5,310.5,Color(255,221,235,210),'bottom','right')
 			local pointratebase=10000 + int(lstg.var.graze/10)*10 + int(lstg.var.faith/10)*10
-			RenderTTF('PointStyle1',string.format('%.1f×%d,%d%d%d',max(1.0,-lstg.var.dr),math.floor(pointratebase/1000),math.floor(pointratebase/100)%10,math.floor(pointratebase/10)%10,pointratebase%10),580.5,666,295.5,310.5,Color(255,221,235,210),'bottom','right')
-			RenderTTF('PointStyle1',string.format('%d',lstg.var.graze),580.5,666,277.5,292.5,Color(255,217,217,217),'bottom','right')
+			RenderTTFplus('PointStyle1',string.format('%.1f×%d,%d%d%d',max(1.0,-lstg.var.dr),math.floor(pointratebase/1000),math.floor(pointratebase/100)%10,math.floor(pointratebase/10)%10,pointratebase%10),580.5,666,295.5,310.5,Color(255,221,235,210),'bottom','right')
+			RenderTTFplus('PointStyle1',string.format('%d',lstg.var.graze),580.5,666,277.5,292.5,Color(255,217,217,217),'bottom','right')
 		end
 	else
 		LoadImageFromFile('ui_bg2','THlib\\ui\\ui_bg_2.png')

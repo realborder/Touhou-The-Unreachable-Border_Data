@@ -1,3 +1,4 @@
+Include"mwy_dialogsys\\mwy_dialogsys_sub.lua"
 -----------------------------------------------------------------------------------
 --外挂式对话系统
 --目的是将原本在工程内的对话和对话所用的立绘全部移到外部脚本中
@@ -19,9 +20,9 @@ function dialogsys.init()
 		local ch,dia=lstg.DoFile(PATH..v..'\\_init.lua')
 		if ch or dia then dialogsys.data[v]={} end
 		if ch then dialogsys.data[v].character={} end
-		for k,v in pairs(ch) do dialogsys.data[v].character[k]=v end
-		if dia then dialogsys.data[v].dialog={} end
-		for k,v in pairs(dia) do dialogsys.data[v].dialog[k]=v end
+		for _k,_v in pairs(ch) do dialogsys_sub.data[v].character[_k]=_v end
+		if dia then dialogsys_sub.data[v].dialog={} end
+		for _k,_v in pairs(dia) do dialogsys_sub.data[v].dialog[_k]=_v end
 	end
 end
 
@@ -41,7 +42,7 @@ end
 function dialogsys:play(stage,index) --对应工程中的sentence部分
 	if type(stage)~='string' then error('param#1 requeire string value') end
 	if type(index)~='number' then error('param#2 requeire number value') end
-	if not dialogsys.data[stage] then error('Look at dialog of '..stage..'['..index..']  It\'s just empty!'')
+	if not dialogsys.data[stage] then error('Look at dialog of '..stage..'['..index..']  It\'s just empty!') end
 	local stagech=dialogsys.data[stage].character
 	local dia=dialogsys.data[stage].dialog[index]
 	for k,v in dia do

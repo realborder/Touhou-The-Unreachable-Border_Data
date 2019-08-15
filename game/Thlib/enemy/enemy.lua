@@ -175,17 +175,19 @@ function enemy_death_ef:init(index,x,y)
 	self.img='bubble'..index
 	self.layer=LAYER_ENEMY+50
 	self.group=GROUP_GHOST
-	self.x=x self.y=y self.rot=45
+	self.x=x self.y=y self.rot=ran:Float(0,360)
 	PlaySound('enep00',0.3,self.x/200,true)
 end
 
 function enemy_death_ef:render()
-	local alpha=1-self.timer/30
-	alpha=255*alpha^2
+	-- local alpha=1-self.timer/30
+	local k=self.timer/30
+	local alpha=255*(1-k)^2
+	k=sin(90*k)
+	SetImageState(self.img,'',Color(alpha/1.5,255,255,255))
+	Render(self.img,self.x,self.y, 0,2+1.4*k,2+1.4*k)
 	SetImageState(self.img,'',Color(alpha,255,255,255))
-	Render(self.img,self.x,self.y, 15,0.4-self.timer*0.01,self.timer*0.1+0.7)
-	Render(self.img,self.x,self.y, 75,0.4-self.timer*0.01,self.timer*0.1+0.7)
-	Render(self.img,self.x,self.y,135,0.4-self.timer*0.01,self.timer*0.1+0.7)
+	Render(self.img,self.x,self.y, self.rot,0.8,6*k)
 end
 
 function enemy_death_ef:frame()

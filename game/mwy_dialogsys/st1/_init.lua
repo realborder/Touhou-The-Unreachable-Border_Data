@@ -14,13 +14,12 @@ local _tmp_char_info={
 		--键值必须是string类型，指代表情类型
 		--img 角色表情图像
 		--balloontype 角色表情对应的气泡
-	[REIMU]={img=,rx=,ry=,pos=L,emolist={
-		['normal']={img=,balloontype=},
+	[REIMU]={img='',rx=0,ry=0,pos=L,emolist={
+		['normal']={img='',balloontype=1},
 		['happy']={},
 	}},
 	[VALEN]={
-	},
-	...
+	}
 }
 
 --对话内容，如此一来写对话可完全简化为角色，表情和文字三项
