@@ -282,7 +282,7 @@ function special_difficulty:init()
 		LoadImageFromFile(self.pics[i],"Thlib\\exani\\exani_data\\"..self.pics[i].."\\"..self.pics[i]..".png")
 	end
 	
-	self.gap=640
+	self.gap=480
 	self.repeats=3
 	self.speed=0.5
 	self.y=200
@@ -329,7 +329,7 @@ function special_difficulty:frame()
 	if self.activate_timer>0 then
 		local choosen=(#self.pics)*(self.repeats-1)/2+self.choose
 		local dx=exani_interpolation(self.x_offset[choosen],0,self.activate_delay-self.activate_timer+1,1,self.activate_delay,'smooth','smooth')
-		exani_player_manager.SetExaniAttribute(play_manager,self.pics[self.choose],nil,nil,nil,nil,nil,nil,nil,'3d',dx+853/2,480/2,self.z,0.5,0.5)
+		exani_player_manager.SetExaniAttribute(play_manager,self.pics[self.choose],nil,nil,nil,nil,nil,nil,nil,'3d',dx+320,240,self.z,0.5,0.5)
 	end
 	
 	if self.init_timer>self.init_delay and self.activate_timer==0 and self.deactivate_timer==0 and not self.is_choose then
@@ -374,7 +374,7 @@ function special_difficulty:frame()
 		if pre_choose~=0 then
 			local choosen=(#self.pics)*(self.repeats-1)/2+self.pre_choose
 			local dx=exani_interpolation(0,self.x_offset[choosen],self.deactivate_delay-self.deactivate_timer+1,1,self.deactivate_delay,'smooth','smooth')
-			exani_player_manager.SetExaniAttribute(play_manager,self.pics[self.pre_choose],nil,nil,nil,nil,nil,nil,nil,'3d',dx+853/2,480/2,self.z,0.5,0.5)
+			exani_player_manager.SetExaniAttribute(play_manager,self.pics[self.pre_choose],nil,nil,nil,nil,nil,nil,nil,'3d',dx+320,240,self.z,0.5,0.5)
 		end
 	end
 	
@@ -386,7 +386,7 @@ function special_difficulty:frame()
 end
 
 function special_difficulty:render()
-	local scalefix=1
+	local scalefix=0.5
 	if self.locked and not self.is_choose then
 		SetViewMode('ui')
 		local dx=(self.timer*self.speed)%((#self.pics)*self.gap)
@@ -420,7 +420,7 @@ end
 
 -------------------------------------
 stage_diffs={'Easy','Normal','Hard','Lunatic'}
-stage_choices={'Stage 1','','Stage 2','','Stage 3',''}
+stage_choices={'Stage 1','Stage 1','Stage 2','Stage 2','Stage 3','Stage 3'}
 
 
 special_player=Class(object)
