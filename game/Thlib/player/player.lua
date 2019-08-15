@@ -816,8 +816,8 @@ player_list={
 	{'Kirisame Marisa typeB','marisa_playerB','MarisaB'}]]
 }
 
-Include'THlib\\player\\reimu\\reimu.lua'
-Include'THlib\\player\\marisa\\marisa.lua'
+-- Include'THlib\\player\\reimu\\reimu.lua'
+-- Include'THlib\\player\\marisa\\marisa.lua'
 
 ----------------------------------------
 ---加载自机
