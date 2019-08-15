@@ -282,7 +282,7 @@ function special_difficulty:init()
 		LoadImageFromFile(self.pics[i],"Thlib\\exani\\exani_data\\"..self.pics[i].."\\"..self.pics[i]..".png")
 	end
 	
-	self.gap=640
+	self.gap=480
 	self.repeats=3
 	self.speed=0.5
 	self.y=200
@@ -390,7 +390,7 @@ function special_difficulty:frame()
 end
 
 function special_difficulty:render()
-	local scalefix=1
+	local scalefix=0.5
 	if self.locked and not self.is_choose then
 		SetViewMode('ui')
 		local dx=(self.timer*self.speed)%((#self.pics)*self.gap)
@@ -424,7 +424,7 @@ end
 
 -------------------------------------
 stage_diffs={'Easy','Normal','Hard','Lunatic'}
-stage_choices={'Stage 1','','Stage 2','','Stage 3',''}
+stage_choices={'Stage 1','Stage 1','Stage 2','Stage 2','Stage 3','Stage 3'}
 
 
 special_player=Class(object)

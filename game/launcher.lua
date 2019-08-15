@@ -85,6 +85,17 @@ function setting_keys_default()
 end
 
 ---------------------------------------
+LoadImageFromFile('UI_gameInit','THlib\\UI\\UI_gameInit.jpg')
+InitRenderFlag=true
+
+InitRender=Class(object)
+function InitRender:init()
+	self.layer=LAYER_TOP+20
+end
+
+function InitRender:render()
+	if InitRenderFlag then Render('UI_gameInit',320,240) end
+end
 
 stage_main_menu=stage.New('menu',true,true)
 
@@ -116,18 +127,18 @@ function stage_main_menu:init()
 	
 	stage_menu=New(base_menu,'stage_menu','',{
 			{'ChooseStage_item_Stage1','diff_menu','',true},
-			{'ChooseBoss_item_Boss1','diff_menu','',true},
+			{'ChooseBoss_item_Boss1','diff_menu',function() debugPoint=4 end,true},
 			{'ChooseStage_item_Stage2','diff_menu','',true},
-			{'ChooseBoss_item_Boss2','diff_menu','',true},
+			{'ChooseBoss_item_Boss2','diff_menu',function() debugPoint=4 end,true},
 			{'ChooseStage_item_Stage3','diff_menu','',true},
-			{'ChooseBoss_item_Boss3','diff_menu','',true},
+			{'ChooseBoss_item_Boss3','diff_menu',function() debugPoint=5 end,true},
 		},
 		'start_menu',
 		true
 	)
 	
 	start_menu=New(base_menu,'start_menu','Title_Menu_item_Start',{
-			{'ChooseMode_item_StoryMode','diff_menu',function() practice=nil diff_menu.menu_back=1 end,true},
+			{'ChooseMode_item_StoryMode','diff_menu',function() practice=nil diff_menu.menu_back=1 debugPoint=0 end,true},
 			{'ChooseMode_item_StagePrac','stage_menu',function() practice='stage' diff_menu.menu_back=2 end,true},
 			{'ChooseMode_item_SpellCardPrac','','',false},
 			{'ChooseMode_item_NightmareEcli','','',false},
@@ -192,11 +203,11 @@ function stage_main_menu:init()
 	LoadMusic('menu',music_list.menu[1],music_list.menu[2],music_list.menu[3])
     PlayMusic('menu')
 	
+	InitRenderFlag=false
 end
 
 function stage_main_menu:render()
-	--执行exani动画,主要是背景
-	--然后发现不是在这里运行的
+	
 end
 
 ---------------------------------------
@@ -250,6 +261,7 @@ function other_setting_menu:frame()
 end
 
 function other_setting_menu:render()
+	if self.locked then return end
 	SetFontState('menu','',Color(self.alpha*255,unpack(ui.menu.title_color)))
 	RenderText('menu',self.title,self.x,self.y+ui.menu.line_height*4,ui.menu.font_size,'centerpoint')
 	if self.pos<=2 and self.edit then
