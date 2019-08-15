@@ -226,8 +226,6 @@ Include(path.."marisaB.lua")
 
 
 
-table.insert(player_list, {"MWY Kirisame Marisa A","marisa_playerA","MarisaA"})
-table.insert(player_list, {"MWY Kirisame Marisa B","marisa_playerB","MarisaB"})
 
 
 
