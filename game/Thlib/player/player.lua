@@ -810,14 +810,14 @@ end
 
 --列表里的三项分别代表被展示名称，类名和类的name值
 player_list={
-	{'Hakurei Reimu typeA','reimu_playerA','ReimuA'},
-	{'Hakurei Reimu typeB','reimu_playerB','ReimuB'}--[[,
+	--[[{'Hakurei Reimu typeA','reimu_playerA','ReimuA'},
+	{'Hakurei Reimu typeB','reimu_playerB','ReimuB'},
 	{'Kirisame Marisa typeA','marisa_playerA','MarisaA'},
 	{'Kirisame Marisa typeB','marisa_playerB','MarisaB'}]]
 }
 
-Include'THlib\\player\\reimu\\reimu.lua'
-Include'THlib\\player\\marisa\\marisa.lua'
+-- Include'THlib\\player\\reimu\\reimu.lua'
+-- Include'THlib\\player\\marisa\\marisa.lua'
 
 ----------------------------------------
 ---加载自机

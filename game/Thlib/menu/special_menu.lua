@@ -328,8 +328,10 @@ function special_difficulty:frame()
 	end
 	if self.activate_timer>0 then
 		local choosen=(#self.pics)*(self.repeats-1)/2+self.choose
+		local x_fix=640/2
+		local y_fix=480/2
 		local dx=exani_interpolation(self.x_offset[choosen],0,self.activate_delay-self.activate_timer+1,1,self.activate_delay,'smooth','smooth')
-		exani_player_manager.SetExaniAttribute(play_manager,self.pics[self.choose],nil,nil,nil,nil,nil,nil,nil,'3d',dx+853/2,480/2,self.z,0.5,0.5)
+		exani_player_manager.SetExaniAttribute(play_manager,self.pics[self.choose],nil,nil,nil,nil,nil,nil,nil,'3d',dx+x_fix,y_fix,self.z,0.5,0.5)
 	end
 	
 	if self.init_timer>self.init_delay and self.activate_timer==0 and self.deactivate_timer==0 and not self.is_choose then
@@ -373,8 +375,10 @@ function special_difficulty:frame()
 	if self.deactivate_timer>0 then
 		if pre_choose~=0 then
 			local choosen=(#self.pics)*(self.repeats-1)/2+self.pre_choose
+			local x_fix=640/2
+			local y_fix=480/2
 			local dx=exani_interpolation(0,self.x_offset[choosen],self.deactivate_delay-self.deactivate_timer+1,1,self.deactivate_delay,'smooth','smooth')
-			exani_player_manager.SetExaniAttribute(play_manager,self.pics[self.pre_choose],nil,nil,nil,nil,nil,nil,nil,'3d',dx+853/2,480/2,self.z,0.5,0.5)
+			exani_player_manager.SetExaniAttribute(play_manager,self.pics[self.pre_choose],nil,nil,nil,nil,nil,nil,nil,'3d',dx+x_fix,y_fix,self.z,0.5,0.5)
 		end
 	end
 	
