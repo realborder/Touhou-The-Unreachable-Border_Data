@@ -71,7 +71,8 @@ function base_menu:frame()
 			PlaySound('select00', 0.3)
 			self.changed=true
 			self.change_timer=self.change_delay
-		elseif lstg.GetKeyState(KEY.Z) then
+		--- lstg.GetKeyState(KEY.Z)这样的写法是有问题的，一旦改键就会完蛋，而且一直按住Z键就会一直选择菜单
+		elseif KeyIsPressed'shoot' then 
 			self.choosed=true
 			self.choose_timer=self.choose_delay
 			PlaySound('ok00', 0.3)
