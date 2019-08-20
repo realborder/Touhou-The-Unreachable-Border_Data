@@ -13,7 +13,11 @@ function special_manual:init()
 	
 	self.exani_names={'Manual_item'}
 	self.enables={true}
-	
+
+	for _,v in ipairs({'Manual_item','Manual_title'}) do
+		exani_player_manager.CreateSingleExani(play_manager,v)
+	end
+
 	menus['manual_menu']=self
 end
 
@@ -118,6 +122,10 @@ function special_replay:init()
 	special_replay.Refresh(self)
 	
 	menus['replay_menu']=self
+		
+	for _,v in ipairs({'Replay_titleAndTable'}) do
+		exani_player_manager.CreateSingleExani(play_manager,v)
+	end
 end
 
 function special_replay:Refresh()
@@ -300,6 +308,11 @@ function special_difficulty:init()
 	end
 	
 	menus['diff_menu']=self
+
+	exani_player_manager.CreateSingleExani(play_manager,self.title)
+	for _,v in ipairs(self.pics) do
+		exani_player_manager.CreateSingleExani(play_manager,v)
+	end
 end
 
 function special_difficulty:frame()
@@ -390,6 +403,7 @@ function special_difficulty:frame()
 end
 
 function special_difficulty:render()
+	-- do if self.timer<=30 then return end end
 	local scalefix=0.5
 	if self.locked and not self.is_choose then
 		SetViewMode('ui')
@@ -453,6 +467,11 @@ function special_player:init()
 	self.player={'ChooseChar_reimu','ChooseChar_marisa'}
 	
 	menus['player_menu']=self
+
+	exani_player_manager.CreateSingleExani(play_manager,self.title)
+	for _,v in ipairs(self.player) do
+		exani_player_manager.CreateSingleExani(play_manager,v)
+	end
 end
 
 function special_player:frame()
@@ -466,7 +485,8 @@ function special_player:frame()
 	if self.locked then return end
 	
 	self.init_timer=self.init_timer+1
-	if self.changed and not lstg.GetKeyState(KEY.LEFT) and not lstg.GetKeyState(KEY.RIGHT) and not lstg.GetKeyState(KEY.UP) and not lstg.GetKeyState(KEY.DOWN) then self.changed=false end
+	if self.changed and not lstg.GetKeyState(KEY.LEFT) and not lstg.GetKeyState(KEY.RIGHT)
+		and not lstg.GetKeyState(KEY.UP) and not lstg.GetKeyState(KEY.DOWN) then self.changed=false end
 	
 	if self.choose_timer>=0 then self.choose_timer=self.choose_timer-1 end
 	
@@ -528,14 +548,15 @@ function special_player:frame()
 			self.choose_timer=self.choose_delay
 			PlaySound('ok00', 0.3)
 			if self.choose==1 then exani_player_manager.ExecuteExaniPredefine(play_manager,self.player[1],'chooseA')
-			elseif self.choose==2 then exani_player_manager.ExecuteExaniPredefine(play_manager,self.player[1],'chooseB')
+			elseif self.choose==2 then PlaySound"invalid"--exani_player_manager.ExecuteExaniPredefine(play_manager,self.player[1],'chooseB')
 			elseif self.choose==3 then exani_player_manager.ExecuteExaniPredefine(play_manager,self.player[2],'chooseA')
 			elseif self.choose==4 then exani_player_manager.ExecuteExaniPredefine(play_manager,self.player[2],'chooseB')
 			end
 		end
 	end
 	
-	if self.choose_timer==0 then
+	-- if self.choose_timer==0 then --上t锁定梦B
+	if self.choose_timer==0 and self.choose ~= 2 then 
 		base_menu.ChangeLocked(self)
 		scoredata.player_select=self.choose
 		lstg.var.player_name=player_list[self.choose][2]

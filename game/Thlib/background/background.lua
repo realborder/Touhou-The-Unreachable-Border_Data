@@ -218,4 +218,4 @@ end
 Include'THlib\\background\\temple\\temple.lua'
 Include'THlib\\background\\spellcard\\spellcard.lua'
 
-Include'THlib\\background\\background_addon.lua'
+-- Include'THlib\\background\\background_addon.lua'

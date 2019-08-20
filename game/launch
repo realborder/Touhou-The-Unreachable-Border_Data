@@ -306,9 +306,9 @@ if #args>=2 then loadstring(args[2])() end
 
 if not start_game then
 	setting.mod='launcher'
-	setting.resx=480
-	setting.resy=640
-	setting.windowed=true
+	--setting.resx=480
+	--setting.resy=640
+	--setting.windowed=true
 	setting.nosplash=true
 	setting.allowsnapshot=false
 end
@@ -319,12 +319,25 @@ if updatelib then
 	lfs.chdir('..')
 end
 
-for _,v in ipairs({"data","background","se","music","font"}) do
+
+SetSplash(true)
+SetTitle('东方梦无垠 ~ The Unreachabe Oneiroborder ver.pre1')
+SetWindowed(setting.windowed)
+SetResolution(setting.resx,setting.resy)
+SetFPS(60)
+SetVsync(setting.vsync)
+SetSEVolume(setting.sevolume/100)
+SetBGMVolume(setting.bgmvolume/100)
+
+---[[
+for _,v in ipairs({"data",--[["background",]]"se","music","font"}) do
 	local packpath="Library\\"..v..".zip"
 	if not (lfs.attributes(packpath)==nil) then
 		LoadPack(packpath)
 	end
 end
+--]]
+
 
 if setting.mod~='launcher' then
 	if not(lfs.attributes('mod\\'..setting.mod..'.zip')==nil) then
@@ -344,12 +357,3 @@ else
 		--使用游戏根目录里面的启动器
 	end
 end
-
-SetSplash(false)
-SetTitle(setting.mod)
-SetWindowed(setting.windowed)
-SetResolution(setting.resx,setting.resy)
-SetFPS(60)
-SetVsync(setting.vsync)
-SetSEVolume(setting.sevolume/100)
-SetBGMVolume(setting.bgmvolume/100)

@@ -51,11 +51,11 @@ function boss_ui:render()
     SetImageState('hpbar2','',Color(0,255,255,255))
     SetImageState('life_node','',Color(alpha1*255,255,255,255))
     --血条、boss名、剩余符卡
-    if self.boss.ex then
-        if self.boss.ex.cardcount and self.drawhp then
-            boss_ui.render_hpbar_ex(self)
-        end
-    end
+    -- if self.boss.ex then
+    --     if self.boss.ex.cardcount and self.drawhp then
+    --         boss_ui.render_hpbar_ex(self)
+    --     end
+    -- end
     --RenderText('bonus',self.ex.status,0,207,0.5,'right')
     if self.is_combat then
         if self.hpbarlen or self.boss.ex then
@@ -69,11 +69,11 @@ function boss_ui:render()
                 if m >= 0 then
                     for i=0,m-1 do
                         for j=1,8 do
-                            Render('boss_sc_left',-194+j*12,207-i*12-dy1,0,1) --【临时修改】
+                            Render('boss_sc_left',-194+j*12,207-i*12-dy1,0,0.5,0.25) 
                         end
                     end
                     for i=1,int(self.sc_left-1-8*m) do
-                        Render('boss_sc_left',-194+i*12,207-m*12-dy1,0,1) --【临时修改】
+                        Render('boss_sc_left',-194+i*12,207-m*12-dy1,0,0.5,0.25) 
                     end
                 end
             end
@@ -82,15 +82,16 @@ function boss_ui:render()
     --位置指示器
     if self.pointer_x and self.drawpointer then
         SetViewMode'ui'
-        Render('boss_pointer',WorldToScreen(max(min(self.pointer_x,lstg.world.r-24),lstg.world.l+24),lstg.world.b))--适配宽屏
+        local x,y=WorldToUI(max(min(self.pointer_x,lstg.world.r-24),lstg.world.l+24),lstg.world.b)
+        Render('boss_pointer',x,y,0,0.5)
         SetViewMode'world'
     end
     --为boss ex时，下方逻辑不执行
-    if self.boss.ex then
-        if self.boss.ex.status==0 then
-            return
-        end
-    end
+    -- if self.boss.ex then
+    --     if self.boss.ex.status==0 then
+    --         return
+    --     end
+    -- end
     --透明度和位置处理
     local axy=0
     for _,p in pairs(Players(self)) do
@@ -104,12 +105,16 @@ function boss_ui:render()
     local alpha=1-axy
     SetFontState('time','',Color(alpha*255,255,255,255))
     local xoffset=384
+    if not IsValid(self.boss) then
+        Del(self)
+        return
+    end
     if self.boss.sc_bonus then xoffset=max(384-self.boss.timer*7,0) else xoffset=min(384,(self.boss.timer+1)*7) end
     --符卡
     if self.drawspell then
         if self.sc_name~='' then
             SetImageState('boss_spell_name_bg','',Color(alpha*255,255,255,255))
-            Render('boss_spell_name_bg',192+xoffset,236-dy2,0,2)  --这里*2了，之后换素材之后要改
+            Render('boss_spell_name_bg',192+xoffset,236-dy2,0,1)  --这里*2了，之后换素材之后要改
             RenderTTF('sc_name',self.sc_name,193+xoffset,193+xoffset,226-dy2,226-dy2,Color(alpha*255,0,0,0),'right','noclip')
             RenderTTF('sc_name',self.sc_name,192+xoffset,192+xoffset,227-dy2,227-dy2,Color(alpha*255,255,255,255),'right','noclip')
         end

@@ -10,13 +10,13 @@ LoadTTF('PointStyle1','THlib\\UI\\ttf\\yrdzst.ttf',30)
 LoadTTF('PointStyle2','THlib\\UI\\ttf\\yrdzst.ttf',24)
 
 LoadTexture('boss_ui','THlib\\UI\\boss_ui.png')
-LoadImage('boss_spell_name_bg','boss_ui',0,0,256,36)
-SetImageCenter('boss_spell_name_bg',256,0)
+LoadImage('boss_spell_name_bg','boss_ui',0,0,256*2,36*2)
+SetImageCenter('boss_spell_name_bg',256*2,0)
 
-LoadImage('boss_pointer','boss_ui',0,64,48,16)
-SetImageCenter('boss_pointer',24,0)
+LoadImage('boss_pointer','boss_ui',0,64*2,48*2,16*2)
+SetImageCenter('boss_pointer',24*2,0)
 
-LoadImage('boss_sc_left','boss_ui',64,64,32,32)
+LoadImage('boss_sc_left','boss_ui',64*2,64*2,32*2,32*2)
 SetImageState('boss_sc_left','',Color(0xFF80FF80))
 
 LoadTexture('hint','THlib\\ui\\hint.png',true)
@@ -298,14 +298,20 @@ function ResetUI()
 			if CheckRes('img','image:LOGO_img') then Render('image:LOGO_img',400,150,0,0.5,0.5) else Render('logo',400,150,0,0.5,0.5) end
 			]]--
 			SetFontState('menu','',Color(0xFFFFFFFF))
-			RenderText('menu',string.format('%.1ffps',GetFPS()),636,1,0.25,'right','bottom')
+			local x_offset=((16/9)/(4/3)-1)/2*640
+			RenderText('menu',string.format('%.1ffps',GetFPS()),636+x_offset,1,0.25,'right','bottom')
+			RenderText('menu',string.format('%dobjs',GetnObj()),636+x_offset,11,0.25,'right','bottom')
+			
 		end
 
 		function ui.DrawMenuBG()
 			SetViewMode'ui'
 			Render('menu_bg',320,240)
 			SetFontState('menu','',Color(0xFFFFFFFF))
-			RenderText('menu',string.format('%.1ffps',GetFPS()),636,1,0.25,'right','bottom')
+			local x_offset=((16/9)/(4/3)-1)/2*640
+			RenderText('menu',string.format('%.1ffps',GetFPS()),636+x_offset,1,0.25,'right','bottom')
+			RenderText('menu',string.format('%dobjs',GetnObj()),636+x_offset,6,0.25,'right','bottom')
+
 		end
 		function ui.DrawScore()
 			SetFontState('score3','',Color(0xFFADADAD))
@@ -314,8 +320,9 @@ function ResetUI()
 			if diffimg then
 				Render('image:diff_'..diff,528,448)
 			else
-		        if diff=='Easy' or diff=='Normal' or diff=='Hard' or diff=='Lunatic' or diff=='Extra' then
-			        Render('rank_'..diff,528,448,0.5,0.5)
+				if diff=='Easy' or diff=='Normal' or diff=='Hard' or diff=='Lunatic' or diff=='Extra' then
+					local x_offset=((16/9)/(4/3)-1)/2*640/2
+			        Render('rank_'..diff,528+x_offset,448,0.5,0.5)
 		        else
 			        RenderText('score',diff,528,466,0.5,'center')
 		        end
@@ -444,7 +451,10 @@ function ResetUI()
 			SetViewMode'ui'
 			Render('menu_bg2',198,264)
 			SetFontState('menu','',Color(0xFFFFFFFF))
-			RenderText('menu',string.format('%.1ffps',GetFPS()),392,1,0.25,'right','bottom')
+			local x_offset=((16/9)/(4/3)-1)/2*640
+			RenderText('menu',string.format('%.1ffps',GetFPS()),636+x_offset,1,0.25,'right','bottom')
+			RenderText('menu',string.format('%dobjs',GetnObj()),636+x_offset,6,0.25,'right','bottom')
+
 		end
 
 		function ui.DrawScore()

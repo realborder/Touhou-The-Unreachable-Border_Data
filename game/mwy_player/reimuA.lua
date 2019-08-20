@@ -650,7 +650,7 @@ function reimu_playerA:render()
 end
 
 function reimu_playerA:ccc()
-	do return end
+	-- do return end
 	PlaySound("slash", 0.7)
 	New(reimu_ccc_gap)
 end

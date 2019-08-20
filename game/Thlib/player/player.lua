@@ -227,9 +227,9 @@ function player_class:frame()
 		    local n=int(self.support)+1
 		    PlaySound('enep02',0.3,self.x/200,true)
 		    local r4=sqrt(ran:Float(1,4))
-		    local r3=ran:Float(0,360)
-		    New(item_power_mid,self.supportx+self.sp[n][1]+r4*cos(r3),self.supporty+self.sp[n][2]+r4*sin(r3))
-			self.PowerDelay1=-1
+			local r3=ran:Float(0,360)
+		if self.supportx and self.sp[n][1] then 	New(item_power_mid,self.supportx+self.sp[n][1]+r4*cos(r3),self.supporty+self.sp[n][2]+r4*sin(r3)) end --修复崩溃的bug
+				self.PowerDelay1=-1
 		end
 		-----------------------------------------------
 		

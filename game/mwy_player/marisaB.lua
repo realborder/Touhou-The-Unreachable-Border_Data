@@ -404,10 +404,10 @@ function marisa_spark:frame()
 
 	end
 	for j,o in ObjList(GROUP_NONTJT) do
-		o.y=min(224,o.y+1)
+	if not unit._bosssys then  o.y=min(224,o.y+1) end
 	end
 	for j,o in ObjList(GROUP_ENEMY) do
-		o.y=min(224,o.y+1)
+		if not unit._bosssys then  o.y=min(224,o.y+1) end
 	end
 	for j,o in ObjList(GROUP_ITEM) do
 		o.y=min(226,o.y+2)
@@ -468,10 +468,10 @@ function marisa_spark2:frame()
 		New(marisa_spark_wave2,self.x,self.y,self.rot,12,0.9,self.player,self.vscale)
 	end
 	for j,o in ObjList(GROUP_NONTJT) do
-		o.y=min(224,o.y+1)
+		if not unit._bosssys then  o.y=min(224,o.y+1) end
 	end
 	for j,o in ObjList(GROUP_ENEMY) do
-		o.y=min(224,o.y+1)
+		if not unit._bosssys then  o.y=min(224,o.y+1) end
 	end
 	for j,o in ObjList(GROUP_ITEM) do
 		o.y=min(226,o.y+2)

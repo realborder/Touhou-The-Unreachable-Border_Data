@@ -301,7 +301,7 @@ function marisa_star_crack:init(x,y,rot,v,dmg,hue,master)
 end
 function marisa_star_crack:frame()
 	task.Do(self)
-	if not IsValid(self.master) then
+	if not IsValid(self.master) or self.timer>90 then
 		self.alpha=self.alpha-0.08
 		if self.alpha<=0 then RawDel(self) end
 	end
@@ -479,10 +479,10 @@ function marisa_blackhole:frame()
 		o.x,o.y=o.x+(self.x-o.x)*force,o.y+(self.y-o.y)*force
 	end
 	for j,o in ObjList(GROUP_NONTJT) do
-		o.x,o.y=o.x+(self.x-o.x)*force,o.y+(self.y-o.y)*force
+		if not unit._bosssys then  o.x,o.y=o.x+(self.x-o.x)*force,o.y+(self.y-o.y)*force end
 	end
 	for j,o in ObjList(GROUP_ENEMY) do
-		o.x,o.y=o.x+(self.x-o.x)*force,o.y+(self.y-o.y)*force
+		if not unit._bosssys then o.x,o.y=o.x+(self.x-o.x)*force,o.y+(self.y-o.y)*force end
 	end
 	for j,o in ObjList(GROUP_ITEM) do
 		o.x,o.y=o.x+(self.x-o.x)*force,o.y+(self.y-o.y)*force

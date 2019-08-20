@@ -1,14 +1,28 @@
-stage_init=stage.New('init',true,true)
-function stage_init:init()
-    New(mask_fader,'open')
-    jstg.enable_player=true
-end
-function stage_init:frame()
-    if self.timer>=30 then stage.Set('none', 'menu') end
-end
-function stage_init:render()
-    ui.DrawMenuBG()
-end
+-- stage_init=stage.New('init',true,true)
+-- function stage_init:init()
+--     New(mask_fader,'open')
+--     jstg.enable_player=true
+--     LoadTexture('UI_gameInit','THlib\\UI\\UI_gameInit.jpg')
+-- 	LoadImage('UI_gameInit','UI_gameInit',0,0,1920,1080)
+
+
+-- end
+-- function stage_init:frame()
+--     if self.timer==30 then
+--         --加载资源
+
+
+--     end
+--     if self.timer==31 then
+--         -- New(mask_fader,'')
+--     end
+--     if self.timer>=60 then stage.Set('none', 'menu') end
+--     -- if self.timer>=1 then stage.Set('none', 'menu') end
+-- end
+-- function stage_init:render()
+--     SetViewMode'ui'
+--     Render('UI_gameInit',320,240,0,0.5)
+-- end
 
 stage_menu=stage.New('menu',false,true)
 

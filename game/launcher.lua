@@ -85,42 +85,167 @@ function setting_keys_default()
 end
 
 ---------------------------------------
-LoadImageFromFile('UI_gameInit','THlib\\UI\\UI_gameInit.jpg')
+-- LoadImageFromFile('UI_gameInit','THlib\\UI\\UI_gameInit.jpg')
 InitRenderFlag=true
 
-InitRender=Class(object)
-function InitRender:init()
-	self.layer=LAYER_TOP+20
+-- InitRender=Class(object)
+-- function InitRender:init()
+-- 	self.layer=LAYER_TOP+20
+-- end
+
+-- function InitRender:render()
+-- 	if InitRenderFlag then Render('UI_gameInit',320,240) end
+-- end
+
+
+stage_init=stage.New('init',true,true)
+function stage_init:init()
+    New(mask_fader,'open')
+    jstg.enable_player=true
+    LoadTexture('UI_gameInit','THlib\\UI\\UI_gameInit.jpg')
+	LoadImage('UI_gameInit','UI_gameInit',0,0,1920,1080)
+
+
+end
+function stage_init:frame()
+	if self.timer==30 then
+		SetResourceStatus'global'
+
+		LoadTTF('menuttfs','THlib\\UI\\font\\default_ttf',40)
+		--沙雕加载资源，以后再改
+		--[[
+		for _,v in ipairs({"data","background","music","font"}) do
+			local packpath="Library\\"..v..".zip"
+			if not (lfs.attributes(packpath)==nil) then
+				LoadPack(packpath)
+			end
+		end
+		--]]		
+		local f,msg
+		f,msg=io.open(settingfile,'r')
+		if f==nil then
+			cur_setting=DeSerialize(Serialize(default_setting))
+		else
+			cur_setting=DeSerialize(f:read('*a'))
+			f:close()
+		end
+		LoadTexture('UI_gameInit','THlib\\UI\\UI_gameInit.jpg')
+		LoadImage('UI_gameInit','UI_gameInit',0,0,1920,1080)
+	
+		New(exani_player_manager)	
+		player_menu=New(special_player)
+		
+		diff_menu=New(special_difficulty)
+		RawDel(diff_menu)
+		stage_menu=New(base_menu,'stage_menu','',{
+				{'ChooseStage_item_Stage1','diff_menu','',true},
+				{'ChooseBoss_item_Boss1','diff_menu',function() debugPoint=4 end,true},
+				{'ChooseStage_item_Stage2','diff_menu','',true},
+				{'ChooseBoss_item_Boss2','diff_menu',function() debugPoint=4 end,true},
+				{'ChooseStage_item_Stage3','diff_menu','',true},
+				{'ChooseBoss_item_Boss3','diff_menu',function() debugPoint=5 end,true},
+			},
+			'start_menu',
+			true
+		)
+		
+		start_menu=New(base_menu,'start_menu','Title_Menu_item_Start',{
+				{'ChooseMode_item_StoryMode','diff_menu',function() practice=nil diff_menu.menu_back=1 debugPoint=0 end,true},
+				{'ChooseMode_item_StagePrac','stage_menu',function() practice='stage' diff_menu.menu_back=2 end,true},
+				{'ChooseMode_item_SpellCardPrac','','',false},
+				{'ChooseMode_item_NightmareEcli','','',false},
+			},
+			'main_menu',
+			true
+		)
+		
+		replay_menu=New(special_replay)
+		
+		manual_menu=New(special_manual)
+		menu_other=New(other_setting_menu,'Other Settings',{
+			{'Resolution X',function() menu_other.edit=true menu_other.setting_backup=cur_setting.res end},
+			{'Resolution Y',function() menu_other.edit=true menu_other.setting_backup=cur_setting.res end},
+			{'Windowed',function() cur_setting.windowed=not cur_setting.windowed end},
+			{'Vsync',function() cur_setting.vsync=not cur_setting.vsync end},
+			{'Sound Volume',function() end},
+			{'Music Volume',function() end},
+			{'Return To Title',function()
+				menu.FlyOut(menu_other,'right')
+				save_setting()
+				loadConfigure()
+				ChangeVideoMode(setting.resx,setting.resy,setting.windowed,setting.vsync)
+				SetSEVolume(setting.sevolume/100)
+				SetBGMVolume(setting.bgmvolume/100)
+				ResetScreen()
+				base_menu.ChangeLocked(menus['main_menu'])
+			end},
+			{'exit',function()
+				if menu_other.pos~=7 then
+					menu_other.pos=7
+				else
+					menu.FlyOut(menu_other,'right')
+					save_setting()
+					base_menu.ChangeLocked(menus['main_menu'])
+				end
+			end},
+		})
+		main_menu=New(base_menu,'main_menu','',{
+				{'Title_Menu_item_Start','start_menu','',true},
+				{'Title_Menu_item_Replay','replay_menu',function() menu.FadeIn2(replay_menu,'right') end,true},
+				{'Title_Menu_item_PlayerData','','',false},
+				{'Title_Menu_item_Musicroom','','',false},
+				{'Title_Menu_item_Manual','manual_menu','',true},
+				{'Title_Menu_item_Gallery','','',false},
+				{'Title_Menu_item_Option','',function() menu.FlyIn(menu_other,'right') menu_other.pos=1 end,true},
+				{'Title_Menu_item_Exit','',ExitGame,true}
+			},
+			'',
+			true
+		)
+		LoadMusic('menu',music_list.menu[1],music_list.menu[2],music_list.menu[3])
+		start_game()
+    end
+    if self.timer==31 then
+        New(mask_fader,'')
+    end
+	if self.timer>=61 then 
+		
+
+		stage.Set('none', 'menu') 
+	end
+    -- if self.timer>=1 then stage.Set('none', 'menu') end
+end
+function stage_init:render()
+    SetViewMode'ui'
+    Render('UI_gameInit',320,240,0,0.5)
 end
 
-function InitRender:render()
-	if InitRenderFlag then Render('UI_gameInit',320,240) end
-end
 
-stage_main_menu=stage.New('menu',true,true)
+stage_main_menu=stage.New('menu',false,true)
 
 function stage_main_menu:init()
-	LoadTTF('menuttfs','THlib\\UI\\font\\default_ttf',40)
-	--
-	local f,msg
-	f,msg=io.open(settingfile,'r')
-	if f==nil then
-		cur_setting=DeSerialize(Serialize(default_setting))
-	else
-		cur_setting=DeSerialize(f:read('*a'))
-		f:close()
-	end
-	--
+	-- LoadTTF('menuttfs','THlib\\UI\\font\\default_ttf',40)
+	-- --
+	-- local f,msg
+	-- f,msg=io.open(settingfile,'r')
+	-- if f==nil then
+	-- 	cur_setting=DeSerialize(Serialize(default_setting))
+	-- else
+	-- 	cur_setting=DeSerialize(f:read('*a'))
+	-- 	f:close()
+	-- end
+	-- --
 	local function ExitGame()
 		task.New(self,function()
 			task.Wait(30)
 			stage.QuitGame()
 		end)
 	end
-	--
-	New(mask_fader,'open')
-	New(exani_player_manager)
-	
+	-- --
+	-- LoadTexture('UI_gameInit','THlib\\UI\\UI_gameInit.jpg')
+	-- LoadImage('UI_gameInit','UI_gameInit',0,0,1920,1080)
+
+	New(exani_player_manager)	
 	player_menu=New(special_player)
 	
 	diff_menu=New(special_difficulty)
@@ -150,7 +275,6 @@ function stage_main_menu:init()
 	replay_menu=New(special_replay)
 	
 	manual_menu=New(special_manual)
-	
 	menu_other=New(other_setting_menu,'Other Settings',{
 		{'Resolution X',function() menu_other.edit=true menu_other.setting_backup=cur_setting.res end},
 		{'Resolution Y',function() menu_other.edit=true menu_other.setting_backup=cur_setting.res end},
@@ -178,7 +302,6 @@ function stage_main_menu:init()
 			end
 		end},
 	})
-	
 	main_menu=New(base_menu,'main_menu','',{
 			{'Title_Menu_item_Start','start_menu','',true},
 			{'Title_Menu_item_Replay','replay_menu',function() menu.FadeIn2(replay_menu,'right') end,true},
@@ -192,22 +315,32 @@ function stage_main_menu:init()
 		'',
 		true
 	)
-	
-	start_game()
-	
+	LoadMusic('menu',music_list.menu[1],music_list.menu[2],music_list.menu[3])
+
+	-- New(mask_fader,'open')
+	-- InitRenderFlag=false
+	New(mask_fader,'open')
+		
 	base_menu.ChangeLocked(menus['main_menu'])
-	
 	exani_player_manager.ExecuteExaniPredefine(play_manager,'Title_Menu_bg','init')
 	exani_player_manager.SetExaniAttribute(play_manager,'Title_Menu_bg',nil,nil,nil,'ui')
 	
-	LoadMusic('menu',music_list.menu[1],music_list.menu[2],music_list.menu[3])
-    PlayMusic('menu')
-	
-	InitRenderFlag=false
+	PlayMusic('menu')
+end
+
+function stage_main_menu:frame()
+	-- if self.timer==1 then
+		
+	-- elseif self.timer==2 then
+	-- 	New(mask_fader,'')
+	-- elseif self.timer==30 then
+
+	-- end
 end
 
 function stage_main_menu:render()
-	
+	-- SetViewMode'ui'
+	-- if self.timer<=60 then Render('UI_gameInit',320,240,0,0.5) end
 end
 
 ---------------------------------------
@@ -285,20 +418,22 @@ function start_game()
 	loadConfigure()
 	LoadPack('mod\\'..setting.mod..'.zip')
 	SetSplash(false)
-	SetTitle(setting.mod)
-	if not ChangeVideoMode(setting.resx,setting.resy,setting.windowed,setting.vsync) then
-		if lfs.attributes('.\\LuaSTGPlus.dev.exe')~=nil then
-			os.execute('start /b .\\LuaSTGPlus.dev.exe "start_game=true"')
-		else
-			os.execute('start /b .\\LuaSTGPlus.exe "start_game=true"')
-		end
-		stage.QuitGame()
-		return
-	end
+	-- SetTitle(setting.mod)
+	SetTitle('东方梦无垠 ~ The Unreachabe Oneiroborder ver.pre1')
+
+	-- if not ChangeVideoMode(setting.resx,setting.resy,setting.windowed,setting.vsync) then
+	-- 	if lfs.attributes('.\\LuaSTGPlus.dev.exe')~=nil then
+	-- 		os.execute('start /b .\\LuaSTGPlus.dev.exe "start_game=true"')
+	-- 	else
+	-- 		os.execute('start /b .\\LuaSTGPlus.exe "start_game=true"')
+	-- 	end
+	-- 	stage.QuitGame()
+	-- 	return
+	-- end
 	SetSEVolume(setting.sevolume/100)
 	SetBGMVolume(setting.bgmvolume/100)
-	ResetScreen()--Lscreen
-	SetResourceStatus'global'
+	-- ResetScreen()--Lscreen
+	-- SetResourceStatus'global'
 	ResetUI()
 	Include("root.lua")
 	SetResourceStatus'stage'

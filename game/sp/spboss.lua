@@ -1221,7 +1221,8 @@ function lib.pointer:render()
             local ceny = (w.t + w.b) / 2
             if abs(self.boss.pointer_x - cenx) <= (lstg.world.r - lstg.world.l) / 2 then
                 SetViewMode'ui'
-                Render('boss_pointer', WorldToScreen(max(min(self.boss.pointer_x, w.r), -w.r) * (w.r - w.l) / (w.scrr - w.scrl), self.y * (w.t - w.b) / (w.scrt - w.scrb) + ceny))
+                local x,y=WorldToScreen(max(min(self.boss.pointer_x, w.r), -w.r) * (w.r - w.l) / (w.scrr - w.scrl), self.y * (w.t - w.b) / (w.scrt - w.scrb) + ceny)
+                Render('boss_pointer',x,y,0,0.5)
                 SetViewMode'world'
             end
         end

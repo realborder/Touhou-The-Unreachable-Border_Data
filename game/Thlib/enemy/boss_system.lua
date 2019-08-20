@@ -241,9 +241,9 @@ function BossSystem:UpdateBG()
     if b.bg then
         if IsValid(b.bg) then
             if c.is_sc then
-                b.bg.alpha = min(1, b.bg.alpha + 0.025)
+                b.bg.alpha = min(1, b.bg.alpha + 1/60)
             else
-                b.bg.alpha = max(0, b.bg.alpha - 0.025)
+                b.bg.alpha = max(0, b.bg.alpha - 1/60)
             end
         end
         if lstg.tmpvar.bg then

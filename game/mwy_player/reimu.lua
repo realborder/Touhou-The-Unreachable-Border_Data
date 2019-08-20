@@ -16,7 +16,8 @@ reimu_player={}
 
 function reimu_player.load_res(self)
 	LoadTexture(texname,path.."reimu.png",false)
-	
+	LoadTexture(texname .. "boundary", path .. "reimu_booundary.png", false)
+
 	LoadImageGroup("_reimu_ani", texname,0, 1152, 64, 96, 12, 3)
 	self.imgs={}
 	for i=1,36 do
@@ -78,25 +79,43 @@ end
 function reimu_player.load_res_B(self)
 	reimu_player.load_res(self)
 	
-	LoadImage("_reimu_high_shoot_big",texname,576,0,128,128,48*collibox_scale,48*collibox_scale)
-	SetImageState("_reimu_high_shoot_big","",Color(0x80FFFFFF))
+	LoadImage("_reimu_high_shoot_big", texname, 576, 0, 128, 128, 48 * collibox_scale, 48 * collibox_scale)
+	SetImageState("_reimu_high_shoot_big", "", Color(0x80FFFFFF))
 	
-	LoadImage("_reimu_high_shoot_big_ef",texname,576,0,128,128)
+	LoadImage("_reimu_high_shoot_big_ef", texname, 576, 0, 128, 128)
 	--SetImageState("_reimu_high_shoot_big_ef","",Color(0x80FFFFFF))--渲染的时候会更改透明度
 	
-	LoadImage("_reimu_high_shoot_small",texname,704,0,64,64,16*collibox_scale,16*collibox_scale)
+	LoadImage("_reimu_high_shoot_small", texname, 704, 0, 64, 64, 16 * collibox_scale, 16 * collibox_scale)
 	--SetImageState("_reimu_high_shoot_small","",Color(0x80FFFFFF))--渲染的时候会更改透明度
 	
-	LoadAnimation("_reimu_high_shoot_small_ef",texname,768,0,64,64,2,2,4)
-	SetAnimationState("_reimu_high_shoot_small_ef","mul+add",Color(0x80FFFFFF))
+	LoadAnimation("_reimu_high_shoot_small_ef", texname, 768, 0, 64, 64, 2, 2, 4)
+	SetAnimationState("_reimu_high_shoot_small_ef", "mul+add", Color(0x80FFFFFF))
 	
-	LoadAnimation("_reimu_slow_shoot",texname,512,128,128,64,2,2,4,16*collibox_scale,16*collibox_scale)
-	SetAnimationState("_reimu_slow_shoot","",Color(0x80FFFFFF))--渲染的时候会更改混合模式
-	SetAnimationCenter("_reimu_slow_shoot",96,32)
+	LoadAnimation("_reimu_slow_shoot", texname, 512, 128, 128, 64, 2, 2, 4, 16 * collibox_scale, 16 * collibox_scale)
+	SetAnimationState("_reimu_slow_shoot", "", Color(0x80FFFFFF))--渲染的时候会更改混合模式
+	SetAnimationCenter("_reimu_slow_shoot", 96, 32)
 	
-	LoadImage("_reimu_support_1",texname,0,64,64,64)
-	LoadImage("_reimu_support_2",texname,64,64,64,64)
+	LoadImage("_reimu_support_1", texname, 0, 64, 64, 64)
+	LoadImage("_reimu_support_2", texname, 64, 64, 64, 64)
+	---符卡
+
+
+	LoadImage("_reimu_high_spell_ef", texname, 0, 1440, 768, 96)
 	
+	--LoadImage("_reimu_slow_spell_ef1", texname, 1024, 0, 1024, 1024)
+	--LoadImage("_reimu_slow_spell_ef2", texname, 1024, 1024, 1024, 1024)
+	
+	LoadImage("_reimu_slow_spell_ef1", texname .. "boundary", 512, 0, 512, 512)
+	LoadImage("_reimu_slow_spell_ef2", texname .. "boundary", 512, 512, 512, 512)
+	LoadImage("_reimu_boundary_spread",texname.."boundary",0,0,512,512)
+	LoadImage("_reimu_boundary_4way",texname.."boundary",512,0,512,512)
+	LoadImage("_reimu_boundary_4waycenter",texname.."boundary",512,512,512,512)
+
+	LoadImage("_reimu_boundary_8_outside",texname,1024,0,1024,1024)
+	LoadImage("_reimu_boundary_8_inside",texname,1024,1024,1024,1024)
+	SetImageState("_reimu_boundary_8_outside","mul+add",Color(0xA0FFFFFFF))
+	SetImageState("_reimu_boundary_8_inside","mul+add",Color(0xA0FFFFFFF))
+
 	--[[
 	LoadTexture('reimu_bullet','THlib\\player\\reimu\\reimu_bullet.png')
 	LoadImage('reimu_orb_T','reimu_bullet',512,256,128,128,32,32)
@@ -242,9 +261,3 @@ end
 
 Include(path.."reimuA.lua")
 Include(path.."reimuB.lua")
-
---看情况处理，如果自机列表已经写好了，那就可以注释掉这些
-table.insert(player_list, {"MWY Hakurei Reimu A","reimu_playerA","ReimuA"})
-table.insert(player_list, {"MWY Hakurei Reimu B","reimu_playerB","ReimuB"})
-
-

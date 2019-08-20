@@ -23,13 +23,15 @@ function _spellcard_background:frame()
 		end
 	end
 	if IsValid(_boss) and _boss.card_num and _boss.cards[_boss.card_num] then 
-		if _boss.cards[_boss.card_num].is_sc then self.spr=min(1,self.spr+1/45) else self.spr=max(0,self.spr-1/45) end
+		if _boss.cards[_boss.card_num].is_sc then self.spr=min(1,self.spr+1/60) else self.spr=max(0,self.spr-1/60) end --见boss_system
+	else
+		self.spr=max(0,self.spr-1/60)
 	end
 	-- Print('scbg_spr='..self.spr)
 end
 function _spellcard_background:render()
 	SetViewMode'world'
-	if self.alpha>0 then
+	if self.alpha>0 and IsValid(_boss) then
 		-- local showboss = lstg.tmpvar.bg and lstg.tmpvar.bg.hide==true
 		-- if showboss then
 			background.WarpEffectCapture()

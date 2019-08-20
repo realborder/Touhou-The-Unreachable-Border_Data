@@ -262,7 +262,8 @@ function mask_fader:render()
 	else
 		SetImageState('white','',Color(max(0,min(255,self.timer*8.5)),0,0,0))
 	end
-	RenderRect('white',0,screen.width,0,screen.height)
+	local extra=screen.width*(16/9-4/3)/2
+	RenderRect('white',0-extra,screen.width+extra,0,screen.height)
 	SetViewMode'world'
 end
 
