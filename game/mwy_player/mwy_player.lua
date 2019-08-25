@@ -1,4 +1,4 @@
-local path="mwy_player/"
+local path="mwy_player\\"
 mwy={}
 mwy.useMWYwis=true ---false则会在各个机体的init方法中应用新的行走图系统
 local  PlayerWalkImageSystem = plus.Class()

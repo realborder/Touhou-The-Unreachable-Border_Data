@@ -578,15 +578,15 @@ function special_player:frame()
 			self.choose_timer=self.choose_delay
 			PlaySound('ok00', 0.3)
 			if self.choose==1 then exani_player_manager.ExecuteExaniPredefine(play_manager,self.player[1],'chooseA')
-			elseif self.choose==2 then PlaySound"invalid"--exani_player_manager.ExecuteExaniPredefine(play_manager,self.player[1],'chooseB')
+			elseif self.choose==2 then exani_player_manager.ExecuteExaniPredefine(play_manager,self.player[1],'chooseB')
 			elseif self.choose==3 then exani_player_manager.ExecuteExaniPredefine(play_manager,self.player[2],'chooseA')
 			elseif self.choose==4 then exani_player_manager.ExecuteExaniPredefine(play_manager,self.player[2],'chooseB')
 			end
 		end
 	end
 	
-	-- if self.choose_timer==0 then --上t锁定梦B
-	if self.choose_timer==0 and self.choose ~= 2 then 
+	if self.choose_timer==0 then 
+	-- if self.choose_timer==0 and self.choose ~= 2 then --上t锁定梦B
 		base_menu.ChangeLocked(self)
 		scoredata.player_select=self.choose
 		lstg.var.player_name=player_list[self.choose][2]

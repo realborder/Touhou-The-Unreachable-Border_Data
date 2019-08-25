@@ -110,6 +110,11 @@ function FrameFunc()
 	end
 	--暂停菜单更新
 	ext.pause_menu:frame()
+
+	if FileReloader then 
+		FileReloader.frame()
+	end
+
 	--退出游戏逻辑
 	if lstg.quit_flag then
 		GameExit()
@@ -133,6 +138,7 @@ function RenderFunc()
 		if Collision_Checker then
 			Collision_Checker.render()
 		end
+
 	end
 	AfterRender()
 	EndScene()
