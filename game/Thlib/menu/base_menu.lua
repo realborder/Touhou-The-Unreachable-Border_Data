@@ -110,6 +110,17 @@ function base_menu:render()
 			PlaySound('select00',0.3)
 		elseif lstg.GetKeyState(KEY.X) then
 			if self.pre_menu~='' then base_menu.ChangeLocked(self) base_menu.ChangeLocked(menus[self.pre_menu]) end
+			if self.name=='main_menu' then
+				if self.choose==#self.exani_names then
+					self.functions[#self.exani_names]()
+				else
+					exani_player_manager.SetExaniAttribute(play_manager,self.exani_names[#self.exani_names],nil,nil,nil,nil,nil,3)
+					exani_player_manager.ExecuteExaniPredefine(play_manager,self.exani_names[#self.exani_names],'activate')
+					exani_player_manager.SetExaniAttribute(play_manager,self.exani_names[self.choose],nil,nil,nil,nil,nil,4)
+					exani_player_manager.ExecuteExaniPredefine(play_manager,self.exani_names[self.choose],'deactivate')
+					self.choose=#self.exani_names
+				end
+			end
 			PlaySound('cancel00', 0.3)
 		end
 		self.choosed=false
