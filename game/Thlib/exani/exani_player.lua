@@ -387,6 +387,7 @@ function exani_player:DoPredefine()
 	exani_player.GetActionValue(self)
 	if type(self.future_action[1][1])=='string' then --默认强制补间后面的不是action字符串
 		self.replay_round=1
+		self.pre_interval=self.play_interval
 		self.play_interval=1
 		self.current_frame=1
 		self.force_time=self.future_action[1].force_interpolation_time
@@ -401,8 +402,9 @@ function exani_player:DoPredefine()
 	else
 		self.start_frame=self.future_action[1].startf
 		self.end_frame=self.future_action[1].endf
-		if self.start_frame>=self.end_frame then self.play_interval=-1
-		elseif self.start_frame< self.end_frame then self.play_interval=1 end
+		if self.pre_interval and self.pre_interval~=-100 then self.play_interval=self.pre_interval self.pre_interval=-100 end
+		if self.start_frame>=self.end_frame then self.play_interval=-abs(self.play_interval)
+		elseif self.start_frame< self.end_frame then self.play_interval=abs(self.play_interval) end
 		-- Print("action's interval is "..self.play_interval)
 		self.replay_round=self.future_action[1].repeatc or 1
 		-- Print("action's repeat is "..self.replay_round)
@@ -449,6 +451,7 @@ function exani_player:GetActionValue()
 	do
 		is_ok=true
 		if type(self.future_action[1])=='string' then
+			self.play_interval=1
 			is_ok=false
 			local action=self.future_action[1]
 			-- Print(self.name..' string action '..action)
