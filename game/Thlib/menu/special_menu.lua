@@ -287,7 +287,7 @@ function special_difficulty:init()
 	
 	self.pics={'ChooseDiff_Easy','ChooseDiff_Normal','ChooseDiff_Hard','ChooseDiff_Lunatic'} --exani名字刚好和图片相同
 	for i=1,#self.pics do
-		LoadImageFromFile(self.pics[i],"Thlib\\exani\\exani_data\\"..self.pics[i].."\\"..self.pics[i]..".png")
+		LoadImageFromFile(self.pics[i],"THlib\\exani\\exani_data\\"..self.pics[i].."\\"..self.pics[i]..".png")
 	end
 	
 	self.gap=480
@@ -570,7 +570,7 @@ function special_player:frame()
 			New(mask_fader,'close')
 			task.Wait(30)
 			if practice=='stage' then
-				Print("关卡练习参数是 "..stage_choices[stage_pr.choose]..'@'..stage_diffs[diff.choose])
+				-- Print("关卡练习参数是 "..stage_choices[stage_pr.choose]..'@'..stage_diffs[diff.choose])
 				stage.group.PracticeStart(stage_choices[stage_pr.choose]..'@'..stage_diffs[diff.choose])
 			else
 				stage.group.Start(stage.groups[stage_diffs[diff.choose]])

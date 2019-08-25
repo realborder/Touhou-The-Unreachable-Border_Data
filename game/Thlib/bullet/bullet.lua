@@ -81,7 +81,7 @@ LoadImageGroup('silence','bullet6',192,0,32,32,1,8,9*bk,9*bk)
 --------------------------
 ------bullet_break--------
 --牺牲内存优化运行性能
-LoadTexture('etbreak','thlib\\bullet\\etbreak.png')
+LoadTexture('etbreak','THlib\\bullet\\etbreak.png')
 for j=1,16 do
 	LoadAnimation('etbreak'..j,'etbreak',0,0,64,64,4,2,3)
 end

@@ -1,8 +1,8 @@
-Include'THlib\\ui\\uiconfig.lua'
-Include'THlib\\ui\\font.lua'
-Include'THlib\\ui\\title.lua'
-Include'THlib\\ui\\sc_pr.lua'
-Include'THlib\\ui\\stage_clear_bonus.lua'
+Include'THlib\\UI\\uiconfig.lua'
+Include'THlib\\UI\\font.lua'
+Include'THlib\\UI\\title.lua'
+Include'THlib\\UI\\sc_pr.lua'
+Include'THlib\\UI\\stage_clear_bonus.lua'
 ui={}
 
 LoadTTF('WordStyle','THlib\\UI\\ttf\\yrdzst.ttf',20)
@@ -19,8 +19,8 @@ SetImageCenter('boss_pointer',24*2,0)
 LoadImage('boss_sc_left','boss_ui',64*2,64*2,32*2,32*2)
 SetImageState('boss_sc_left','',Color(0xFF80FF80))
 
-LoadTexture('hint','THlib\\ui\\hint.png',true)
-LoadTexture('hint2','THlib\\ui\\hint2.png',true)
+LoadTexture('hint','THlib\\UI\\hint.png',true)
+LoadTexture('hint2','THlib\\UI\\hint2.png',true)
 LoadImage('hint.stageclear','hint2',0,0,784,289)
 LoadImage('hint.bonusfail','hint2',0,567,784,137)
 LoadImage('hint.getbonus','hint2',0,290,784,277)
@@ -33,15 +33,15 @@ LoadImage('hint.extend','hint',0,192,160,64)
 --LoadImage('hint.bomb','hint',320,0,16,16)
 --LoadImage('hint.bombleft','hint',336,0,16,16)
 
-LoadImageFromFile('player_life','THlib\\ui\\UI_gaming_player.png')
+LoadImageFromFile('player_life','THlib\\UI\\UI_gaming_player.png')
 SetImageCenter('player_life',0,5.5)
-LoadImageFromFile('spell_life','THlib\\ui\\UI_gaming_spell.png')
+LoadImageFromFile('spell_life','THlib\\UI\\UI_gaming_spell.png')
 SetImageCenter('spell_life',0,5.5)
 
 LoadImage('kill_time','hint2',0,704,161,41,16,16)
 
-LoadImageFromFile('UI_gaming_item_collect_line','THlib\\ui\\UI_gaming_item_collect_line.png')
-LoadImageFromFile('UI_gaming_item_collect_word','THlib\\ui\\UI_gaming_item_collect_word.png')
+LoadImageFromFile('UI_gaming_item_collect_line','THlib\\UI\\UI_gaming_item_collect_line.png')
+LoadImageFromFile('UI_gaming_item_collect_word','THlib\\UI\\UI_gaming_item_collect_word.png')
 --SetImageCenter('hint.power',0,16)
 --SetImageCenter('hint.graze',0,16)
 --SetImageCenter('hint.point',0,16)
@@ -57,10 +57,10 @@ LoadImageFromFile('UI_gaming_item_collect_word','THlib\\ui\\UI_gaming_item_colle
 --SetImageCenter('hint.Pnumber',0,10)
 --SetImageCenter('hint.Bnumber',0,10)
 
---LoadTexture('line','THlib\\ui\\line.png',true)
+--LoadTexture('line','THlib\\UI\\line.png',true)
 --LoadImageGroup('line_','line',0,0,180,8,1,7,0,0)
 
-LoadTexture('ui_rank','THlib\\ui\\rank.png')
+LoadTexture('ui_rank','THlib\\UI\\rank.png')
 LoadImage('rank_Easy','ui_rank',0,0,144,32)
 LoadImage('rank_Normal','ui_rank',0,32,144,32)
 LoadImage('rank_Hard','ui_rank',0,64,144,32)
@@ -262,18 +262,18 @@ end
 function ResetUI()
 	if setting.resx>setting.resy then
 		if not CheckRes('img','image:UI_img') 	then 
-		LoadImageFromFile('UI_gaming_bg','THlib\\ui\\UI_gaming_bg.png')
-		LoadImageFromFile('UI_gaming_bgFlow','THlib\\ui\\UI_gaming_bgFlow.png')
-		LoadImageFromFile('UI_gaming_bgCover','THlib\\ui\\UI_gaming_bgCover.png') 
-		LoadImageFromFile('UI_gaming_bg_highlight','THlib\\ui\\UI_gaming_bg_highlight.png')
-		LoadImageFromFile('UI_gaming_DR_ruler','THlib\\ui\\UI_gaming_DR_ruler.png')
-		LoadImageFromFile('UI_gaming_DR_pin','THlib\\ui\\UI_gaming_DR_pin.png')
+		LoadImageFromFile('UI_gaming_bg','THlib\\UI\\UI_gaming_bg.png')
+		LoadImageFromFile('UI_gaming_bgFlow','THlib\\UI\\UI_gaming_bgFlow.png')
+		LoadImageFromFile('UI_gaming_bgCover','THlib\\UI\\UI_gaming_bgCover.png') 
+		LoadImageFromFile('UI_gaming_bg_highlight','THlib\\UI\\UI_gaming_bg_highlight.png')
+		LoadImageFromFile('UI_gaming_DR_ruler','THlib\\UI\\UI_gaming_DR_ruler.png')
+		LoadImageFromFile('UI_gaming_DR_pin','THlib\\UI\\UI_gaming_DR_pin.png')
 		end
 		--[[
-		if not CheckRes('img','image:LOGO_img') then LoadImageFromFile('logo','THlib\\ui\\logo.png') end
+		if not CheckRes('img','image:LOGO_img') then LoadImageFromFile('logo','THlib\\UI\\logo.png') end
 		SetImageCenter('logo',0,0)
 		]]--
-		LoadImageFromFile('menu_bg','THlib\\ui\\menu_bg.png')
+		LoadImageFromFile('menu_bg','THlib\\UI\\menu_bg.png')
 
 		function ui.DrawFrame()
 		    ui.menu.FlowTimer=ui.menu.FlowTimer+1
@@ -432,17 +432,17 @@ function ResetUI()
 			RenderTTFplus('PointStyle1',string.format('%d',lstg.var.graze),580.5,666,277.5,292.5,Color(255,217,217,217),'bottom','right')
 		end
 	else
-		LoadImageFromFile('ui_bg2','THlib\\ui\\ui_bg_2.png')
-		LoadImageFromFile('UI_gaming_bg','THlib\\ui\\UI_gaming_bg.png')
-		LoadImageFromFile('UI_gaming_bgFlow','THlib\\ui\\UI_gaming_bgFlow.png')
-		LoadImageFromFile('UI_gaming_bgCover','THlib\\ui\\UI_gaming_bgCover.png')
-		LoadImageFromFile('UI_gaming_bg_highlight','THlib\\ui\\UI_gaming_bg_highlight.png')
-		LoadImageFromFile('UI_gaming_DR_ruler','THlib\\ui\\UI_gaming_DR_ruler.png')
-		LoadImageFromFile('UI_gaming_DR_pin','THlib\\ui\\UI_gaming_DR_pin.png')
-		--LoadImageFromFile('logo','THlib\\ui\\logo.png')
+		LoadImageFromFile('ui_bg2','THlib\\UI\\ui_bg_2.png')
+		LoadImageFromFile('UI_gaming_bg','THlib\\UI\\UI_gaming_bg.png')
+		LoadImageFromFile('UI_gaming_bgFlow','THlib\\UI\\UI_gaming_bgFlow.png')
+		LoadImageFromFile('UI_gaming_bgCover','THlib\\UI\\UI_gaming_bgCover.png')
+		LoadImageFromFile('UI_gaming_bg_highlight','THlib\\UI\\UI_gaming_bg_highlight.png')
+		LoadImageFromFile('UI_gaming_DR_ruler','THlib\\UI\\UI_gaming_DR_ruler.png')
+		LoadImageFromFile('UI_gaming_DR_pin','THlib\\UI\\UI_gaming_DR_pin.png')
+		--LoadImageFromFile('logo','THlib\\UI\\logo.png')
 		--SetImageCenter('logo',0,0)
-		LoadImageFromFile('menu_bg2','THlib\\ui\\menu_bg_2.png')
-		LoadImageFromFile('menu_bg','THlib\\ui\\menu_bg.png')
+		LoadImageFromFile('menu_bg2','THlib\\UI\\menu_bg_2.png')
+		LoadImageFromFile('menu_bg','THlib\\UI\\menu_bg.png')
 		function ui.DrawFrame()
 			Render('ui_bg2',198,264)
 		end

@@ -84,7 +84,7 @@ end
 ----------------------------------------
 ---boss函数库和资源
 
-local patch="Thlib\\enemy\\"
+local patch="THlib\\enemy\\"
 
 LoadTexture('boss',patch..'boss.png')
 LoadImageGroup('bossring1','boss',80*4,0,16*4,8*4,1,16)

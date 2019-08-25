@@ -30,7 +30,9 @@ function boss_ui:frame()
     task.Do(self)
     if self.countdown then
         if self.countdown>5 and self.countdown<=10 and self.countdown%1==0 then PlaySound('timeout',0.6) end
-        if self.countdown>0 and self.countdown<=5 and self.countdown%1==0 then PlaySound('timeout2',0.8) Print(self.timer) end
+        if self.countdown>0 and self.countdown<=5 and self.countdown%1==0 then PlaySound('timeout2',0.8) 
+        -- Print(self.timer) 
+    end
     end
 end
 

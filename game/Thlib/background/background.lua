@@ -157,7 +157,7 @@ end
 
 LoadFX('boss_distortion', 'shader\\boss_distortion.fx')
 LoadFX('scbg_loaderV2', 'shader\\scbg_loaderV2.fx') --【开卡特效】
-LoadImageFromFile('default_scbg_loader_mask','Thlib\\enemy\\scbg_loader_mask.png') --【开卡特效】
+LoadImageFromFile('default_scbg_loader_mask','THlib\\enemy\\scbg_loader_mask.png') --【开卡特效】
 CreateRenderTarget("_boss_distortion_render_buffer")
 CreateRenderTarget("scbg_render_buffer")
 

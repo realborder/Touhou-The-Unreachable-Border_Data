@@ -8,7 +8,7 @@
 ---@class ext @额外游戏循环加强库
 ext={}
 
-local extpath="Thlib\\ext\\"
+local extpath="THlib\\ext\\"
 
 DoFile(extpath.."ext_pause_menu.lua")--暂停菜单和暂停菜单资源
 DoFile(extpath.."ext_replay.lua")--CHU爷爷的replay系统以及切关函数重载

@@ -1,11 +1,133 @@
 Include'THlib\\exani\\exani_player.lua'
+Include'THlib\\exani\\exani_resource.lua'
+Include'THlib\\exani\\exani_interpolation.lua'
 
+exaniname_list={
+	'BossName1A',
+	'BossName1B',
+	'BossName2',
+	'BossName3',
+	'ChapterFinished',
+	'ChooseBoss_item_Boss1',
+	'ChooseBoss_item_Boss2',
+	'ChooseBoss_item_Boss3',
+	'ChooseChar_marisa',
+	'ChooseChar_reimu',
+	'ChooseDiff_Easy',
+	'ChooseDiff_Hard',
+	'ChooseDiff_Lunatic',
+	'ChooseDiff_Normal',
+	'ChooseDiff_title',
+	'ChooseMode_item_NightmareEcli',
+	'ChooseMode_item_SpellCardPrac',
+	'ChooseMode_item_StagePrac',
+	'ChooseMode_item_StoryMode',
+	'ChoosePlayer_title',
+	'ChooseStage_item_Stage1',
+	'ChooseStage_item_Stage2',
+	'ChooseStage_item_Stage3',
+	'Life_Extend',
+	'Manual_item',
+	'Manual_title',
+	--'Replay_tablePointer',
+	'Replay_titleAndTable',
+	'Spell_Restored',
+	'SpellCardAttack_1A',
+	'SpellCardAttack_1B',
+	'SpellCardAttack_1F',
+	'SpellCardAttack_2',
+	'SpellCardAttack_3',
+	'StageTitle1',
+	'StageTitle2',
+	'StageTitle3',
+	'Title_Menu_bg',
+	'Title_Menu_item_Exit',
+	'Title_Menu_item_Gallery',
+	'Title_Menu_item_Manual',
+	'Title_Menu_item_Musicroom',
+	'Title_Menu_item_Option',
+	'Title_Menu_item_PlayerData',
+	'Title_Menu_item_Replay',
+	'Title_Menu_item_Start',
+	'Title_Menu_LOGO'}
+
+	
+function clone(tab)
+	local ins={}
+	for key,var in pairs(tab) do
+		ins[key]=var
+	end
+	return ins
+end
+
+keyFrame={
+	img='',
+	x=0,
+	x_ran=0,
+	y=0,
+	y_ran=0,
+	cx=0,
+	cy=0,
+	rot=0,
+	hs=1,
+	vs=1,
+	a=255,
+	frame_at=0,
+	blend='',
+	frame_type=0,
+	v_type=2,
+	h_type=2,
+	r_type=2,
+	a_type=2,
+	b_type=1
+}
+keyFrame.new=function()
+	local self=clone(keyFrame)
+	return self
+end
+keyFrame.pass_value=function(t1,t2)
+	---少img和frame_at,原因是这两个有的操作不需要甚至不能要(比如L+K)
+	t1.x=t2.x
+	t1.x_ran=t2.x_ran or 0
+	t1.y=t2.y
+	t1.y_ran=t2.y_ran or 0
+	t1.cx=t2.cx
+	t1.cy=t2.cy
+	t1.rot=t2.rot
+	t1.vs=t2.vs
+	t1.hs=t2.hs
+	t1.a=t2.a
+	t1.blend=t2.blend
+	t1.frame_type=t2.frame_type or 0
+	t1.v_type=t2.v_type or 2
+	t1.h_type=t2.h_type or 2
+	t1.r_type=t2.r_type or 2
+	t1.a_type=t2.a_type or 2
+	t1.b_type=t2.b_type or 1
+end
+keyFrame.copy=function(tab)
+	local ins={}
+	ins.img=tab.img
+	ins.frame_at=tab.frame_at
+	keyFrame.pass_value(ins,tab)
+	return ins
+end
+
+function ReturnTypeName(n)
+	if n==1 then return 'instant'
+	elseif n==2 then return 'linear'
+	elseif n==3 then return 'smooth'
+	end
+end
+	
+	
 play_manager={}
-local EXANI_PATH="Thlib\\exani\\exani_data\\"
+local EXANI_PATH="THlib\\exani\\exani_data\\"
 
 exani_player_manager=Class(object)
 function exani_player_manager:init()
-	self.exanis_path=plus.ReturnDirectory(EXANI_PATH)
+	-- self.exanis_path=plus.ReturnDirectory(EXANI_PATH)
+	self.exanis_path=exaniname_list
 	self.exanis={}
 	play_manager=self
 end
@@ -17,11 +139,28 @@ function exani_player_manager:Del()
 	end
 end
 
+function exani_player_manager.LoadAllResource()
+	local EXANI_PATH="THlib\\exani\\exani_data\\"
+	Print('[exani]开始加载所有资源')
+	for _,v in pairs(exaniname_list) do
+		local name=v
+		local path=EXANI_PATH..name.."\\"
+		if not exani_resource_list[v] then error(v) end
+		for _,_v in pairs(exani_resource_list[v]) do
+			local imgname=string.sub(_v,string.len(path)+1,-5)
+			Print('[exani]加载exani '..name..'的名为'..imgname..'的部件，文件路径：'.._v)
+			LoadImageFromFile(imgname,_v)
+
+		end
+	end
+end
+
 --创建单个exani对象
 function exani_player_manager:CreateSingleExani(exani_name)
 	for i=1,#self.exanis do
 		if self.exanis[i].name==exani_name then return i end
 	end
+	
 	for k,v in pairs(self.exanis_path) do
 		if v==exani_name then
 			table.insert(self.exanis,New(exani_player,v))
@@ -80,16 +219,16 @@ function exani_player_manager:ExecuteExaniPredefine(exani_name,action)
 		for j=1,#ex.predefine[action] do
 			table.insert(ex.future_action,ex.predefine[action][j])
 		end
-		Print('查看'..exani_name..'future_action')
-		for k,v in pairs(ex.future_action) do
-			if(type(v)=='string') then
-				Print(v)
-			else
-				Print(v.startf)
-				Print(v.endf)
-				Print(v.repeatc)
-			end
-		end
+		-- Print('查看'..exani_name..'future_action')
+		-- for k,v in pairs(ex.future_action) do
+		-- 	if(type(v)=='string') then
+		-- 		Print(v)
+		-- 	else
+		-- 		Print(v.startf)
+		-- 		Print(v.endf)
+		-- 		Print(v.repeatc)
+		-- 	end
+		-- end
 		exani_player.DoPredefine(ex)
 	elseif i then
 		local ex=self.exanis[#self.exanis]
@@ -98,19 +237,20 @@ function exani_player_manager:ExecuteExaniPredefine(exani_name,action)
 				table.remove(ex.future_action,k)
 			end
 		end
+		if not ex.predefine then error('exani_predefine is empty:'..ex.name) end
 		for j=1,#ex.predefine[action] do
 			table.insert(ex.future_action,ex.predefine[action][j])
 		end
-		Print('查看'..exani_name..'future_action')
-		for k,v in pairs(ex.future_action) do
-			if(type(v)=='string') then
-				Print(v)
-			else
-				Print(v.startf)
-				Print(v.endf)
-				Print(v.repeatc)
-			end
-		end
+		-- Print('查看'..exani_name..'future_action')
+		-- for k,v in pairs(ex.future_action) do
+		-- 	if(type(v)=='string') then
+		-- 		Print(v)
+		-- 	else
+		-- 		Print(v.startf)
+		-- 		Print(v.endf)
+		-- 		Print(v.repeatc)
+		-- 	end
+		-- end
 		exani_player.DoPredefine(ex)
 	else
 		error('create exani object named:'..exani_name..' failed')

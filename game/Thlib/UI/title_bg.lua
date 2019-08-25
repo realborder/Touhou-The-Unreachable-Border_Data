@@ -4,12 +4,12 @@
 -----------------------------
 title_bg=Class(object)
 LoadImageFromFile('title_sky','THlib\\UI\\title_sky.png')
-LoadImageFromFile('title_diff_e','Thlib\\UI\\title\\difficulty_E.png')
-LoadImageFromFile('title_diff_n','Thlib\\UI\\title\\difficulty_N.png')
-LoadImageFromFile('title_diff_h','Thlib\\UI\\title\\difficulty_H.png')
-LoadImageFromFile('title_diff_l','Thlib\\UI\\title\\difficulty_L.png')
-LoadImageFromFile('cube_side','Thlib\\UI\\title\\bg_test.png')
-for i=1,4 do LoadImageFromFile('title_char_'..i,'Thlib\\UI\\title\\char_'..i..'.png') end
+LoadImageFromFile('title_diff_e','THlib\\UI\\title\\difficulty_E.png')
+LoadImageFromFile('title_diff_n','THlib\\UI\\title\\difficulty_N.png')
+LoadImageFromFile('title_diff_h','THlib\\UI\\title\\difficulty_H.png')
+LoadImageFromFile('title_diff_l','THlib\\UI\\title\\difficulty_L.png')
+LoadImageFromFile('cube_side','THlib\\UI\\title\\bg_test.png')
+for i=1,4 do LoadImageFromFile('title_char_'..i,'THlib\\UI\\title\\char_'..i..'.png') end
 
 function title_bg:init()
 	self.group=GROUP_GHOST

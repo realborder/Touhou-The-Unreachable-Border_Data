@@ -838,7 +838,7 @@ local function slow_shoot(self)
 	--local angle = {110,100,80,70,110,70}
 	--local num = int(lstg.var.power / 100) + 1
 	local num = int(self.support) + 1
-	Print(num)
+	-- Print(num)
 	if self.timer % 15 == 0 then
 		for i = 1, 6 do
 			if self.sp[i] and self.sp[i][3] > 0.5 then

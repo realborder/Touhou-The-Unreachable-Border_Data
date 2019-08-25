@@ -479,10 +479,10 @@ function marisa_blackhole:frame()
 		o.x,o.y=o.x+(self.x-o.x)*force,o.y+(self.y-o.y)*force
 	end
 	for j,o in ObjList(GROUP_NONTJT) do
-		if not unit._bosssys then  o.x,o.y=o.x+(self.x-o.x)*force,o.y+(self.y-o.y)*force end
+		if not o._bosssys then  o.x,o.y=o.x+(self.x-o.x)*force,o.y+(self.y-o.y)*force end
 	end
 	for j,o in ObjList(GROUP_ENEMY) do
-		if not unit._bosssys then o.x,o.y=o.x+(self.x-o.x)*force,o.y+(self.y-o.y)*force end
+		if not o._bosssys then o.x,o.y=o.x+(self.x-o.x)*force,o.y+(self.y-o.y)*force end
 	end
 	for j,o in ObjList(GROUP_ITEM) do
 		o.x,o.y=o.x+(self.x-o.x)*force,o.y+(self.y-o.y)*force

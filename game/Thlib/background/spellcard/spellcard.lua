@@ -31,7 +31,7 @@ function _spellcard_background:frame()
 end
 function _spellcard_background:render()
 	SetViewMode'world'
-	if self.alpha>0 and IsValid(_boss) then
+	if self.alpha>0 and self.spr>0 and IsValid(_boss) then
 		-- local showboss = lstg.tmpvar.bg and lstg.tmpvar.bg.hide==true
 		-- if showboss then
 			background.WarpEffectCapture()

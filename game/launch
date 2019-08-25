@@ -330,9 +330,12 @@ SetSEVolume(setting.sevolume/100)
 SetBGMVolume(setting.bgmvolume/100)
 
 ---[[
-for _,v in ipairs({"data",--[["background",]]"se","music","font"}) do
+for _,v in ipairs({"se","music","font","data",--[["background"]]}) do
 	local packpath="Library\\"..v..".zip"
-	if not (lfs.attributes(packpath)==nil) then
+	local packpath_sub="Library\\"..v.."_sub.zip"
+	if not (lfs.attributes(packpath_sub)==nil) then
+		LoadPackSub(packpath_sub)
+	elseif not (lfs.attributes(packpath)==nil) then
 		LoadPack(packpath)
 	end
 end
@@ -340,16 +343,19 @@ end
 
 
 if setting.mod~='launcher' then
-	if not(lfs.attributes('mod\\'..setting.mod..'.zip')==nil) then
-		LoadPack('mod\\'..setting.mod..'.zip')--正常加载mod
+	if not(lfs.attributes('Library\\'..setting.mod..'_pw.zip')==nil) then
+		LoadPackSub('Library\\'..setting.mod..'_pw.zip')--正常加载加密mod
+	elseif not(lfs.attributes('Library\\'..setting.mod..'.zip')==nil) then
+		LoadPack('Library\\'..setting.mod..'.zip')--正常加载mod
 	else
 		--找不到，不加载mod
 	end
 else
 	if lfs.attributes('launcher.lua')==nil then
 		--尝试加载启动器包
-		if not(lfs.attributes('mod\\launcher.zip')==nil) then
-			LoadPack('mod\\launcher.zip')--正常加载启动器
+		if not(lfs.attributes('Library\\launcher.zip')==nil) then
+			-- LoadPackSub('mod\\launcher.zip')--正常加载启动器
+			LoadPack('Library\\launcher.zip')--正常加载启动器
 		else
 			--找不到启动器包，尝试使用data.zip里面的启动器
 		end

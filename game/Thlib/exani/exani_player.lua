@@ -1,4 +1,4 @@
-local EXANI_PATH="Thlib\\exani\\exani_data\\"
+local EXANI_PATH="THlib\\exani\\exani_data\\"
 
 layers_player=Class(object)
 function layers_player:init(list)
@@ -41,7 +41,7 @@ function layers_player:render()
 				imgname=string.sub(self.renderFrame.img,1,-5)
 				SetImageCenter(imgname,self.renderFrame.cx,self.renderFrame.cy)
 			elseif type(self.renderFrame.img)=='number' then
-				Print("check img:"..self.manager.name.."-"..self.Prio.."-"..self.current_frame)
+				-- Print("check img:"..self.manager.name.."-"..self.Prio.."-"..self.current_frame)
 				imgname1=string.sub(self.previousFrame.img,1,-5)
 				imgname2=string.sub(self.nextFrame.img,1,-5)
 				SetImageCenter(imgname1,self.renderFrame.cx,self.renderFrame.cy)
@@ -232,10 +232,16 @@ exani_player=Class(object)
 function exani_player:init(name)
 	self.name=name
 	self.path=EXANI_PATH..name.."\\"
+	-- lstg.DoFile(self.path..'_exani_load_resource.lua')
 	self.viewmode='world'
 	self.layer=LAYER_TOP --默认最顶层
 	self.layerList=lstg.LoadExaniConfig(self.path)
-	self.picList={}
+	------检查predefine是否为空
+	local flag=false
+	for k,v in pairs(self.layerList) do flag=true end
+	if not flag then Print('[exani]名为 '..self.name..' 的exani对象的动画数据为空') end
+	------------
+	self.picList={}---------
 	self.isContainShader=false
 	for k,v in pairs(self.layerList) do
 		table.insert(self.picList,New(layers_player,v))
@@ -286,16 +292,16 @@ function exani_player:frame()
 				else
 					if next(self.future_action) then table.remove(self.future_action,1) end
 					if next(self.future_action) then
-						Print('执行'..self.name..'后续action')
-						for k,v in pairs(self.future_action) do
-							if(type(v)=='string') then
-								Print(v)
-							else
-								Print(v.startf)
-								Print(v.endf)
-								Print(v.repeatc)
-							end
-						end
+						-- Print('执行'..self.name..'后续action')
+						-- for k,v in pairs(self.future_action) do
+						-- 	if(type(v)=='string') then
+						-- 		Print(v)
+						-- 	else
+						-- 		Print(v.startf)
+						-- 		Print(v.endf)
+						-- 		Print(v.repeatc)
+						-- 	end
+						-- end
 						exani_player.DoPredefine(self)
 					end
 				end
@@ -321,16 +327,28 @@ function exani_player:Del()
 end
 
 function exani_player:LoadImgSources()
-	local pngs=lstg.FindFiles(self.path,"png","")
-	for k,v in pairs(pngs) do
-		local imgname=string.sub(v[1],string.len(self.path)+1,-5)
-		LoadImageFromFile(imgname,v[1])
-	end
-	local jpgs=lstg.FindFiles(self.path,"jpg","")
-	for k,v in pairs(jpgs) do
-		local imgname=string.sub(v[1],string.len(self.path)+1,-5)
-		LoadImageFromFile(imgname,v[1])
-	end
+	-- local info_tmp={}
+	-- local output_tmp='[\''..self.name..'\']={'
+	-- local pngs=lstg.FindFiles(self.path,"png","")
+	-- for k,v in pairs(pngs) do
+	-- 	local imgname=string.sub(v[1],string.len(self.path)+1,-5)
+	-- 	table.insert(info_tmp,v[1])
+	-- 	LoadImageFromFile(imgname,v[1])
+	-- end
+	-- local jpgs=lstg.FindFiles(self.path,"jpg","")
+	-- for k,v in pairs(jpgs) do
+	-- 	local imgname=string.sub(v[1],string.len(self.path)+1,-5)
+	-- 	table.insert(info_tmp,v[1])
+	-- 	LoadImageFromFile(imgname,v[1])
+	-- end
+	-- for _,v in pairs(info_tmp) do
+	-- 	local prefix=',\"'
+	-- 	if _==1 then prefix='\"' end
+	-- 	output_tmp=output_tmp..prefix..v..'\"'
+	-- end
+	-- output_tmp=output_tmp.."},"
+	-- Print('[ExaniResource]'..output_tmp)
+
 end
 
 function exani_player:play(start_frame,end_frame,layer,viewmode,replay_round,play_interval,isdelete,mode,offset_x,offset_y,z,hscale,vscale)
@@ -385,9 +403,9 @@ function exani_player:DoPredefine()
 		self.end_frame=self.future_action[1].endf
 		if self.start_frame>=self.end_frame then self.play_interval=-1
 		elseif self.start_frame< self.end_frame then self.play_interval=1 end
-		Print("action's interval is "..self.play_interval)
+		-- Print("action's interval is "..self.play_interval)
 		self.replay_round=self.future_action[1].repeatc or 1
-		Print("action's repeat is "..self.replay_round)
+		-- Print("action's repeat is "..self.replay_round)
 		self.current_frame=self.start_frame
 		for k,v in pairs(self.picList) do
 			v.current_frame=self.current_frame
@@ -433,17 +451,17 @@ function exani_player:GetActionValue()
 		if type(self.future_action[1])=='string' then
 			is_ok=false
 			local action=self.future_action[1]
-			Print(self.name..' string action '..action)
+			-- Print(self.name..' string action '..action)
 			table.remove(self.future_action,1)
 			for i=#self.predefine[action],1,-1 do
 				table.insert(self.future_action,1,self.predefine[action][i])
 			end
-			Print('查看'..self.name..'转换action')
-			for k,v in pairs(self.future_action) do
-				Print(v.startf)
-				Print(v.endf)
-				Print(v.repeatc)
-			end
+			-- Print('查看'..self.name..'转换action')
+			-- for k,v in pairs(self.future_action) do
+			-- 	Print(v.startf)
+			-- 	Print(v.endf)
+			-- 	Print(v.repeatc)
+			-- end
 		end
 	end
 end
@@ -460,7 +478,7 @@ function exani_player:UpdateLayers()
 end
 
 function exani_player:CheckShader()
-	Print('进入CheckShader')
+	-- Print('进入CheckShader')
 	local hasShader=false
 	local hasMasked=false
 	for k,v in pairs(self.picList) do
@@ -477,7 +495,7 @@ function exani_player:CheckShader()
 		local rtmname='RTM'..self.name	---RenderTargetMaskedName
 		CreateRenderTarget(rtsname)
 		CreateRenderTarget(rtmname)
-		local path='Thlib\\exani\\exani_data\\'..self.name..'\\'..self.name..'FX.fx'
+		local path='THlib\\exani\\exani_data\\'..self.name..'\\'..self.name..'FX.fx'
 		LoadFX(self.name..'FX',path)
 		for i=#self.picList,1,-1 do
 			if self.picList[i].attr=='shader' then self.picList[i].attr='final_shader' break end

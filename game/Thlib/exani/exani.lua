@@ -225,7 +225,7 @@ end
 exani=Class(object)
 function exani:init(dir)
 	self.name=dir
-	self.path="Thlib\\exani\\exani_data\\"..dir.."\\"
+	self.path="THlib\\exani\\exani_data\\"..dir.."\\"
 	self.Prio_in_dev=1
 	self.show=false
 	self.changeShowFlag=false
@@ -328,7 +328,7 @@ function exani:CheckShader()
 		local rtmname='RTM'..self.name	---RenderTargetMaskedName
 		CreateRenderTarget(rtsname)
 		CreateRenderTarget(rtmname)
-		local path='Thlib\\exani\\exani_data\\'..self.name..'\\'..self.name..'FX.fx'
+		local path='THlib\\exani\\exani_data\\'..self.name..'\\'..self.name..'FX.fx'
 		LoadFX(self.name..'FX',path)
 		for i=#self.picList,1,-1 do
 			if self.picList[i].attr=='shader' then self.picList[i].attr='final_shader' break end

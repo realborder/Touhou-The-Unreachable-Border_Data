@@ -1,27 +1,27 @@
 Include'THlib\\exani\\exani.lua'
 Include'THlib\\exani\\exani_interpolation.lua'
-Include'THlib\\exani\\exani_player_manager.lua'
+-- Include'THlib\\exani\\exani_player_manager.lua'
 
-LoadImageFromFile('exani_editor_background','Thlib\\exani\\exani_editor_background.png')
-LoadImageFromFile('exani_editor_background_night','Thlib\\exani\\exani_editor_background_night.png')
-LoadImageFromFile('exani_editor_blackback','Thlib\\exani\\exani_editor_blackback.png')
-LoadImageFromFile('exani_editor_ruler','Thlib\\exani\\exani_editor_ruler.png') --SetImageCenter('exani_editor_ruler',0,0)--【云绝】
-LoadImageFromFile('exani_editor_tip','Thlib\\exani\\exani_editor_tip.png') --SetImageCenter('exani_editor_tip',0,0)
-LoadImageFromFile('exani_editor_tip_night','Thlib\\exani\\exani_editor_tip_night.png') --SetImageCenter('exani_editor_tip',0,0)
-LoadImageFromFile('exani_pointer','Thlib\\exani\\exani_pointer.png') SetImageCenter('exani_pointer',64,64)
-LoadImageFromFile('exani_pointer2','Thlib\\exani\\exani_pointer2.png') SetImageCenter('exani_pointer2',32,32)
+LoadImageFromFile('exani_editor_background','THlib\\exani\\exani_editor_background.png')
+LoadImageFromFile('exani_editor_background_night','THlib\\exani\\exani_editor_background_night.png')
+LoadImageFromFile('exani_editor_blackback','THlib\\exani\\exani_editor_blackback.png')
+LoadImageFromFile('exani_editor_ruler','THlib\\exani\\exani_editor_ruler.png') --SetImageCenter('exani_editor_ruler',0,0)--【云绝】
+LoadImageFromFile('exani_editor_tip','THlib\\exani\\exani_editor_tip.png') --SetImageCenter('exani_editor_tip',0,0)
+LoadImageFromFile('exani_editor_tip_night','THlib\\exani\\exani_editor_tip_night.png') --SetImageCenter('exani_editor_tip',0,0)
+LoadImageFromFile('exani_pointer','THlib\\exani\\exani_pointer.png') SetImageCenter('exani_pointer',64,64)
+LoadImageFromFile('exani_pointer2','THlib\\exani\\exani_pointer2.png') SetImageCenter('exani_pointer2',32,32)
 LoadTTF('Word','THlib\\UI\\ttf\\杨任东竹石体-Heavy.ttf',60)
 LoadTTF('Information','THlib\\exani\\times.ttf',26)
 LoadTTF('Number','THlib\\UI\\ttf\\杨任东竹石体-Heavy.ttf',30)
 
-LoadImageFromFile('exani_editor_frame_nil','Thlib\\exani\\exani_editor_frame_nil.png')
-LoadImageFromFile('exani_editor_frame_normal','Thlib\\exani\\exani_editor_frame_normal.png')
-LoadImageFromFile('exani_editor_frame_spec','Thlib\\exani\\exani_editor_frame_spec.png')
-LoadImageFromFile('exani_editor_frame_selector','Thlib\\exani\\exani_editor_frame_selector.png')
+LoadImageFromFile('exani_editor_frame_nil','THlib\\exani\\exani_editor_frame_nil.png')
+LoadImageFromFile('exani_editor_frame_normal','THlib\\exani\\exani_editor_frame_normal.png')
+LoadImageFromFile('exani_editor_frame_spec','THlib\\exani\\exani_editor_frame_spec.png')
+LoadImageFromFile('exani_editor_frame_selector','THlib\\exani\\exani_editor_frame_selector.png')
 
 SetImageState('exani_editor_blackback','',Color(150,255,255,255))
 
-local EXANI_PATH="Thlib\\exani\\exani_data\\"
+local EXANI_PATH="THlib\\exani\\exani_data\\"
 current_manager={}
 
 exani_manager=Class(object)

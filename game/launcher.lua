@@ -104,112 +104,119 @@ function stage_init:init()
     jstg.enable_player=true
     LoadTexture('UI_gameInit','THlib\\UI\\UI_gameInit.jpg')
 	LoadImage('UI_gameInit','UI_gameInit',0,0,1920,1080)
-
+	self.load_process=0
 
 end
 function stage_init:frame()
 	if self.timer==30 then
 		SetResourceStatus'global'
-
 		LoadTTF('menuttfs','THlib\\UI\\font\\default_ttf',40)
+		self.load_process=0.1
+	elseif self.timer==31 then
 		--沙雕加载资源，以后再改
-		--[[
-		for _,v in ipairs({"data","background","music","font"}) do
-			local packpath="Library\\"..v..".zip"
-			if not (lfs.attributes(packpath)==nil) then
-				LoadPack(packpath)
+		dialogsys_sub.Init()
+		local STAGE={'player','st1','st2','st3'--[[,'st4','st5','st6a','st6b','ex']]} --未制作的关卡暂时屏蔽
+		for _,v in pairs(STAGE) do
+			dialogsys_sub.LoadImage(v)
+		end
+		self.load_process=0.45
+	elseif self.timer==32 then
+		exani_player_manager.LoadAllResource()
+		self.load_process=0.75
+	elseif self.timer==33 then
+		do
+			local f,msg
+			f,msg=io.open(settingfile,'r')
+			if f==nil then
+				cur_setting=DeSerialize(Serialize(default_setting))
+			else
+				cur_setting=DeSerialize(f:read('*a'))
+				f:close()
 			end
-		end
-		--]]		
-		local f,msg
-		f,msg=io.open(settingfile,'r')
-		if f==nil then
-			cur_setting=DeSerialize(Serialize(default_setting))
-		else
-			cur_setting=DeSerialize(f:read('*a'))
-			f:close()
-		end
-		LoadTexture('UI_gameInit','THlib\\UI\\UI_gameInit.jpg')
-		LoadImage('UI_gameInit','UI_gameInit',0,0,1920,1080)
-	
-		New(exani_player_manager)	
-		player_menu=New(special_player)
+			LoadTexture('UI_gameInit','THlib\\UI\\UI_gameInit.jpg')
+			LoadImage('UI_gameInit','UI_gameInit',0,0,1920,1080)
 		
-		diff_menu=New(special_difficulty)
-		RawDel(diff_menu)
-		stage_menu=New(base_menu,'stage_menu','',{
-				{'ChooseStage_item_Stage1','diff_menu','',true},
-				{'ChooseBoss_item_Boss1','diff_menu',function() debugPoint=4 end,true},
-				{'ChooseStage_item_Stage2','diff_menu','',true},
-				{'ChooseBoss_item_Boss2','diff_menu',function() debugPoint=4 end,true},
-				{'ChooseStage_item_Stage3','diff_menu','',true},
-				{'ChooseBoss_item_Boss3','diff_menu',function() debugPoint=5 end,true},
-			},
-			'start_menu',
-			true
-		)
-		
-		start_menu=New(base_menu,'start_menu','Title_Menu_item_Start',{
-				{'ChooseMode_item_StoryMode','diff_menu',function() practice=nil diff_menu.menu_back=1 debugPoint=0 end,true},
-				{'ChooseMode_item_StagePrac','stage_menu',function() practice='stage' diff_menu.menu_back=2 end,true},
-				{'ChooseMode_item_SpellCardPrac','','',false},
-				{'ChooseMode_item_NightmareEcli','','',false},
-			},
-			'main_menu',
-			true
-		)
-		
-		replay_menu=New(special_replay)
-		
-		manual_menu=New(special_manual)
-		menu_other=New(other_setting_menu,'Other Settings',{
-			{'Resolution X',function() menu_other.edit=true menu_other.setting_backup=cur_setting.res end},
-			{'Resolution Y',function() menu_other.edit=true menu_other.setting_backup=cur_setting.res end},
-			{'Windowed',function() cur_setting.windowed=not cur_setting.windowed end},
-			{'Vsync',function() cur_setting.vsync=not cur_setting.vsync end},
-			{'Sound Volume',function() end},
-			{'Music Volume',function() end},
-			{'Return To Title',function()
-				menu.FlyOut(menu_other,'right')
-				save_setting()
-				loadConfigure()
-				ChangeVideoMode(setting.resx,setting.resy,setting.windowed,setting.vsync)
-				SetSEVolume(setting.sevolume/100)
-				SetBGMVolume(setting.bgmvolume/100)
-				ResetScreen()
-				base_menu.ChangeLocked(menus['main_menu'])
-			end},
-			{'exit',function()
-				if menu_other.pos~=7 then
-					menu_other.pos=7
-				else
+			New(exani_player_manager)	
+			player_menu=New(special_player)
+			
+			diff_menu=New(special_difficulty)
+			RawDel(diff_menu)
+			stage_menu=New(base_menu,'stage_menu','',{
+					{'ChooseStage_item_Stage1','diff_menu','',true},
+					{'ChooseBoss_item_Boss1','diff_menu',function() debugPoint=4 end,true},
+					{'ChooseStage_item_Stage2','diff_menu','',true},
+					{'ChooseBoss_item_Boss2','diff_menu',function() debugPoint=4 end,true},
+					{'ChooseStage_item_Stage3','diff_menu','',true},
+					{'ChooseBoss_item_Boss3','diff_menu',function() debugPoint=5 end,true},
+				},
+				'start_menu',
+				true
+			)
+			
+			start_menu=New(base_menu,'start_menu','Title_Menu_item_Start',{
+					{'ChooseMode_item_StoryMode','diff_menu',function() practice=nil diff_menu.menu_back=1 debugPoint=0 end,true},
+					{'ChooseMode_item_StagePrac','stage_menu',function() practice='stage' diff_menu.menu_back=2 end,true},
+					{'ChooseMode_item_SpellCardPrac','','',false},
+					{'ChooseMode_item_NightmareEcli','','',false},
+				},
+				'main_menu',
+				true
+			)
+			
+			replay_menu=New(special_replay)
+			
+			manual_menu=New(special_manual)
+			menu_other=New(other_setting_menu,'Other Settings',{
+				{'Resolution X',function() menu_other.edit=true menu_other.setting_backup=cur_setting.res end},
+				{'Resolution Y',function() menu_other.edit=true menu_other.setting_backup=cur_setting.res end},
+				{'Windowed',function() cur_setting.windowed=not cur_setting.windowed end},
+				{'Vsync',function() cur_setting.vsync=not cur_setting.vsync end},
+				{'Sound Volume',function() end},
+				{'Music Volume',function() end},
+				{'Return To Title',function()
 					menu.FlyOut(menu_other,'right')
 					save_setting()
+					loadConfigure()
+					ChangeVideoMode(setting.resx,setting.resy,setting.windowed,setting.vsync)
+					SetSEVolume(setting.sevolume/100)
+					SetBGMVolume(setting.bgmvolume/100)
+					ResetScreen()
 					base_menu.ChangeLocked(menus['main_menu'])
-				end
-			end},
-		})
-		main_menu=New(base_menu,'main_menu','',{
-				{'Title_Menu_item_Start','start_menu','',true},
-				{'Title_Menu_item_Replay','replay_menu',function() menu.FadeIn2(replay_menu,'right') end,true},
-				{'Title_Menu_item_PlayerData','','',false},
-				{'Title_Menu_item_Musicroom','','',false},
-				{'Title_Menu_item_Manual','manual_menu','',true},
-				{'Title_Menu_item_Gallery','','',false},
-				{'Title_Menu_item_Option','',function() menu.FlyIn(menu_other,'right') menu_other.pos=1 end,true},
-				{'Title_Menu_item_Exit','',ExitGame,true}
-			},
-			'',
-			true
-		)
+				end},
+				{'exit',function()
+					if menu_other.pos~=7 then
+						menu_other.pos=7
+					else
+						menu.FlyOut(menu_other,'right')
+						save_setting()
+						base_menu.ChangeLocked(menus['main_menu'])
+					end
+				end},
+			})
+			main_menu=New(base_menu,'main_menu','',{
+					{'Title_Menu_item_Start','start_menu','',true},
+					{'Title_Menu_item_Replay','replay_menu',function() menu.FadeIn2(replay_menu,'right') end,true},
+					{'Title_Menu_item_PlayerData','','',false},
+					{'Title_Menu_item_Musicroom','','',false},
+					{'Title_Menu_item_Manual','manual_menu','',true},
+					{'Title_Menu_item_Gallery','','',false},
+					{'Title_Menu_item_Option','',function() menu.FlyIn(menu_other,'right') menu_other.pos=1 end,true},
+					{'Title_Menu_item_Exit','',ExitGame,true}
+				},
+				'',
+				true
+			)
+			
+		end
+		self.load_process=0.9
+	elseif self.timer==34 then
 		LoadMusic('menu',music_list.menu[1],music_list.menu[2],music_list.menu[3])
 		start_game()
-    end
-    if self.timer==31 then
+		Print('游戏已启动')
+		self.load_process=1
+    elseif self.timer==35 then
         New(mask_fader,'')
-    end
-	if self.timer>=61 then 
-		
+    elseif self.timer>=66 then 
 
 		stage.Set('none', 'menu') 
 	end
@@ -218,6 +225,9 @@ end
 function stage_init:render()
     SetViewMode'ui'
     Render('UI_gameInit',320,240,0,0.5)
+	SetImageState('white','',Color(0xFFFFFFFF))
+	local extra=150
+	RenderRect('white',0-extra,(screen.width+2*extra)*self.load_process,0,3)
 end
 
 
@@ -416,7 +426,13 @@ end
 
 function start_game()
 	loadConfigure()
-	LoadPack('mod\\'..setting.mod..'.zip')
+	if not(lfs.attributes('Library\\'..setting.mod..'_pw.zip')==nil) then
+		LoadPackSub('Library\\'..setting.mod..'_pw.zip')--正常加载加密mod
+	elseif not(lfs.attributes('Library\\'..setting.mod..'.zip')==nil) then
+		LoadPack('Library\\'..setting.mod..'.zip')--正常加载mod
+	else
+		--找不到，不加载mod
+	end
 	SetSplash(false)
 	-- SetTitle(setting.mod)
 	SetTitle('东方梦无垠 ~ The Unreachabe Oneiroborder ver.pre1')

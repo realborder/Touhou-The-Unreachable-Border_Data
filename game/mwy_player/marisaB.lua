@@ -358,7 +358,7 @@ function marisa_spark:init(x,y,rot,turnOnTime,wait,turnOffTime,p,index)
 	self.life=92
 	self.player.slowlock=true
 	_lastSpark[index]=self
-	Print("[spark]"..index..": "..tostring(IsValid(_lastSpark[index])))
+	-- Print("[spark]"..index..": "..tostring(IsValid(_lastSpark[index])))
 	-- lstg.var.block_spell=true
 	task.New(self,function()
 		for i=0,turnOnTime do
@@ -382,7 +382,7 @@ end
 function marisa_spark:frame()
 	task.Do(self)
 	if self.timer%90==1 then misc.ShakeScreen(90,5) end
-	Print("[life]"..self.life)
+	-- Print("[life]"..self.life)
 	self.x=self.player.x
 	self.y=self.player.y
 	if self.timer%10==0 then
@@ -404,10 +404,10 @@ function marisa_spark:frame()
 
 	end
 	for j,o in ObjList(GROUP_NONTJT) do
-	if not unit._bosssys then  o.y=min(224,o.y+1) end
+		if not o._bosssys then  o.y=min(224,o.y+1) end
 	end
 	for j,o in ObjList(GROUP_ENEMY) do
-		if not unit._bosssys then  o.y=min(224,o.y+1) end
+		if not o._bosssys then  o.y=min(224,o.y+1) end
 	end
 	for j,o in ObjList(GROUP_ITEM) do
 		o.y=min(226,o.y+2)
@@ -468,10 +468,10 @@ function marisa_spark2:frame()
 		New(marisa_spark_wave2,self.x,self.y,self.rot,12,0.9,self.player,self.vscale)
 	end
 	for j,o in ObjList(GROUP_NONTJT) do
-		if not unit._bosssys then  o.y=min(224,o.y+1) end
+		if not o._bosssys then  o.y=min(224,o.y+1) end
 	end
 	for j,o in ObjList(GROUP_ENEMY) do
-		if not unit._bosssys then  o.y=min(224,o.y+1) end
+		if not o._bosssys then  o.y=min(224,o.y+1) end
 	end
 	for j,o in ObjList(GROUP_ITEM) do
 		o.y=min(226,o.y+2)
@@ -542,7 +542,7 @@ end
 local releaseMasterSpark=function (self,rot,index)
 	self.slowlock=true
 	-- New(player_spell_mask,255,255,0,30,240,30)
-	Print(IsValid(_lastSpark[index]))
+	-- Print(IsValid(_lastSpark[index]))
 	if _lastSpark[index] --[[and _lastSpark[index].life>0--]] then _lastSpark[index].life=_lastSpark[index].life+90 return end
 	PlaySound('slash',1.0)
 	PlaySound('nep00',1.0)

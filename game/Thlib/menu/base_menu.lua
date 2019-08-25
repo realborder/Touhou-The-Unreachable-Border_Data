@@ -121,10 +121,10 @@ function base_menu:render()
 		local action=''
 		if self.enables[self.choose] then 
 			action='activate'
-			Print('执行'..self.exani_names[self.choose]..'的activate')
+			-- Print('执行'..self.exani_names[self.choose]..'的activate')
 			exani_player_manager.ExecuteExaniPredefine(play_manager,self.exani_names[self.choose],action)
 		end --else action='ignite_unable' 
-		Print('执行'..self.exani_names[self.pre_choose]..'的deactivate')
+		-- Print('执行'..self.exani_names[self.pre_choose]..'的deactivate')
 		if self.enables[self.pre_choose] then exani_player_manager.ExecuteExaniPredefine(play_manager,self.exani_names[self.pre_choose],'deactivate') end
 		self.changed=false
 	end
