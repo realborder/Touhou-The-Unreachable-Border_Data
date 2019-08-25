@@ -27,7 +27,7 @@ function base_menu:init(name,title,options,pre_menu,has_logo)
 	self.choosed=false --选中选项(包括z和x)
 	self.pre_choose=1
 	
-	self.change_delay=10
+	self.change_delay=15
 	self.change_timer=0
 	
 	self.init_delay=30 --init时间
@@ -75,7 +75,6 @@ function base_menu:frame()
 			PlaySound('select00', 0.3)
 			self.changed=true
 			self.change_timer=self.change_delay
-		--- lstg.GetKeyState(KEY.Z)这样的写法是有问题的，一旦改键就会完蛋，而且一直按住Z键就会一直选择菜单
 		elseif KeyIsPressed'shoot' then 
 			self.choosed=true
 			self.choose_timer=self.choose_delay
@@ -91,10 +90,14 @@ end
 --理论上这些应该都要放在frame里,因为执行预定义的函数并不直接涉及渲染函数
 --但是为了看起来清楚，就放到render里了
 function base_menu:render()
-	if self.init_timer==30 then
-		if self.title~='' then exani_player_manager.ExecuteExaniPredefine(play_manager,self.title,'ignite') end
+	if self.init_timer==self.init_delay then
+		if self.title~='' then
+			exani_player_manager.SetExaniAttribute(play_manager,self.title,nil,nil,nil,nil,nil,1)
+			exani_player_manager.ExecuteExaniPredefine(play_manager,self.title,'ignite')
+		end
 		local action
 		if self.enables[self.choose] then action='activate' else action='activate_unable' end
+		exani_player_manager.SetExaniAttribute(play_manager,self.exani_names[self.choose],nil,nil,nil,nil,nil,1)
 		exani_player_manager.ExecuteExaniPredefine(play_manager,self.exani_names[self.choose],action)
 	end
 	
@@ -102,6 +105,7 @@ function base_menu:render()
 		if lstg.GetKeyState(KEY.Z) then
 			local action
 			if self.enables[self.choose] then action='choose' else action='choose_unable' end
+			exani_player_manager.SetExaniAttribute(play_manager,self.exani_names[self.choose],nil,nil,nil,nil,nil,1)
 			exani_player_manager.ExecuteExaniPredefine(play_manager,self.exani_names[self.choose],action)
 			PlaySound('select00',0.3)
 		elseif lstg.GetKeyState(KEY.X) then
@@ -120,12 +124,15 @@ function base_menu:render()
 	if self.changed then
 		local action=''
 		if self.enables[self.choose] then 
-			action='activate'
 			-- Print('执行'..self.exani_names[self.choose]..'的activate')
-			exani_player_manager.ExecuteExaniPredefine(play_manager,self.exani_names[self.choose],action)
-		end --else action='ignite_unable' 
+			exani_player_manager.SetExaniAttribute(play_manager,self.exani_names[self.choose],nil,nil,nil,nil,nil,3)
+			exani_player_manager.ExecuteExaniPredefine(play_manager,self.exani_names[self.choose],'activate')
+		end 
 		-- Print('执行'..self.exani_names[self.pre_choose]..'的deactivate')
-		if self.enables[self.pre_choose] then exani_player_manager.ExecuteExaniPredefine(play_manager,self.exani_names[self.pre_choose],'deactivate') end
+		if self.enables[self.pre_choose] then
+			exani_player_manager.SetExaniAttribute(play_manager,self.exani_names[self.pre_choose],nil,nil,nil,nil,nil,4)
+			exani_player_manager.ExecuteExaniPredefine(play_manager,self.exani_names[self.pre_choose],'deactivate')
+		end
 		self.changed=false
 	end
 	
@@ -135,12 +142,16 @@ function base_menu:ChangeLocked()
 	self.locked=not self.locked
 	local action
 	if self.locked then action='kill' self.init_timer=0 self.choose_timer=-1 self.change_timer=0 else action='init' self.choose=1 end
-	if self.title~='' then exani_player_manager.ExecuteExaniPredefine(play_manager,self.title,action) end
+	if self.title~='' then
+		exani_player_manager.SetExaniAttribute(play_manager,self.title,nil,nil,nil,nil,nil,1)
+		exani_player_manager.ExecuteExaniPredefine(play_manager,self.title,action)
+	end
 	if self.has_logo then exani_player_manager.ExecuteExaniPredefine(play_manager,'Title_Menu_LOGO',action) end
 	if self.exani_names then
 		for i=1,#self.exani_names do
 			local tmp=action
 			if (not self.enables[i]) and tmp=='init' then tmp='init_unable' end
+			exani_player_manager.SetExaniAttribute(play_manager,self.exani_names[i],nil,nil,nil,nil,nil,1)
 			exani_player_manager.ExecuteExaniPredefine(play_manager,self.exani_names[i],tmp)
 		end
 	end
