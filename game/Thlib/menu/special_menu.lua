@@ -284,6 +284,7 @@ function special_difficulty:init()
 	self.cancel_delay=30
 	
 	self.is_choose=false
+	self.delay=0
 	
 	self.pics={'ChooseDiff_Easy','ChooseDiff_Normal','ChooseDiff_Hard','ChooseDiff_Lunatic'} --exani名字刚好和图片相同
 	for i=1,#self.pics do
@@ -321,8 +322,10 @@ function special_difficulty:frame()
 		local z=exani_interpolation(self.z-0.5,0,self.cancel_delay-self.cancel_timer+1,1,self.cancel_delay,'smooth','smooth')
 		Set3D('at',0,0,z)
 	end
+	
+	if self.delay>0 then self.delay=self.delay-1 end
 
-	if self.locked then return end
+	if self.locked or self.delay>0 then return end
 	self.init_timer=self.init_timer+1
 	if self.changed and not lstg.GetKeyState(KEY.LEFT) and not lstg.GetKeyState(KEY.RIGHT) then self.changed=false end
 	
@@ -343,7 +346,14 @@ function special_difficulty:frame()
 		local choosen=(#self.pics)*(self.repeats-1)/2+self.choose
 		local x_fix=640/2
 		local y_fix=480/2
-		local dx=exani_interpolation(self.x_offset[choosen],0,self.activate_delay-self.activate_timer+1,1,self.activate_delay,'smooth','smooth')
+		local dx=0
+		if self.pre_choose~=0 then
+			if self.pre_choose<self.choose then
+				dx=exani_interpolation(self.gap,0,self.activate_delay-self.activate_timer+1,1,self.activate_delay,'smooth','smooth')
+			else
+				dx=exani_interpolation(-self.gap,0,self.activate_delay-self.activate_timer+1,1,self.activate_delay,'smooth','smooth')
+			end
+		end
 		exani_player_manager.SetExaniAttribute(play_manager,self.pics[self.choose],nil,nil,nil,nil,nil,nil,nil,'3d',dx+x_fix,y_fix,self.z,0.5,0.5)
 	end
 	
@@ -386,17 +396,24 @@ function special_difficulty:frame()
 	end
 	
 	if self.deactivate_timer>0 then
-		if pre_choose~=0 then
+		if self.pre_choose~=0 then
 			local choosen=(#self.pics)*(self.repeats-1)/2+self.pre_choose
 			local x_fix=640/2
 			local y_fix=480/2
-			local dx=exani_interpolation(0,self.x_offset[choosen],self.deactivate_delay-self.deactivate_timer+1,1,self.deactivate_delay,'smooth','smooth')
+			local dx=0
+			if self.pre_choose<self.choose then
+				dx=exani_interpolation(0,-self.gap,self.activate_delay-self.activate_timer+1,1,self.activate_delay,'smooth','smooth')
+			else
+				dx=exani_interpolation(0,self.gap,self.activate_delay-self.activate_timer+1,1,self.activate_delay,'smooth','smooth')
+			end
 			exani_player_manager.SetExaniAttribute(play_manager,self.pics[self.pre_choose],nil,nil,nil,nil,nil,nil,nil,'3d',dx+x_fix,y_fix,self.z,0.5,0.5)
 		end
 	end
 	
 	if self.choose_timer==0 and self.is_choose then
-		base_menu.ChangeLocked(self)
+		self.change_timer=0
+		if self.title then exani_player_manager.ExecuteExaniPredefine(play_manager,self.title,'kill') end
+		
 		base_menu.ChangeLocked(menus['player_menu'])
 		exani_player_manager.ExecuteExaniPredefine(play_manager,'ChooseChar_reimu','init')
 	end
@@ -417,7 +434,7 @@ function special_difficulty:render()
 		end
 	elseif not self.locked and self.init_timer>0 and self.init_timer<=self.init_delay then
 		SetViewMode('ui')
-		local dx=exani_interpolation(self.tmpdx,0,self.init_timer,1,self.init_delay,'smooth','smooth')
+		local dx=exani_interpolation(self.tmpdx,self.gap*(3-self.choose),self.init_timer,1,self.init_delay,'smooth','smooth')
 		for i=1,(#self.pics)*self.repeats do
 			local x=self.x_offset[i]+dx
 			local n=i%(#self.pics)
@@ -427,11 +444,22 @@ function special_difficulty:render()
 	elseif not self.locked then
 		local startn=(#self.pics)*(self.repeats-1)/2+1
 		local endn=(#self.pics)*(self.repeats+1)/2
+		
+		local dx=self.gap*(3-self.choose)
+		if self.activate_timer>0 then
+			if self.pre_choose~=0 then
+				dx=exani_interpolation(self.gap*(3-self.pre_choose),self.gap*(3-self.choose),self.activate_delay-self.activate_timer+1,1,self.activate_delay,'smooth','smooth')
+			end
+		end
+		
 		for i=startn,endn do
+		--for i=1,(#self.pics)*self.repeats do
 			local x=self.x_offset[i]
 			local n=i%(#self.pics)
 			if n==0 then n=#self.pics end
-			if n~=self.choose then Render(self.pics[n],x,self.y,0,1*scalefix,1*scalefix,self.z) end
+			-- if not (self.activate_timer==0 and n==self.choose) then
+				Render(self.pics[n],x+dx,self.y,0,1*scalefix,1*scalefix,self.z)
+			-- end
 		end
 	end
 end
@@ -536,6 +564,8 @@ function special_player:frame()
 			local diff=menus['diff_menu']
 			diff.locked=false
 			diff.is_choose=false
+			diff.pre_choose=0
+			diff.delay=30
 			exani_player_manager.ExecuteExaniPredefine(play_manager,diff.title,'init')
 			exani_player_manager.ExecuteExaniPredefine(play_manager,diff.pics[diff.choose],'unchoose')
 			if self.choose==1 then exani_player_manager.ExecuteExaniPredefine(play_manager,self.player[1],'killA')
