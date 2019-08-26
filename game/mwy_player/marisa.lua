@@ -177,7 +177,6 @@ function marisa_drug_bottle_ef:init(x,y)
 	self.img="_marisa_drug_bottle_eff"
 	self.group=GROUP_GHOST
 	self.layer=LAYER_PLAYER_BULLET+1
-	New(marisa_drug_bottle_ef2,self.x,self.y,30)
 	ParticleFire(self)
 end
 function marisa_drug_bottle_ef:frame()
@@ -197,28 +196,41 @@ function marisa_drug_bottle:init(x,y,v,dmg)
 	self.omiga=15
 end
 function marisa_drug_bottle:kill()
-	New(marisa_drug_bottle_ef,self.x,self.y)
+	New(marisa_drug_bottle_ef,self.x,self.y,45)
+	New(marisa_drug_bottle_ef2,self.x,self.y,30,self.dmg/100)
 	New(bullet_cleaner,self.x,self.y, 125, 30, 30, 1)
 end
 
 marisa_drug_bottle_ef2=Class(object)
-function marisa_drug_bottle_ef2:init(x,y,remainTime)
+function marisa_drug_bottle_ef2:init(x,y,remainTime,dmg)
 	self.x,self.y=x,y
 	self.img="_marisa_explode_ring"
 	self.hscale,self.vscale=0.5,0.5
-	self.group=GROUP_GHOST
+	self.alpha=1
+	self.dmg=dmg
+	self.group=GROUP_PLAYER_BULLET
 	self.layer=LAYER_PLAYER_BULLET+50
+	self.killflag=true
 	task.New(self,function ()
+		local a,b=self.a,self.b
 		for i=1,remainTime do
-			self.hscale=0.5+sin(i/remainTime)
+			self.hscale=0.5+2*sin(90*i/remainTime)
 			self.vscale=self.hscale
+			self.a=a*self.hscale
+			self.b=b*self.hscale
+			self.alpha=1-i/remainTime
+			task.Wait()
 		end
+		RawDel(self)
 	end)
 end
 function marisa_drug_bottle_ef2:frame()
 	task.Do(self)
 end
-
+function marisa_drug_bottle_ef2:render()
+	SetImageState(self.img,'',Color(255*self.alpha,0x5F,0xCE,0xEA))
+	object.render(self)
+end
 
 Include(path.."marisaA.lua")
 Include(path.."marisaB.lua")

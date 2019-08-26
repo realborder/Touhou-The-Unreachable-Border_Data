@@ -80,9 +80,9 @@ end
 
 function reimu_spread_small:render()
 	if self.timer <= 6 then
-		SetImageState(self.img, "", Color(180 * self.timer / 6, 255, 255, 255))
+		SetImageState(self.img, "", Color(125 * self.timer / 6, 255, 255, 255))
 	else
-		SetImageState(self.img, "", Color(180, 255, 255, 255))
+		SetImageState(self.img, "", Color(125, 255, 255, 255))
 	end
 	DefaultRenderFunc(self)
 end
@@ -124,7 +124,7 @@ function reimu_spread_big_ef:frame()
 end
 
 function reimu_spread_big_ef:render()
-	SetImgState(self, "mul+add", self.alpha * 128, 255, 255, 255)
+	SetImageState(self.img, "mul+add", Color(self.alpha * 128, 255, 255, 255))
 	DefaultRenderFunc(self)
 end
 
@@ -182,7 +182,7 @@ end
 function reimu_spread_big:frame()
 	if self.timer <= 30 then
 		--缩放变大
-		self.hscale = self.timer / 30
+		self.hscale = 0.5+0.5*self.timer / 30
 		self.vscale = self.hscale
 		self.a = self.hscale * self.sa
 		self.b = self.vscale * self.sb
@@ -199,7 +199,10 @@ function reimu_spread_big:frame()
 		Kill(self)
 	end
 end
-
+function reimu_spread_big:render()
+	SetImageState(self.img, "mul+add", Color(0x80FFFFFF))
+	DefaultRenderFunc(self)
+end
 function reimu_spread_big:kill()
 	shoot_small(self)
 	New(reimu_spread_big_ef,
@@ -267,12 +270,15 @@ end
 
 local reimu_boundary_line = Class(object)
 
-function reimu_boundary_line:init(master, dmg, rot, ra, t, r, w, h)
+function reimu_boundary_line:init(master, dmg, rot, ra, t, r, w, h, index)
+	local dmg_offset={0.6,0.8,1}
 	self.group = GROUP_PLAYER_BULLET
 	self.layer = LAYER_PLAYER_BULLET
 	self.bound = false
 	self.rect = true
-	self.dmg = dmg
+	self.index=index
+	if not dmg_offset[index] then error(index) end
+	self.dmg = dmg * dmg_offset[index]
 	self.killflag = true
 	self.master = master
 	self.x = self.master.x
@@ -281,7 +287,13 @@ function reimu_boundary_line:init(master, dmg, rot, ra, t, r, w, h)
 	self.hscale, self.vscale = 0, 0
 	self._rot = rot
 	self.rot = self._rot + 90
-	_object.set_color(self, "mul+add", 192, 0, 0, 255)
+	if index==1 then
+		_object.set_color(self, "mul+add", 192, 100, 100, 255)
+	elseif index==2 then
+		_object.set_color(self, "mul+add", 192, 255, 100, 255)
+	elseif index==3 then
+		_object.set_color(self, "mul+add", 192, 255, 255, 100)
+	end
 	task.New(self, function()
 		local dw = w / t
 		local dr = r / t
@@ -306,6 +318,7 @@ function reimu_boundary_line:init(master, dmg, rot, ra, t, r, w, h)
 end
 
 function reimu_boundary_line:frame()
+	New(boundary_bullet_killer,self.x,self.y,self.a,self.b,self.rot)
 	task.Do(self)
 end
 
@@ -341,7 +354,7 @@ end
 
 local reimu_boundary = Class(object)
 
-function reimu_boundary:init(x, y, n, d, dmg)
+function reimu_boundary:init(x, y, n, d, dmg, index)
 	self.x, self.y = x, y
 	self.obj_n = 0
 	task.New(self, function()
@@ -357,11 +370,11 @@ function reimu_boundary:init(x, y, n, d, dmg)
 		local dd2 = (dd * 0.95)
 		for i = 1, n do
 			for j = 1, 4 do
-				New(reimu_boundary_line, self, dmg, 90 + a + j * 90, da, t, r, w, h)
+				New(reimu_boundary_line, self, dmg, 90 + a + j * 90, da, t, r, w, h, index)
 				self.obj_n = self.obj_n + 1
 			end
 			for j = 1, 4 do
-				New(reimu_boundary_line, self, dmg, 90 - a + j * 90, -da, t, r, w, h)
+				New(reimu_boundary_line, self, dmg, 90 - a + j * 90, -da, t, r, w, h, index)
 				self.obj_n = self.obj_n + 1
 			end
 			a = a + _a
@@ -475,10 +488,11 @@ function reimu_boundary2_obj:_render()
 end
 
 boundary_bullet_killer=Class(object)
-function boundary_bullet_killer:init(x,y,a,b,rot,kill_indes)
+function boundary_bullet_killer:init(x,y,a,b,rot,kill_indes,rect)
 	self.x=x self.y=y
 	self.a=a self.b=b
 	self.rot=rot
+	self.rect=rect or false
 	-- if self.a~=self.b then self.rect=true end
 	self.group=GROUP_PLAYER
 	self.hide=true
@@ -501,38 +515,34 @@ function reimu_slowspell1:init(x,y,rgb,rot,dmg,scale_fix)
 	self.x,self.y=x,y
 	self.color=color
 	self.rot=rot
+	self._blend='mul+add'
 	self._r,self._g,self._b=rgb[1],rgb[2],rgb[3]
 	self.dmg=dmg
 	self.scale_fix=scale_fix
 	self.a=500
-	self.hscale=10
-	self.vscale=0
+	self.hscale=200
+	self.vscale=5
 	self.b=0
-	self.img="_reimu_high_spell_ef"
+	self.img="white"
+	self.alpha=0.5
 	task.New(self,function () 
 		for i=1,45 do
 			local k=i/45
-			self.b=10*k*scale_fix
+			self.vscale=k*10
+			self.alpha=0.5+0.5*k
+			self.a=448
+			self.b=20+20*k*scale_fix
 			task.Wait()
 		end
-		for i=1,45 do
-			local k=i/45
-			self.b=(10+96*k)*scale_fix
-			self.vscale=k*scale_fix
-			task.Wait()
-		end
-		for i=1,10 do
-			local k=i/10
-			self.vscale=(1+0.1)*k*scale_fix
-			self.alpha=(1-k)*scale_fix
-			task.Wait()
-		end
+		misc.ShakeScreen(30,3)
+		New(reimu_slowspell1_wave,self.x,self.y,5,self.rot+90,rgb,dmg,60,scale_fix)
+		New(reimu_slowspell1_wave,self.x,self.y,5,self.rot-90,rgb,dmg,60,scale_fix)
 		RawDel(self)
 	end)
 end
 function reimu_slowspell1:frame()
 	task.Do	(self)
-	New(boundary_bullet_killer,self.x,self.y,self.a,self.b,self.rot,false)
+	New(boundary_bullet_killer,self.x,self.y,self.a,self.b,self.rot,false,true)
 end
 function reimu_slowspell1:render()
 	if self.timer<=45 then
@@ -540,23 +550,63 @@ function reimu_slowspell1:render()
 		local alpha=255*k
 		local w=10*k
 		SetImageState('white',"mul+add",Color(alpha,self._r,self._g,self._b))
-		RenderRect('white',self.x-w,self.x+w,self.y-224,self.y+224)
-	else
-		--这里要渲染两道封魔阵
-		SetImageState(self.img,"mul+add",Color(255,self._r,self._g,self._b))
 		object.render(self)
 	end
+end
 
-
-
+reimu_slowspell1_wave=Class(object)
+function reimu_slowspell1_wave:init(x,y,v,rot,rgb,dmg,remainTime,scale_fix)
+	--麻烦的是素材，如果朝向0度放这个波那么素材的rot应该为-90，也就是渲染和判定的时候rot要-90（嗯？）
+	--好吧，应该是传入朝向角，计算好vx和vy后再-90，所以看到不要奇怪
+	self.x,self.y=x,y
+	self.rot=rot+90
+	self.vx,self.vy=v*cos(rot),v*sin(rot)
+	self._blend='mul+add'
+	self._r,self._g,self._b=rgb[1],rgb[2],rgb[3]
+	self.group=GROUP_PLAYER_BULLET
+	self.layer=LAYER_PLAYER_BULLET
+	self.alpha=1
+	self.killflag=true
+	self.dmg=dmg
+	self.img='_reimu_slow_spell1'
+	self.a=448
+	self.b=40
+	self.rect=true
+	self.hscale=3
+	task.New(self,function ()
+		local vx,vy=self.vx,self.vy
+		for i=1,60 do
+			local k=1-i/60
+			self.vx,self.vy=vx*k,vy*k
+			self.vscale=1+(1-k)
+			task.Wait()
+		end
+	end)
+	task.New(self,function() 
+		task.Wait(15)
+		for i=1,60 do
+			local k=1-i/60
+			self.alpha=k
+			task.Wait()
+		end
+		RawDel(self)
+	end)
+end
+function reimu_slowspell1_wave:frame()
+	New(boundary_bullet_killer,self.x,self.y,self.a,self.b,self.rot,false,true)
+	task.Do(self)
+end
+function reimu_slowspell1_wave:render()
+	SetImageState(self.img,self._blend,Color(self.alpha*255,self._r,self._g,self._b))
+	object.render(self)
 end
 
 reimu_slowspell2=Class(object)
 function reimu_slowspell2:init(x,y,dmg)
 	self.x,self.y=x,y
 	self.omiga=10
-	self.omiga1=10 
-	self.omiga2=25
+	self.omiga1=2
+	self.omiga2=10
 	self.img='img_void'
 	self.img1='_reimu_boundary_4way'
 	self.img2='_reimu_boundary_4waycenter'
@@ -568,24 +618,68 @@ function reimu_slowspell2:init(x,y,dmg)
 	self.killflag=true
 	task.New(self,function () 
 		local o1,o2=self.omiga1,self.omiga2
-		for i=1,3*90 do
+		for i=1,270 do
 			local k=i/270
-			self.omiga=o1+(o2-o1)*k
-			self.alpha=k
-			self.scale=0.4+0.15*k
+			self.omiga=o1+(o2-o1)*i/180
+			self.alpha=min(1,i/45)
+			self.scale=0.4+0.35*k
 			task.Wait()
 		end
+		for i=1,10 do
+			local k=sin(990*i/10)
+			self.scale=0.75*(1-k)
+			task.Wait()
+		end
+		RawDel(self)
 	end)
 end
 function reimu_slowspell2:frame()
+	self.hscale,self.vscale=self.scale,self.scale
+	self.a,self.b=200*self.scale,200*self.scale
+	New(boundary_bullet_killer,self.x,self.y,self.a,self.b,self.rot)
 	task.Do(self)
 end
 function reimu_slowspell2:render()
 	SetImageState(self.img1,"mul+add",Color(self.alpha*255,255,255,255))
-	Render(self.img1,self.x,self.y,self.rot,self.scale)
-	SetImageState(self.img2,"mul+add",Color(self.alpha*255,255,255,255))
-	Render(self.img2,self.x,self.y,-self.rot,self.scale*1.5)
+	Render(self.img1,self.x,self.y,-self.rot,self.scale)
+	SetImageState(self.img2,"mul+add",Color(self.alpha*205,255,255,255))
+	Render(self.img2,self.x,self.y,self.rot,self.scale*1.5)
 end
+function reimu_slowspell2:kill()
+	New(reimu_slowspell2_ef,self)
+end
+reimu_slowspell2_ef=Class(object)
+function reimu_slowspell2_ef:init(master)
+	local m=master
+	self.group=GROUP_GHOST
+	self.layer=LAYER_PLAYER_BULLET
+	self.x,self.y=m.x,m.y
+	self.rot,self.omiga=m.rot,m.omiga
+	self.img1,self.img2,self.scale=m.img1,m.img2,m.scale
+	self.alpha=m.alpha
+	task.New(self,function () 
+		local sc=self.scale
+		for i=1,15 do
+			local k=1+0.5*sin(90*i/15)
+			self.scale=k*sc
+			self.hscale=self.scale
+			self.vscale=self.scale
+			self.alpha=1-i/15
+			task.Wait()
+		end
+		RawDel(self)
+	end)
+end
+function reimu_slowspell2_ef:frame()
+	task.Do(self)
+end
+function reimu_slowspell2_ef:render()
+	SetImageState(self.img1,"mul+add",Color(self.alpha*255,255,255,255))
+	Render(self.img1,self.x,self.y,-self.rot,self.scale)
+	SetImageState(self.img2,"mul+add",Color(self.alpha*205,255,255,255))
+	Render(self.img2,self.x,self.y,self.rot,self.scale*1.5)
+end
+
 reimu_slowspell2_pre=Class(object)
 function reimu_slowspell2_pre:init(x,y,sx,sy,dmg)
 	self.x,self.y=x,y
@@ -599,17 +693,17 @@ function reimu_slowspell2_pre:init(x,y,sx,sy,dmg)
 	self.scale=0.5
 	self.alpha=1
 	task.New(self,function()
-		for i=1,20 do
+		for i=1,15 do
 			local x,y=self.x,self.y
-			local k=(-cos(180*i/20))*0.5+0.5
+			local k=sin(90*i/15)
 			self.x=x+(self.sx-x)*k
 			self.y=y+(self.sy-y)*k
-			self.scale=0.5+0.5*k
+			self.scale=0.8+0.2*k
 			task.Wait()
 		end
 		self.serv=New(reimu_slowspell2,self.x,self.y,self._dmg)
 		for i=1,8 do
-			local k=1/8
+			local k=i/8
 			self.scale=1+k
 			self.alpha=1-k
 			task.Wait()
@@ -621,6 +715,11 @@ end
 function reimu_slowspell2_pre:frame()
 	task.Do(self)
 	self.hscale,self.vscale=self.scale,self.scale
+	-- New(boundary_bullet_killer,self.x,self.y,self.a,self.b,self.rot)
+end
+function reimu_slowspell2_pre:render()
+	SetImageState(self.img,'mul+add',Color(255*self.alpha,255,255,255))
+	object.render(self)
 end
 function reimu_slowspell2_pre:kill()
 	if IsValid(self.serv) then Kill(self.serv) end
@@ -637,7 +736,7 @@ function reimu_slowspell3:init(x,y,dmg,player,remainTime)
 	self.killflag=true
 	self.img1="_reimu_boundary_8_inside"
 	self.img2="_reimu_boundary_8_outside"
-	self.scale_max=0.8
+	self.scale_max=1.2
 	self.scale1=0
 	self.scale2=0
 	self.omiga1=0
@@ -648,19 +747,22 @@ function reimu_slowspell3:init(x,y,dmg,player,remainTime)
 	self.lspeed=player.lspeed
 	player.hspeed=0
 	player.lspeed=0
+	player.slowlock=true
+	lstg.var.block_spell=true
 	task.New(self,function()
 		local s_max=self.scale_max
 		for	i=1,90 do
 			local k=sin(90*i/90)
-			self.scale1=s_max*k
+			self.scale1=s_max*k*0.8
 			self.dmg=0.1*5*self._dmg
 			task.Wait()
 		end
-		local domiga=0.05
+		local domiga=0.1
 		for i=1,remainTime-90 do
 			local k=i/(remainTime-90)
-			self.omiga1=max(5,self.omiga1+domiga)
-			self.dmg=self._dmg*k
+			self.scale1=s_max*(k*0.2+0.8)
+			self.omiga1=min(4,self.omiga1+domiga)
+			self.dmg=self._dmg*(0.5+0.5*k)
 			task.Wait()
 		end
 		for i=1,20 do
@@ -670,19 +772,23 @@ function reimu_slowspell3:init(x,y,dmg,player,remainTime)
 		end
 		player.hspeed=self.hspeed
 		player.lspeed=self.lspeed
+		player.slowlock=false
+		lstg.var.block_spell=false
 		RawDel(self)
 	end)
 	task.New(self,function ()
 		local s_max=self.scale_max
-		task.Wait(45)
+		task.Wait(90)
 		for	i=1,90 do
 			local k=sin(90*i/90)
-			self.scale2=s_max*k
+			self.scale2=s_max*k*0.8
 			task.Wait()
 		end
-		local domiga=0.05
-		for i=1,remainTime-90-45 do
-			self.omiga2=max(5,self.omiga2+domiga)
+		local domiga=0.1
+		for i=1,remainTime-90-90 do
+			local k=i/(remainTime-90-90)
+			self.omiga2=min(5,self.omiga2+domiga)
+			self.scale1=s_max*(k*0.2+0.8)
 			task.Wait()
 		end
 		for i=1,20 do
@@ -694,10 +800,14 @@ function reimu_slowspell3:init(x,y,dmg,player,remainTime)
 end
 function reimu_slowspell3:frame()
 	task.Do(self)
+	if self.timer%10==1 then 
+		misc.ShakeScreen(10,3) 
+		self.player.protect=10
+	end
 	New(boundary_bullet_killer,self.x,self.y,self.a,self.b,self.rot)
 	self.rot1=self.rot1+self.omiga1
-	self.rot2=self.rot2+self.omiga2
-	self.a,self.b=self.scale2*512*0.5,self.scale2*512*0.5
+	self.rot2=self.rot2-self.omiga2
+	self.a,self.b=(0.5+0.5*self.scale2)*512*0.5,(0.5+0.5*self.scale2)*512*0.5
 	self.player.SpellCardHp=self.player.SpellCardHp-K_SpellDecay/2
 
 end
@@ -710,12 +820,20 @@ end
 reimu_slow_boundary_summoner=Class(object)
 function reimu_slow_boundary_summoner:init(index,player)
 	self.index=index
+	self.hide=true
 	self.player=player
+	self.x,self.y=player.x,player.y
 	self.life=92
 	self.serv={}
 	if IsValid(_last_boundaryS_summoner) then
-		if _last_boundaryS_summoner.index==index then _last_boundaryS_summoner.life=_last_boundaryS_summoner.life+90 RawDel(self) self.hide=true
-		else RawDel(_last_boundaryS_summoner)  _last_boundaryS_summoner=self end
+		if _last_boundaryS_summoner.index==index then
+			 _last_boundaryS_summoner.life=_last_boundaryS_summoner.life+90 
+			 RawDel(self) 
+			 self.hide=true
+			 return
+		else 
+			RawDel(_last_boundaryS_summoner)  
+			_last_boundaryS_summoner=self end
 	else 
 		_last_boundaryS_summoner=self
 	end
@@ -723,26 +841,27 @@ function reimu_slow_boundary_summoner:init(index,player)
 
 	if self.index==3 then
 		--低速三卡
+		RawDel(self)
 	elseif self.index==2 then 
-		local da=360/4
-		local ai=0
-		for i=1,4 do
-			local sx,sy=self.x+75*cos(ai),self.y+75*sin(ai)
-			self.serv[i]=New(reimu_slowspell2_pre,self.x,self.y,sx,sy,0.4)
-			ai=ai+da
+		local dist=100
+		if not IsValid(self.serv) then 
+			self.serv[1]=New(reimu_slowspell2_pre,self.x,self.y,self.x,self.y+dist,0.5*K_dr_SlowSpell)
+			self.serv[2]=New(reimu_slowspell2_pre,self.x,self.y,self.x,self.y-dist,0.5*K_dr_SlowSpell)
+			self.serv[3]=New(reimu_slowspell2_pre,self.x,self.y,self.x+dist,self.y,0.5*K_dr_SlowSpell)
+			self.serv[4]=New(reimu_slowspell2_pre,self.x,self.y,self.x-dist,self.y,0.5*K_dr_SlowSpell)
 		end
 	elseif self.index==1 then
 		task.New(self,function()
-			New(reimu_slowspell1,self.x,self.y,{255,0,0},0,0.5,1)
-			New(reimu_slowspell1,self.x,self.y,{0,0,255},90,0.5,1)
+			New(reimu_slowspell1,self.x,self.y,{255,100,100},0,0.5,1)
+			New(reimu_slowspell1,self.x,self.y,{100,100,255},90,0.5,1)
 			task.Wait(90)
-			New(reimu_slowspell1,self.x,self.y,{255,0,0},0,0.8,1.2)
-			New(reimu_slowspell1,self.x,self.y,{0,0,255},90,0.8,1.2)
+			New(reimu_slowspell1,self.x,self.y,{255,100,100},0,0.8,1.2)
+			New(reimu_slowspell1,self.x,self.y,{100,100,255},90,0.8,1.2)
 			task.Wait(90)
-			New(reimu_slowspell1,self.x,self.y,{255,0,0},0,1,1.4)
-			New(reimu_slowspell1,self.x,self.y,{0,0,255},45,1,1.4)
-			New(reimu_slowspell1,self.x,self.y,{255,0,0},90,1,1.4)
-			New(reimu_slowspell1,self.x,self.y,{0,0,255},135,1,1.4)
+			New(reimu_slowspell1,self.x,self.y,{255,100,100},0,1,1.4)
+			New(reimu_slowspell1,self.x,self.y,{100,100,255},45,1,1.4)
+			New(reimu_slowspell1,self.x,self.y,{255,100,100},90,1,1.4)
+			New(reimu_slowspell1,self.x,self.y,{100,100,255},135,1,1.4)
 			RawDel(self)
 		end)
 	end
@@ -751,13 +870,14 @@ end
 function reimu_slow_boundary_summoner:frame()
 	self.x,self.y=self.player.x,self.player.y
 	self.life=self.life-1
-	if self.life<=0 then task.Clear(self) Kill(self) end
-	task.Do(self)
-end
-function reimu_slow_boundary_summoner:kill()
-	for i=1,4 do
-		if IsValid(self.serv[i]) then Kill(self.serv[i]) end
+	if self.life<=0 then 
+		task.Clear(self) 
+		RawDel(self)
+		for i=1,4 do
+			if IsValid(self.serv[i]) then Kill(self.serv[i]) end
+		end	
 	end
+	task.Do(self)
 end
 
 
@@ -867,8 +987,9 @@ function reimu_playerB:shoot()
 end
 
 function reimu_playerB:spell()
+	-- do return end
 	if self.SpellIndex == 6 then
-		New(reimu_slowspell3,self.x,self.y,1.2,self,int(self.SpellCardHpMax/(1.5*K_SpellDecay)))
+		New(reimu_slowspell3,self.x,self.y,5,self,int(self.SpellCardHpMax/(1.5*K_SpellDecay)))
 	end
 	do
 		return
@@ -912,14 +1033,16 @@ function reimu_playerB:newSpell()
 		elseif self.SpellIndex == 6 then
 		end
 		New(reimu_slow_boundary_summoner,self.SpellIndex-3,self)
+		-- New(reimu_slow_boundary_summoner,1,self)
 	else
 		----------高速符卡
 		PlaySound('nep00', 0.8)
 		PlaySound('slash', 0.8)
 		K_dr_HighSpell = 1.0 + K_dr_SpellDmg * lstg.var.dr
-		local n, dmg
+		local n, dmg, index
+		index=self.SpellIndex
 		if self.SpellIndex == 1 then
-			dmg = 0.4
+			dmg = 0.2
 			if deep == 1 then
 				n = 3
 			elseif deep == 2 then
@@ -928,7 +1051,7 @@ function reimu_playerB:newSpell()
 				n = 10
 			end
 		elseif self.SpellIndex == 2 then
-			dmg = 0.55
+			dmg = 0.25
 			if deep == 1 then
 				n = 6
 			elseif deep == 2 then
@@ -937,7 +1060,7 @@ function reimu_playerB:newSpell()
 				n = 14
 			end
 		elseif self.SpellIndex == 3 then
-			dmg = 0.7
+			dmg = 0.35
 			if deep == 1 then
 				n = 10
 			elseif deep == 2 then
@@ -946,9 +1069,9 @@ function reimu_playerB:newSpell()
 				n = 20
 			end
 		end
-		New(reimu_boundary, self.x, self.y, n, 20, dmg)
+		New(reimu_boundary, self.x, self.y, n, 20, dmg*K_dr_HighSpell, index)
 	end
-if self.SpellIndex~=6 then self.SpellCardHp = max(0, self.SpellCardHp - K_SpellCost) end
+	if self.SpellIndex~=6 then self.SpellCardHp = max(0, self.SpellCardHp - K_SpellCost) end
 end
 
 function reimu_playerB:frame()

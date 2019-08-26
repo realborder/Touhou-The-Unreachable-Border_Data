@@ -101,6 +101,7 @@ function reimu_player.load_res_B(self)
 
 
 	LoadImage("_reimu_high_spell_ef", texname, 0, 1440, 768, 96)
+	LoadImage("_reimu_slow_spell1", texname, 0, 1440, 768, 96)
 	
 	--LoadImage("_reimu_slow_spell_ef1", texname, 1024, 0, 1024, 1024)
 	--LoadImage("_reimu_slow_spell_ef2", texname, 1024, 1024, 1024, 1024)
@@ -113,33 +114,14 @@ function reimu_player.load_res_B(self)
 
 	LoadImage("_reimu_boundary_8_outside",texname,1024,0,1024,1024)
 	LoadImage("_reimu_boundary_8_inside",texname,1024,1024,1024,1024)
-	SetImageState("_reimu_boundary_8_outside","mul+add",Color(0xA0FFFFFFF))
-	SetImageState("_reimu_boundary_8_inside","mul+add",Color(0xA0FFFFFFF))
-
-	--[[
-	LoadTexture('reimu_bullet','THlib\\player\\reimu\\reimu_bullet.png')
-	LoadImage('reimu_orb_T','reimu_bullet',512,256,128,128,32,32)
-	LoadImageGroup('reimu_orb_T','reimu_bullet',832,128,192,128,1,4)
-	for i=1,4 do SetImageCenter('reimu_orb_T'..i,128,64) SetImageState('reimu_orb_T'..i,'',Color(255,255,255,255)) end
-	LoadImage('reimu_orb_M','reimu_bullet',512,384,256,256,64,64)
-	LoadImageGroup('reimu_orb_M','reimu_bullet',0,640,512,256,2,2)
-	for i=1,4 do SetImageCenter('reimu_orb_M'..i,384,128) SetImageState('reimu_orb_M'..i,'',Color(255,255,255,255)) end
-	
-	LoadImageFromFile('orb_huge_base','THlib\\player\\reimu\\orb_huge_base.png')
-	LoadImageFromFile('orb_huge','THlib\\player\\reimu\\orb_huge.png',false,500,500)
-	LoadImageFromFile('orb_huge_highlight','THlib\\player\\reimu\\orb_huge_highlight.png')
-	SetImageState('orb_huge_base','',Color(255,255,255,255))
-	SetImageState('orb_huge','mul+add',Color(255,255,255,255))
-	SetImageState('orb_huge_highlight','mul+add',Color(255,255,255,255))
-	
-	LoadPS('reimu_high_spell','THlib\\player\\reimu\\reimu_sp_ef.psi','parimg1',32,32)
-	LoadImageFromFile('reimu_bomb_ef','THlib\\player\\reimu\\reimu_bomb_ef.png')
-	
+	SetImageState("_reimu_boundary_8_outside","mul+add",Color(0xFFFFFFFFF))
+	SetImageState("_reimu_boundary_8_inside","mul+add",Color(0xFFFFFFFFF))
+	LoadImageFromFile("_reimu_explode_ring",path.."player_explode_ring.png")
+	SetImageState("_reimu_explode_ring","mul+add",Color(255,225,108,72))
 	-----------------------------------------
 	-- 必杀技所用素材 --
-	LoadImageGroup('reimu_ccc_gap','reimu_bullet',0,128,64*4,64,1,8)
-	LoadImageGroup('reimu_ccc_bullet','reimu_bullet',256,128,64*4,64,1,8,90*sf,10*sf)
-	--]]
+	LoadImageGroup('reimu_ccc_gap',texname,0,128,64*4,64,1,8)
+	LoadImageGroup('reimu_ccc_bullet',texname,256,128,64*4,64,1,8,45,5)	
 end
 
 function reimu_player.render_support(self)

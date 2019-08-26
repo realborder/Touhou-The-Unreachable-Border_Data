@@ -131,7 +131,7 @@ function player_class:frame()
 			
 			if self.SpellTimer1==90 then self.class.newSpell(self) end
 			
-			if KeyIsDown'spell' and not lstg.var.block_spell and self.protect==0 then  --新增了无敌期间不能开卡
+			if KeyIsDown'spell' and not lstg.var.block_spell then 
 			    if self.SpellTimer1>90 then self.KeyDownTimer1=self.KeyDownTimer1+1 end
 				if (lstg.var.bomb>0 and self.death>90) or (self.SpellCardHp==0 and self.nextspell<=0 and self.NextSingleSpell==0 and lstg.var.bomb>0) then
 			        item.PlayerSpell()
