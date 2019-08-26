@@ -8,7 +8,7 @@ local GetLastKey=lstg.GetLastKey--_GetLastKey
 
 local _key_code_to_name=KeyCodeToName()--Linput
 local setting_item={'resx','resy','windowed','vsync','sevolume','bgmvolume','res'}
-local Resolution={{640,360},{800,450},{960,540},{1024,576},{1280,720},{1600,900},{1920,1080}}
+local Resolution={{1024,576},{1280,720},{1600,900},{1920,1080}}
 
 local settingfile="Library\\setting"
 
@@ -184,8 +184,8 @@ function stage_init:frame()
 					base_menu.ChangeLocked(menus['main_menu'])
 				end},
 				{'exit',function()
-					if menu_other.pos~=7 then
-						menu_other.pos=7
+					if menu_other.pos~=4 then
+						menu_other.pos=4
 					else
 						menu.FlyOut(menu_other,'right')
 						save_setting()
@@ -303,8 +303,8 @@ function stage_main_menu:init()
 			base_menu.ChangeLocked(menus['main_menu'])
 		end},
 		{'exit',function()
-			if menu_other.pos~=7 then
-				menu_other.pos=7
+			if menu_other.pos~=4 then
+				menu_other.pos=4
 			else
 				menu.FlyOut(menu_other,'right')
 				save_setting()

@@ -5,7 +5,7 @@
 ---Email:Xiliusha@outlook.com
 ---=====================================
 
-local path="mwy_player/"
+local path="mwy_player\\"
 local texname="_reimu_texture"
 local collibox_scale=1.0--碰撞盒缩放，因为碰撞盒缩放和图片精灵渲染缩放分离了，所以不需要调整
 
