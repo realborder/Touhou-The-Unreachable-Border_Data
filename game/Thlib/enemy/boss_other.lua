@@ -217,8 +217,8 @@ function kill_timer:init(x,y,t)
 end
 function kill_timer:frame()
     if self.timer<=30 then self.alph=self.timer/30 self.y=self.yy-30*cos(3*self.timer) end
-    if self.timer>120 then self.alph=1-(self.timer-120)/30 end
-    if self.timer>=150 then Del(self) end
+    if self.timer>90 then self.alph=1-(self.timer-120)/30 end
+    if self.timer>=120 then Del(self) end
 end
 function kill_timer:render()
     SetViewMode'world'
@@ -241,7 +241,7 @@ function hinter_bonus:init(img,size,x,y,t1,t2,fade,bonus)
     self.fade=fade
     self.group=GROUP_GHOST
     self.layer=LAYER_TOP
-    self.size=size*2
+    self.size=size
     self.t=0
     self.hscale=self.size
     self.vscale=self.size

@@ -96,8 +96,8 @@ ui.menu={
 }
 
 function RenderTTFplus(ttfname,text,left,right,bottom,top,color,...) 
-	local a,r,g,b=lstgColor.ARGB(color)
-	r,g,b=r*0.15,g*0.15,b*0.15
+	local a,r,g,b=color.ARGB(color)
+	r,g,b=r*0.29,g*0.29,b*0.29
 	RenderTTF(ttfname,text,left+1,right+1,bottom-1,top-1,Color(a,r,g,b),...)
 	RenderTTF(ttfname,text,left,right,bottom,top,color,...)
 end

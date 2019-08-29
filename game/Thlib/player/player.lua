@@ -228,8 +228,9 @@ function player_class:frame()
 		    PlaySound('enep02',0.3,self.x/200,true)
 		    local r4=sqrt(ran:Float(1,4))
 			local r3=ran:Float(0,360)
-		if self.supportx and self.sp[n][1] then 	New(item_power_mid,self.supportx+self.sp[n][1]+r4*cos(r3),self.supporty+self.sp[n][2]+r4*sin(r3)) end --修复崩溃的bug
-				self.PowerDelay1=-1
+		if self.supportx and self.sp[n][1] then 	
+			New(item_power_mid,self.supportx+self.sp[n][1]+r4*cos(r3),self.supporty+self.sp[n][2]+r4*sin(r3)) end --修复崩溃的bug
+			self.PowerDelay1=-1
 		end
 		-----------------------------------------------
 		
@@ -588,11 +589,12 @@ function grazer:frame()
 end
 
 function grazer:render()
+	local scale=sin(90*self.player.lh)
 	object.render(self)
 	SetImageState('player_aura','',Color(0xC0FFFFFF)*self.player.lh+Color(0x00FFFFFF)*(1-self.player.lh))
-	Render('player_aura',self.x,self.y, self.aura,(2-self.player.lh)*2)
+	Render('player_aura',self.x,self.y, self.aura,(2-scale))
 	SetImageState('player_aura','',Color(0xC0FFFFFF))
-	Render('player_aura',self.x,self.y,-self.aura,self.player.lh*2)
+	Render('player_aura',self.x,self.y,-self.aura,scale)
 end
 
 function grazer:colli(other)

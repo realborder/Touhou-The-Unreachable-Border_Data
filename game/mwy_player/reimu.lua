@@ -178,6 +178,7 @@ function reimu_main_bullet:kill()
 			self.x,self.y,self.rot+180)
 end
 
+
 function reimu_player.main_shoot(self)
 	PlaySound("plst00", 0.3, self.x / 768)
 	New(reimu_main_bullet, "_reimu_main_shoot", self.x + 10, self.y, 24, 90, 2)

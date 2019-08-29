@@ -6,7 +6,7 @@ Include"mwy_dialogsys\\mwy_dialogsys_sub.lua"
 dialogsys={}
 dialogsys.data={}
 local LOG_HEAD='[dialogsys]'
---这个player是玩家，毕竟不可能往所有stage里都放一次灵梦对吧~
+--这个player是玩家，毕竟不可能往所有stage里都放一次丽灵梦对吧~
 local STAGE={'player','st1','st2','st3'--[[,'st4','st5','st6a','st6b','ex']]} --未制作的关卡暂时屏蔽
 
 local PATH='mwy_dialogsys\\'

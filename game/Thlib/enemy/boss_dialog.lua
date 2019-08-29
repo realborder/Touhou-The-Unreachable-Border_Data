@@ -351,8 +351,8 @@ function balloon:init(x, y, hpos, vpos, pic, text, n)
     end
 end
 function balloon:frame()
-    local t = min(self.timer, 10)
-    self.scale = t / 10
+    local t = min(self.timer, 15)
+    self.scale = sin(90* t / 15)
     self.ttfdrawer:set(self.text)
     if self.n <= 0 then
         Del(self)

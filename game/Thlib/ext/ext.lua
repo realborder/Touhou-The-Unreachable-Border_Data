@@ -111,8 +111,8 @@ function FrameFunc()
 	--暂停菜单更新
 	ext.pause_menu:frame()
 
-	if FileReloader then 
-		FileReloader.frame()
+	if TUO_Developer_Tool_kit then 
+		TUO_Developer_Tool_kit.frame()
 	end
 
 	--退出游戏逻辑
@@ -138,7 +138,9 @@ function RenderFunc()
 		if Collision_Checker then
 			Collision_Checker.render()
 		end
-
+		if TUO_Developer_Tool_kit then 
+			TUO_Developer_Tool_kit.render()
+		end
 	end
 	AfterRender()
 	EndScene()

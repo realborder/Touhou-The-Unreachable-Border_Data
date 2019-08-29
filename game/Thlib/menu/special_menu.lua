@@ -14,9 +14,9 @@ function special_manual:init()
 	self.exani_names={'Manual_item'}
 	self.enables={true}
 
-	for _,v in ipairs({'Manual_item','Manual_title'}) do
-		exani_player_manager.CreateSingleExani(play_manager,v)
-	end
+	-- for _,v in ipairs({'Manual_item','Manual_title'}) do
+	-- 	exani_player_manager.CreateSingleExani(play_manager,v)
+	-- end
 
 	menus['manual_menu']=self
 end
@@ -287,9 +287,6 @@ function special_difficulty:init()
 	self.delay=0
 	
 	self.pics={'ChooseDiff_Easy','ChooseDiff_Normal','ChooseDiff_Hard','ChooseDiff_Lunatic'} --exani名字刚好和图片相同
-	for i=1,#self.pics do
-		LoadImageFromFile(self.pics[i],"THlib\\exani\\exani_data\\"..self.pics[i].."\\"..self.pics[i]..".png")
-	end
 	
 	self.gap=480
 	self.repeats=3

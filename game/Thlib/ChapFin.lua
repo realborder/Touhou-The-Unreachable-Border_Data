@@ -79,7 +79,7 @@ function ClearAllEnemyAndBullet()
 	for _,unit in ObjList(GROUP_ENEMY) do
 		if not unit._bosssys then --靠有无挂载boss系统来判断是不是boss
 			unit.drop=false
-			Del(unit)
+			Kill(unit)
 		end
 	end
 	for _,unit in ObjList(GROUP_ENEMY_BULLET) do

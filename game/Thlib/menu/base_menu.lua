@@ -38,9 +38,9 @@ function base_menu:init(name,title,options,pre_menu,has_logo)
 	
 	menus[self.name]=self
 	--预加载exani对象
-	for k,v in pairs(self.exani_names) do
-		exani_player_manager.CreateSingleExani(play_manager,v)
-	end
+	-- for k,v in pairs(self.exani_names) do
+	-- 	exani_player_manager.CreateSingleExani(play_manager,v)
+	-- end
 
 end
 

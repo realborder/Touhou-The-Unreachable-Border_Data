@@ -165,8 +165,8 @@ default_setting=
 	username='User',
 	font='',
 	timezone=8,
-	resx=640,
-	resy=480,
+	resx=1280,
+	resy=720,
 	res=1,
 	windowed=false,
 	vsync=false,
@@ -248,6 +248,38 @@ end
 local settingfile="Library\\setting"
 local networkfile="Library\\network.txt"
 
+--分辨率适配，第一次启动用
+DealResolution = function ()
+	-- local res_tmp=EnumResolutions()
+	local res_result={}
+	local has_16_9=false
+	for _,v in pairs(res_tmp) do
+		if abs(v[1]/v[2]-16/9)<0.01 then --玄学操作防止浮点数误差
+			has_16_9=true end 
+		table.insert(res_result,v)
+	end
+	--排序懒得
+	if setting.windowed then
+		--因为现在窗口再大也不会被挤出去了，所以随便浪
+	else
+		if has_16_9 then
+			--检查设置内的分辨率是否正好在系统提供的分辨率中也有
+			local flag=false
+			for _,v in pairs(res_result) do
+				if v[1] == setting.resx and v[2] == setting.resy then flag=true return end
+			end
+			--找不到的话以最高分辨率开全屏
+			if flag then 
+				for _,v in pairs(res_result) do
+					if v[1]>setting.resx then setting.resx=v[1] setting.resy=v[2] end
+				end
+			end
+		else
+			
+		end
+	end
+end
+
 loadNetwork = function()
 	f,msg=io.open(networkfile,'r')
 	if f==nil then
@@ -278,6 +310,7 @@ loadConfigure = function()
 		setting=DeSerialize(f:read('*a'))
 		f:close()
 	end
+	-- DealResolution()
 	loadNetwork()
 end
 
@@ -313,23 +346,15 @@ if not start_game then
 	setting.allowsnapshot=false
 end
 
-if updatelib then
-	lfs.chdir('data')
-	os.execute('..\\..\\tools\\7z\\7z.exe u -tzip -mcu=on -r ..\\Library\\data.zip *')
-	lfs.chdir('..')
-end
+-- if updatelib then
+	-- lfs.chdir('data')
+	-- os.execute('..\\..\\tools\\7z\\7z.exe u -tzip -mcu=on -r ..\\Library\\data.zip *')
+	-- lfs.chdir('..')
+-- end
 
 
-SetSplash(true)
-SetTitle('东方梦无垠 ~ The Unreachabe Oneiroborder ver.pre1')
-SetWindowed(setting.windowed)
-SetResolution(setting.resx,setting.resy)
-SetFPS(60)
-SetVsync(setting.vsync)
-SetSEVolume(setting.sevolume/100)
-SetBGMVolume(setting.bgmvolume/100)
 
----[[
+
 for _,v in ipairs({"se","music","font","data",--[["background"]]}) do
 	local packpath="Library\\"..v..".zip"
 	local packpath_sub="Library\\"..v.."_sub.zip"
@@ -339,7 +364,6 @@ for _,v in ipairs({"se","music","font","data",--[["background"]]}) do
 		LoadPack(packpath)
 	end
 end
---]]
 
 
 if setting.mod~='launcher' then
@@ -363,3 +387,13 @@ else
 		--使用游戏根目录里面的启动器
 	end
 end
+
+
+SetSplash(true)
+SetTitle('东方梦无垠 ~ The Unreachabe Oneiroborder ver.pre2')
+SetWindowed(setting.windowed)
+SetResolution(setting.resx,setting.resy)
+SetFPS(60)
+SetVsync(setting.vsync)
+SetSEVolume(setting.sevolume/100)
+SetBGMVolume(setting.bgmvolume/100)

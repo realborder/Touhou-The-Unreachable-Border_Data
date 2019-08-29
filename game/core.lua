@@ -31,7 +31,7 @@ lstg.DoFile("lib\\Lplugin.lua")--用户插件
 ---设置标题
 function ChangeGameTitle()
 	-- local title=setting.mod..' | FPS='..GetFPS()..' | Objects='..GetnObj()..' | Luastg Ex Plus'
-	local title='东方梦无垠 ~ The Unreachabe Oneiroborder ver.pre1'
+	local title='东方梦无垠 ~ The Unreachabe Oneiroborder ver.pre2'
 	if jstg.network.status>0 then
 		title=title..' | '..jstg.NETSTATES[jstg.network.status]
 		if jstg.network.status>4 then

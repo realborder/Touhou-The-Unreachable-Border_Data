@@ -8,8 +8,7 @@ local GetLastKey=lstg.GetLastKey--_GetLastKey
 
 local _key_code_to_name=KeyCodeToName()--Linput
 local setting_item={'resx','resy','windowed','vsync','sevolume','bgmvolume','res'}
-local Resolution={{1024,576},{1280,720},{1600,900},{1920,1080}}
-
+local Resolution={{1280,720},{1600,900},{1920,1080}}
 local settingfile="Library\\setting"
 
 local function format_json(str)
@@ -119,10 +118,10 @@ function stage_init:frame()
 		for _,v in pairs(STAGE) do
 			dialogsys_sub.LoadImage(v)
 		end
-		self.load_process=0.45
+		self.load_process=0.35
 	elseif self.timer==32 then
 		exani_player_manager.LoadAllResource()
-		self.load_process=0.75
+		self.load_process=0.45
 	elseif self.timer==33 then
 		do
 			local f,msg
@@ -208,7 +207,7 @@ function stage_init:frame()
 			)
 			
 		end
-		self.load_process=0.9
+		self.load_process=0.55
 	elseif self.timer==34 then
 		LoadMusic('menu',music_list.menu[1],music_list.menu[2],music_list.menu[3])
 		start_game()
@@ -216,14 +215,14 @@ function stage_init:frame()
 		self.load_process=1
     elseif self.timer==35 then
         New(mask_fader,'')
-    elseif self.timer>=66 then 
-
+    elseif self.timer>=67 then 
 		stage.Set('none', 'menu') 
 	end
     -- if self.timer>=1 then stage.Set('none', 'menu') end
 end
 function stage_init:render()
-    SetViewMode'ui'
+	if self.timer>=66 then return end --阻止
+	SetViewMode'ui'
     Render('UI_gameInit',320,240,0,0.5)
 	SetImageState('white','',Color(0xFFFFFFFF))
 	local extra=150
@@ -303,8 +302,8 @@ function stage_main_menu:init()
 			base_menu.ChangeLocked(menus['main_menu'])
 		end},
 		{'exit',function()
-			if menu_other.pos~=4 then
-				menu_other.pos=4
+			if menu_other.pos~=7 then
+				menu_other.pos=7
 			else
 				menu.FlyOut(menu_other,'right')
 				save_setting()
@@ -433,9 +432,9 @@ function start_game()
 	else
 		--找不到，不加载mod
 	end
-	SetSplash(false)
+	-- SetSplash(false)
 	-- SetTitle(setting.mod)
-	SetTitle('东方梦无垠 ~ The Unreachabe Oneiroborder ver.pre1')
+	SetTitle('东方梦无垠 ~ The Unreachabe Oneiroborder ver2')
 
 	-- if not ChangeVideoMode(setting.resx,setting.resy,setting.windowed,setting.vsync) then
 	-- 	if lfs.attributes('.\\LuaSTGPlus.dev.exe')~=nil then

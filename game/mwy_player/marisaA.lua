@@ -466,6 +466,7 @@ function marisa_blackhole:frame()
 	task.Do(self)
 	----星尘
 	local hue=256*(2+self.timer/270)
+	if self.timer%10==1 then self.player.protect=10 end
 	if hue>256*3-1 then hue=hue-256*3 end
 	for i=1,3 do
 		local a=ran:Float(0,360)
