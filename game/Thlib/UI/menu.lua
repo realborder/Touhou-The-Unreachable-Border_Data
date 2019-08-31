@@ -154,8 +154,8 @@ function simple_menu:frame()
 	if GetLastKey(self.keyslot)==setting.keys.up and (not self.no_pos_change) then self.pos=self.pos-1 PlaySound('select00',0.3) end
 	if GetLastKey(self.keyslot)==setting.keys.down and (not self.no_pos_change) then self.pos=self.pos+1 PlaySound('select00',0.3) end
 	self.pos=(self.pos-1+#(self.text))%(#(self.text))+1
-	if KeyIsPressed('shoot',self.keyslot) and self.func[self.pos] then self.func[self.pos]() PlaySound('ok00',0.3)
-	elseif KeyIsPressed('spell',self.keyslot) and self.exit_func then self.exit_func() PlaySound('cancel00',0.3) end
+	if (KeyIsPressed('shoot',self.keyslot) or lstg.GetKeyState(KEY.ENTER)) and self.func[self.pos] then self.func[self.pos]() PlaySound('ok00',0.3)
+	elseif (KeyIsPressed('spell',self.keyslot) or lstg.GetKeyState(KEY.ESCAPE)) and self.exit_func then self.exit_func() PlaySound('cancel00',0.3) end
 	if self.pos_changed>0 then self.pos_changed=self.pos_changed-1 end
 	if self.pos_pre~=self.pos then self.pos_changed=ui.menu.shake_time end
 	self.pos_pre=self.pos

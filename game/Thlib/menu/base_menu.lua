@@ -51,7 +51,7 @@ function base_menu:frame()
 	if self.change_timer>0 then self.change_timer=self.change_timer-1 end
 	
 	if self.choose_timer==-1 and self.change_timer==0 and self.init_timer>30 then
-		if lstg.GetKeyState(KEY.UP) then
+		if KeyIsPressed('up') then
 			self.pre_choose=self.choose
 			self.choose=self.choose-1
 			if self.choose<1 then self.choose=#self.exani_names end
@@ -63,7 +63,7 @@ function base_menu:frame()
 			PlaySound('select00', 0.3)
 			self.changed=true
 			self.change_timer=self.change_delay
-		elseif lstg.GetKeyState(KEY.DOWN) then
+		elseif KeyIsPressed('down') then
 			self.pre_choose=self.choose
 			self.choose=self.choose+1
 			if self.choose>#self.exani_names then self.choose=1 end
@@ -75,11 +75,11 @@ function base_menu:frame()
 			PlaySound('select00', 0.3)
 			self.changed=true
 			self.change_timer=self.change_delay
-		elseif KeyIsPressed'shoot' then 
+		elseif KeyIsPressed('shoot') or lstg.GetKeyState(KEY.ENTER) then 
 			self.choosed=true
 			self.choose_timer=self.choose_delay
 			PlaySound('ok00', 0.3)
-		elseif lstg.GetKeyState(KEY.X) then
+		elseif KeyIsPressed('spell') or lstg.GetKeyState(KEY.ESCAPE) then
 			self.choosed=true
 			self.change_timer=self.change_delay
 			PlaySound('cancel00', 0.3)
@@ -102,13 +102,13 @@ function base_menu:render()
 	end
 	
 	if self.choosed then
-		if lstg.GetKeyState(KEY.Z) then
+		if KeyIsPressed('shoot') or lstg.GetKeyState(KEY.ENTER) then
 			local action
 			if self.enables[self.choose] then action='choose' else action='choose_unable' end
 			exani_player_manager.SetExaniAttribute(play_manager,self.exani_names[self.choose],nil,nil,nil,nil,nil,1)
 			exani_player_manager.ExecuteExaniPredefine(play_manager,self.exani_names[self.choose],action)
 			PlaySound('select00',0.3)
-		elseif lstg.GetKeyState(KEY.X) then
+		elseif KeyIsPressed('spell') or lstg.GetKeyState(KEY.ESCAPE) then
 			if self.pre_menu~='' then base_menu.ChangeLocked(self) base_menu.ChangeLocked(menus[self.pre_menu]) end
 			if self.name=='main_menu' then
 				if self.choose==#self.exani_names then

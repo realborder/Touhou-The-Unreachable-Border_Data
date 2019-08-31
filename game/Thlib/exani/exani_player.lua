@@ -427,7 +427,11 @@ function exani_player:SetAttribute(start_frame,end_frame,layer,viewmode,replay_r
 	self.layer=layer or self.layer
 	self.viewmode=viewmode or self.viewmode
 	self.replay_round=replay_round or self.replay_round
-	self.play_interval=play_interval or self.play_interval
+	if play_interval then
+		self.play_interval=play_interval
+		if self.start_frame>=self.end_frame then self.play_interval=-abs(self.play_interval)
+		elseif self.start_frame< self.end_frame then self.play_interval=abs(self.play_interval) end
+	end
 	if isdelete~=nil then self.isdelete=isdelete end
 	self.mode=mode or self.mode
 	self.center_dx=offset_x or self.center_dx

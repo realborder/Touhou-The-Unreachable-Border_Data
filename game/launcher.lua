@@ -4,6 +4,54 @@
 
 Include'THlib\\THlib.lua'
 
+---stack trace back function. called when engine error
+---@param msg string
+---@param level number
+---@return string
+function Traceback(msg, level)
+	local TRACE_MAX_LEVEL = 64
+	local ret = ''
+	if msg then
+		ret = msg .. '\n'
+	end
+	ret = ret .. 'stack traceback:'
+	while true do
+		local info = debug.getinfo(level + 1, "Slnf")
+		if not info then
+			break
+		end
+		local msgs = {}
+		local source = info.source or ''
+		if info.short_src == '[C]' then
+			source = '[C]'
+		else
+			source = string.format('[%s]', source)
+		end
+		table.insert(msgs, string.format('    %s', source, info.currentline, info.name or ""))
+		if info.currentline > 0 then
+			table.insert(msgs, string.format('%d:', info.currentline))
+		end
+		if info.namewhat and info.name then
+			table.insert(msgs, string.format(' in function \'%s\'', info.name))
+		else
+			if info.what == 'm' or info.linedefined == 0 then
+				table.insert(msgs, ' in main chunk')
+			elseif info.what == 'C' then
+				table.insert(msgs, string.format(' at %s', tostring(info.func)))
+			else
+				table.insert(msgs, string.format(' in function <%s:%d>', source, info.linedefined))
+			end
+		end
+		ret = ret .. '\n' .. table.concat(msgs, '')
+		level = level + 1
+		if level > TRACE_MAX_LEVEL then
+			ret = ret .. '\n...'
+			break
+		end
+	end
+	return ret
+end
+
 local GetLastKey=lstg.GetLastKey--_GetLastKey
 
 local _key_code_to_name=KeyCodeToName()--Linput
@@ -184,8 +232,8 @@ function stage_init:frame()
 					base_menu.ChangeLocked(menus['main_menu'])
 				end},
 				{'exit',function()
-					if menu_other.pos~=4 then
-						menu_other.pos=4
+					if menu_other.pos~=7 then
+						menu_other.pos=7
 					else
 						menu.FlyOut(menu_other,'right')
 						save_setting()
@@ -303,8 +351,8 @@ function stage_main_menu:init()
 			base_menu.ChangeLocked(menus['main_menu'])
 		end},
 		{'exit',function()
-			if menu_other.pos~=4 then
-				menu_other.pos=4
+			if menu_other.pos~=7 then
+				menu_other.pos=7
 			else
 				menu.FlyOut(menu_other,'right')
 				save_setting()
@@ -338,21 +386,6 @@ function stage_main_menu:init()
 	PlayMusic('menu')
 end
 
-function stage_main_menu:frame()
-	-- if self.timer==1 then
-		
-	-- elseif self.timer==2 then
-	-- 	New(mask_fader,'')
-	-- elseif self.timer==30 then
-
-	-- end
-end
-
-function stage_main_menu:render()
-	-- SetViewMode'ui'
-	-- if self.timer<=60 then Render('UI_gameInit',320,240,0,0.5) end
-end
-
 ---------------------------------------
 
 other_setting_menu=Class(simple_menu)
@@ -380,9 +413,9 @@ function other_setting_menu:frame()
 				elseif last_key==setting.keys.up then
 					self.posx=self.posx+1
 					PlaySound('select00',0.3)
-				elseif last_key==setting.keys.shoot then self.edit=false PlaySound('select00',0.3)
-				elseif last_key==setting.keys.spell then self.edit=false
-					cur_setting.res=menu_other.setting_backup
+				elseif last_key==setting.keys.shoot or lstg.GetKeyState(KEY.ENTER) then self.edit=false PlaySound('select00',0.3)
+				elseif last_key==setting.keys.spell or lstg.GetKeyState(KEY.ESCAPE) then self.edit=false
+					if menu_other.setting_backup then cur_setting.res=menu_other.setting_backup end
 					cur_setting.resx=Resolution[cur_setting.res][1]
 					cur_setting.resy=Resolution[cur_setting.res][2]
 					PlaySound('cancel00',0.3)
