@@ -7,20 +7,25 @@
 
 KeyState={}
 KeyStatePre={}
+--由云绝添加，用于手柄适配
+JoyState={}
+JoyStatePre={}
 
-function GetInput()--于ext中重载，然后被ESC抛弃了……
-	for k,v in pairs(setting.keys) do
-		KeyStatePre[k]=KeyState[k]
-		KeyState[k]=GetKeyState(v)
-	end
-end
+-- function GetInput()--于ext中重载，然后被ESC抛弃了……
+-- 	for k,v in pairs(setting.keys) do
+-- 		KeyStatePre[k]=KeyState[k]
+-- 		KeyState[k]=GetKeyState(v)
+-- 	end
+-- end
 
 function KeyIsDown(key)
-	return KeyState[key]
+	-- return KeyState[key]
+	return KeyState[key] or JoyState[key]
 end KeyPress = KeyIsDown
 
 function KeyIsPressed(key)--于javastage中重载
-	return KeyState[key] and (not KeyStatePre[key])
+	-- return KeyState[key] and (not KeyStatePre[key])
+	return (KeyState[key] and (not KeyStatePre[key])) or (JoyState[key] and (not JoyStatePre[key]))
 end KeyTrigger = KeyIsPressed
 
 --将按键二进制码转换为字面值，用于设置界面

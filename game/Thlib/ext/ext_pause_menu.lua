@@ -49,7 +49,7 @@ function ext.pausemenu:oldframe()
 		pause_menu_text=self.text[m]
 	end
 	--检测按键切换槽位
-	if GetLastKey()==setting.keys.up and self.t<=0 then
+	if Lk==setting.keys.up and self.t<=0 then
 		if not self.choose then
 			self.pos=self.pos-1
 		else
@@ -57,7 +57,7 @@ function ext.pausemenu:oldframe()
 		end
 		PlaySound('select00',0.3)
 	end
-	if GetLastKey()==setting.keys.down and self.t<=0 then
+	if Lk==setting.keys.down and self.t<=0 then
 		if not self.choose then
 			self.pos=self.pos+1
 		else
@@ -86,8 +86,10 @@ function ext.pausemenu:oldframe()
 	--执行自身task
 	task.Do(self)
 	--执行选项操作
-	if (GetLastKey()==setting.keysys.menu or GetLastKey()==setting.keys.shoot or GetLastKey()==setting.keys.spell or GetLastKey()==setting.keysys.retry) and not self.lock then
-		if GetLastKey()==setting.keysys.retry then
+	local Lk=GetLastKey()
+	local k,ks,j=setting.keys,setting.keysys,setting.joysticks
+	if (Lk==ks.menu or Lk==k.shoot or Lk==k.spell or Lk==ks.retry) or (Lk==j.menu or Lk==j.shoot or Lk==j.spell or Lk==j.retry) and not self.lock then
+		if Lk==ks.retry or Lk==j.retry then
 			PlaySound('ok00',0.3)
 			lstg.tmpvar.death = false
 			self.t=60
@@ -98,7 +100,7 @@ function ext.pausemenu:oldframe()
 				ext.pause_menu_order='Give up and Retry'
 			end
 		end
-		if GetLastKey()==setting.keys.shoot and self.t<1 then
+		if (Lk==setting.keys.shoot or Lk==j.shoot) and self.t<1 then
 			self.t=15
 			if not self.choose then
 				PlaySound('ok00',0.3)
@@ -135,7 +137,7 @@ function ext.pausemenu:oldframe()
 				end
 			end
 		end
-		if GetLastKey()==setting.keys.spell and self.t<1 and self.choose==true then
+		if (Lk==setting.keys.spell or Lk==j.spell) and self.t<1 and self.choose==true then
 			self.choose=false
 			self.t=15
 			PlaySound('cancel00',0.3)
@@ -165,9 +167,10 @@ function ext.pausemenu:frame()
 	task.Do(self)
 	--执行选项操作
 	if (not self.lock) and self.t<1 then
-		local lastkey=GetLastKey()
-		--关闭暂停菜单
-		if lastkey==setting.keysys.menu then
+		local Lk=GetLastKey()
+		local k,ks,j=setting.keys,setting.keysys,setting.joysticks
+			--关闭暂停菜单
+		if Lk==ks.menu or Lk==j.menu then
 			if lstg.tmpvar.death then
 				ext.pause_menu_order='Quit and Save Replay'
 			elseif not ext.rep_over then
@@ -178,7 +181,7 @@ function ext.pausemenu:frame()
 			end
 		end
 		--直接重开
-		if lastkey==setting.keysys.retry then
+		if Lk==ks.retry or Lk==j.retry then
 			self.t=60
 			PlaySound('ok00',0.3)
 			self.choose=false
@@ -191,7 +194,7 @@ function ext.pausemenu:frame()
 		end
 		--槽位切换
 		do
-			if lastkey==setting.keys.up then
+			if Lk==k.up or Lk==j.up then
 				self.t=4
 				PlaySound('select00',0.3)
 				if not self.choose then
@@ -199,7 +202,7 @@ function ext.pausemenu:frame()
 				else
 					self.pos2=self.pos2-1
 				end
-			elseif lastkey==setting.keys.down then
+			elseif Lk==k.down or Lk==j.down then
 				self.t=4
 				PlaySound('select00',0.3)
 				if not self.choose then
@@ -212,7 +215,7 @@ function ext.pausemenu:frame()
 			self.pos2=(self.pos2-1)%(2)+1
 		end
 		--取消操作
-		if lastkey==setting.keys.spell then
+		if Lk==k.spell or Lk==j.spell then
 			if self.choose then
 				self.t=15
 				PlaySound('cancel00',0.3)
@@ -226,7 +229,7 @@ function ext.pausemenu:frame()
 			end
 		end
 		--按键操作
-		if lastkey==setting.keys.shoot then
+		if Lk==k.shoot or Lk==j.shoot then
 			if self.choose then
 				if self.pos2==1 then
 					--确认选项，推送命令，暂停菜单关闭

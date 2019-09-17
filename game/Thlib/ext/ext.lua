@@ -46,20 +46,118 @@ end
 ----------------------------------------
 ---extra game loop
 
-function GameStateChange()
-	ResetWorldOffset() end
+function GameStateChange() ResetWorldOffset() end
 
+
+--legecy
+--jstg输入已爆破
+--（划掉）不再使用，已转为jstg.GetInputEX
+function GetInputEx()
+	if stage.next_stage then
+		-- 把一些转场的破事放到这里处理，NOT GOOD
+		local w1=GetDefaultWorld()
+		jstg.ApplyWorld(w1)
+		
+		ResetLstgtmpvar()--重置lstg.tmpvar
+		ex.Reset()--重置ex全局变量
+		
+		if lstg.nextvar then
+			lstg.var=lstg.nextvar
+			lstg.nextvar =nil
+		end
+		-- 初始化随机数
+		if lstg.var.ran_seed then
+			--Print('RanSeed',lstg.var.ran_seed)
+			ran:Seed(lstg.var.ran_seed)
+		end
+		
+		KeyStatePre = {}
+		JoyStatePre = {}
+		if not stage.next_stage.is_menu then
+			if scoredata.hiscore == nil then
+				scoredata.hiscore = {}
+			end
+			lstg.tmpvar.hiscore = scoredata.hiscore[stage.next_stage.stage_name..'@'..tostring(lstg.var.player_name)]
+		end
+	else
+		-- 刷新KeyStatePre
+		for k, v in pairs(setting.keys) do
+			KeyStatePre[k] = KeyState[k]
+		end
+		-- 刷新JoyStatePre
+		for k, v in pairs(setting.joysticks) do
+			JoyStatePre[k] = JoyState[k]
+		end
+	end
+	
+	-- 不是录像时更新按键状态
+	if not ext.replay.IsReplay() then
+		for k,v in pairs(setting.keys) do
+			KeyState[k] = GetKeyState(v)
+		end
+		for k,v in pairs(setting.joysticks) do
+			JoyState[k] = GetKeyState(v)
+		end
+	end
+	
+	if ext.replay.IsRecording() then
+		-- 录像模式下记录当前帧的按键
+		replayWriter:Record(KeyState)
+		replayWriter:Record(JoyState)
+	elseif ext.replay.IsReplay() then
+		-- 回放时载入按键状态
+		replayReader:Next(KeyState)
+		replayReader:Next(JoyState)
+		--assert(replayReader:Next(KeyState), "Unexpected end of replay file.")
+	end
+end
+function GetInput()
+	if not stage.next_stage then
+		-- 刷新KeyStatePre
+		for k, v in pairs(setting.keys) do
+			KeyStatePre[k] = KeyState[k]
+		end
+		-- 刷新JoyStatePre
+		for k, v in pairs(setting.joysticks) do
+			JoyStatePre[k] = JoyState[k]
+		end
+	end
+	-- 不是录像时更新按键状态
+	if not ext.replay.IsReplay() then
+		for k,v in pairs(setting.keys) do
+			KeyState[k] = GetKeyState(v)
+		end
+		for k,v in pairs(setting.joysticks) do
+			JoyState[k] = GetKeyState(v)
+		end
+	end
+	if ext.replay.IsRecording() then
+		-- 录像模式下记录当前帧的按键
+		replayWriter:Record(KeyState)
+		replayWriter:Record(JoyState)
+	elseif ext.replay.IsReplay() then
+		-- 回放时载入按键状态
+		replayReader:Next(KeyState)
+		replayReader:Next(JoyState)
+		--assert(replayReader:Next(KeyState), "Unexpected end of replay file.")
+	end
+end
+
+
+	
 function DoFrameEx()
 	if ext.replay.IsReplay() then
 		--播放录像时
 		ext.replayTicker = ext.replayTicker + 1
 		ext.slowTicker = ext.slowTicker + 1
-		if GetKeyState(setting.keysys.repfast) then
+		-- if GetKeyState(setting.keysys.repfast) then
+		if GetKeyState(setting.keysys.repfast) or GetKeyState(setting.joysticks.repfast) then
 			for _=1,4 do
 				DoFrame(true, false)
 				ext.pause_menu_order = nil
 			end
-		elseif GetKeyState(setting.keysys.repslow) then
+		-- elseif GetKeyState(setting.keysys.repslow) then
+		elseif GetKeyState(setting.keysys.repslow) or GetKeyState(setting.joysticks.repslow) then
 			if ext.replayTicker % 4 == 0 then
 				DoFrame(true, false)
 				ext.pause_menu_order = nil
@@ -92,21 +190,26 @@ end
 function FrameFunc()
 	if jstg then jstg.ProceedConnect() end--刷新网络状态
 	boss_ui.active_count=0--重设boss ui的槽位（多boss支持）
-	if GetLastKey() == setting.keysys.snapshot and setting.allowsnapshot then
+	-- if GetLastKey() == setting.keysys.snapshot and setting.allowsnapshot then
+	if (GetLastKey() == setting.keysys.snapshot or GetLastKey() == setting.joysticks.snapshot) and setting.allowsnapshot then
 		Snapshot('snapshot\\'..os.date("!%Y-%m-%d-%H-%M-%S", os.time() + setting.timezone * 3600)..'.png')--支持时区
 	end
 	--执行场景逻辑
 	if ext.pause_menu:IsKilled() then
 		--处理录像速度与正常更新逻辑
+		GetInput()
 		DoFrameEx()
 		--按键弹出菜单
-		if (GetLastKey() == setting.keysys.menu or ext.pop_pause_menu) and (not stage.current_stage.is_menu) then
+		-- if (GetLastKey() == setting.keysys.menu or ext.pop_pause_menu) and (not stage.current_stage.is_menu) then
+		if (GetLastKey() == setting.keysys.menu or GetLastKey() == setting.joysticks.menu or ext.pop_pause_menu) and (not stage.current_stage.is_menu) then
 			ext.pause_menu:FlyIn()
 		end
 	else
 		--暂停菜单部分
 		--仍然需要更新输入
-		jstg.GetInputEx(true)
+		-- jstg爆破痕迹
+		-- jstg.GetInputEx(true)
+		GetInputEx()
 	end
 	--暂停菜单更新
 	ext.pause_menu:frame()
@@ -138,9 +241,6 @@ function RenderFunc()
 		if Collision_Checker then
 			Collision_Checker.render()
 		end
-		if TUO_Developer_Tool_kit then 
-			TUO_Developer_Tool_kit.render()
-		end
 	end
 	AfterRender()
 	EndScene()
@@ -149,6 +249,9 @@ end
 function AfterRender()
 	--暂停菜单渲染
 	ext.pause_menu:render()
+	if TUO_Developer_Tool_kit then 
+		TUO_Developer_Tool_kit.render()
+	end
 end
 
 function FocusLoseFunc()
@@ -159,55 +262,4 @@ function FocusLoseFunc()
 	end
 end
 
---legecy
 
---不再使用，已转为jstg.GetInputEX
-function GetInput()
-	if stage.next_stage then
-		-- 把一些转场的破事放到这里处理，NOT GOOD
-		local w1=GetDefaultWorld()
-		jstg.ApplyWorld(w1)
-		
-		ResetLstgtmpvar()--重置lstg.tmpvar
-		ex.Reset()--重置ex全局变量
-		
-		if lstg.nextvar then
-			lstg.var=lstg.nextvar
-			lstg.nextvar =nil
-		end
-		-- 初始化随机数
-		if lstg.var.ran_seed then
-			--Print('RanSeed',lstg.var.ran_seed)
-			ran:Seed(lstg.var.ran_seed)
-		end
-		
-		KeyStatePre = {}
-		if not stage.next_stage.is_menu then
-			if scoredata.hiscore == nil then
-				scoredata.hiscore = {}
-			end
-			lstg.tmpvar.hiscore = scoredata.hiscore[stage.next_stage.stage_name..'@'..tostring(lstg.var.player_name)]
-		end
-	else
-		-- 刷新KeyStatePre
-		for k, v in pairs(setting.keys) do
-			KeyStatePre[k] = KeyState[k]
-		end
-	end
-	
-	-- 不是录像时更新按键状态
-	if not ext.replay.IsReplay() then
-		for k,v in pairs(setting.keys) do
-			KeyState[k] = GetKeyState(v)
-		end
-	end
-	
-	if ext.replay.IsRecording() then
-		-- 录像模式下记录当前帧的按键
-		replayWriter:Record(KeyState)
-	elseif ext.replay.IsReplay() then
-		-- 回放时载入按键状态
-		replayReader:Next(KeyState)
-		--assert(replayReader:Next(KeyState), "Unexpected end of replay file.")
-	end
-end

@@ -185,7 +185,15 @@ function player_class:frame()
 		if KeyIsDown'right' then dx=dx+1 end
 		if dx*dy~=0 then v=v*SQRT2_2 end
 		self.x=self.x+v*dx
-		self.y=self.y+v*dy
+		self.y=self.y+v*dy		
+		--[[本来想做全方向摇杆，但是实际操作起来由于阈值的关系仍然是八向摇杆的手感，因此作废
+		local leftX,leftY,rightX,rightY=lstg.XInputManager.GetThumbState(1)
+		local dx,dy=leftX/32768,leftY/32768
+		local a=atan2(dy,dx)
+		self.x=self.x+v*cos(a)
+		self.y=self.y+v*sin(a)
+		--]]
+
 		
 		for i=1,#jstg.worlds do -----------------------------------------------------????????????????????
 			if IsInWorld(self.world,jstg.worlds[i].world) then

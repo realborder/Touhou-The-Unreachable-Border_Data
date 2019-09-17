@@ -24,11 +24,11 @@ end
 function special_manual:frame()
 	if self.locked then return end
 	
-	if self.changed and not lstg.GetKeyState(KEY.UP) and not lstg.GetKeyState(KEY.DOWN) then self.changed=false end
+	if self.changed and not KeyTrigger'up' and not KeyTrigger'down' then self.changed=false end
 	
 	if not self.changed then
 		local action
-		if lstg.GetKeyState(KEY.UP) then
+		if KeyTrigger'up' then
 			self.choose=self.choose-1
 			if self.choose<1 then
 				self.choose=10
@@ -39,7 +39,7 @@ function special_manual:frame()
 			exani_player_manager.ExecuteExaniPredefine(play_manager,'Manual_item',action)
 			PlaySound('select00', 0.3)
 			self.changed=true
-		elseif lstg.GetKeyState(KEY.DOWN) then
+		elseif KeyTrigger'down' then
 			self.choose=self.choose+1
 			if self.choose>10 then
 				self.choose=1
@@ -50,7 +50,7 @@ function special_manual:frame()
 			exani_player_manager.ExecuteExaniPredefine(play_manager,'Manual_item',action)
 			PlaySound('select00', 0.3)
 			self.changed=true
-		elseif lstg.GetKeyState(KEY.X) then
+		elseif KeyTrigger'spell' then
 			if self.pre_menu~='' then base_menu.ChangeLocked(self) base_menu.ChangeLocked(menus[self.pre_menu]) end
 			PlaySound('cancel00', 0.3)
 			self.changed=true
@@ -324,7 +324,7 @@ function special_difficulty:frame()
 
 	if self.locked or self.delay>0 then return end
 	self.init_timer=self.init_timer+1
-	if self.changed and not lstg.GetKeyState(KEY.LEFT) and not lstg.GetKeyState(KEY.RIGHT) then self.changed=false end
+	if self.changed and not KeyTrigger'left' and not KeyTrigger'right' then self.changed=false end
 	
 	if self.activate_timer>0 then self.activate_timer=self.activate_timer-1 end
 	if self.deactivate_timer>0 then self.deactivate_timer=self.deactivate_timer-1 end
@@ -355,7 +355,7 @@ function special_difficulty:frame()
 	end
 	
 	if self.init_timer>self.init_delay and self.activate_timer==0 and self.deactivate_timer==0 and not self.is_choose then
-		if lstg.GetKeyState(KEY.LEFT) then
+		if KeyTrigger'left' then
 			if self.choose~=1 then
 				self.pre_choose=self.choose
 				self.choose=self.choose-1
@@ -366,7 +366,7 @@ function special_difficulty:frame()
 				exani_player_manager.ExecuteExaniPredefine(play_manager,self.pics[self.pre_choose],'deactivate')
 				self.changed=true
 			end
-		elseif lstg.GetKeyState(KEY.RIGHT) then
+		elseif KeyTrigger'right' then
 			if self.choose~=#self.pics then
 				self.pre_choose=self.choose
 				self.choose=self.choose+1
@@ -377,12 +377,12 @@ function special_difficulty:frame()
 				exani_player_manager.ExecuteExaniPredefine(play_manager,self.pics[self.pre_choose],'deactivate')
 				self.changed=true
 			end
-		elseif lstg.GetKeyState(KEY.Z) then
+		elseif KeyTrigger'shoot' then
 			self.is_choose=true
 			exani_player_manager.ExecuteExaniPredefine(play_manager,self.pics[self.choose],'choose')
 			self.choose_timer=self.choose_delay
 			PlaySound('ok00', 0.3)
-		elseif lstg.GetKeyState(KEY.X) then
+		elseif KeyTrigger'spell' then
 			base_menu.ChangeLocked(self)
 			self.cancel_timer=self.cancel_delay
 			self.timer=0
@@ -510,8 +510,8 @@ function special_player:frame()
 	if self.locked then return end
 	
 	self.init_timer=self.init_timer+1
-	if self.changed and not lstg.GetKeyState(KEY.LEFT) and not lstg.GetKeyState(KEY.RIGHT)
-		and not lstg.GetKeyState(KEY.UP) and not lstg.GetKeyState(KEY.DOWN) then self.changed=false end
+	if self.changed and not KeyTrigger'left' and not KeyTrigger'right'
+		and not KeyTrigger'up' and not KeyTrigger'down' then self.changed=false end
 	
 	if self.choose_timer>=0 then self.choose_timer=self.choose_timer-1 end
 	
@@ -521,21 +521,21 @@ function special_player:frame()
 	end
 	
 	if self.init_timer>self.init_delay and not self.changed and self.cancel_timer==0 and self.choose_timer==-1 then
-		if lstg.GetKeyState(KEY.DOWN) then
+		if KeyTrigger'down' then
 			if (self.choose%2)==1 then
 				self.changed=true
 				self.choose=self.choose+1
 				PlaySound('select00', 0.3)
 				exani_player_manager.ExecuteExaniPredefine(play_manager,self.player[self.choose/2],'AtoB')
 			end
-		elseif lstg.GetKeyState(KEY.UP) then
+		elseif KeyTrigger'up' then
 			if (self.choose%2)==0 then
 				self.changed=true
 				self.choose=self.choose-1
 				PlaySound('select00', 0.3)
 				exani_player_manager.ExecuteExaniPredefine(play_manager,self.player[(self.choose+1)/2],'BtoA')
 			end
-		elseif lstg.GetKeyState(KEY.RIGHT) then
+		elseif KeyTrigger'right' then
 			if self.choose<3 then
 				self.changed=true
 				PlaySound('select00', 0.3)
@@ -545,7 +545,7 @@ function special_player:frame()
 				self.choose=3
 				exani_player_manager.ExecuteExaniPredefine(play_manager,self.player[2],'init')
 			end
-		elseif lstg.GetKeyState(KEY.LEFT) then
+		elseif KeyTrigger'left' then
 			if self.choose>2 then
 				self.changed=true
 				PlaySound('select00', 0.3)
@@ -555,7 +555,7 @@ function special_player:frame()
 				self.choose=1
 				exani_player_manager.ExecuteExaniPredefine(play_manager,self.player[1],'init')
 			end
-		elseif lstg.GetKeyState(KEY.X) then
+		elseif KeyTrigger'spell' then
 			self.cancel_timer=self.cancel_delay
 			base_menu.ChangeLocked(self)
 			local diff=menus['diff_menu']
@@ -571,7 +571,7 @@ function special_player:frame()
 			elseif self.choose==4 then exani_player_manager.ExecuteExaniPredefine(play_manager,self.player[2],'killB')
 			end
 			PlaySound('cancel00', 0.3)
-		elseif lstg.GetKeyState(KEY.Z) then
+		elseif KeyTrigger'shoot' then
 			self.choose_timer=self.choose_delay
 			PlaySound('ok00', 0.3)
 			if self.choose==1 then exani_player_manager.ExecuteExaniPredefine(play_manager,self.player[1],'chooseA')

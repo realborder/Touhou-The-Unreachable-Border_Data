@@ -20,49 +20,49 @@ _GetLastKey=GetLastKey
 ---获取最后按下的按键
 ---@param id number @输入槽位
 ---@return number @VKEYcode
-function GetLastKey(id)
-	if id then
-		local k1=jstg.keys[id]
-		local kp=jstg.keypres[id]
-		for k, v in pairs(jstg.syskey) do
-			if k1[k]~= kp[k] and k1[k] then
-				return jstg.SysVKey2Key(v)
-			end
-		end
-	else
-		return jstg.LastKey
-	end
-end
+-- function GetLastKey(id)
+-- 	if id then
+-- 		local k1=jstg.keys[id]
+-- 		local kp=jstg.keypres[id]
+-- 		for k, v in pairs(jstg.syskey) do
+-- 			if k1[k]~= kp[k] and k1[k] then
+-- 				return jstg.SysVKey2Key(v)
+-- 			end
+-- 		end
+-- 	else
+-- 		return jstg.LastKey
+-- 	end
+-- end
 
 ---判断某个按键是否处于按下状态
 ---@param key string @按键名
 ---@param id number @输入槽位
 ---@return boolean
-function KeyIsDown(key,id)
-	if id then
-		return jstg.keys[id][key]
-	else
-		return KeyState[key]
-	end
-end
+-- function KeyIsDown(key,id)
+-- 	if id then
+-- 		return jstg.keys[id][key]
+-- 	else
+-- 		return KeyState[key]
+-- 	end
+-- end
 
 ---判断某个按键是否处于当前帧按下
 ---@param key string @按键名
 ---@param id number @输入槽位
 ---@return boolean
-function KeyIsPressed(key,id)
-	if id then
-		return jstg.keys[id][key] and (not jstg.keypres[id][key])
-	else
-		return KeyState[key] and (not KeyStatePre[key])
-	end
-end
+-- function KeyIsPressed(key,id)
+-- 	if id then
+-- 		return jstg.keys[id][key] and (not jstg.keypres[id][key])
+-- 	else
+-- 		return KeyState[key] and (not KeyStatePre[key])
+-- 	end
+-- end
 
 ---判断某个按键是否处于按下状态
-KeyPress = KeyIsDown
+-- KeyPress = KeyIsDown
 
 ---判断某个按键是否处于按下状态
-KeyTrigger = KeyIsPressed
+-- KeyTrigger = KeyIsPressed
 
 ----------------------------------------
 ---Player Input

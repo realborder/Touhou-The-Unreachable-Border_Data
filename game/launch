@@ -168,10 +168,11 @@ default_setting=
 	resx=1280,
 	resy=720,
 	res=1,
-	windowed=false,
+	windowed=true,
 	vsync=false,
-	sevolume=100,
+	sevolume=30,
 	bgmvolume=100,
+	mod='TUO_pre2',
 	keys={
 		up=KEY.UP,
 		down=KEY.DOWN,
@@ -199,6 +200,21 @@ default_setting=
 		snapshot=KEY.HOME,
 		retry=KEY.R,
 	},
+	joysticks={
+		up=KEY.JOY1_1,
+		down=KEY.JOY1_2,
+		left=KEY.JOY1_3,
+		right=KEY.JOY1_4,
+		slow=KEY.JOY1_10,
+		shoot=KEY.JOY1_5,
+		spell=KEY.JOY1_6,
+		special=KEY.JOY1_7,
+		repfast=KEY.JOY1_10,
+		repslow=KEY.JOY1_9,
+		menu=KEY.JOY1_12,
+		snapshot=KEY.JOY1_11,
+		retry=KEY.JOY1_8
+	}
 }
 
 default_network=
