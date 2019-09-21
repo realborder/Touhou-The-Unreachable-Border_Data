@@ -141,7 +141,7 @@ end
 
 ----------------------------------------
 ---Game Input
-
+--[[
 ---刷新输入状态
 ---@param is_pause boolean @是否处于暂停状态
 function jstg.GetInputEx(is_pause)--OLC提供的一个解决方法，解决了非自机输入在rep中检测不到的问题
@@ -240,7 +240,7 @@ function jstg.OldGetInputEx(is_pause)--旧方法的备份
 		end
 	end
 end
-
+--]]
 ---从指定输入槽位刷新输入状态
 ---@param i number @槽位
 ---@param is_pause boolean @是否处于暂停状态

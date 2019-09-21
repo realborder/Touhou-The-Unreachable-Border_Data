@@ -27,7 +27,7 @@ end
 
 function stage.Set(stage_name)--于ext中重载
 	stage.next_stage=stage.stages[stage_name]
-	KeyStatePre={}
+	-- KeyStatePre={}
 end
 
 function stage.SetTimer(t)

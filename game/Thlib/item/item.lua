@@ -21,6 +21,7 @@ function item:init(x,y,t,v,angle)
 	v=v or 1.5
 	SetV(self,v,angle)
 	self.v=v
+	self._rot=-90
 	self.group=GROUP_ITEM
 	self.layer=LAYER_ITEM
 	self.bound=false
@@ -41,10 +42,29 @@ function item:frame()
 		self.vscale=self.hscale
 		if self.timer==22 then self.vy=min(self.v,2) self.vx=0 end
 	elseif self.attract>0 then
-		if not IsValid(player) then error('I have a question') end
-		local a=Angle(self,player)
-		self.vx=self.attract*cos(a)+player.dx*0.5
-		self.vy=self.attract*sin(a)+player.dy*0.5
+		-- local a=Angle(self,player)
+		-- self.vx=self.attract*cos(a)+player.dx*0.5
+		-- self.vy=self.attract*sin(a)+player.dy*0.5
+		-- 上面是旧的代码
+		local s,t=self,self.target
+		if t and IsValid(t) then
+			local dist=Dist(s,t)
+			local a_aim=Angle(s,t) --目标值
+			local a=self._rot
+			local a_aim1,a_aim2=a_aim+360,a_aim-360
+			--处理a目标值
+			if abs(a_aim1-a)<abs(a_aim-a) then a_aim=a_aim1 end
+			if abs(a_aim2-a)<abs(a_aim-a) then a_aim=a_aim2 end
+			local mag_min=0.002 --目标对子弹的吸引力的系数（大概
+			local mag_max=0.25
+			local k=(1-dist/600) --目标里子弹的距离越近，这个数越接近1
+			local mag=mag_max*k+mag_min*(1-k)
+			self._rot=a+(a_aim-a)*mag
+			local v=self.v*(1+1.5*k) * (0.5+1.5*self.attract/8)
+			self.vx = v * cos(self._rot)
+			self.vy = v * sin(self._rot)
+			self.rot=self._rot+90
+		end
 	else self.vy=max(self.dy-0.03,-1.7) end
 	if self.y<lstg.world.boundb then 
 	    Del(self)
@@ -52,6 +72,13 @@ function item:frame()
 	end
 	if self.attract>=8 then self.collected=true end
 end
+
+-- function item:render()
+	-- self.r0t=self.rot+90
+	-- object.render(self)
+	-- self.rot=self.rot-90
+-- end
+
 
 function item:colli(other)
 	--if other==player then

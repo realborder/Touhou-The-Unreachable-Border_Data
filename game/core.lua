@@ -86,10 +86,11 @@ end
 function DoFrame()
 	--标题设置
 	ChangeGameTitle()
-	--切关处理
+	--切关处理(于ext.lua重载)
 	if stage.next_stage then ChangeGameStage() end
-	--刷新输入
-	jstg.GetInputEx()
+	--刷新输入(于ext.lua重载)
+	-- jstg.GetInputEx()
+	GetInput()
 	--stage和object逻辑
 	SetPlayer()--清除jstg.current_player指向的自机
 	if GetCurrentSuperPause()<=0 or stage.nopause then

@@ -432,12 +432,12 @@ end
 
 function reimu_boundary2_obj:frame()
 	local _temp_key, _temp_keyp
-	if self.master.key then
-		_temp_key = KeyState
-		_temp_keyp = KeyStatePre
-		KeyState = self.master.key
-		KeyStatePre = self.master.keypre
-	end
+	-- if self.master.key then
+	-- 	_temp_key = KeyState
+	-- 	_temp_keyp = KeyStatePre
+	-- 	KeyState = self.master.key
+	-- 	KeyStatePre = self.master.keypre
+	-- end
 	if KeyIsDown("spell") then
 		if self.scale < 1 then
 			self.scale = min(self.scale + 0.23, 1.35)
@@ -456,10 +456,10 @@ function reimu_boundary2_obj:frame()
 		self.omiga = 0.75
 	end
 	reimu_boundary2_obj._scale(self)
-	if self.master.key then
-		KeyState = _temp_key
-		KeyStatePre = _temp_keyp
-	end
+	-- if self.master.key then
+	-- 	KeyState = _temp_key
+	-- 	KeyStatePre = _temp_keyp
+	-- end
 end
 
 function reimu_boundary2_obj:render()

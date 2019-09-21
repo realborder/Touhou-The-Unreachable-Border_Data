@@ -5,32 +5,39 @@ TUO_Developer_HUD={
     timer=0,
     side_x=SIDE_X1,
     panel={}
-    --[[
-    panel={
-        timer=0,
-        left=0,
-        monitoring_value={} --监视列表，可以是字符串也可以是函数
-        display_value={} --取出的监视列表的数值，在这里等待被渲染
-    }
-    --]]
 }
 local self=TUO_Developer_HUD
-function TUO_Developer_HUD.NewPanel(title,monitoring_value,initfunc,framefunc,renderfunc)
+--------------------------------------------------
+---在HUD里新建面板
+---@param title string 面板标题，显示在左边栏
+---@param monitoring_value table or string or function 监视列表，可以用字符串监视一个变量，也可以直接监视一个表，也可以用函数来将待监视的值导入self.displey_value
+---@param initfunc function 初始化时调用的函数
+---@param framefunc function
+---@param renderfunc function
+---@param force_refresh boolean 若设为true，面板就算不显示也会强制执行frame函数
+function TUO_Developer_HUD.NewPanel(title,monitoring_value,initfunc,framefunc,renderfunc,force_refresh)
     if initfunc and type(initfunc)=='function' then initfunc() end
     table.insert(TUO_Developer_HUD.panel,{
         title=title,
         timer=0,
         alpha=0,
         y_offset=0,
+        value_pre={},
+        value_change={},
         monitoring_value=monitoring_value,
         framefunc=framefunc,
-        renderfunc=renderfunc})
+        renderfunc=renderfunc,
+        force_refresh=force_refresh or false})
 end
+--------------------------------------------------
+---渲染面板的标题
+---@param index number 位于第几个槽位
+---@param panel table 记录面板信息的表
 function TUO_Developer_HUD.RenderPanelTitle(index,panel)
     local TOP_OFFSET=16
     local RIGHT_OFFSET=32
     local HEIGHT=32
-    local SIZE=1.5
+    local SIZE=1.3
     local GAP=16
     local color=Color(self.timer/30*255,0,0,0)
     local t='f3_word'
@@ -46,40 +53,80 @@ function TUO_Developer_HUD.RenderPanelTitle(index,panel)
         TOP_OFFSET+index*(HEIGHT+GAP)-GAP,SIZE,color,'left','vcenter')
     
 end
-function TUO_Developer_HUD.RenderValue(panel,title,x_pos,value_table)
+--------------------------------------------------
+---渲染一列值
+---@param panel table 面板信息
+---@param title string 标题文字，同一个面板下不可重复
+---@param x_pos number x起始位置，如果在这个函数调用之后紧接着以相同的该参数调用则新渲染的内容会在其下方而不会重叠，请注意
+---@param value_table table 待观测表，目前没对表中表进行处理
+function TUO_Developer_HUD.DisplayValue(panel,title,x_pos,value_table)
+    local last_top
     title=title or 'Value Monitor'
     local p=panel
     local TOP_OFFSET=16
     local l=expl(SIDE_X4-24,SIDE_X4,p.timer/10)
-    if x_pos then l=expl(x_pos-24,x_pos,p.timer/10) end  
+    if x_pos then l=expl(x_pos-24,x_pos,p.timer/10) end
     local r=l+640
     local t=480-TOP_OFFSET+panel.y_offset
+    if self.__DH_last_top~=0 and self.__DH_last_x_pos==x_pos and self.__DH_last_panel_title==panel.title then
+        t=self.__DH_last_top-TOP_OFFSET*4 end
     local b
     local HEIGHT=16
     local SIZE=1
     local GAP=2
     local ttf='f3_word'
     local color=Color(panel.timer/10*255,0,0,0)
-    RenderTTF2(ttf,title,l-5,r,t-HEIGHT*1.5,t,SIZE*1.5,color)
+    RenderTTF2(ttf,title,l-5,r,t-HEIGHT*1.5,t,SIZE*1.2,color)
     t=t-HEIGHT*1.5-GAP
     if value_table then
+        local index=panel.title..title
+        panel.value_pre[index]=panel.value_pre[index] or {}
+        --这个表用来记录变量做出改变的红色高亮视觉提示，范围0~1,1为红色
+        panel.value_change[index]=panel.value_change[index] or {}
+        
         for k,v in pairs(value_table) do  
+            --缩写下
+            local pre=panel.value_pre[index]
+            local change=panel.value_change[index]
+            -----------------------
+            change[k]=change[k] or 0
+            -----------------------变量有变化则让这个变成1
+            if v~=pre[k] then change[k]=1 else change[k]=max(0,change[k]-0.02) end
+            pre[k]=v
+            color=Color(panel.timer/10*255,255*change[k],100*change[k],100*change[k])
+            -----------------------
             b=t-HEIGHT
             RenderTTF2(ttf,k..': '..tostring(v),l,r,b,t,SIZE,color)
             t=t-HEIGHT-GAP
         end
     else
-        for k,v in pairs(panel.display_value) do  
+        if not panel.display_value then error(panel.title) end
+        local index=panel.title..'_display_value'
+        if not panel.value_pre[index] then  panel.value_pre[index]={} end
+        if not panel.value_change[index] then  panel.value_change[index]={} end
+        
+        for _,v in pairs(panel.display_value) do  
+            local pre=panel.value_pre[index]
+            local change=panel.value_change[index]
+            change[v.name]=change[v.name] or 0
+            if v.v~=pre[v.name] then change[v.name]=1 else change[v.name]=max(0,change[v.name]-0.02) end
+            pre[v.name]=v.v
+            color=Color(panel.timer/10*255,255*change[v.name],100*change[v.name],100*change[v.name])
             b=t-HEIGHT
             RenderTTF2(ttf,v.name..': '..tostring(v.v),l,r,b,t,SIZE,color)
             t=t-HEIGHT-GAP
         end
     end
+    self.__DH_last_panel_title=panel.title
+    self.__DH_last_top=t 
+    self.__DH_last_x_pos=x_pos
 end
+
 function TUO_Developer_HUD.init()
     self.cur=1
     self.scroll_force=0
 end
+
 function TUO_Developer_HUD.frame()
     self.side_x=expl(SIDE_X1,SIDE_X2,self.timer/30)
 
@@ -93,12 +140,17 @@ function TUO_Developer_HUD.frame()
         v.alpha=255*v.timer/10
         --上面是丝滑用的代码
         
-        if v.framefunc and type(v.framefunc) then v.framefunc(v) end
+        if (v.framefunc and type(v.framefunc)=='function') and (v.timer>0 or v.force_refresh) then v.framefunc(v) end
 
         if v.monitoring_value then
             if type(v.monitoring_value)=='function' then v.display_value=v.monitoring_value() 
             elseif type(v.monitoring_value)=='string' then  v.display_value={} --待补充
-            elseif type(v.monitoring_value)=='table' then v.display_value={}
+            elseif type(v.monitoring_value)=='table' then 
+                --临时处理
+                v.display_value={} 
+                for key,value in pairs(v.monitoring_value) do
+                    table.insert(v.display_value,{name=key,v=value})
+                end
             else v.display_value=nil
             end
         end
@@ -125,7 +177,7 @@ function TUO_Developer_HUD.render()
     for k,v in pairs(self.panel) do
         self.RenderPanelTitle(k,v)
         if v.display_value then
-            self.RenderValue(v)
+            self.DisplayValue(v)
         end
         if v.renderfunc and type(v.renderfunc)=='function' then v.renderfunc(v) end
     end

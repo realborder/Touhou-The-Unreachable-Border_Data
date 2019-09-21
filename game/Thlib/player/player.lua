@@ -98,14 +98,14 @@ end
 
 function player_class:frame()
 	self.grazer.world=self.world
-	local _temp_key=nil
-	local _temp_keyp=nil
-	if self.key then
-		_temp_key=KeyState
-		_temp_keyp=KeyStatePre
-		KeyState=self.key
-		KeyStatePre=self.keypre
-	end
+	-- local _temp_key=nil
+	-- local _temp_keyp=nil
+	-- if self.key then
+	-- 	_temp_key=KeyState
+	-- 	_temp_keyp=KeyStatePre
+	-- 	KeyState=self.key
+	-- 	KeyStatePre=self.keypre
+	-- end
 
 	local boss_in_nonsc=IsValid(_boss) and (not boss.GetCurrentCard(_boss).is_sc) --判断boss是否处在非符状态
 	
@@ -420,10 +420,10 @@ function player_class:frame()
 	if self.time_stop then self.timer=self.timer-1 end
 	
 	
-	if self.key then
-		KeyState=_temp_key
-		KeyStatePre=_temp_keyp
-	end
+	-- if self.key then
+	-- 	KeyState=_temp_key
+	-- 	KeyStatePre=_temp_keyp
+	-- end
 	
 	-------符卡环参数的丝滑
 	local dx=self.ringX-self.ringX_aim
