@@ -182,12 +182,16 @@ end
 function enemy_death_ef:render()
 	-- local alpha=1-self.timer/30
 	local k=self.timer/30
-	local alpha=255*(1-k)^2
+	local alpha=255*(1-k)
 	k=sin(90*k)
-	SetImageState(self.img,'',Color(alpha/1.5,255,255,255))
-	Render(self.img,self.x,self.y, 0,2+1.4*k,2+1.4*k)
-	SetImageState(self.img,'',Color(alpha,255,255,255))
-	Render(self.img,self.x,self.y, self.rot,0.8,6*k)
+	SetImageState(self.img,'mul+add',Color(0.5*alpha/1.5,255,255,255))
+	Render(self.img,self.x,self.y, 0,1+0.7*k,1+0.7*k)
+	SetImageState(self.img,'mul+add',Color(0.5*alpha,255,255,255))
+	Render(self.img,self.x,self.y, self.rot,0.3,5*k)
+	SetImageState(self.img,'',Color(0.5*alpha/1.5,255,255,255))
+	Render(self.img,self.x,self.y, 0,1+0.7*k,1+0.7*k)
+	SetImageState(self.img,'',Color(0.5*alpha,255,255,255))
+	Render(self.img,self.x,self.y, self.rot,0.3,5*k)
 end
 
 function enemy_death_ef:frame()

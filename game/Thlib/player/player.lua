@@ -99,14 +99,14 @@ end
 
 function player_class:frame()
 	self.grazer.world=self.world
-	local _temp_key=nil
-	local _temp_keyp=nil
-	if self.key then
-		_temp_key=KeyState
-		_temp_keyp=KeyStatePre
-		KeyState=self.key
-		KeyStatePre=self.keypre
-	end
+	-- local _temp_key=nil
+	-- local _temp_keyp=nil
+	-- if self.key then
+	-- 	_temp_key=KeyState
+	-- 	_temp_keyp=KeyStatePre
+	-- 	KeyState=self.key
+	-- 	KeyStatePre=self.keypre
+	-- end
 
 	local boss_in_nonsc=IsValid(_boss) and (not boss.GetCurrentCard(_boss).is_sc) --判断boss是否处在非符状态
 	
@@ -187,7 +187,15 @@ function player_class:frame()
 		if KeyIsDown'right' then dx=dx+1 end
 		if dx*dy~=0 then v=v*SQRT2_2 end
 		self.x=self.x+v*dx
-		self.y=self.y+v*dy
+		self.y=self.y+v*dy		
+		--[[本来想做全方向摇杆，但是实际操作起来由于阈值的关系仍然是八向摇杆的手感，因此作废
+		local leftX,leftY,rightX,rightY=lstg.XInputManager.GetThumbState(1)
+		local dx,dy=leftX/32768,leftY/32768
+		local a=atan2(dy,dx)
+		self.x=self.x+v*cos(a)
+		self.y=self.y+v*sin(a)
+		--]]
+
 		
 		for i=1,#jstg.worlds do -----------------------------------------------------????????????????????
 			if IsInWorld(self.world,jstg.worlds[i].world) then
@@ -230,8 +238,9 @@ function player_class:frame()
 		    PlaySound('enep02',0.3,self.x/200,true)
 		    local r4=sqrt(ran:Float(1,4))
 			local r3=ran:Float(0,360)
-		if self.supportx and self.sp[n][1] then 	New(item_power_mid,self.supportx+self.sp[n][1]+r4*cos(r3),self.supporty+self.sp[n][2]+r4*sin(r3)) end --修复崩溃的bug
-				self.PowerDelay1=-1
+		if self.supportx and self.sp[n][1] then 	
+			New(item_power_mid,self.supportx+self.sp[n][1]+r4*cos(r3),self.supporty+self.sp[n][2]+r4*sin(r3)) end --修复崩溃的bug
+			self.PowerDelay1=-1
 		end
 		-----------------------------------------------
 		
@@ -413,10 +422,10 @@ function player_class:frame()
 	if self.time_stop then self.timer=self.timer-1 end
 	
 	
-	if self.key then
-		KeyState=_temp_key
-		KeyStatePre=_temp_keyp
-	end
+	-- if self.key then
+	-- 	KeyState=_temp_key
+	-- 	KeyStatePre=_temp_keyp
+	-- end
 	
 	-------符卡环参数的丝滑
 	local dx=self.ringX-self.ringX_aim
@@ -593,11 +602,12 @@ function grazer:frame()
 end
 
 function grazer:render()
+	local scale=sin(90*self.player.lh)
 	object.render(self)
 	SetImageState('player_aura','',Color(0xC0FFFFFF)*self.player.lh+Color(0x00FFFFFF)*(1-self.player.lh))
-	Render('player_aura',self.x,self.y, self.aura,(2-self.player.lh)*2)
+	Render('player_aura',self.x,self.y, self.aura,(2-scale))
 	SetImageState('player_aura','',Color(0xC0FFFFFF))
-	Render('player_aura',self.x,self.y,-self.aura,self.player.lh*2)
+	Render('player_aura',self.x,self.y,-self.aura,scale)
 end
 
 function grazer:colli(other)

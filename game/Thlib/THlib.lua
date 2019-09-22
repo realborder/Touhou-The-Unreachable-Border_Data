@@ -35,3 +35,6 @@ Include'THlib\\menu\\special_menu.lua'
 
 Include("mwy_player\\mwy_player.lua")
 Include("mwy_dialogsys\\mwy_dialogsys_sub.lua")
+
+--下面这个是调试用的，正式版本必须去掉
+Include("Library\\plugins\\TUO_Developer_Tool_kit\\__init__.lua")

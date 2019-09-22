@@ -374,11 +374,11 @@ end
 
 --一些乱七八糟的东西
 LoadTexture('misc','THlib\\misc\\misc.png')
-LoadImage('player_aura','misc',128,0,64,64)
-LoadImageGroup('bubble','misc',192,0,64,64,1,4)
-LoadImage('border','misc',128,192,64,64)
-LoadImage('leaf','misc',0,32,32,32)
-LoadImage('white','misc',56,8,16,16)
+LoadImage('player_aura','misc',128*2,0,64*2,64*2)
+LoadImageGroup('bubble','misc',192*2,0,64*2,64*2,1,4)
+LoadImage('border','misc',128*2,192*2,64*2,64*2)
+LoadImage('leaf','misc',0,32*2,32*2,32*2)
+LoadImage('white','misc',56*2,8*2,16*2,16*2)
 --预制粒子特效图片
 LoadTexture('particles','THlib\\misc\\particles.png')
 LoadImageGroup('parimg','particles',0,0,32,32,4,4)

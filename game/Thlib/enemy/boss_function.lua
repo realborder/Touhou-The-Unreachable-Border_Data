@@ -10,6 +10,7 @@ function boss:PopSpellResult(c) --boss行为结束逻辑，弹出提示文字、
     if c.is_combat then
         self.spell_get = false
         if (self.hp <= 0 and self.timeout == 0) or (c.t1 == c.t3 and self.timeout == 1) then
+            --boss掉落物
             if c.drop then item.DropItem(self.x,self.y,c.drop,true) end
             item.EndChipBonus(self,self.x,self.y)
             if self.sc_bonus and not c.fake then
@@ -18,7 +19,7 @@ function boss:PopSpellResult(c) --boss行为结束逻辑，弹出提示文字、
 					New(boss_card_ring,self,true)--符卡环被玩家收取
 					lstg.var.score=lstg.var.score+self.sc_bonus-self.sc_bonus%10
                     PlaySound('cardget',1.0,0)
-                    New(hinter_bonus,'hint.getbonus',0.6,0,112,15,120,true,self.sc_bonus-self.sc_bonus%10)
+                    New(hinter_bonus,'hint.getbonus',1,0,112,15,90,true,self.sc_bonus-self.sc_bonus%10)
                     New(kill_timer,0,30,self.timer)
                     if not ext.replay.IsReplay() then
                         scoredata.spell_card_hist[lstg.var.player_name][self.difficulty][c.name][1]=scoredata.spell_card_hist[lstg.var.player_name][self.difficulty][c.name][1]+1
@@ -27,13 +28,13 @@ function boss:PopSpellResult(c) --boss行为结束逻辑，弹出提示文字、
                 else
                     --【未收卡】
 					New(boss_card_ring,self,false)
-					New(hinter,'hint.bonusfail',0.6,0,112,15,120)
+					New(hinter,'hint.bonusfail',1,0,112,15,90)
                     New(kill_timer,0,60,self.timer)
                 end
             end
         else
             if c.is_sc and self.timeout==1 then PlaySound('fault',1.0,0) end
-            if self.sc_bonus then New(hinter,'hint.bonusfail',0.6,0,112,15,120,15) end
+            if self.sc_bonus then New(hinter,'hint.bonusfail',1,0,112,15,90,15) end
         end
         self.spell_timeout=(self.timeout==1)
         if self.no_clear_buller then --结束符卡后是否需要清除子弹

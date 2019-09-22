@@ -21,6 +21,7 @@ function item:init(x,y,t,v,angle)
 	v=v or 1.5
 	SetV(self,v,angle)
 	self.v=v
+	self._rot=-90
 	self.group=GROUP_ITEM
 	self.layer=LAYER_ITEM
 	self.bound=false
@@ -37,14 +38,34 @@ function item:frame()
 	local player=self.target
 	if self.timer<24 then
 		self.rot=self.rot+45
+		self.vy=self.v*2*(1-self.timer/23)
 		self.hscale=(self.timer+25)/48
 		self.vscale=self.hscale
-		if self.timer==22 then self.vy=min(self.v,2) self.vx=0 end
+		-- if self.timer==22 then self.vy=min(self.v,2) self.vx=0 end
 	elseif self.attract>0 then
-		if not IsValid(player) then error('I have a question') end
-		local a=Angle(self,player)
-		self.vx=self.attract*cos(a)+player.dx*0.5
-		self.vy=self.attract*sin(a)+player.dy*0.5
+		-- local a=Angle(self,player)
+		-- self.vx=self.attract*cos(a)+player.dx*0.5
+		-- self.vy=self.attract*sin(a)+player.dy*0.5
+		-- 上面是旧的代码
+		local s,t=self,self.target
+		if t and IsValid(t) then
+			local dist=Dist(s,t)
+			local a_aim=Angle(s,t) --目标值
+			local a=self._rot
+			local a_aim1,a_aim2=a_aim+360,a_aim-360
+			--处理a目标值
+			if abs(a_aim1-a)<abs(a_aim-a) then a_aim=a_aim1 end
+			if abs(a_aim2-a)<abs(a_aim-a) then a_aim=a_aim2 end
+			local mag_min=0.002 --目标对子弹的吸引力的系数（大概
+			local mag_max=0.25
+			local k=(1-dist/600) --目标里子弹的距离越近，这个数越接近1
+			local mag=mag_max*k+mag_min*(1-k)
+			self._rot=a+(a_aim-a)*mag
+			local v=self.v*(1+1.5*k) * (0.5+1.5*self.attract/8)
+			self.vx = v * cos(self._rot)
+			self.vy = v * sin(self._rot)
+			self.rot=self._rot+90
+		end
 	else self.vy=max(self.dy-0.03,-1.7) end
 	if self.y<lstg.world.boundb then 
 	    Del(self)
@@ -52,6 +73,13 @@ function item:frame()
 	end
 	if self.attract>=8 then self.collected=true end
 end
+
+-- function item:render()
+	-- self.r0t=self.rot+90
+	-- object.render(self)
+	-- self.rot=self.rot-90
+-- end
+
 
 function item:colli(other)
 	--if other==player then
@@ -107,7 +135,7 @@ function item_power_large:collect() GetPower(100)  end
 
 item_power_full=Class(item)
 function item_power_full:init(x,y) item.init(self,x,y,4) end
-function item_power_full:collect() GetPower(400)  end
+function item_power_full:collect() GetPower(600)  end
 
 item_extend=Class(item)
 function item_extend:init(x,y) item.init(self,x,y,7) end
@@ -224,24 +252,33 @@ function item.DropItem(x,y,drop,attract)
 	local n=m+drop[2]+drop[3]
 	if n<1 then return end
 	local r=sqrt(n-1)*5
-	--if lstg.var.power==500 then drop[2]=drop[2]+drop[1] drop[1]=0 end
-	if drop[1] >= 400 then
+	if drop[1] >= 400 then --p点大于400，直接给F点
 		local r2=sqrt(ran:Float(1,4))*r
 		local a=ran:Float(0,360)
-		last=New(item_power_full,x+r2*cos(a),y+r2*sin(a)) if attract then last.attract=8 last.target=player end
+		last=New(item_power_full,x,y) if attract then last.attract=8 last.target=player end
 	else
-		drop[4] = drop[1] / 100
-		drop[1] = drop[1] % 100
-		for i=1,drop[4] do
-			local r2=sqrt(ran:Float(1,4))*r
+		local p=drop[1]
+		local large,mid,small
+		large=p/100 p=p-int(large)*100
+		mid=p/10 p=p-int(mid)*10
+		small=p
+		local r3=(large+mid+small)
+		for i=1,large do
+			local _r=r3*ran:Float(0.7,1.3)
 			local a=ran:Float(0,360)
-			last=New(item_power_large,x+r2*cos(a),y+r2*sin(a)) if attract then last.attract=8 last.target=player end
+			last=New(item_power_large,x+_r*cos(a),y+_r*sin(a)) if attract then last.attract=8 last.target=player end
 		end
-		for i=1,drop[1] do
-			local r2=sqrt(ran:Float(1,4))*r
+		for i=1,mid do
+			local _r=r3*ran:Float(1.3,1.9)
 			local a=ran:Float(0,360)
-			last=New(item_power,x+r2*cos(a),y+r2*sin(a)) if attract then last.attract=8 last.target=player end
+			last=New(item_power_mid,x+_r*cos(a),y+_r*sin(a)) if attract then last.attract=8 last.target=player end
 		end
+		for i=1,small do
+			local _r=r3*ran:Float(1.9,2.5)
+			local a=ran:Float(0,360)
+			last=New(item_power,x+_r*cos(a),y+_r*sin(a)) if attract then last.attract=8 last.target=player end
+		end
+
 	end
 	for i=1,drop[2] do
 		local r2=sqrt(ran:Float(1,4))*r

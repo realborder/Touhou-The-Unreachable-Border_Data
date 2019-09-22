@@ -17,7 +17,16 @@ local power_offset = {
 	{ { 1.0, 1.0 }, 0.6 }, --4
 	{ { 1.0, 1.0 }, 1.0 }, --5
 	{ { 1.0, 1.0 }, 0.6 }, --6
-	{ { 1.0, 1.0 }, 0.6 }, --6
+	{ { 1.0, 1.0 }, 0.6 } --6
+}
+local power_offset2={
+	{0.5,	1,		1,		1,		1,		1},
+	{0.6,	0.6,	1,		1,		1,		1},
+	{0.5,	0.7,	0.5,	1,		1,		1},
+	{0.7,	0.85,	0.85,	0.7,	1,		1},
+	{0.7,	0.9,	1,		0.9,	0.7,	1},
+	{0.6,	1,		1.2,	1.2,	1,		0.6},
+	{0.6,	0.8,	1.2,	1.2,	0.8,	0.6}
 }
 
 -------------------------------------------
@@ -124,7 +133,7 @@ function reimu_spread_big_ef:frame()
 end
 
 function reimu_spread_big_ef:render()
-	SetImageState(self.img, "mul+add", Color(self.alpha * 128, 255, 255, 255))
+	SetImageState(self.img, "", Color(self.alpha * 128, 255, 255, 255))
 	DefaultRenderFunc(self)
 end
 
@@ -200,7 +209,7 @@ function reimu_spread_big:frame()
 	end
 end
 function reimu_spread_big:render()
-	SetImageState(self.img, "mul+add", Color(0x80FFFFFF))
+	SetImageState(self.img, "", Color(0x60FFFFFF))
 	DefaultRenderFunc(self)
 end
 function reimu_spread_big:kill()
@@ -222,7 +231,8 @@ function reimu_bullet_purple:init(x, y, rot, v, _hp, dmg)
 	self.vx = v * cos(rot)
 	self.vy = v * sin(rot)
 	self._hp = _hp
-	self.dmg = dmg * 0.88
+	self.dmg = dmg 
+	self.max_dmg = dmg 
 	self._blend = ""
 	self.killflag = true
 	self.cold = 0
@@ -238,6 +248,7 @@ function reimu_bullet_purple:frame()
 			self.vy = self.vy * 0.6
 			self._hp = self._hp - 0.1
 			self.vscale = self.vscale - 0.05
+			self.dmg=self.max_dmg*self.hscale
 		end
 		self.killerenemy = nil
 		self.cold = 0
@@ -246,8 +257,8 @@ function reimu_bullet_purple:frame()
 		if self.cold >= 60 and self.attack then
 			local maxvx = abs(self.v * cos(self.rot))
 			local maxvy = abs(self.v * sin(self.rot))
-			self.vx = max(-maxvx, min(self.vx * 1.05, maxvx))
-			self.vy = max(-maxvy, min(self.vy * 1.05, maxvy))
+			self.vx = max(-maxvx, min(self.vx * 1.2, maxvx))
+			self.vy = max(-maxvy, min(self.vy * 1.2, maxvy))
 		end
 		self.cold = self.cold + 1
 	end
@@ -421,12 +432,12 @@ end
 
 function reimu_boundary2_obj:frame()
 	local _temp_key, _temp_keyp
-	if self.master.key then
-		_temp_key = KeyState
-		_temp_keyp = KeyStatePre
-		KeyState = self.master.key
-		KeyStatePre = self.master.keypre
-	end
+	-- if self.master.key then
+	-- 	_temp_key = KeyState
+	-- 	_temp_keyp = KeyStatePre
+	-- 	KeyState = self.master.key
+	-- 	KeyStatePre = self.master.keypre
+	-- end
 	if KeyIsDown("spell") then
 		if self.scale < 1 then
 			self.scale = min(self.scale + 0.23, 1.35)
@@ -445,10 +456,10 @@ function reimu_boundary2_obj:frame()
 		self.omiga = 0.75
 	end
 	reimu_boundary2_obj._scale(self)
-	if self.master.key then
-		KeyState = _temp_key
-		KeyStatePre = _temp_keyp
-	end
+	-- if self.master.key then
+	-- 	KeyState = _temp_key
+	-- 	KeyStatePre = _temp_keyp
+	-- end
 end
 
 function reimu_boundary2_obj:render()
@@ -516,6 +527,9 @@ function reimu_slowspell1:init(x,y,rgb,rot,dmg,scale_fix)
 	self.color=color
 	self.rot=rot
 	self._blend='mul+add'
+	self.group=GROUP_PLAYER_BULLET
+	self.layer=LAYER_PLAYER_BULLET
+	self.killflag=true
 	self._r,self._g,self._b=rgb[1],rgb[2],rgb[3]
 	self.dmg=dmg
 	self.scale_fix=scale_fix
@@ -913,17 +927,29 @@ function reimu_playerB:init(slot)
 		{ { -38, -10, -45, 13 }, { -28, 20, -29, 25 }, { -10, 42, -10, 31 }, { 10, 42, 10, 31 }, { 28, 20, 29, 25 }, { 38, -10, 45, 13 } }, --6
 		{ { -38, -10, -45, 13 }, { -28, 20, -29, 25 }, { -10, 42, -10, 31 }, { 10, 42, 10, 31 }, { 28, 20, 29, 25 }, { 38, -10, 45, 13 } }--6
 	}
+	-- self.anglelist = {
+	-- 	{ -1, -1, -1, -1, -1, -1 }, --0
+	-- 	{ 90, -1, -1, -1, -1, -1 }, --1
+	-- 	{ 95, 85, -1, -1, -1, -1 }, --2
+	-- 	{ 108, 90, 72, -1, -1, -1 }, --3
+	-- 	{ 105, 95, 85, 75, -1, -1 }, --4
+	-- 	{ 126, 108, 90, 72, 54, -1 }, --5
+	-- 	{ 135, 105, 95, 85, 75, 45 }, --6
+	-- 	{ 135, 105, 95, 85, 75, 45 }, --6
+	-- }
+	--为了防止子机在火力下降时射歪，嗯，先这样吧
 	self.anglelist = {
-		{ -1, -1, -1, -1, -1, -1 }, --0
-		{ 90, -1, -1, -1, -1, -1 }, --1
-		{ 95, 85, -1, -1, -1, -1 }, --2
-		{ 108, 90, 72, -1, -1, -1 }, --3
-		{ 105, 95, 85, 75, -1, -1 }, --4
-		{ 126, 108, 90, 72, 54, -1 }, --5
+		{ 90, 0, 0, 0, 0, 0 }, --0
+		{ 90, 85, 0, 0, 0, 0 }, --1
+		{ 95, 85, 72, 0, 0, 0 }, --2
+		{ 108, 90, 72, 75, 0, 0 }, --3
+		{ 105, 95, 85, 75, 72, 0 }, --4
+		{ 108, 99, 90, 81, 72, 45 }, --5
 		{ 135, 105, 95, 85, 75, 45 }, --6
 		{ 135, 105, 95, 85, 75, 45 }, --6
 	}
-	self.fire_cold = 30
+	self.fire_cold = 0
+	self.fire_cold2 = 0
 end
 
 local function high_shoot(self)
@@ -950,7 +976,7 @@ local function high_shoot(self)
 						sign)
 			end
 		end
-		self.fire_cold = 30
+		self.fire_cold = 45
 	end
 end
 
@@ -958,18 +984,20 @@ local function slow_shoot(self)
 	--local angle = {110,100,80,70,110,70}
 	--local num = int(lstg.var.power / 100) + 1
 	local num = int(self.support) + 1
+	if self.PowerDelay1>0 then num=num+1 end
 	-- Print(num)
-	if self.timer % 15 == 0 then
+	if self.fire_cold2 == 0 then
 		for i = 1, 6 do
-			if self.sp[i] and self.sp[i][3] > 0.5 then
+			if self.sp[i] and self.sp[i][3] > 0 then
 				New(reimu_bullet_purple,
 						self.supportx + self.sp[i][1],
 						self.supporty + self.sp[i][2],
 						self.anglelist[num][i],
-						6, 1.0,
-						1.0 * power_offset[num][2])
+						12, 1.0,
+						1.0 * power_offset2[num][i])
 			end
 		end
+		self.fire_cold2 = 22
 	end
 end
 
@@ -1077,7 +1105,11 @@ end
 function reimu_playerB:frame()
 	task.Do(self)
 	player_class.frame(self)
-	self.fire_cold = max(self.fire_cold - 1, 0)
+	if self.slow==0 then
+		self.fire_cold = max(self.fire_cold - 1, 0)
+	else
+		self.fire_cold2 = max(self.fire_cold2 - 1, 0)
+	end
 end
 
 function reimu_playerB:render()

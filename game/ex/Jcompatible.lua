@@ -113,14 +113,14 @@ end
 
 
 function jstg.player_class:frame()
-	local _temp_key=nil
-	local _temp_keyp=nil
-	if self.key then
-		_temp_key=KeyState
-		_temp_keyp=KeyStatePre
-		KeyState=self.key
-		KeyStatePre=self.keypre
-	end
+	-- local _temp_key=nil
+	-- local _temp_keyp=nil
+	-- if self.key then
+	-- 	_temp_key=KeyState
+	-- 	_temp_keyp=KeyStatePre
+	-- 	KeyState=self.key
+	-- 	KeyStatePre=self.keypre
+	-- end
 
 
 	--find target
@@ -285,10 +285,10 @@ function jstg.player_class:frame()
 	if self.time_stop then self.timer=self.timer-1 end
 	
 	
-	if self.key then
-		KeyState=_temp_key
-		KeyStatePre=_temp_keyp
-	end
+	-- if self.key then
+	-- 	KeyState=_temp_key
+	-- 	KeyStatePre=_temp_keyp
+	-- end
 	
 end
 

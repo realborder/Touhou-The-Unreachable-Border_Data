@@ -4,6 +4,8 @@
 
 ---=====================================
 _lastSpark={}
+local highlaserdmg={2,2.5,3,3.5,4.5,6.1}
+local slowlaserdmg={2,2.5,3,3.8,4.9,6.5}
 -------------------------------------------
 ---support shoot
 
@@ -31,9 +33,21 @@ end
 local CalculatePriority=function(self,o,rot)
 	local dist=Dist(self,o)
 	local angle=abs(Angle(self,o)-rot) if angle<-180 then angle=angle+360 end
-	angle=1-angle/180*3
-	dist=(400-dist)/400
-	return dist*angle
+
+	--算法修正：只会追踪前方120度扇形范围的敌机
+	if abs(angle)>60 then return 0 end
+	
+	--对dist和angle归一化
+	if dist>24 then --距离大于24照常
+		dist=(400-dist)/400
+	elseif abs(angle)<dist then --距离小于24但是角度小那么也照常
+		dist=(400-dist)/400
+	else --如果角度大那么直接跳过这个对象
+		return 0
+	end
+
+	angle=(1-angle/180)
+	return dist+angle
 end
 
 -------------------------------------------
@@ -279,8 +293,9 @@ local DoLaserDamage=function(self)
 	local num=#(self.sp)
 	if self.shootstate==1 then  --为了性能，激光不需要视觉上照到敌机即可造成伤害，不然要对每个敌机遍历一边激光节点伤不起
 		local l=#self.targetlist
+		num=highlaserdmg[num]
 		for i=2,l do
-			local offset=(l-i)/l*(1+0.2*(6-l))*0.9  --越靠后的目标伤害越低，但是目标越少伤害最多能到多目标的1.8倍
+			local offset=0.071 * (1+0.2*(7-i)) * (1+0.2*(6-l)) --越靠后的目标伤害越低，但是目标越少伤害最多能到最多目标的1.8倍
 			Damage(self.targetlist[i],0.15*num*offset)
 			if self.targetlist[i].hp>self.targetlist[i].maxhp*0.1 then
 				PlaySound('damage00',0.3,self.targetlist[i].x/1024)
@@ -289,6 +304,7 @@ local DoLaserDamage=function(self)
 			end
 		end
 	elseif self.shootstate==2 then
+		num=slowlaserdmg[num]
 		for i=1,6 do
 			if self.sp[i] and self.sp[i][3]>0.5 then
 				local target,dist={},{}
@@ -385,8 +401,9 @@ function marisa_spark:frame()
 	-- Print("[life]"..self.life)
 	self.x=self.player.x
 	self.y=self.player.y
-	if self.timer%10==0 then
+	if self.timer%10==1 then
 		New(marisa_spark_wave,self.x,self.y,self.rot,12,0.9,self.player,self.vscale)
+		self.player.protect=10
 	end
 	self.life=self.life-1
 	if self.life==0 then 
@@ -429,6 +446,7 @@ function marisa_spark2:init(x,y,rot,turnOnTime,wait,turnOffTime,p)
 	self.hscale=2.5
 	self.player.slowlock=true
 	lstg.var.block_spell=true
+	self.shoot_wave=true
 	task.New(self,function()
 		for i=0,90 do
 			self.hscale=i/90*2.5
@@ -447,7 +465,9 @@ function marisa_spark2:init(x,y,rot,turnOnTime,wait,turnOffTime,p)
 			self.vscale=vs+(7.5-vs)*i/15
 			task.Wait()
 		end
-		task.Wait(165)
+		task.Wait(135)
+		self.shoot_wave=false
+		task.Wait(30)
 		local vs=self.vscale
 		for i=1,10 do
 			self.vscale=vs*(1-i/10)
@@ -464,8 +484,11 @@ function marisa_spark2:frame()
 	self.player.SpellCardHp=self.player.SpellCardHp-K_SpellDecay/2
 	self.x=self.player.x
 	self.y=self.player.y
-	if self.timer>=75 and self.timer%10==0 then
+	if self.timer>=75 and self.timer%10==1 and self.shoot_wave then
 		New(marisa_spark_wave2,self.x,self.y,self.rot,12,0.9,self.player,self.vscale)
+	end
+	if self.timer%10==1 then
+		self.player.protect=10
 	end
 	-- for j,o in ObjList(GROUP_NONTJT) do
 	-- 	if not o._bosssys then  o.y=min(224,o.y+1) end
@@ -556,7 +579,7 @@ local releaseMasterSpark=function (self,rot,index)
 			-- New(marisa_spark_wave,self.x,self.y,rot,12,0.9,self)
 			task.Wait(10)
 		end
-		New(bullet_killer,self.x,self.y)
+		-- New(bullet_killer,self.x,self.y)
 		-- PlaySound('slash',1.0)
 		self.slowlock=false
 	end)
@@ -568,18 +591,18 @@ local releaseUnlimitedSpark=function (self)
 	PlaySound('nep00',1.0)
 	-- self.nextspell=300
 	self.nextshoot=self.nextshoot+90
-	self.protect=360
+	-- self.protect=360
 	New(marisa_spark2,self.x,self.y,90,15,int(self.SpellCardHpMax/(1.5*K_SpellDecay)),30,self)
-	New(tasker,function()
-		task.Wait(90)
-		for i=1,int(self.SpellCardHpMax/K_SpellDecay/10)-9 do
+	-- New(tasker,function()
+		-- task.Wait(90)
+		-- for i=1,int(self.SpellCardHpMax/K_SpellDecay/10)-9 do
 			-- New(marisa_spark_wave2,self.x,self.y,90,12,0.9,self)
-			task.Wait(10)
-		end
-		New(bullet_killer,self.x,self.y)
+			-- task.Wait(10)
+		-- end
+		-- New(bullet_killer,self.x,self.y)
 		-- PlaySound('slash',1.0)
 		
-	end)
+	-- end)
 	misc.ShakeScreen(7.5*60,5)
 end
 
@@ -748,6 +771,7 @@ function marisa_ray_summoner:init(index,player)
 	self.index=index
 	self.player=player
 	self.life=92
+	
 	if IsValid(_last_ray_summoner) then
 		if _last_ray_summoner.index==index then _last_ray_summoner.life=_last_ray_summoner.life+90 RawDel(self) self.hide=true
 		else RawDel(_last_ray_summoner)  _last_ray_summoner=self end
@@ -756,6 +780,7 @@ function marisa_ray_summoner:init(index,player)
 	end
 	
 	if index==1 or index==2 then
+		player.protect=30
 		task.New(self,function()
 			for i=1,3 do
 				local num=6+2*i
@@ -768,6 +793,7 @@ function marisa_ray_summoner:init(index,player)
 			end
 		end)
 	elseif index==3 then
+		player.protect=60
 		task.New(self,function()
 			for i=1,3 do
 				for j=1,90 do
@@ -785,7 +811,7 @@ end
 function marisa_ray_summoner:frame()
 	self.x,self.y=self.player.x,self.player.y
 	self.life=self.life-1
-	if self.life<=0 then task.Clear(self) RawDel(self) end
+	if self.life<=0 or (self.player.death>0 and self.player.death<90) then task.Clear(self) RawDel(self) end
 	task.Do(self)
 end
 

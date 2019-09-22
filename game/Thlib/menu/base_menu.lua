@@ -38,9 +38,9 @@ function base_menu:init(name,title,options,pre_menu,has_logo)
 	
 	menus[self.name]=self
 	--预加载exani对象
-	for k,v in pairs(self.exani_names) do
-		exani_player_manager.CreateSingleExani(play_manager,v)
-	end
+	-- for k,v in pairs(self.exani_names) do
+	-- 	exani_player_manager.CreateSingleExani(play_manager,v)
+	-- end
 
 end
 
@@ -51,7 +51,7 @@ function base_menu:frame()
 	if self.change_timer>0 then self.change_timer=self.change_timer-1 end
 	
 	if self.choose_timer==-1 and self.change_timer==0 and self.init_timer>30 then
-		if KeyIsPressed('up') then
+		if KeyTrigger'up' then
 			self.pre_choose=self.choose
 			self.choose=self.choose-1
 			if self.choose<1 then self.choose=#self.exani_names end
@@ -64,6 +64,7 @@ function base_menu:frame()
 			self.changed=true
 			self.change_timer=self.change_delay
 		elseif KeyIsPressed('down') then
+		elseif KeyTrigger'down' then
 			self.pre_choose=self.choose
 			self.choose=self.choose+1
 			if self.choose>#self.exani_names then self.choose=1 end
@@ -75,11 +76,11 @@ function base_menu:frame()
 			PlaySound('select00', 0.3)
 			self.changed=true
 			self.change_timer=self.change_delay
-		elseif KeyIsPressed('shoot') or lstg.GetKeyState(KEY.ENTER) then 
+		elseif KeyTrigger'shoot' then 
 			self.choosed=true
 			self.choose_timer=self.choose_delay
 			PlaySound('ok00', 0.3)
-		elseif KeyIsPressed('spell') or lstg.GetKeyState(KEY.ESCAPE) then
+		elseif KeyTrigger'spell' then
 			self.choosed=true
 			self.change_timer=self.change_delay
 			PlaySound('cancel00', 0.3)
@@ -102,13 +103,13 @@ function base_menu:render()
 	end
 	
 	if self.choosed then
-		if KeyIsPressed('shoot') or lstg.GetKeyState(KEY.ENTER) then
+		if KeyTrigger'shoot' or lstg.GetKeyState(KEY.ENTER) then
 			local action
 			if self.enables[self.choose] then action='choose' else action='choose_unable' end
 			exani_player_manager.SetExaniAttribute(play_manager,self.exani_names[self.choose],nil,nil,nil,nil,nil,1)
 			exani_player_manager.ExecuteExaniPredefine(play_manager,self.exani_names[self.choose],action)
 			PlaySound('select00',0.3)
-		elseif KeyIsPressed('spell') or lstg.GetKeyState(KEY.ESCAPE) then
+		elseif KeyTrigger'spell' or lstg.GetKeyState(KEY.ESCAPE) then
 			if self.pre_menu~='' then base_menu.ChangeLocked(self) base_menu.ChangeLocked(menus[self.pre_menu]) end
 			if self.name=='main_menu' then
 				if self.choose==#self.exani_names then

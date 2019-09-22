@@ -424,7 +424,8 @@ function reimu_orb_H:frame()
 	end 
 	if self.released~=self.released_pre then
 		misc.ShakeScreen(10,5)
-		player.slowlock=false
+		self.player.slowlock=false
+		self.player.protect=2
 	end
 	self.released_pre=self.released
 	if self.y-self.a>=350 then RawDel(self) end
@@ -499,12 +500,21 @@ local function high_shoot(self)
 		end
 	end
 end
-
+local dmg_offset={
+	{1,1,1,1,1,1},
+	{1,1,1,1,1,1},
+	{0.95,1.1,0.95,1,1,1,1},
+	{0.9,1.1,1.1,0.9,1,1},
+	{0.9,1.05,1.2,1.05,0.9,1},
+	{1,1.1,1.3,1.3,1.1,1},
+	{1,1.1,1.4,1.4,1.1,1}
+}
 local function slow_shoot(self)
+	local num=#(self.sp)
 	for i = 1, 6 do
 		if self.sp[i] and self.sp[i][3] > 0.5 then
-			New(reimu_side_bullet2, "_reimu_slow_shoot", self.supportx + self.sp[i][1] - 3, self.supporty + self.sp[i][2], 24, 90, 0.3)
-			New(reimu_side_bullet2, "_reimu_slow_shoot", self.supportx + self.sp[i][1] + 3, self.supporty + self.sp[i][2], 24, 90, 0.3)
+			New(reimu_side_bullet2, "_reimu_slow_shoot", self.supportx + self.sp[i][1] - 3, self.supporty + self.sp[i][2], 24, 90, 0.3*dmg_offset[num][i])
+			New(reimu_side_bullet2, "_reimu_slow_shoot", self.supportx + self.sp[i][1] + 3, self.supporty + self.sp[i][2], 24, 90, 0.3*dmg_offset[num][i])
 		end
 	end
 end
@@ -563,12 +573,14 @@ function reimu_playerA:newSpell()
 		K_dr_SlowSpell = 1.25 + K_dr_SpellDmg * lstg.var.dr
 		if self.SpellIndex == 4 then
 			--低速符卡1
+			self.protect=45
 			for i = 1, 9 do
-				New(reimu_orb_T, player.x, player.y, 10, i * 20, 2 + deep, 0.7 + 0.3 * deep, K_dr_SlowSpell*0.7, player, (i - 1) * 5)
+				New(reimu_orb_T, player.x, player.y, 6, i * 20, 2 + deep, 0.7 + 0.3 * deep, K_dr_SlowSpell*0.7, player, (i - 1) * 5)
 			end
 		end
 		if self.SpellIndex == 5 then
 			--低速符卡2
+			self.protect=45
 			for i = 1, 3 do
 				New(reimu_orb_M, player.x, player.y, 2.5, i * 45, 0, 0.7 + 0.3 * deep, K_dr_SlowSpell*0.5, player, (i - 1) * 10)
 			end
@@ -634,6 +646,7 @@ function reimu_playerA:newSpell()
 				New(reimu_sp_ef1, 'reimu_high_spell', self.x, self.y, 8, rot + i * (360 / n), tar1, 1200, K_dr_HighSpell, n * 3 - 6 * i, self, scale, 0.6 * radius, -1) --高速符卡，图像，横坐标，纵坐标，速度，角度，目标，控制释放，伤害，控制时间，符卡中心
 			end
 		end
+		self.protect=45
 	end
 	
 	self.SpellCardHp = max(0, self.SpellCardHp - K_SpellCost)

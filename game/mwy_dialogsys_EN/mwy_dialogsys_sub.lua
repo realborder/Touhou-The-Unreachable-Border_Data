@@ -40,20 +40,11 @@ end
 ---@param stage string 关卡对应的字符串索引值
 function dialogsys_sub.LoadImage(stage) --对应工程中的load部分
 	local PATH=PATH..stage.."\\"
-	if dialogsys_sub.data[stage].character then 
-		for k,v in pairs(dialogsys_sub.data[stage].character) do
-			local imgname=k.."_dialog_"
-			for _k,_v in pairs(v.emolist) do 
-				LoadImageFromFile(imgname.._k,PATH..imgname.._k..".png") 
-				Print('[mwy_dialogsys]加载'..PATH..imgname.._k..".png")
-			end
-		end
-	end
-	if dialogsys_sub.data[stage].dialog then
-		for k,v in pairs(dialogsys_sub.data[stage].dialog) do
-			for _,_v in pairs(v) do
-				CacheTTFString('balloon_font',_v[3])
-			end
+	for k,v in pairs(dialogsys_sub.data[stage].character) do
+		local imgname=k.."_dialog_"
+		for _k,_v in pairs(v.emolist) do 
+			LoadImageFromFile(imgname.._k,PATH..imgname.._k..".png") 
+			Print('[mwy_dialogsys]加载'..PATH..imgname.._k..".png")
 		end
 	end
 end
