@@ -68,6 +68,7 @@ function player_class:init()
 	self.NextSingleSpell=0 --符卡释放期间单次符卡攻击间隔
 	self.SpellTimer1=-1 --用于符卡开始后帧计时
 	self.KeyDownTimer1=0 --用于记录持续按压时长
+	self.bomb_end=false --上一张符卡结束标志
 	
 	self.maxPower=400 --灵力上限
 	self.PowerFlag=0 --随梦现指针变化的阶段标志，在（-5,5）范围内由-1至2变化
@@ -112,6 +113,7 @@ function player_class:frame()
 	--find target
 	if ((not IsValid(self.target)) or (not self.target.colli)) then player_class.findtarget(self) end
 	if not KeyIsDown'shoot' then self.target=nil end
+	if self.bomb_end and not KeyIsDown('spell') then self.bomb_end=false end
 	--
 	local dx=0
 	local dy=0
@@ -124,14 +126,14 @@ function player_class:frame()
 			if KeyIsDown'shoot' and self.nextshoot<=0 then self.class.shoot(self) end
 
 		----新的符卡设计
-			if self.SpellCardHp==0 and self.SpellTimer1>=0 then self.SpellTimer1=-1 self.KeyDownTimer1=0 self.SC_name='' end
+			if self.SpellCardHp==0 and self.SpellTimer1>=0 then self.SpellTimer1=-1 self.KeyDownTimer1=0 self.SC_name='' self.nextspell=90 self.bomb_end=true end
             if self.SpellCardHp>0 and self.SpellTimer1>90 then self.SpellCardHp=max(0,self.SpellCardHp-K_SpellDecay) end
 			if self.NextSingleSpell>0 then self.NextSingleSpell=self.NextSingleSpell-1 end
 			if self.SpellTimer1>0 then self.SpellTimer1=self.SpellTimer1+1 end
 			
 			if self.SpellTimer1==90 then self.class.newSpell(self) end
 			
-			if KeyIsDown'spell' and not lstg.var.block_spell then 
+			if KeyIsDown'spell' and not lstg.var.block_spell and not self.bomb_end then 
 			    if self.SpellTimer1>90 then self.KeyDownTimer1=self.KeyDownTimer1+1 end
 				if (lstg.var.bomb>0 and self.death>90) or (self.SpellCardHp==0 and self.nextspell<=0 and self.NextSingleSpell==0 and lstg.var.bomb>0) then
 			        item.PlayerSpell()
@@ -511,6 +513,9 @@ function player_class:SpellClear()
 	if self.SpellCardHp>0 then
 		lstg.var.bombchip=lstg.var.bombchip+self.SpellCardHp/K_MaxSpell*0.4
 		self.SpellCardHp=0
+		self.SpellTimer1=-1
+		self.KeyDownTimer1=0
+		self.SC_name=''
 	end
 end
 
