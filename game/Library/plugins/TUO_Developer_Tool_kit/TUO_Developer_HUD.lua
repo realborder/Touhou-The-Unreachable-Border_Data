@@ -1,4 +1,6 @@
 local SIDE_X1,SIDE_X2,SIDE_X3,SIDE_X4=-107,56,72,620
+---------------------------------
+---粗糙的补间函数
 local expl = function(vstart,vend,t)  return vstart+(vend-vstart)*sin(90*t) end
 
 TUO_Developer_HUD={
@@ -7,11 +9,12 @@ TUO_Developer_HUD={
     panel={}
 }
 local self=TUO_Developer_HUD
+self.self=TUO_Developer_Tool_kit
 --------------------------------------------------
 ---在HUD里新建面板
 ---@param title string 面板标题，显示在左边栏
 ---@param monitoring_value table or string or function 监视列表，可以用字符串监视一个变量，也可以直接监视一个表，也可以用函数来将待监视的值导入self.displey_value
----@param initfunc function 初始化时调用的函数
+---@param initfunc function 
 ---@param framefunc function
 ---@param renderfunc function
 ---@param force_refresh boolean 若设为true，面板就算不显示也会强制执行frame函数
@@ -22,6 +25,7 @@ function TUO_Developer_HUD.NewPanel(title,monitoring_value,initfunc,framefunc,re
         timer=0,
         alpha=0,
         y_offset=0,
+        y_offset_aim=0,
         value_pre={},
         value_change={},
         monitoring_value=monitoring_value,
@@ -34,21 +38,28 @@ end
 ---@param index number 位于第几个槽位
 ---@param panel table 记录面板信息的表
 function TUO_Developer_HUD.RenderPanelTitle(index,panel)
+    local t=panel.timer/10
     local TOP_OFFSET=16
-    local RIGHT_OFFSET=32
+    local RIGHT_OFFSET=16
     local HEIGHT=32
-    local SIZE=1.3
-    local GAP=16
-    local color=Color(self.timer/30*255,0,0,0)
-    local t='f3_word'
+    local SIZE=1.2
+    local GAP=8
+    local color=Color(self.timer/30*255,t*255,t*255,t*255)
+    local ttf=self.self.ttf
     SetImageState('white','',Color(0xFF101010))
     local x1=self.side_x+RIGHT_OFFSET+(SIDE_X1-SIDE_X2)-6
     local y_c=TOP_OFFSET+((2*index-1)*(HEIGHT+GAP)-GAP)/2
-    local y_h=expl(0,HEIGHT/2,panel.timer/10)
+    local y_h=expl(HEIGHT/10,HEIGHT/1.8,t)
     RenderRect('white',
         x1-4,x1,
         y_c-y_h,y_c+y_h)
-    RenderTTF2(t,panel.title,self.side_x+RIGHT_OFFSET+(SIDE_X1-SIDE_X2),self.side_x-RIGHT_OFFSET,
+    local x2=expl(x1,SIDE_X2,t)
+    local y_h=expl(0,HEIGHT/2,t)
+    SetImageState('white','',Color(0xFF202020))
+    RenderRect('white',
+        x1,x2,
+        y_c-y_h,y_c+y_h)
+    RenderTTF2(ttf,panel.title,self.side_x+RIGHT_OFFSET+(SIDE_X1-SIDE_X2),self.side_x-RIGHT_OFFSET,
         TOP_OFFSET+(index-1)*(HEIGHT+GAP),
         TOP_OFFSET+index*(HEIGHT+GAP)-GAP,SIZE,color,'left','vcenter')
     
@@ -74,7 +85,7 @@ function TUO_Developer_HUD.DisplayValue(panel,title,x_pos,value_table)
     local HEIGHT=16
     local SIZE=1
     local GAP=2
-    local ttf='f3_word'
+    local ttf=self.self.ttf
     local color=Color(panel.timer/10*255,0,0,0)
     RenderTTF2(ttf,title,l-5,r,t-HEIGHT*1.5,t,SIZE*1.2,color)
     t=t-HEIGHT*1.5-GAP
@@ -157,11 +168,12 @@ function TUO_Developer_HUD.frame()
     end
     if lstg.GetKeyState(KEY.PGUP) or lstg.GetKeyState(KEY.PGDN) then
         if self.scroll_force<=0 then self.scroll_force=1
-        else self.scroll_force=min(10,self.scroll_force+0.1) end
+        else self.scroll_force=min(50,self.scroll_force+0.5) end
     else self.scroll_force=0
     end
-    if lstg.GetKeyState(KEY.PGUP) then self.panel[self.cur].y_offset=self.panel[self.cur].y_offset+1+self.scroll_force end
-    if lstg.GetKeyState(KEY.PGDN) then self.panel[self.cur].y_offset=max(0,self.panel[self.cur].y_offset-1-self.scroll_force) end
+    if lstg.GetKeyState(KEY.PGUP) then self.panel[self.cur].y_offset_aim=max(0,self.panel[self.cur].y_offset_aim-5-self.scroll_force) end
+    if lstg.GetKeyState(KEY.PGDN) then self.panel[self.cur].y_offset_aim=self.panel[self.cur].y_offset_aim+5+self.scroll_force end
+    self.panel[self.cur].y_offset=self.panel[self.cur].y_offset*0.85+self.panel[self.cur].y_offset_aim*0.15
 
 end
 function TUO_Developer_HUD.render()
@@ -170,10 +182,14 @@ function TUO_Developer_HUD.render()
     local sis=SetImageState
     local rr=RenderRect
     -- local rttf=RenderTTF
-    sis('white','',Color(155*self.timer/30,255,255,255))
+    sis('white','',Color(195*self.timer/30,255,255,255))
     rr('white',SIDE_X1,640-SIDE_X1,0,480)
     sis('white','',Color(0xFFFFFFFF))
     rr('white',SIDE_X1,self.side_x,0,480)
+    for i=1,10 do
+        sis('white','',Color((1-i/10)*100*self.timer/30,0,0,0))
+        rr('white',self.side_x+i-1,self.side_x+i,0,480)
+    end
     for k,v in pairs(self.panel) do
         self.RenderPanelTitle(k,v)
         if v.display_value then
@@ -181,6 +197,5 @@ function TUO_Developer_HUD.render()
         end
         if v.renderfunc and type(v.renderfunc)=='function' then v.renderfunc(v) end
     end
-
 
 end
