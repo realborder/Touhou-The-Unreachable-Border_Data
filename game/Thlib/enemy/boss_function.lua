@@ -10,6 +10,7 @@ function boss:PopSpellResult(c) --boss行为结束逻辑，弹出提示文字、
     if c.is_combat then
         self.spell_get = false
         if (self.hp <= 0 and self.timeout == 0) or (c.t1 == c.t3 and self.timeout == 1) then
+            --boss掉落物
             if c.drop then item.DropItem(self.x,self.y,c.drop,true) end
             item.EndChipBonus(self,self.x,self.y)
             if self.sc_bonus and not c.fake then

@@ -225,7 +225,7 @@ function stage_init:render()
 	SetViewMode'ui'
     Render('UI_gameInit',320,240,0,0.5)
 	SetImageState('white','',Color(0xFFFFFFFF))
-	local extra=150
+	local extra=107
 	RenderRect('white',0-extra,(screen.width+2*extra)*self.load_process,0,3)
 end
 
@@ -434,7 +434,7 @@ function start_game()
 	end
 	-- SetSplash(false)
 	-- SetTitle(setting.mod)
-	SetTitle('东方梦无垠 ~ The Unreachabe Oneiroborder ver2')
+	SetTitle('东方梦无垠 ~ The Unreachabe Oneiroborder')
 
 	-- if not ChangeVideoMode(setting.resx,setting.resy,setting.windowed,setting.vsync) then
 	-- 	if lfs.attributes('.\\LuaSTGPlus.dev.exe')~=nil then
