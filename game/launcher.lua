@@ -4,54 +4,6 @@
 
 Include'THlib\\THlib.lua'
 
----stack trace back function. called when engine error
----@param msg string
----@param level number
----@return string
-function Traceback(msg, level)
-	local TRACE_MAX_LEVEL = 64
-	local ret = ''
-	if msg then
-		ret = msg .. '\n'
-	end
-	ret = ret .. 'stack traceback:'
-	while true do
-		local info = debug.getinfo(level + 1, "Slnf")
-		if not info then
-			break
-		end
-		local msgs = {}
-		local source = info.source or ''
-		if info.short_src == '[C]' then
-			source = '[C]'
-		else
-			source = string.format('[%s]', source)
-		end
-		table.insert(msgs, string.format('    %s', source, info.currentline, info.name or ""))
-		if info.currentline > 0 then
-			table.insert(msgs, string.format('%d:', info.currentline))
-		end
-		if info.namewhat and info.name then
-			table.insert(msgs, string.format(' in function \'%s\'', info.name))
-		else
-			if info.what == 'm' or info.linedefined == 0 then
-				table.insert(msgs, ' in main chunk')
-			elseif info.what == 'C' then
-				table.insert(msgs, string.format(' at %s', tostring(info.func)))
-			else
-				table.insert(msgs, string.format(' in function <%s:%d>', source, info.linedefined))
-			end
-		end
-		ret = ret .. '\n' .. table.concat(msgs, '')
-		level = level + 1
-		if level > TRACE_MAX_LEVEL then
-			ret = ret .. '\n...'
-			break
-		end
-	end
-	return ret
-end
-
 local GetLastKey=lstg.GetLastKey--_GetLastKey
 
 local _key_code_to_name=KeyCodeToName()--Linput
