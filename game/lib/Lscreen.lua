@@ -328,6 +328,23 @@ function ScreenToWorld(x,y)--该功能并不完善
 	return x-dx,y-dy
 end
 
+
+function ScreenToUI(x,y)
+	local s=screen
+	if s.width>s.height then
+		x,y=x/s.vScale,y/s.vScale
+		local scale=s.width/s.height
+		if abs(scale-s.resScale)>=0.1 then
+			local delta_scale=(s.resScale-scale)/2
+			local dx=s.height*delta_scale
+			x=x-dx
+		else
+		end
+	end
+	return x,y
+end
+
+
 ---设置渲染矩形（会被SetViewMode覆盖）
 ---@param l number @坐标系左边界
 ---@param r number @坐标系右边界

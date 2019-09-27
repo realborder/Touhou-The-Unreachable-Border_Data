@@ -1,5 +1,7 @@
 ------------------------------------------------
---开发工具
+---TUO_Developer_Tool_kit 
+---东方梦无垠开发者工具兼大型高危实验基地 
+---code by JanrilW
 --F3可以开关调试界面（第一次开启需要快速连按3下）
 --F6刷新输入设备
 --F9
@@ -13,10 +15,12 @@
 --重载指定关卡
 --
 --!注意，插件外的鼠标滚轮状态获取函数可能会失效，如有需要请把这里的移出去
+---------------------------------------------------
 TUO_Developer_Tool_kit = {}
 local self=TUO_Developer_Tool_kit
+local INCLUDE_PATH='Library\\plugins\\TUO_Developer_Tool_kit\\'
 --这个是界面
-Include("Library\\plugins\\TUO_Developer_Tool_kit\\TUO_Developer_HUD.lua")
+Include(INCLUDE_PATH.."TUO_Developer_HUD.lua")
 
 --独立按键检测
 local _KeyDown={}
@@ -88,7 +92,7 @@ local ReloadFiles = function (path)
 end
 
 --------------------------------------------
----独立按键检测函数
+---独立按键检测函数，这个每帧只能调用一次
 ---@return boolean 返回键值状态
 local CheckKeyState= function (k)
 	if not _KeyDown[k] then _KeyDown[k]=false end
@@ -102,111 +106,7 @@ local CheckKeyState= function (k)
 	end
 	return false
 end
---------------------------------------------
----添加面板，为了方便阅读相关内容全部放在这里
-function TUO_Developer_Tool_kit.AddPanels()
-	
-	---键盘输入监测（已完成）---------------------------------------------------------
-	
-	self.hud.NewPanel('Key State',nil,nil,
-	function (panel)
-		panel.KeyTrigger={}
-		for k,v in pairs(KeyState) do
-			panel.KeyTrigger[k]=KeyTrigger(k)
-		end
-	end,
-	function (panel)
-		TUO_Developer_HUD.DisplayValue(panel,'Table:KeyState',80,KeyState)
-		TUO_Developer_HUD.DisplayValue(panel,'Table:KeyStatePre',80,KeyStatePre)		
-		TUO_Developer_HUD.DisplayValue(panel,'Table:setting.keys',440,setting.keys)
-		TUO_Developer_HUD.DisplayValue(panel,'KeyTrigger',260,panel.KeyTrigger)
-	end)
 
-
-	---手柄输入监测（已完成）---------------------------------------------------------
-
-	self.hud.NewPanel('Joystick State',function()
-			local t={}
-			for i=1,32 do
-				table.insert(t,{name='JOY1_'..i,v=lstg.GetKeyState(KEY['JOY1_'..i])})
-			end
-			-- 在只插入一个手柄的情况下joy1和joy2是重复的
-			-- for i=1,32 do
-			-- 	t['JOY2_'..i]=lstg.GetKeyState(KEY['JOY1_'..i])
-			-- end
-			return t
-		end,
-		nil,function (panel)
-			--获取手柄的摇杆和扳机状态
-			panel.joystick_detailed_state={}
-			local t=panel.joystick_detailed_state
-			t.leftX,t.leftY,t.ringtX,t.ringtY=lstg.XInputManager.GetThumbState(1)
-			t.leftT,t.rightT=lstg.XInputManager.GetTriggerState(1)  
-			panel.JoyTrigger={}
-			for k,v in pairs(JoyState) do
-				panel.JoyTrigger[k]=KeyTrigger(k)
-			end
-		end,
-		function(panel)
-			TUO_Developer_HUD.DisplayValue(panel,'Table:JoyState',80,JoyState)
-			TUO_Developer_HUD.DisplayValue(panel,'Table:JoyStatePre',80,JoyStatePre)
-			TUO_Developer_HUD.DisplayValue(panel,'JoyStickState',260,panel.joystick_detailed_state)
-			TUO_Developer_HUD.DisplayValue(panel,'JoyStickTrigger',260,panel.JoyTrigger)
-			TUO_Developer_HUD.DisplayValue(panel,'Table:setting.joysticks',440,setting.joysticks)
-		end)
-
-	---鼠标输入监测----------------------------------------------------------------------
-
-	self.hud.NewPanel('Mouse State',function()
-			local t={}
-			local x,y=GetMousePosition()
-			local mouse={}
-			for i=0,7 do
-				table.insert(mouse,lstg.GetMouseState(i))
-			end
-			local wheel=lstg.GetMouseWheelDelta()
-			--!注意，插件外的鼠标滚轮状态获取函数可能会失效，如有需要请把这里的移出去
-			table.insert(t,{name='MouseX',v=x})
-			table.insert(t,{name='MouseY',v=y})
-			for i=1,8 do
-				table.insert(t,{name='Button'..(i),v=mouse[i]})
-			end
-			table.insert(t,{name='WheelDelta',v=wheel})
-			return t
-		end)
-	---游戏变量监测---------------------------------------------------------
-	--包括以下数值的显示和修改：
-	--------（游戏基本数值）分数，残机，奖残计数，符卡，符卡奖励计数，灵力，灵力上限，最大得点，擦弹，擦弹计数，每个单位的hp
-	--------（特殊系统数值）梦现指针值，连击数，玩家对每个单位的DPS
-	--------（关卡debug）设置和快速重启关卡并跳转到指定部分，设置和跳过boss符卡，（以多种模式）查看、输出和调整判定
-
-	self.hud.NewPanel('Basic Variable')
-	self.hud.NewPanel('Dream & Reality')
-	self.hud.NewPanel('Stage & Boss')
-
-
-	---资源列表显示和快速重载（可能需要修改loadImage等等的定义）---------------------------------------------------------
-
-	self.hud.NewPanel('Resource')
-	
-
-	---使用脚本列表显示和快速重载---------------------------------------------------------
-	---相关代码：Include定义
-
-	self.hud.NewPanel('Lua Scripts')
-
-
-	---背景脚本的3D参数显示，可直接在游戏内调整和写入3D背景参数---------------------------------------------------------
-
-	self.hud.NewPanel('3D Background')
-
-	---临时变量监测（支持在外部动态添加）---------------------------------------------------------
-
-	self.hud.NewPanel('Quick Monitor')
-
-
-
-end
 
 
 function TUO_Developer_Tool_kit.init()
@@ -215,12 +115,14 @@ function TUO_Developer_Tool_kit.init()
 	-- LoadTTF('f3_word','THlib\\UI\\ttf\\yrdzst.ttf',32)
 	LoadTTF('f3_word','THlib\\exani\\times.ttf',32)
 	self.visiable=false --标记界面是否可见
-	self.locked=true
+	self.locked=true --标记是否锁定
 	self.unlock_time_limit=0
-	self.unlock_count=1
+	self.UNLOCK_TIME_LIMIT=60
+	self.unlock_count=0
+	self.UNLOCK_COUNT=3
 	self.hud=TUO_Developer_HUD
 	self.hud.init()
-	self.AddPanels()
+	self:AddPanels()
 	Log('初始化完毕',4)
 end
 
@@ -229,7 +131,7 @@ function TUO_Developer_Tool_kit.frame()
 	if self.locked then 
 		if CheckKeyState(KEY.F3) then
 			if self.unlock_time_limit<=0 then 
-				self.unlock_time_limit=60
+				self.unlock_time_limit=	self.UNLOCK_TIME_LIMIT
 				self.unlock_count=1
 			else
 				self.unlock_count=self.unlock_count+1
@@ -239,7 +141,7 @@ function TUO_Developer_Tool_kit.frame()
 		if self.unlock_time_limit<=0 then
 			self.unlock_count=0
 		end
-		if self.unlock_count>=3 and self.unlock_time_limit>0 then 
+		if self.unlock_count>=self.UNLOCK_COUNT and self.unlock_time_limit>0 then 
 			self.locked=false 
 			self.visiable = not self.visiable
 			if self.visiable then Log('F3调试界面已开启') else Log('F3调试界面已关闭') end
@@ -273,6 +175,8 @@ function TUO_Developer_Tool_kit.frame()
 			self.visiable = not self.visiable
 			if self.visiable then Log('F3调试界面已开启') else Log('F3调试界面已关闭') end
 		end
+		--右键或者esc退出这个界面
+		if (lstg.GetMouseState(2) or lstg.GetKeyState(KEY.ESCAPE)) and self.visiable then self.visiable=false Log('F3调试界面已关闭') end
 		if CheckKeyState(KEY.TAB) then
 			local hud=self.hud
 			local num=#hud.panel
@@ -283,6 +187,8 @@ function TUO_Developer_Tool_kit.frame()
 				if hud.cur==num then hud.cur=1 else hud.cur=hud.cur+1 end
 			end
 		end
+		--鼠标滚轮的操作写HUD里了
+
 		if self.visiable then
 			self.hud.timer=min(30,self.hud.timer+1)
 		else 

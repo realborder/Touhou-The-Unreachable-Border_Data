@@ -22,6 +22,7 @@ function item:init(x,y,t,v,angle)
 	SetV(self,v,angle)
 	self.v=v
 	self._rot=-90
+	self.dirc=ran:Sign()
 	self.group=GROUP_ITEM
 	self.layer=LAYER_ITEM
 	self.bound=false
@@ -37,7 +38,7 @@ end
 function item:frame()
 	local player=self.target
 	if self.timer<24 then
-		self.rot=self.rot+45
+		self.rot=720*sin(90*self.timer/23)*self.dirc
 		self.vy=self.v*2*(1-self.timer/23)
 		self.hscale=(self.timer+25)/48
 		self.vscale=self.hscale
