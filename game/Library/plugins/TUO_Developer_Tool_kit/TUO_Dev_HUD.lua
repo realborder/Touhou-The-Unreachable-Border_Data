@@ -3,14 +3,17 @@ TUO_Developer_HUD={
     side_x=SIDE_X1,
     panel={}
 }
+----排版信息
+local TOP_OFFSET=16
+local RIGHT_OFFSET=16
+local HEIGHT=32
+local GAP=8    
+
 local self=TUO_Developer_HUD
 self.self=TUO_Developer_Tool_kit
 
 
 local SIDE_X1,SIDE_X2,SIDE_X3,SIDE_X4=-107,56,72,620
-local INCLUDE_PATH='Library\\plugins\\TUO_Developer_Tool_kit\\'
-Include(INCLUDE_PATH.."TUO_Developer_HUD_Panel.lua")
-Include(INCLUDE_PATH.."TUO_Developer_HUD_Widget.lua")
 ---------------------------------
 ---粗糙的补间函数
 local expl = function(vstart,vend,t)  return vstart+(vend-vstart)*sin(90*t) end
@@ -19,14 +22,13 @@ local expl = function(vstart,vend,t)  return vstart+(vend-vstart)*sin(90*t) end
 --------------------------------------------------
 ---在HUD里新建面板
 ---@param title string 面板标题，显示在左边栏
----@param monitoring_value any 监视列表，可以用字符串监视一个变量，也可以直接监视一个表，也可以用函数来将待监视的值导入self.displey_value
+---@param monitoring_value any 监视列表，可以传字符串索引（构成的表），也可以直接传值，也可以用函数来将待监视的值导入self.display_value
 ---@param initfunc function 
 ---@param framefunc function
 ---@param renderfunc function
 ---@param force_refresh boolean 若设为true，面板就算不显示也会强制执行frame函数
 function TUO_Developer_HUD.NewPanel(title,monitoring_value,initfunc,framefunc,renderfunc,force_refresh)
-    if initfunc and type(initfunc)=='function' then initfunc() end
-    table.insert(TUO_Developer_HUD.panel,{
+    local tmp_panel={
         title=title,
         timer=0,
         mouseDrop=false,
@@ -36,10 +38,13 @@ function TUO_Developer_HUD.NewPanel(title,monitoring_value,initfunc,framefunc,re
         y_offset_aim=0,
         value_pre={},
         value_change={},
-        monitoring_value=monitoring_value,
+        WidgetList={},
+        monitoring_value=nil,
         framefunc=framefunc,
         renderfunc=renderfunc,
-        force_refresh=force_refresh or false})
+        force_refresh=force_refresh or false}
+    if initfunc and type(initfunc)=='function' then initfunc(tmp_panel) end
+    table.insert(TUO_Developer_HUD.panel,tmp_panel)
 end
 --------------------------------------------------
 ---渲染面板的标题
@@ -48,11 +53,7 @@ end
 function TUO_Developer_HUD.RenderPanelTitle(index,panel)
     local t=panel.timer/10
     local tc=panel.clicktimer/10
-    local TOP_OFFSET=16
-    local RIGHT_OFFSET=16
-    local HEIGHT=32
     local SIZE=expl(1.09,1.2,t)
-    local GAP=8
     local color=Color(self.timer/30*255,t*255,t*255,t*255)
     local ttf=self.self.ttf
     --侧条
@@ -88,31 +89,6 @@ function TUO_Developer_HUD.RenderPanelTitle(index,panel)
     SetImageState('white','',Color(panel.timer/10*255,50,50,50))
     RenderRect('white',744,748,yt,yb)
 end
-
-function TUO_Developer_HUD.ResponseMouseAction(index,panel)
-   --抄上面的
-    local t=panel.timer/10
-    local TOP_OFFSET=16
-    local RIGHT_OFFSET=16
-    local HEIGHT=32
-    local SIZE=expl(1.09,1.2,t)
-    local GAP=8
-    local x1=self.side_x+RIGHT_OFFSET+(SIDE_X1-SIDE_X2)-6
-    local y_c=TOP_OFFSET+((2*index-1)*(HEIGHT+GAP)-GAP)/2
-    local y_h=HEIGHT/1.8
-    local ux,uy=ScreenToUI(lstg.GetMousePosition())
-    if ux>x1 and ux<SIDE_X2 and abs(uy-y_c)<y_h then panel.mouseDrop=true else panel.mouseDrop=false end
-    --下面三行代码的作用……你去掉试试看就知道为啥了
-    local force=0.75
-    for i,p in pairs(self.panel) do
-        if p.clicktimer>0 then force=force+0.75 end end
-    if panel.mouseDrop then
-        panel.clicktimer=min(10,panel.clicktimer+force)*self.timer/30
-    else 
-        panel.clicktimer=max(0,panel.clicktimer-0.75)*self.timer/30
-    end
-end
-
 
 --------------------------------------------------
 ---直接在某个面板打印一列值
@@ -183,34 +159,7 @@ function TUO_Developer_HUD.DisplayValue(panel,title,x_pos,value_table)
     self.__DH_last_top=t 
     self.__DH_last_x_pos=x_pos
 end
---------------------------------------------------
----用文本索引来返回其对应的值（未通过测试）
----现在已经能接受类如 'lstg.var'这样的表中表的索引输入
----@param str string 
----@return any
-IndexValueByString=function(str)
-	local tmp
-	local tmp_k={}
-	local i=1
-	local pos=string.find(str,".",1,true)
-	local pospre
-	if not pos then return _G[str]
-	else table.insert(tmp_k,string.sub(str,1,pos-1)) end
-	while true do
-		pospre=pos+1
-		pos=string.find(str,".",pos+1,true)
-		if not pos then
-			table.insert(tmp_k,string.sub(str,pospre,114514))
-			break
-		else
-		table.insert(tmp_k,string.sub(str,pospre,pos-1)) end
-    end
-	for k,v in pairs(tmp_k) do
-        if k==1 then tmp=_G[v]
-        else tmp=tmp[v] end
-	end
-    return tmp
-end
+
 
 local DeserializeTable
 DeserializeTable=function (panel,t,output,level)
@@ -246,6 +195,52 @@ DeserializeTable=function (panel,t,output,level)
     end
 end
 
+-------------------------
+---每个面板对鼠标的响应
+function TUO_Developer_HUD.PanelMouseAction(index,panel)
+    local t=panel.timer/10
+    local SIZE=expl(1.09,1.2,t)
+    local x1=self.side_x+RIGHT_OFFSET+(SIDE_X1-SIDE_X2)-6
+    local y_c=TOP_OFFSET+((2*index-1)*(HEIGHT+GAP)-GAP)/2
+    local y_h=HEIGHT/1.8
+    local ux,uy=ScreenToUI(lstg.GetMousePosition())
+    if ux>x1 and ux<SIDE_X2 and abs(uy-y_c)<y_h then panel.mouseDrop=true else panel.mouseDrop=false end
+    --下面三行代码的作用……你去掉试试看就知道为啥了
+    local force=0.75
+    for i,p in pairs(self.panel) do
+        if p.clicktimer>0 then force=force+0.75 end end
+    if panel.mouseDrop then
+        panel.clicktimer=min(10,panel.clicktimer+force)*self.timer/30
+    else 
+        panel.clicktimer=max(0,panel.clicktimer-0.75)*self.timer/30
+    end
+end
+--------------------------
+---面板帧函数
+function TUO_Developer_HUD.DoPanelFrame(index,panel)
+    -----丝滑部分
+    if index==self.cur then
+        panel.timer=min(10,panel.timer+1)*self.timer/30
+    else 
+        panel.timer=max(0,panel.timer-1)*self.timer/30
+    end
+    panel.left=expl(SIDE_X2,SIDE_X3,panel.timer/10)
+    panel.alpha=255*panel.timer/10
+    -------监测鼠标点击
+    self.PanelMouseAction(index,panel)
+    --不显示的时候是不会执行frame函数的
+    if (panel.framefunc and type(panel.framefunc)=='function') and (panel.timer>0 or panel.force_refresh) then panel.framefunc(panel) end
+
+    --重置控件排版用的变量
+    panel.__DH_last_top=0
+    panel.__DH_last_x_pos=0
+    ----控件帧函数
+    ----观测变量部分已经移动至widget
+    for _,widget in pairs(panel.WidgetList) do
+        if widget.framefunc and type(widget.framefunc)=='function' then widget.framefunc(widget) end
+    end
+    
+end
 
 function TUO_Developer_HUD.init()
     self.cur=1
@@ -256,47 +251,7 @@ function TUO_Developer_HUD.frame()
     self.side_x=expl(SIDE_X1,SIDE_X2,self.timer/30)
 
     for k,v in pairs(self.panel) do
-        if k==self.cur then
-            v.timer=min(10,v.timer+1)*self.timer/30
-        else 
-            v.timer=max(0,v.timer-1)*self.timer/30
-        end
-        v.left=expl(SIDE_X2,SIDE_X3,v.timer/10)
-        v.alpha=255*v.timer/10
-        --上面是丝滑用的代码
-        
-        --监测鼠标点击的代码
-        self.ResponseMouseAction(k,v)
-
-        if (v.framefunc and type(v.framefunc)=='function') and (v.timer>0 or v.force_refresh) then v.framefunc(v) end
-
-        
-        if v.monitoring_value then
-            if type(v.monitoring_value)=='function' then v.display_value=v.monitoring_value() 
-            elseif type(v.monitoring_value)=='string' then  
-                v.display_value={}
-                local v_tmp=_G[v.monitoring_value]
-                table.insert(v.display_value,{name=v.monitoring_value,v=v_tmp})
-                if type(v_tmp)=='table' then DeserializeTable(v,v_tmp) end
-            elseif type(v.monitoring_value)=='table' then 
-                --支持显示表中表
-                v.display_value={}
-                --存的是索引值，先索引再拆
-                if v.monitoring_value.use_G then
-                    for _k,_v in pairs(v.monitoring_value) do
-                        if type(_v)=='string' then 
-                            local v_tmp=IndexValueByString(_v)
-                            table.insert(v.display_value,{name=_v,v=v_tmp})
-                            if type(v_tmp)=='table' then DeserializeTable(v,v_tmp) end
-                        end
-                    end
-                else --存的不是索引值， 直接拆
-                    table.insert(v.display_value,{name=tostring(v.monitoring_value),v='table'})
-                    DeserializeTable(v,v.monitoring_value)
-                end
-            else v.display_value=nil
-            end
-        end
+        self.DoPanelFrame(k,v)
     end
     --鼠标滚轮滚动调整tab
     local mx,my=ScreenToUI(lstg.GetMousePosition())
@@ -337,15 +292,18 @@ function TUO_Developer_HUD.render()
     sis('white','',Color(195*self.timer/30,255,255,255))
     rr('white',SIDE_X1,640-SIDE_X1,0,480)
     --面板渲染
-    for k,v in pairs(self.panel) do
-        if v.display_value then
-            if v.renderfunc then
-                self.DisplayValue(v)
-            else
-                self.DisplayValue(v,nil,SIDE_X3)
-            end
+    for _,panel in pairs(self.panel) do
+        for _,widget in pairs(panel.WidgetList) do
+            if widget.renderfunc and type(widget.renderfunc)=='function' then widget.renderfunc(widget) end
+            -- if v.display_value then
+            --     if v.renderfunc then
+            --         self.DisplayValue(v)
+            --     else
+            --         self.DisplayValue(v,nil,SIDE_X3)
+            --     end
+            -- end
         end
-        if v.renderfunc and type(v.renderfunc)=='function' then v.renderfunc(v) end
+        if panel.renderfunc and type(panel.renderfunc)=='function' then panel.renderfunc(panel) end
     end
     --侧边栏
     sis('white','',Color(0xFFFFFFFF))
@@ -357,4 +315,13 @@ function TUO_Developer_HUD.render()
     for k,v in pairs(self.panel) do
         self.RenderPanelTitle(k,v)
     end
+end
+
+
+--重载
+local OriginalFocusLoseFunc=FocusLoseFunc
+function FocusLoseFunc()
+    OriginalFocusLoseFunc()
+
+
 end

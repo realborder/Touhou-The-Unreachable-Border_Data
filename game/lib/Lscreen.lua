@@ -329,7 +329,7 @@ function ScreenToWorld(x,y)--该功能并不完善
 end
 
 
-function ScreenToUI(x,y)
+function ScreenToUI(x,y)--该功能并不完善
 	local s=screen
 	if s.width>s.height then
 		x,y=x/s.vScale,y/s.vScale

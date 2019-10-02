@@ -122,11 +122,8 @@ KeyInputTemp={
     wordlimit2=0x5A
 
 }
-    
-local Original_GetInput=GetInput
-function GetInput()
-    Original_GetInput()
-    --鼠标输入不参与录像
+function GetInputExtra()
+        --鼠标输入不参与录像
     --鼠标操作自机之后看情况加入
 
     -- 刷新MouseStatePre
@@ -150,12 +147,21 @@ function GetInput()
     --更新输入缓冲
     KeyInputTemp:RefreshAll()
 end
+
+local Original_GetInput=GetInput
+function GetInput()
+    Original_GetInput()
+    GetInputExtra()
+end
 function MouseIsDown(i)
     return MouseState['MouseButton_'..i]
 end MousePress=MouseIsDown
 function MouseIsPressed(i)
     return MouseState['MouseButton_'..i] and (not MouseStatePre['MouseButton_'..i])
 end MouseTrigger=MouseIsPressed
+function MouseIsReleased(i)
+    return MouseStatePre['MouseButton_'..i] and (not MouseState['MouseButton_'..i])
+end 
 
 function KeyInputTemp:New() 
     local tmp=self.templist

@@ -146,7 +146,7 @@ function FrameFunc()
 	ext.pause_menu:frame()
 
 	if TUO_Developer_Tool_kit then 
-		TUO_Developer_Tool_kit.frame()
+		TUO_Developer_Tool_kit:frame()
 	end
 
 	--退出游戏逻辑
@@ -181,7 +181,7 @@ function AfterRender()
 	--暂停菜单渲染
 	ext.pause_menu:render()
 	if TUO_Developer_Tool_kit then 
-		TUO_Developer_Tool_kit.render()
+		TUO_Developer_Tool_kit:render()
 	end
 end
 

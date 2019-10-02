@@ -17,10 +17,22 @@
 --!注意，插件外的鼠标滚轮状态获取函数可能会失效，如有需要请把这里的移出去
 ---------------------------------------------------
 TUO_Developer_Tool_kit = {}
-local self=TUO_Developer_Tool_kit
-local INCLUDE_PATH='Library\\plugins\\TUO_Developer_Tool_kit\\'
---这个是界面
-Include(INCLUDE_PATH.."TUO_Developer_HUD.lua")
+-- local self=TUO_Developer_Tool_kit
+--载入其他部件
+local PATH_HEAD='Library\\plugins\\TUO_Developer_Tool_kit\\'
+local IncludePlus=function(path)
+    if lfs.attributes(path) == nil then
+        path=PATH_HEAD..path
+    end 
+    Include(path)
+end
+
+IncludePlus"TUO_Dev_HUD.lua"
+IncludePlus"TUO_Dev_Panel_Define.lua"
+IncludePlus"TUO_Dev_Widget_Template.lua"
+
+
+
 
 --独立按键检测
 local _KeyDown={}
@@ -41,11 +53,10 @@ end
 ---@param path string 脚本的路径
 local ReloadSingleFile=function(path)
 	if not(lfs.attributes(path) == nil) then 
-		local err
-		local r,msg=xpcall(lstg.DoFile,function() err=debug.traceback() end,path)
+		local r,err=xpcall(lstg.DoFile,debug.traceback,path)
 		if r then 
 			Log('成功重载脚本：'..path,2)
-			flag=true
+			-- flag=true
 		else
 			Log('重载脚本：'..path..' 的时候发生错误\n\t行数:'..msg..'\n\t错误详细信息:\n\t\t'..err,1) 
 		end
@@ -53,7 +64,7 @@ local ReloadSingleFile=function(path)
 		Log('脚本 '..path..' 不存在',1) 
 	end
 end
-
+TUO_Developer_Tool_kit.ReloadSingleFile=ReloadSingleFile
 
 ---------------------------------------------
 ---重载指定（多个）脚本
@@ -90,6 +101,7 @@ local ReloadFiles = function (path)
 		end
 	end
 end
+TUO_Developer_Tool_kit.ReloadFiles=ReloadFiles
 
 --------------------------------------------
 ---独立按键检测函数，这个每帧只能调用一次
@@ -106,10 +118,38 @@ local CheckKeyState= function (k)
 	end
 	return false
 end
+TUO_Developer_Tool_kit.CheckKeyState=CheckKeyState
 
+--------------------------------------------------
+---用文本索引来返回其对应的值（未通过测试）
+---现在已经能接受类如 'lstg.var'这样的表中表的索引输入
+---@param str string 
+---@return any
+function IndexValueByString(str)
+	local tmp
+	local tmp_k={}
+	local i=1
+	local pos=string.find(str,".",1,true)
+	local pospre
+	if not pos then return _G[str]
+	else table.insert(tmp_k,string.sub(str,1,pos-1)) end
+	while true do
+		pospre=pos+1
+		pos=string.find(str,".",pos+1,true)
+		if not pos then
+			table.insert(tmp_k,string.sub(str,pospre,114514))
+			break
+		else
+		table.insert(tmp_k,string.sub(str,pospre,pos-1)) end
+    end
+	for k,v in pairs(tmp_k) do
+        if k==1 then tmp=_G[v]
+        else tmp=tmp[v] end
+	end
+    return tmp
+end
 
-
-function TUO_Developer_Tool_kit.init()
+function TUO_Developer_Tool_kit:init()
 	--
 	self.ttf='f3_word'
 	-- LoadTTF('f3_word','THlib\\UI\\ttf\\yrdzst.ttf',32)
@@ -121,12 +161,16 @@ function TUO_Developer_Tool_kit.init()
 	self.unlock_count=0
 	self.UNLOCK_COUNT=3
 	self.hud=TUO_Developer_HUD
-	self.hud.init()
+	self.hud:init()
 	self:AddPanels()
 	Log('初始化完毕',4)
 end
 
-function TUO_Developer_Tool_kit.frame()
+function TUO_Developer_Tool_kit:frame()
+	--!!!设备输入补充，如果输入发生异常请删除这个
+	if not ext.pause_menu:IsKilled() then
+		GetInputExtra()
+	end
 	--解锁需要在一秒内连按三下F3
 	if self.locked then 
 		if CheckKeyState(KEY.F3) then
@@ -171,12 +215,16 @@ function TUO_Developer_Tool_kit.frame()
 				end
 			end
 		end
+		if CheckKeyState(KEY.F8) then
+			self:RefreshPanels()
+		end
 		if CheckKeyState(KEY.F3) then
 			self.visiable = not self.visiable
 			if self.visiable then Log('F3调试界面已开启') else Log('F3调试界面已关闭') end
 		end
 		--右键或者esc退出这个界面
-		if (lstg.GetMouseState(2) or lstg.GetKeyState(KEY.ESCAPE)) and self.visiable then self.visiable=false Log('F3调试界面已关闭') end
+		-- 不行这个太沙雕了
+		-- if (lstg.GetMouseState(2) or lstg.GetKeyState(KEY.ESCAPE)) and self.visiable then self.visiable=false Log('F3调试界面已关闭') end
 		if CheckKeyState(KEY.TAB) then
 			local hud=self.hud
 			local num=#hud.panel
@@ -194,14 +242,14 @@ function TUO_Developer_Tool_kit.frame()
 		else 
 			self.hud.timer=max(0,self.hud.timer-1)
 		end
-		self.hud.frame()
+		self.hud:frame()
 	end
 end
-function TUO_Developer_Tool_kit.render()
---这里用exanieditor的字体了
+function TUO_Developer_Tool_kit:render()
+	--这里用exanieditor的字体了
 	if self.hud.timer>0 then
-		self.hud.render()
+		self.hud:render()
 	end
 end
 
-TUO_Developer_Tool_kit.init()
+TUO_Developer_Tool_kit:init()
