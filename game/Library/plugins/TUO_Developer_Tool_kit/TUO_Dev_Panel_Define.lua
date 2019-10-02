@@ -91,7 +91,7 @@ function TUO_Developer_Tool_kit:AddPanels()
 					})
 				end
 				TUO_Developer_HUD:NewWidget(panel,440,'value_displayer',{monitoring_value='lstg.var.chip'})
-				TUO_Developer_HUD:NewWidget(panel,440,'value_slider',{monitoring_value='lstg.var.chip',max_value=300})
+				TUO_Developer_HUD:NewWidget(panel,440,'value_gauge',{monitoring_value='lstg.var.chip',max_value=300})
 			--显示符卡和碎片
 				TUO_Developer_HUD:NewWidget(panel,440,'value_displayer',{monitoring_value='lstg.var.bomb'})
 				TUO_Developer_HUD:NewWidget(panel,440,'value_gauge',{monitoring_value='lstg.var.bomb',max_value=3})
@@ -110,7 +110,7 @@ function TUO_Developer_Tool_kit:AddPanels()
 					})
 				end
 				TUO_Developer_HUD:NewWidget(panel,440,'value_displayer',{monitoring_value='lstg.var.bombchip'})
-				TUO_Developer_HUD:NewWidget(panel,440,'value_slider',{monitoring_value='lstg.var.bombchip',max_value=300})
+				TUO_Developer_HUD:NewWidget(panel,440,'value_gauge',{monitoring_value='lstg.var.bombchip',max_value=300})
 			--抛瓦
 				TUO_Developer_HUD:NewWidget(panel,440,'value_displayer',{monitoring_value='lstg.var.power'})
 				TUO_Developer_HUD:NewWidget(panel,440,'value_gauge',{monitoring_value='lstg.var.power',max_value=600})
@@ -136,9 +136,9 @@ function TUO_Developer_Tool_kit:AddPanels()
 
 			--梦现指针系统
 				TUO_Developer_HUD:NewWidget(panel,440,'value_displayer',{title='Dream & Reality',monitoring_value='lstg.var.dr',})
-				TUO_Developer_HUD:NewWidget(panel,440,'value_slider',{monitoring_value='lstg.var.dr',min_value=-5,max_value=5})
+				TUO_Developer_HUD:NewWidget(panel,440,'value_gauge',{monitoring_value='lstg.var.dr',min_value=-5,max_value=5})
 				TUO_Developer_HUD:NewWidget(panel,440,'value_displayer',{monitoring_value='lstg.var.cp',})
-				TUO_Developer_HUD:NewWidget(panel,440,'value_slider',{monitoring_value='lstg.var.cp',max_value=5})
+				TUO_Developer_HUD:NewWidget(panel,440,'value_gauge',{monitoring_value='lstg.var.cp',max_value=5})
 			--其他信息
 				TUO_Developer_HUD:NewWidget(panel,440,'value_displayer',{title='Basic STG Info',monitoring_value='lstg.var.player_name',})
 				for i,v in pairs(var) do
@@ -234,52 +234,21 @@ function TUO_Developer_Tool_kit:AddPanels()
 	self.hud.NewPanel('Misc Option',nil,function(panel)
 		TUO_Developer_HUD:NewWidget(panel,'slot1','text_displayer',{
 			title='Misc',
-			text='Lock the tool again.'
+			text='Reload every panel.'
 		})
 		TUO_Developer_HUD:NewWidget(panel,'slot1','button',{
-			text='Lock it',
-			_event_mousclick=function(widget)
-				TUO_Developer_Tool_kit.visiable=false 
-				TUO_Developer_Tool_kit.locked=true
-				TUO_Developer_Tool_kit.unlock_time_limit=0
-				TUO_Developer_Tool_kit.unlock_count=0
-			end
-		})
-		TUO_Developer_HUD:NewWidget(panel,'slot1','text_displayer',{
-			text='Reload overall arrangement.'
-		})
-		TUO_Developer_HUD:NewWidget(panel,'slot1','button',{
-			text='Reload'
+			text='Do!'
 		})
 		TUO_Developer_HUD:NewWidget(panel,'slot1','text_displayer',{
 			text='Reload everything of this tool.'
 		})
 		TUO_Developer_HUD:NewWidget(panel,'slot1','button',{
-			text='Reload All'
+			text='I\'m sure, Do it!'
 		})
-		__well_you_can_never_find_it=233333
-		TUO_Developer_HUD:NewWidget(panel,'slot1','value_displayer',{
-			title='Hello LuaSTG!',
-			monitoring_value='__well_you_can_never_find_it'
-		})
-		TUO_Developer_HUD:NewWidget(panel,'slot1','value_gauge',{
-			monitoring_value='__well_you_can_never_find_it',
-			max_value=233333*2
-		})
-		TUO_Developer_HUD:NewWidget(panel,'slot1','value_slider',{
-			monitoring_value='__well_you_can_never_find_it',
-			max_value=233333*2
-		})
-		TUO_Developer_HUD:NewWidget(panel,'slot1','button',{
+		TUO_Developer_HUD:NewWidget(panel,440,'button',{
 			text='Hello LuaSTG!',
-			_event_mouseclick=function()  end}
-		)
-		TUO_Developer_HUD:NewWidget(panel,'slot1','text_displayer',{
-			text='Hello LuaSTG'
-		})
-		TUO_Developer_HUD:NewWidget(panel,'slot1','list_box',{
-			monitoring_value='lstg',
-		})
+			_event_mouseclick=function()  end})
+		
 	end)
 end
 

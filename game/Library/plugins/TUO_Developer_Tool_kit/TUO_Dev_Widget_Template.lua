@@ -87,16 +87,20 @@ end
 
 ---@type TemplateWidget table
 TUO_Developer_HUD.TemplateWidget={
-    -- 所有控件通用参数：
-        ---title string 标题，这会让这个控件跟上面的控件隔开相当的距离并含有一个标题
+    ---所有控件通用参数：
+        ---title string
     ['_GENERAL']={
         initfunc=function(self)
             --鼠标是否停留
             self._mouse_stay=false
             --点燃计时器，鼠标停留在控件上就会使其处于点燃状态
             self._ignite_timer=0
+            --记录控件是否是焦点
+            self._focus=false
             self._pressed=false
             self._pressed_timer=0
+            self._event_getfocus=function(self) end
+            self._event_lostfocus=function(self) end
             ---标题，false和nil为不显示标题
             ---如果从外部输入标题那么就没事了
             self.title=nil
@@ -132,7 +136,9 @@ TUO_Developer_HUD.TemplateWidget={
                     --如果panel上其他控件没有焦点那么焦点会到自己身上
                     -- if type(self.panel.focusedWidget)==nil then 
                         -- self.panel.focusedWidget=self._index
+                        -- self._focus=true
                         self._pressed=true
+                        if self._event_getfocus then self._event_getfocus(self) end
                         if self._event_mousepress then self._event_mousepress(self) end
                     -- 如果焦点正好在自己身上，嗯……怎么可能啊
                     -- elseif self.panel.focusedWidget==self._index then
@@ -140,10 +146,12 @@ TUO_Developer_HUD.TemplateWidget={
                     -- end
                 -- 鼠标停留的时候鼠标被抬起，同时自身已经被按下
                 elseif self._mouse_stay and self._pressed and MouseIsReleased(0) then
+                    -- self._focus=false
                     self._pressed=false
                     -- self.panel.focusedWidget=nil
                     if self._event_mouseclick then self._event_mouseclick(self) end
                 elseif (not self._mouse_stay) and self._pressed then
+                    -- self._focus=false
                     self._pressed=false
                     -- self.panel.focusedWidget=nil
                 end
@@ -192,13 +200,12 @@ TUO_Developer_HUD.TemplateWidget={
             panel.__DH_last_x_pos=x_pos
         end
     },
-    -- 变量监测控件，
-        -- 主要参数为：
+    ---变量监测控件，主要参数为：
         ---monitoring_value 可以是string table funciton 所有可能的用法：
-            ---monitoring_value=funciton(self) local t={} <一些操作> return t end
-            ---monitoring_value='lstg.var'
-            ---monitoring_value=lstg
-            ---monitoring_value={'lstg.var','lstg.tmpvar'}
+        ---monitoring_value=funciton(self) local t={} <一些操作> return t end
+        ---monitoring_value='lstg.var'
+        ---monitoring_value=lstg
+        ---monitoring_value={'lstg.var','lstg.tmpvar'}
 
     ['value_displayer']={
         initfunc=function(self)
@@ -283,11 +290,7 @@ TUO_Developer_HUD.TemplateWidget={
             panel.__DH_last_x_pos=x_pos
         end
     },
-    -- 条状变量监测控件
-        -- 主要参数为：
-        -- monitoring_value string 必须可以索引至number
-        -- max_value number
-        -- min_value number
+    ---条状变量监测控件
     ['value_gauge']={
         initfunc=function(self)
             self.l=160
@@ -358,23 +361,20 @@ TUO_Developer_HUD.TemplateWidget={
             panel.__DH_last_x_pos=x_pos        
         end
     },
-    -- 滑块条，可以监测并改变某个变量 必须是number
-        -- 主要参数为：
-        -- monitoring_value string 必须可以索引至number
-        -- max_value number
-        -- min_value number
+    ---滑块条，可以监测并改变某个变量
     ['value_slider']={
         initfunc=function(self)
             self.l=160
-            self.w=4
+            self.w=3
             self.pos=0
             self.pos_aim=0
             self.monitoring_value=nil
-            self.min_value=0
-            self.max_value=100
+            self.max_value=nil
             self.deviated=false
             self.value_pre=0
             self.changetimer=0
+            self.color=Color(0x0000000)
+            self.color_b=Color(0x0000000)
         end,
         framefunc=function(self)
             local m
@@ -388,7 +388,7 @@ TUO_Developer_HUD.TemplateWidget={
                 self.pos=(sin(self.timer)*0.5+0.5)*self.l
             else
                 if self.value_pre~=m then self.changetimer=1 else self.changetimer=max(0,self.changetimer-0.02) end
-                self.pos_aim=max(0,min(self.max_value-self.min_value,m-self.min_value))/(self.max_value-self.min_value)*self.l
+                self.pos_aim=max(0,min(self.max_value,m)/self.max_value*self.l)
                 self.pos=self.pos+(self.pos_aim-self.pos)*0.2
                 self.value_pre=m
             end
@@ -400,17 +400,16 @@ TUO_Developer_HUD.TemplateWidget={
             local BORDER_WIDTH=2
             local TOP_OFFSET=16
             local HEIGHT=self.w+BORDER_WIDTH*2
-            local GAP=4
+            local GAP=3
             local x_pos=self._x_pos
             
 
             ---lrbt初始值
             local l=expl(x_pos+36,x_pos,panel.timer/10)
-            local r=l+self.l*panel.timer/10+BORDER_WIDTH*2
-            local m=l+self.pos+BORDER_WIDTH
+            local r=l+self.l*panel.timer/10
+            local m=l+self.pos
             local t=480-TOP_OFFSET+panel.y_offset 
-            ---slot2锁定位置不滚动
-            if self._position_lock then t=480-TOP_OFFSET end
+
             ---沿用上一个控件的y
             if panel.__DH_last_top~=0 and panel.__DH_last_x_pos==x_pos then
                 t=panel.__DH_last_top-GAP 
@@ -426,33 +425,18 @@ TUO_Developer_HUD.TemplateWidget={
                 RenderRect('white',l+BORDER_WIDTH,r-BORDER_WIDTH,b+BORDER_WIDTH,t-BORDER_WIDTH)
             end
             SetImageState('white','',Color(255*panel.timer/10,20+210*self.changetimer,20,20))
-            RenderRect('white',l+BORDER_WIDTH,m,yc-h,yc+h)
-            if self._mouse_stay and (not self._pressed) then 
-                SetImageState('white','',Color(255*panel.timer/10,50+205*self.changetimer,50,50))
-                h=h*3
-            elseif self._pressed then
-                SetImageState('white','',Color(255*panel.timer/10,150+105*self.changetimer,150,150))
-                local mx=MouseState.x_in_UI
-                local k=(mx-(l+BORDER_WIDTH))/(r-l-2*BORDER_WIDTH)
-                local v=(self.max_value-self.min_value)*k+self.min_value
-                v=min(self.max_value,max(self.min_value,v))
-                IndexValueByString(self.monitoring_value,v)
-                h=h*2.5
-            end
-            RenderRect('white',m-1,m+1,yc-h,yc+h)
-            self.hitbox={l=l,r=r,b=b,t=t}
+            RenderRect('white',l,m,yc-h,yc+h)
             t=t-HEIGHT
+
             panel.__DH_last_top=t 
             panel.__DH_last_x_pos=x_pos        
         end,
-        _event_change=function(self,value)
+        event_change=function(self,value)
         end
     },
-    -- 按钮
-        -- 主要参数为：
-        --  width number
-        --  height number
-        -- x_pos2 number 如果指定可以同行
+    ---按钮不多说
+    ---可以指定width和height
+    ---指定x_pos2可以同行
     ['button']={
         initfunc=function(self)
             self.text='Button'
@@ -520,9 +504,8 @@ TUO_Developer_HUD.TemplateWidget={
 
         end,
     },
-    -- 文本框，只能显示固定的文本
-        -- 主要参数为：
-        --  text string 要显示的文本
+    ----文本框，只能显示固定的文本
+    ----参数1：text 要显示的文本
     ['text_displayer']={
         initfunc=function(self)
             self.text='text_displayer'
@@ -554,7 +537,7 @@ TUO_Developer_HUD.TemplateWidget={
             end
             
             local ttf=self.ttf
-            local color=Color(255*panel.timer/10,self.text_rgb[1],self.text_rgb[2],self.text_rgb[3])
+            local color=Color(255*panel.timer,self.text_rgb[1],self.text_rgb[2],self.text_rgb[3])
             b=t-HEIGHT
             RenderTTF2(ttf,self.text,l,r,b,t,SIZE,color,'left','top')
             t=t-HEIGHT-GAP
@@ -563,13 +546,9 @@ TUO_Developer_HUD.TemplateWidget={
             panel.__DH_last_x_pos=x_pos
         end
     },
-    -- 列表框，监视或存放一列值，可以对其中的内容进行删改
-        ---魔改自 value_displayer
-        -- 主要参数为：
-        -- monitoring_value 与value_displayer的逻辑一样
-        -- keep_refresh boolean 是否持续根据被监测变量刷新列表
-        -- width number
-        -- refreshfunc function 如果没有 monitoring_value 则会尝试调用这个函数
+    ---列表框，监视或存放一列值，可以对其中的内容进行删改
+    ---魔改自value_displayer
+    ---display_value必须是两种格式：由字符串或者类如{name='',v=''}组成的表
     ['list_box']={
         initfunc=function(self)
             self.keep_refresh=true
@@ -710,10 +689,14 @@ TUO_Developer_HUD.TemplateWidget={
             self.display_value={'* List is empty'}
         end,
     },
-    -- 输入框
-        -- 主要参数为：
-        -- text string 输入框的内容
-        -- _event_textchange function 文本内容发生变化后调用的函数
+    ['texture_displayer']={
+        initfunc=function(self)
+        end,
+        framefunc=function(self)
+        end,
+        renderfunc=function(self)
+        end
+    },
     ['inputer']={
         initfunc=function(self)
         end,
@@ -725,14 +708,6 @@ TUO_Developer_HUD.TemplateWidget={
         end
     },
     ['switch']={},
-    ['texture_displayer']={
-        initfunc=function(self)
-        end,
-        framefunc=function(self)
-        end,
-        renderfunc=function(self)
-        end
-    },
     ['check_boxes']={},
     ['hyperlinks']={}
 
