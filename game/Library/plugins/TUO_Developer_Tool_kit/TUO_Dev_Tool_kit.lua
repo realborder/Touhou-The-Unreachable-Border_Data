@@ -124,8 +124,9 @@ TUO_Developer_Tool_kit.CheckKeyState=CheckKeyState
 ---用文本索引来返回其对应的值（未通过测试）
 ---现在已经能接受类如 'lstg.var'这样的表中表的索引输入
 ---@param str string 
+---@param value any 如果给出这个值那么函数会转而赋值而不是返回值
 ---@return any
-function IndexValueByString(str)
+function IndexValueByString(str,value)
 	local tmp
 	local tmp_k={}
 	local i=1
@@ -142,12 +143,25 @@ function IndexValueByString(str)
 		else
 		table.insert(tmp_k,string.sub(str,pospre,pos-1)) end
     end
-	for k,v in pairs(tmp_k) do
-        if k==1 then tmp=_G[v]
-        else tmp=tmp[v] end
+	if not value then
+		for k,v in pairs(tmp_k) do
+			if k==1 then tmp=_G[v]
+			else tmp=tmp[v] end
+		end
+		return tmp
+	else
+		if #tmp_k == 1 then
+			_G[tmp_k[1]]=value
+		else
+			for k,v in pairs(tmp_k) do
+				if k==1 then tmp=_G[v]
+				elseif k==#tmp_k then tmp[v]=value
+				else tmp=tmp[v] end
+			end
+		end
 	end
-    return tmp
 end
+
 
 function TUO_Developer_Tool_kit:init()
 	--
@@ -242,7 +256,8 @@ function TUO_Developer_Tool_kit:frame()
 		else 
 			self.hud.timer=max(0,self.hud.timer-1)
 		end
-		self.hud:frame()
+		--不显示的时候直接关掉frames
+		if self.hud.timer>0 then self.hud:frame() end
 	end
 end
 function TUO_Developer_Tool_kit:render()

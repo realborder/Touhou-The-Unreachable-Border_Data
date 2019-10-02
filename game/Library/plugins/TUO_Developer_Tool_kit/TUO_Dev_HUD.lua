@@ -218,7 +218,7 @@ end
 --------------------------
 ---面板帧函数
 function TUO_Developer_HUD.DoPanelFrame(index,panel)
-    -----丝滑部分
+    -----丝滑部分，不用动
     if index==self.cur then
         panel.timer=min(10,panel.timer+1)*self.timer/30
     else 
@@ -226,20 +226,22 @@ function TUO_Developer_HUD.DoPanelFrame(index,panel)
     end
     panel.left=expl(SIDE_X2,SIDE_X3,panel.timer/10)
     panel.alpha=255*panel.timer/10
-    -------监测鼠标点击
+    -------监测鼠标点击部分，不用动，算是全局的
     self.PanelMouseAction(index,panel)
-    --不显示的时候是不会执行frame函数的
-    if (panel.framefunc and type(panel.framefunc)=='function') and (panel.timer>0 or panel.force_refresh) then panel.framefunc(panel) end
-
-    --重置控件排版用的变量
-    panel.__DH_last_top=0
-    panel.__DH_last_x_pos=0
-    ----控件帧函数
-    ----观测变量部分已经移动至widget
-    for _,widget in pairs(panel.WidgetList) do
-        if widget.framefunc and type(widget.framefunc)=='function' then widget.framefunc(widget) end
+    --不显示的时候不会执行自身和控件的frame函数
+    if (panel.framefunc and type(panel.framefunc)=='function')   then 
+        panel.framefunc(panel) 
     end
-    
+    if panel.timer>5 then
+        --重置控件排版用的变量
+        panel.__DH_last_top=0
+        panel.__DH_last_x_pos=0
+        ----控件帧函数
+        ----观测变量部分已经移动至widget
+        for _,widget in pairs(panel.WidgetList) do
+            if widget.framefunc and type(widget.framefunc)=='function' then widget.framefunc(widget) end
+        end
+    end
 end
 
 function TUO_Developer_HUD.init()
