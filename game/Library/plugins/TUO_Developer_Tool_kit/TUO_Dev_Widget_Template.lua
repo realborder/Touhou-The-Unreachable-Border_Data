@@ -724,7 +724,95 @@ TUO_Developer_HUD.TemplateWidget={
         event_text_change=function(self)
         end
     },
-    ['switch']={},
+    -- 开关
+    -- 主要参数为：
+    --  flag boolean
+    --  text_on string
+    --  text_off string
+    --  _event_switched fun<widget:table,flag:boolean> 切换选项事件
+    ['switch']={
+        initfunc=function(self)
+            self.text_on='On'
+            self.text_off='Off'
+            self.enable=true
+            self.flag=false
+            self.flag_timer=0
+            self._event_mouseclick=function(self)
+                self.text_off=self.text_off..'!'
+                self.flag=not self.flag
+                if self._event_switched then self._event_switched(self,self.flag) end
+            end
+    
+            ---排版
+            self.width=36
+            self.height=18
+            self.gap=5
+            self.size=0.8
+        end,
+        framefunc=function(self)
+            if self.flag then
+                self.flag_timer=min(1,self.flag_timer+0.1)
+            else
+                self.flag_timer=max(0,self.flag_timer-0.1)
+            end
+        end,
+        renderfunc=function(self)
+            local panel=self.panel
+            --排版
+            local TOP_OFFSET=16
+            local WIDTH=self.width
+            local HEIGHT=self.height
+            local SIZE=self.size
+            local GAP=self.gap
+            local x_pos=self._x_pos
+            ---lrbt初始值
+            local l=expl(x_pos+36,x_pos,panel.timer/10)
+            local r=l+WIDTH
+            local t=480-TOP_OFFSET+panel.y_offset 
+            local b
+            ---slot2锁定位置不滚动
+            if self._position_lock then t=480-TOP_OFFSET end
+            ---沿用上一个控件的y
+            if panel.__DH_last_top~=0 and panel.__DH_last_x_pos==self._x_pos then
+                t=panel.__DH_last_top-GAP 
+            end
+            b=t-HEIGHT
+            self.hitbox={l=l,r=r,b=b,t=t}
+            t=t-HEIGHT-GAP
+            panel.__DH_last_top=t
+            panel.__DH_last_x_pos=x_pos
+            
+            local l=self.hitbox.l
+            local r=self.hitbox.r
+            local b=self.hitbox.b
+            local t=self.hitbox.t
+            local ttf=self.ttf
+            local k=0.3+0.7*self.flag_timer
+            local c=30+225*self.flag_timer
+            local BORDER_WIDTH=min(abs(r-l),abs(t-b))/2*panel.timer/10*k
+            local bd=BORDER_WIDTH
+            local bd2=min(abs(r-l),abs(t-b))/2*0.3*2
+            for i=1,3 do
+                RenderCube(l-i,r+i,b-i,t+i,i/5*15*panel.timer/10,10,10,10)
+            end
+            RenderCube(l,r,b,t,255*panel.timer/10,30,30,30)
+            RenderCube(l+bd,r-bd,b+bd,t-bd,255*panel.timer/10,255,255,255)
+            
+            local w2=t-b-bd2*2
+            local d=r-l-2*bd2-w2
+            l=l+d*self.flag_timer
+            RenderCube(l+bd2,l+bd2+w2,b+bd2,t-bd2,255*panel.timer/10,c,c,c)
+            l=r+GAP*2
+            r=l+640
+
+            local c=255*(max(0.5,k)-0.5)*2
+            local text='nil'
+            if self.flag then  text=self.text_on or 'On'
+            else  text=self.text_off or 'Off' end
+            RenderTTF2(ttf,text,l,r,b,t,self.size,Color(255*panel.timer/10,0,0,0),'vcenter','left')
+
+        end,
+    },
     ['texture_displayer']={
         initfunc=function(self)
         end,

@@ -121,7 +121,7 @@ end
 TUO_Developer_Tool_kit.CheckKeyState=CheckKeyState
 
 --------------------------------------------------
----用文本索引来返回其对应的值（未通过测试）
+---用文本索引来返回其对应的值
 ---现在已经能接受类如 'lstg.var'这样的表中表的索引输入
 ---@param str string 
 ---@param value any 如果给出这个值那么函数会转而赋值而不是返回值
@@ -132,7 +132,9 @@ function IndexValueByString(str,value)
 	local i=1
 	local pos=string.find(str,".",1,true)
 	local pospre
-	if not pos then return _G[str]
+	if not pos then 
+		if value then _G[str]=value return
+		else return _G[str] end
 	else table.insert(tmp_k,string.sub(str,1,pos-1)) end
 	while true do
 		pospre=pos+1

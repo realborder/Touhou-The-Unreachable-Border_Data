@@ -232,7 +232,7 @@ function TUO_Developer_HUD.DoPanelFrame(index,panel)
     if (panel.framefunc and type(panel.framefunc)=='function')   then 
         panel.framefunc(panel) 
     end
-    if panel.timer>5 then
+    if panel.timer>0 then
         --重置控件排版用的变量
         panel.__DH_last_top=0
         panel.__DH_last_x_pos=0

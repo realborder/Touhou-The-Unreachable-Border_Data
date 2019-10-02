@@ -249,7 +249,10 @@ function TUO_Developer_Tool_kit:AddPanels()
 			text='Reload overall arrangement.'
 		})
 		TUO_Developer_HUD:NewWidget(panel,'slot1','button',{
-			text='Reload'
+			text='Reload',
+			_event_mouseclick=function(widget)
+				TUO_Developer_Tool_kit:RefreshPanels()
+			end
 		})
 		TUO_Developer_HUD:NewWidget(panel,'slot1','text_displayer',{
 			text='Reload everything of this tool.'
@@ -276,6 +279,11 @@ function TUO_Developer_Tool_kit:AddPanels()
 		)
 		TUO_Developer_HUD:NewWidget(panel,'slot1','text_displayer',{
 			text='Hello LuaSTG'
+		})
+
+		TUO_Developer_HUD:NewWidget(panel,'slot1','switch',{
+			text_on='Ohhhh man!',
+			text_off='Creeper?'
 		})
 		TUO_Developer_HUD:NewWidget(panel,'slot1','list_box',{
 			monitoring_value='lstg',
