@@ -63,7 +63,6 @@ function base_menu:frame()
 			PlaySound('select00', 0.3)
 			self.changed=true
 			self.change_timer=self.change_delay
-		elseif KeyIsPressed('down') then
 		elseif KeyTrigger'down' then
 			self.pre_choose=self.choose
 			self.choose=self.choose+1
