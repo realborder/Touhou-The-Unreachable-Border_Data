@@ -410,7 +410,7 @@ function TUO_Developer_Tool_kit:AddPanels()
 				text='Reload overall arrangement.'
 			})
 			TUO_Developer_HUD:NewWidget(panel,'slot1','button',{
-				text='Reload',
+				text='Reload (F5)',
 				_event_mouseclick=function(widget)
 					TUO_Developer_Tool_kit:RefreshPanels()
 				end
@@ -419,7 +419,7 @@ function TUO_Developer_Tool_kit:AddPanels()
 				text='Reload everything of this tool. It will disappear instantly.'
 			})
 			TUO_Developer_HUD:NewWidget(panel,'slot1','button',{
-				text='Reload All',
+				text='Reload (Shift + F5)',
 				_event_mouseclick=function(widget)
 					TUO_Developer_Tool_kit:Reload()
 				end
@@ -427,7 +427,7 @@ function TUO_Developer_Tool_kit:AddPanels()
 
 			TUO_Developer_HUD:NewWidget(panel,'slot1','text_displayer',{
 				title='Effect Cut',
-				text='For computer with low disposition.'
+				text='The option is designed for the computers with low disposition.'
 			})
 			TUO_Developer_HUD:NewWidget(panel,'slot1','switch',{
 				text_on='Background On',

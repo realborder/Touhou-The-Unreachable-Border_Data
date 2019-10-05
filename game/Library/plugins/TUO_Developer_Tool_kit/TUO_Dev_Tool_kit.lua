@@ -224,6 +224,13 @@ function TUO_Developer_Tool_kit:frame()
 			self.visiable = not self.visiable
 			if self.visiable then Log('F3调试界面已开启') else Log('F3调试界面已关闭') end
 		end
+		if CheckKeyState(KEY.F5) then
+			if lstg.GetKeyState(KEY.SHIFT) then
+				self:Reload()
+			else
+				self:RefreshPanels()
+			end
+		end
 		--右键或者esc退出这个界面
 		-- 不行这个太沙雕了
 		-- if (lstg.GetMouseState(2) or lstg.GetKeyState(KEY.ESCAPE)) and self.visiable then self.visiable=false Log('F3调试界面已关闭') end
