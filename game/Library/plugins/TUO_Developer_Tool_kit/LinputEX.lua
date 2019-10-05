@@ -14,20 +14,18 @@ _MOUSE={
 MouseStatePre={}
 
 KeyInputTemp={
-    id=1,
-    cur=0,
-    templist={},
+    temp={},
     keys={
-        ['0']=0x30
-        ,['1']=0x31
-        ,['2']=0x32
-        ,['3']=0x33
-        ,['4']=0x34
-        ,['5']=0x35
-        ,['6']=0x36
-        ,['7']=0x37
-        ,['8']=0x38
-        ,['9']=0x39
+        [{'0',')'}]=0x30
+        ,[{'1','!'}]=0x31
+        ,[{'2','@'}]=0x32
+        ,[{'3','#'}]=0x33
+        ,[{'4','$'}]=0x34
+        ,[{'5','%'}]=0x35
+        ,[{'6','^'}]=0x36
+        ,[{'7','&'}]=0x37
+        ,[{'8','*'}]=0x38
+        ,[{'9','('}]=0x39
         
         ,A=0x41
         ,B=0x42
@@ -68,6 +66,10 @@ KeyInputTemp={
         ,[{'.','>'}]=0xBE
         ,[{'/','?'}]=0xBF
         
+        ,[' ']=0x20
+        ,['\t']=0x09
+
+
         ,NUMPAD0=0x60
         ,NUMPAD1=0x61
         ,NUMPAD2=0x62
@@ -87,9 +89,7 @@ KeyInputTemp={
     sys_keys={
         ESCAPE=0x1B,
         BACKSPACE=0x08,
-        TAB=0x09,
         ENTER=0x0D,
-        SPACE=0x20,
 
         SHIFT=0x10,
         CTRL=0x11,
@@ -116,11 +116,12 @@ KeyInputTemp={
         RIGHT=0x27,
         DOWN=0x28},
     keystate={},
-    keysys_state={},
     keystate_pre={},
+    keysys_state={},
+    keysys_state_pre={},
     wordlimit1=0x41,
-    wordlimit2=0x5A
-
+    wordlimit2=0x5A,
+    -- backspace_timer=0
 }
 function GetInputExtra()
         --鼠标输入不参与录像
@@ -149,10 +150,13 @@ function GetInputExtra()
 end
 
 local Original_GetInput=GetInput
-function GetInput()
-    Original_GetInput()
-    GetInputExtra()
-end
+if not _GetInput_overwrited then
+    function GetInput()
+        Original_GetInput()
+        GetInputExtra()
+    end
+end _GetInput_overwrited=true --防止重载出问题
+
 function MouseIsDown(i)
     return MouseState['MouseButton_'..i]
 end MousePress=MouseIsDown
@@ -163,26 +167,32 @@ function MouseIsReleased(i)
     return MouseStatePre['MouseButton_'..i] and (not MouseState['MouseButton_'..i])
 end 
 
-function KeyInputTemp:New() 
-    local tmp=self.templist
-    for i=1,#tmp do
-        if type(tmp[i])~='string' then 
-            tmp[i]=''
-            return i end end
-    tmp[#tmp+1]=''
-    return #tmp+1
+-------------------------------------
+---激活文本缓冲区
+---@param str_init string 初始值
+function KeyInputTemp:Activate(str_init) 
+    self.enable=true
+    str_init=str_init or ''
+    KeyInputTemp.temp=str_init
+    self.keystate_pre={}
+    self.keysys_state_pre={}
 end
+
 function KeyInputTemp:RefreshAll()
+    if not self.enable then return end
     local b_tmp
     for k,v in pairs(self.keystate) do
         self.keystate_pre[k]=v end
     for k,v in pairs(self.sys_keys) do
-        self.keysys_state[k]=lstg.GetKeyState(v) end    
+        self.keysys_state_pre[k]=self.keysys_state[k]
+        self.keysys_state[k]=lstg.GetKeyState(v)
+    end    
+    
     for k,v in pairs(self.keys) do
         self.keystate[k]=lstg.GetKeyState(v)
         if self.keystate[k] and (not self.keystate_pre[k]) then
             if type(k)=='table' then
-                if not self.keysys_state['SHIFT'] then 
+                if self.keysys_state['SHIFT'] then 
                     b_tmp=k[2]
                 else b_tmp=k[1] end
             elseif type(k)=='string' then
@@ -194,40 +204,64 @@ function KeyInputTemp:RefreshAll()
             end 
         end 
     end
-    if self.cur==0 then return
+
+    if b_tmp then self:Push(b_tmp) 
     else
-        if b_tmp then self:Push(b_tmp,self.cur) end
+        if (self.keysys_state['BACKSPACE'] and (not self.keysys_state_pre['BACKSPACE'])) then
+            if self.keysys_state['CTRL'] then
+                self:BackSpace(5)
+            else
+                self:BackSpace(1)
+            end
+        elseif self.keysys_state['ESCAPE'] and (not self.keysys_state_pre['ESCAPE']) then
+            self:Clear()
+        end
     end
+
+
+        -- ESCAPE=0x1B
+        -- BACKSPACE=0x08
+        -- ENTER=0x0D
+
+        -- SHIFT=0x10
+        -- CTRL=0x11
+
+        -- HOME=0x24
+        -- END=0x23
+        -- DELETE=0x2E
+
+        -- LEFT=0x25
+        -- RIGHT=0x27
+
 end
 
 ------------------------------------------
 ---向文本缓冲区压入文本
 ---@param text string
 ---@param id number 若忽略这项则对所有缓冲区压入text
-function KeyInputTemp:Push(text,id) 
+function KeyInputTemp:Push(text) 
+    if not self.enable then return end
     if not text then return false end
-    local tmp=self.templist
-    if type(id)=='nil' then
-        for k,v in pairs(self.templist) do
-            self.templist[k]=self.templist[k]..text end
-    else
-        if type(tmp[id])=='string' then
-            tmp[id]=tmp[id]..text 
-        else error('未创建文本输入缓冲区，请检查缓冲区id: '..id) end 
-    end
+    self.temp=self.temp..text 
 end
-function KeyInputTemp:Pull(id) 
-    local tmp=self.templist
-    if type(tmp[id])=='string' then
-        return tmp[id] end
+function KeyInputTemp:Pull() 
+    if not self.enable then return end
+    if type(self.temp)=='string' then
+        return self.temp end
 end
 
-function KeyInputTemp:Clear(id) 
-    self.templist[id]=''
+function KeyInputTemp:BackSpace(num) 
+    if not self.enable then return end
+    self.temp=string.sub(self.temp,1,string.len(self.temp)-num)
+end 
+function KeyInputTemp:Clear() 
+    if not self.enable then return end
+    self.temp=''
 end 
 KeyInputTemp.Reset=KeyInputTemp.Clear
-function KeyInputTemp:Delete(id) 
-    self.templist[id]=nil
+function KeyInputTemp:Deactivate(id) 
+    self:Clear()
+    self.enable=false
 end
 KeyInputTemp.Del=KeyInputTemp.Delete
 KeyInputTemp.Recycle=KeyInputTemp.Delete

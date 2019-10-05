@@ -16,7 +16,7 @@
 --
 --!注意，插件外的鼠标滚轮状态获取函数可能会失效，如有需要请把这里的移出去
 ---------------------------------------------------
-TUO_Developer_Tool_kit = {}
+TUO_Developer_Tool_kit = TUO_Developer_Tool_kit or {}
 -- local self=TUO_Developer_Tool_kit
 --载入其他部件
 local PATH_HEAD='Library\\plugins\\TUO_Developer_Tool_kit\\'
@@ -58,7 +58,7 @@ local ReloadSingleFile=function(path)
 			Log('成功重载脚本：'..path,2)
 			-- flag=true
 		else
-			Log('重载脚本：'..path..' 的时候发生错误\n\t行数:'..msg..'\n\t错误详细信息:\n\t\t'..err,1) 
+			Log('重载脚本：'..path..' 的时候发生错误\n\t错误详细信息:\n\t\t'..err,1) 
 		end
 	else
 		Log('脚本 '..path..' 不存在',1) 
@@ -133,7 +133,7 @@ function IndexValueByString(str,value)
 	local pos=string.find(str,".",1,true)
 	local pospre
 	if not pos then 
-		if value then _G[str]=value return
+		if value~=nil then _G[str]=value return
 		else return _G[str] end
 	else table.insert(tmp_k,string.sub(str,1,pos-1)) end
 	while true do
@@ -215,21 +215,7 @@ function TUO_Developer_Tool_kit:frame()
 			else ReloadFiles() end
 		end
 		if CheckKeyState(KEY.F9) then
-			do
-				--适配多boss
-				local boss_list={}
-				for _,o in ObjList(GROUP_ENEMY) do
-					if o._bosssys then table.insert(boss_list,o) end
-				end
-				if #boss_list>0 and (not lstg.GetKeyState(KEY.SHIFT)) then 
-					for i=1,#boss_list do boss_list[i].hp=0 end
-				elseif debugPoint then
-					if lstg.GetKeyState(KEY.SHIFT) then 
-						debugPoint=debugPoint-1
-					else 
-						debugPoint=debugPoint+1 end
-				end
-			end
+			self.KillBoss()
 		end
 		if CheckKeyState(KEY.F8) then
 			self:RefreshPanels()
@@ -269,4 +255,52 @@ function TUO_Developer_Tool_kit:render()
 	end
 end
 
+function TUO_Developer_HUD:KillBoss()
+	--适配多boss
+	local boss_list={}
+	for _,o in ObjList(GROUP_ENEMY) do
+		if o._bosssys then table.insert(boss_list,o) end
+	end
+	if #boss_list>0 and (not lstg.GetKeyState(KEY.SHIFT)) then 
+		for i=1,#boss_list do boss_list[i].hp=0 end
+	-- elseif debugPoint then
+	-- 	if lstg.GetKeyState(KEY.SHIFT) then 
+	-- 		debugPoint=debugPoint-1
+	-- 	else 
+	-- 		debugPoint=debugPoint+1 end
+	end
+end
+
+function TUO_Developer_Tool_kit:Reload()
+	Log('开始重载整个插件',4)
+	local ReloadSingleFile=function(path)
+		if not(lfs.attributes(path) == nil) then 
+			local r,err=xpcall(lstg.DoFile,debug.traceback,path)
+			if r then 
+				Log('成功重载脚本：'..path,2)
+				-- flag=true
+			else
+				Log('重载脚本：'..path..' 的时候发生错误\n\t错误详细信息:\n\t\t'..err,1) 
+			end
+		else
+			Log('脚本 '..path..' 不存在',1) 
+		end
+	end
+	local PATH_HEAD='Library\\plugins\\TUO_Developer_Tool_kit\\'
+	local DoFilePlus=function(path)
+		if lfs.attributes(path) == nil then
+			path=PATH_HEAD..path
+		end 
+		ReloadSingleFile(path)
+	end
+	TUO_Developer_Tool_kit = {}
+	DoFilePlus"TUO_Dev_HUD.lua"
+	DoFilePlus"TUO_Dev_Panel_Define.lua"
+	DoFilePlus"TUO_Dev_Widget_Template.lua"
+	DoFilePlus'TUO_Dev_Tool_kit.lua'
+end
+
+
+
 TUO_Developer_Tool_kit:init()
+

@@ -21,6 +21,7 @@ DeserializeTable=function (widget,t,output,level,index)
     local length=0
     for _k,_v in pairs(t) do
         length=length+1 
+        _k=tostring(_k)
         if length>512 then 
             table.insert(widget.display_value,{name='!!!',v=' Reached Table Print Limit',index=0}) return false end
         if type(_v)=='table' then 
@@ -53,6 +54,7 @@ DeserializeTable2=function (widget,t,output,level,index)
     local length=0
     for _k,_v in pairs(t) do
         length=length+1 
+        _k=tostring(_k)
         if length>512 then 
             table.insert(widget.display_value,{name='!!!',v=' Reached Table Print Limit',index=0}) return false end
         if type(_v)=='table' then 
@@ -145,6 +147,7 @@ TUO_Developer_HUD.TemplateWidget={
                     if self._event_mouseclick then self._event_mouseclick(self) end
                 elseif (not self._mouse_stay) and self._pressed then
                     self._pressed=false
+                    if self._event_lostfocus then self._event_lostfocus() end
                     -- self.panel.focusedWidget=nil
                 end
             end
@@ -202,6 +205,7 @@ TUO_Developer_HUD.TemplateWidget={
 
     ['value_displayer']={
         initfunc=function(self)
+            self.text=nil
             self.monitoring_value=nil
             self.display_value={}
             self.value_pre={}
@@ -418,6 +422,7 @@ TUO_Developer_HUD.TemplateWidget={
             local b=t-HEIGHT
             local yc=(t+b)/2
             local h=self.w/2
+            local w2=1
             local ttf=self.ttf
             SetImageState('white','',Color(255*panel.timer/10,20,20,20))
             RenderRect('white',l,r,b,t)
@@ -427,9 +432,10 @@ TUO_Developer_HUD.TemplateWidget={
             end
             SetImageState('white','',Color(255*panel.timer/10,20+210*self.changetimer,20,20))
             RenderRect('white',l+BORDER_WIDTH,m,yc-h,yc+h)
+            h=h*3
             if self._mouse_stay and (not self._pressed) then 
                 SetImageState('white','',Color(255*panel.timer/10,50+205*self.changetimer,50,50))
-                h=h*3
+                w2=1.5
             elseif self._pressed then
                 SetImageState('white','',Color(255*panel.timer/10,150+105*self.changetimer,150,150))
                 local mx=MouseState.x_in_UI
@@ -437,9 +443,10 @@ TUO_Developer_HUD.TemplateWidget={
                 local v=(self.max_value-self.min_value)*k+self.min_value
                 v=min(self.max_value,max(self.min_value,v))
                 IndexValueByString(self.monitoring_value,v)
-                h=h*2.5
+                w2=3
+                h=h*1.2
             end
-            RenderRect('white',m-1,m+1,yc-h,yc+h)
+            RenderRect('white',m-w2,m+w2,yc-h,yc+h)
             self.hitbox={l=l,r=r,b=b,t=t}
             t=t-HEIGHT
             panel.__DH_last_top=t 
@@ -515,7 +522,7 @@ TUO_Developer_HUD.TemplateWidget={
             RenderCube(l+bd,r-bd,b+bd,t-bd,255*panel.timer/10,255,255,255)
             if self.text then
                 local c=255*(max(0.5,k)-0.5)*2
-                RenderTTF2(ttf,self.text,l,r,b-4,t-4,self.size,Color(255*panel.timer/10,c,c,c),'venter','center')
+                RenderTTF2(ttf,self.text,l,r,b,t,self.size,Color(255*panel.timer/10,c,c,c),'vcenter','center')
             end
 
         end,
@@ -555,10 +562,28 @@ TUO_Developer_HUD.TemplateWidget={
             
             local ttf=self.ttf
             local color=Color(255*panel.timer/10,self.text_rgb[1],self.text_rgb[2],self.text_rgb[3])
-            b=t-HEIGHT
-            RenderTTF2(ttf,self.text,l,r,b,t,SIZE,color,'left','top')
-            t=t-HEIGHT-GAP
-
+            local pos=string.find(self.text,"\n",1,true)
+            if not pos then
+                b=t-HEIGHT
+                RenderTTF2(ttf,self.text,l,r,b,t,SIZE,color,'left','top')
+                t=b-GAP
+            else
+                local c=0
+                local pospre=0
+                while pos do
+                    if c>64 then break end
+                    b=t-HEIGHT
+                    local text = string.sub(self.text,pospre+1,pos)
+                    RenderTTF2(ttf,text,l,r,b,t,SIZE,color,'left','top')
+                    t=t-HEIGHT-GAP
+                    pospre=pos
+                    pos=string.find(self.text,"\n",pos+1,true)
+                end
+                b=t-HEIGHT
+                local text = string.sub(self.text,pospre+1,string.len(self.text))
+                RenderTTF2(ttf,text,l,r,b,t,SIZE,color,'left','top')
+                t=t-HEIGHT-GAP
+            end
             panel.__DH_last_top=t 
             panel.__DH_last_x_pos=x_pos
         end
@@ -578,7 +603,7 @@ TUO_Developer_HUD.TemplateWidget={
             self.display_value={}
             self.selection={}
             self.select_timer={}
-            self.width=480
+            self.width=540
         end,
         framefunc=function(self)
             for i,v in pairs(self.display_value) do
@@ -622,7 +647,7 @@ TUO_Developer_HUD.TemplateWidget={
                 -- local tmp=self.display_value
                 -- self.display_value={}
                 -- for k,_ in pairs(tmp) do
-                --     table.insert(self.display_value,k)
+                --     table.   insert(self.display_value,k)
                 -- end
                 table.sort(self.display_value,function(v1,v2)  return v1.name<v2.name end)
             end
@@ -716,20 +741,103 @@ TUO_Developer_HUD.TemplateWidget={
         -- _event_textchange function 文本内容发生变化后调用的函数
     ['inputer']={
         initfunc=function(self)
+            self.text='empty'
+            self.enable=true
+            self.connected=false
+            self.connect_timer=0
+            self._event_mouseclick=function(self)
+                if not KeyInputTemp.enable then
+                    self.connected=true
+                    KeyInputTemp:Activate(self.text)
+                end
+            end
+            self._event_mouseleave=function(self)
+                if self.connected then
+                    self.connected=false
+                    self.text=KeyInputTemp:Pull()
+                    KeyInputTemp:Deactivate()
+                end
+            end
+            ---排版
+            self.width=360
+            self.height=24
+            self.gap=4
+            self.size=0.8
+            --为了同排多个输入框
+            self.x_pos2=0
         end,
         framefunc=function(self)
+            if self.connected then
+                self.text=KeyInputTemp:Pull()
+                self.connect_timer=self.connect_timer+(1-self.connect_timer)*0.2
+            else
+                self.connect_timer=self.connect_timer+(0-self.connect_timer)*0.2
+            end
         end,
         renderfunc=function(self)
+            
+            local panel=self.panel
+            --排版
+            local TOP_OFFSET=16
+            local WIDTH=self.width
+            local HEIGHT=self.height
+            local SIZE=self.size
+            local GAP=self.gap
+            local x_pos=self._x_pos+self.x_pos2
+            ---lrbt初始值
+            local l=expl(x_pos+36,x_pos,panel.timer/10)
+            local r=l+WIDTH
+            local t=480-TOP_OFFSET+panel.y_offset 
+            local b
+            ---slot2锁定位置不滚动
+            if self._position_lock then t=480-TOP_OFFSET end
+            ---沿用上一个控件的y
+            if panel.__DH_last_top~=0 and panel.__DH_last_x_pos==self._x_pos then
+                if self.x_pos2~=0 then
+                    t=panel.__DH_last_top+GAP+HEIGHT
+                else
+                    t=panel.__DH_last_top-GAP 
+                end
+            end
+            b=t-HEIGHT
+            self.hitbox={l=l,r=r,b=b,t=t}
+            t=t-HEIGHT-GAP
+            panel.__DH_last_top=t
+            panel.__DH_last_x_pos=self._x_pos
+            
+            local l=self.hitbox.l
+            local r=self.hitbox.r
+            local b=self.hitbox.b
+            local t=self.hitbox.t
+            local ttf=self.ttf
+
+            local h=2+(HEIGHT-2)*self.connect_timer
+            local k=0.15*self._ignite_timer+0.85*self._pressed_timer
+
+
+            for i=1,3 do
+                RenderCube(l-i,r+i,b-i,b+h+i,i/5*15*panel.timer/10,10,10,10)
+            end
+            RenderCube(l,r,b,b+h,255*panel.timer/10,30,30,30)
+            local m=(r-l)/2
+            local l2=m+(l-m)*self._ignite_timer
+            local r2=m+(r-m)*self._ignite_timer
+            RenderCube(l2,r2,b,b+2,255*panel.timer/10,150,150,150)
+            if self.text then
+                local c=255*self.connect_timer
+                RenderTTF2(ttf,self.text,l+4,r-4,b,t,self.size,Color(255*panel.timer/10,c,c,c),'vcenter','left')
+            end
+
         end,
         event_text_change=function(self)
         end
     },
     -- 开关
-    -- 主要参数为：
-    --  flag boolean
-    --  text_on string
-    --  text_off string
-    --  _event_switched fun<widget:table,flag:boolean> 切换选项事件
+        -- 主要参数为：
+        --  flag boolean
+        --  text_on string
+        --  text_off string
+        --  _event_switched fun<widget:table,flag:boolean> 切换选项事件
     ['switch']={
         initfunc=function(self)
             self.text_on='On'
@@ -737,12 +845,17 @@ TUO_Developer_HUD.TemplateWidget={
             self.enable=true
             self.flag=false
             self.flag_timer=0
+            self.monitoring_value=nil
             self._event_mouseclick=function(self)
-                self.text_off=self.text_off..'!'
-                self.flag=not self.flag
+                self.flag= not self.flag
+                if self.monitoring_value and type(self.monitoring_value)=='string' then
+                    local v=IndexValueByString(self.monitoring_value)
+                    if type(v)=='boolean' or type(v)=='nil' then
+                        IndexValueByString(self.monitoring_value,self.flag)
+                    end
+                end
                 if self._event_switched then self._event_switched(self,self.flag) end
             end
-    
             ---排版
             self.width=36
             self.height=18
@@ -750,6 +863,12 @@ TUO_Developer_HUD.TemplateWidget={
             self.size=0.8
         end,
         framefunc=function(self)
+            if self.monitoring_value then
+                local v=IndexValueByString(self.monitoring_value)
+                if type(v)=='boolean'  then
+                    self.flag=v
+                end
+            end
             if self.flag then
                 self.flag_timer=min(1,self.flag_timer+0.1)
             else
