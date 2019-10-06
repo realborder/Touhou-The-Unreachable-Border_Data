@@ -2,6 +2,7 @@
 ---TUO_Developer_Tool_kit 
 ---东方梦无垠开发者工具兼大型高危实验基地 
 ---code by JanrilW
+---还没有完全插件化，请手动在FrameFunc和AfterRender那边加frame和render
 --F3可以开关调试界面（第一次开启需要快速连按3下）
 --F6刷新输入设备
 --F9
@@ -14,9 +15,8 @@
 --------------按下某个键可以改变背景的phase
 --重载指定关卡
 --
---!注意，插件外的鼠标滚轮状态获取函数可能会失效，如有需要请把这里的移出去
 ---------------------------------------------------
-TUO_Developer_Tool_kit = {}
+TUO_Developer_Tool_kit = TUO_Developer_Tool_kit or {}
 -- local self=TUO_Developer_Tool_kit
 --载入其他部件
 local PATH_HEAD='Library\\plugins\\TUO_Developer_Tool_kit\\'
@@ -58,7 +58,7 @@ local ReloadSingleFile=function(path)
 			Log('成功重载脚本：'..path,2)
 			-- flag=true
 		else
-			Log('重载脚本：'..path..' 的时候发生错误\n\t行数:'..msg..'\n\t错误详细信息:\n\t\t'..err,1) 
+			Log('重载脚本：'..path..' 的时候发生错误\n\t错误详细信息:\n\t\t'..err,1) 
 		end
 	else
 		Log('脚本 '..path..' 不存在',1) 
@@ -121,7 +121,7 @@ end
 TUO_Developer_Tool_kit.CheckKeyState=CheckKeyState
 
 --------------------------------------------------
----用文本索引来返回其对应的值（未通过测试）
+---用文本索引来返回其对应的值
 ---现在已经能接受类如 'lstg.var'这样的表中表的索引输入
 ---@param str string 
 ---@param value any 如果给出这个值那么函数会转而赋值而不是返回值
@@ -132,7 +132,9 @@ function IndexValueByString(str,value)
 	local i=1
 	local pos=string.find(str,".",1,true)
 	local pospre
-	if not pos then return _G[str]
+	if not pos then 
+		if value~=nil then _G[str]=value return
+		else return _G[str] end
 	else table.insert(tmp_k,string.sub(str,1,pos-1)) end
 	while true do
 		pospre=pos+1
@@ -166,8 +168,16 @@ end
 function TUO_Developer_Tool_kit:init()
 	--
 	self.ttf='f3_word'
-	-- LoadTTF('f3_word','THlib\\UI\\ttf\\yrdzst.ttf',32)
-	LoadTTF('f3_word','THlib\\exani\\times.ttf',32)
+	--这个文件可能放在这几个地方，所以都过一遍
+	local ttfpath={"THlib\\exani\\times.ttf",
+		"Library\\plugins\\TUO_Developer_Tool_kit\\times.ttf",
+		"times.ttf"
+	}
+	local i=1
+	while lfs.attributes(ttfpath[i])==nil do
+		i=i+1
+	end
+	LoadTTF('f3_word',ttfpath[i],32)
 	self.visiable=false --标记界面是否可见
 	self.locked=true --标记是否锁定
 	self.unlock_time_limit=0
@@ -181,7 +191,6 @@ function TUO_Developer_Tool_kit:init()
 end
 
 function TUO_Developer_Tool_kit:frame()
-	--!!!设备输入补充，如果输入发生异常请删除这个
 	if not ext.pause_menu:IsKilled() then
 		GetInputExtra()
 	end
@@ -213,21 +222,7 @@ function TUO_Developer_Tool_kit:frame()
 			else ReloadFiles() end
 		end
 		if CheckKeyState(KEY.F9) then
-			do
-				--适配多boss
-				local boss_list={}
-				for _,o in ObjList(GROUP_ENEMY) do
-					if o._bosssys then table.insert(boss_list,o) end
-				end
-				if #boss_list>0 and (not lstg.GetKeyState(KEY.SHIFT)) then 
-					for i=1,#boss_list do boss_list[i].hp=0 end
-				elseif debugPoint then
-					if lstg.GetKeyState(KEY.SHIFT) then 
-						debugPoint=debugPoint-1
-					else 
-						debugPoint=debugPoint+1 end
-				end
-			end
+			self:KillBoss()
 		end
 		if CheckKeyState(KEY.F8) then
 			self:RefreshPanels()
@@ -235,6 +230,13 @@ function TUO_Developer_Tool_kit:frame()
 		if CheckKeyState(KEY.F3) then
 			self.visiable = not self.visiable
 			if self.visiable then Log('F3调试界面已开启') else Log('F3调试界面已关闭') end
+		end
+		if CheckKeyState(KEY.F5) then
+			if lstg.GetKeyState(KEY.SHIFT) then
+				self:Reload()
+			else
+				self:RefreshPanels()
+			end
 		end
 		--右键或者esc退出这个界面
 		-- 不行这个太沙雕了
@@ -267,4 +269,52 @@ function TUO_Developer_Tool_kit:render()
 	end
 end
 
+function TUO_Developer_HUD:KillBoss()
+	--适配多boss
+	local boss_list={}
+	for _,o in ObjList(GROUP_ENEMY) do
+		if o._bosssys then table.insert(boss_list,o) end
+	end
+	if #boss_list>0 and (not lstg.GetKeyState(KEY.SHIFT)) then 
+		for i=1,#boss_list do boss_list[i].hp=0 end
+	elseif debugPoint then
+		if lstg.GetKeyState(KEY.SHIFT) then 
+			debugPoint=debugPoint-1
+		else 
+			debugPoint=debugPoint+1 end
+	end
+end
+
+function TUO_Developer_Tool_kit:Reload()
+	Log('开始重载整个插件',4)
+	local ReloadSingleFile=function(path)
+		if not(lfs.attributes(path) == nil) then 
+			local r,err=xpcall(lstg.DoFile,debug.traceback,path)
+			if r then 
+				Log('成功重载脚本：'..path,2)
+				-- flag=true
+			else
+				Log('重载脚本：'..path..' 的时候发生错误\n\t错误详细信息:\n\t\t'..err,1) 
+			end
+		else
+			Log('脚本 '..path..' 不存在',1) 
+		end
+	end
+	local PATH_HEAD='Library\\plugins\\TUO_Developer_Tool_kit\\'
+	local DoFilePlus=function(path)
+		if lfs.attributes(path) == nil then
+			path=PATH_HEAD..path
+		end 
+		ReloadSingleFile(path)
+	end
+	TUO_Developer_Tool_kit = {}
+	DoFilePlus"TUO_Dev_HUD.lua"
+	DoFilePlus"TUO_Dev_Panel_Define.lua"
+	DoFilePlus"TUO_Dev_Widget_Template.lua"
+	DoFilePlus'TUO_Dev_Tool_kit.lua'
+end
+
+
+
 TUO_Developer_Tool_kit:init()
+

@@ -232,7 +232,7 @@ function TUO_Developer_HUD.DoPanelFrame(index,panel)
     if (panel.framefunc and type(panel.framefunc)=='function')   then 
         panel.framefunc(panel) 
     end
-    if panel.timer>5 then
+    if panel.timer>0 then
         --重置控件排版用的变量
         panel.__DH_last_top=0
         panel.__DH_last_x_pos=0
@@ -247,6 +247,8 @@ end
 function TUO_Developer_HUD.init()
     self.cur=1
     self.scroll_force=0
+    self.timer=0
+    self.alpha=0.75
 end
 
 function TUO_Developer_HUD.frame()
@@ -291,21 +293,23 @@ function TUO_Developer_HUD.render()
     local rr=RenderRect
     -- local rttf=RenderTTF
     --白色背景
-    sis('white','',Color(195*self.timer/30,255,255,255))
+    sis('white','',Color(255*self.alpha*self.timer/30,255,255,255))
     rr('white',SIDE_X1,640-SIDE_X1,0,480)
     --面板渲染
     for _,panel in pairs(self.panel) do
-        for _,widget in pairs(panel.WidgetList) do
-            if widget.renderfunc and type(widget.renderfunc)=='function' then widget.renderfunc(widget) end
-            -- if v.display_value then
-            --     if v.renderfunc then
-            --         self.DisplayValue(v)
-            --     else
-            --         self.DisplayValue(v,nil,SIDE_X3)
-            --     end
-            -- end
+        if panel.timer>0 then
+            for _,widget in pairs(panel.WidgetList) do
+                if widget.renderfunc and type(widget.renderfunc)=='function' then widget.renderfunc(widget) end
+                -- if v.display_value then
+                --     if v.renderfunc then
+                --         self.DisplayValue(v)
+                --     else
+                --         self.DisplayValue(v,nil,SIDE_X3)
+                --     end
+                -- end
+            end
+            if panel.renderfunc and type(panel.renderfunc)=='function' then panel.renderfunc(panel) end
         end
-        if panel.renderfunc and type(panel.renderfunc)=='function' then panel.renderfunc(panel) end
     end
     --侧边栏
     sis('white','',Color(0xFFFFFFFF))
