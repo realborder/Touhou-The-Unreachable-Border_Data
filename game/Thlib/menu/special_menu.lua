@@ -345,10 +345,16 @@ function special_difficulty:frame()
 		local y_fix=480/2
 		local dx=0
 		if self.pre_choose~=0 then
-			if self.pre_choose<self.choose then
+			if self.pre_choose==1 and self.choose==#self.pics then
+				dx=exani_interpolation(-self.gap,0,self.activate_delay-self.activate_timer+1,1,self.activate_delay,'smooth','smooth')
+			elseif self.pre_choose==#self.pics and self.choose==1 then
 				dx=exani_interpolation(self.gap,0,self.activate_delay-self.activate_timer+1,1,self.activate_delay,'smooth','smooth')
 			else
-				dx=exani_interpolation(-self.gap,0,self.activate_delay-self.activate_timer+1,1,self.activate_delay,'smooth','smooth')
+				if self.pre_choose<self.choose then
+					dx=exani_interpolation(self.gap,0,self.activate_delay-self.activate_timer+1,1,self.activate_delay,'smooth','smooth')
+				else 
+					dx=exani_interpolation(-self.gap,0,self.activate_delay-self.activate_timer+1,1,self.activate_delay,'smooth','smooth')
+				end
 			end
 		end
 		exani_player_manager.SetExaniAttribute(play_manager,self.pics[self.choose],nil,nil,nil,nil,nil,nil,nil,'3d',dx+x_fix,y_fix,self.z,0.5,0.5)
@@ -356,27 +362,25 @@ function special_difficulty:frame()
 	
 	if self.init_timer>self.init_delay and self.activate_timer==0 and self.deactivate_timer==0 and not self.is_choose then
 		if KeyTrigger'left' then
-			if self.choose~=1 then
-				self.pre_choose=self.choose
-				self.choose=self.choose-1
-				self.activate_timer=self.activate_delay
-				self.deactivate_timer=self.deactivate_delay
-				PlaySound('select00', 0.3)
-				exani_player_manager.ExecuteExaniPredefine(play_manager,self.pics[self.choose],'activate')
-				exani_player_manager.ExecuteExaniPredefine(play_manager,self.pics[self.pre_choose],'deactivate')
-				self.changed=true
-			end
+			self.pre_choose=self.choose
+			self.choose=self.choose-1
+			if self.choose==0 then self.choose=#self.pics end
+			self.activate_timer=self.activate_delay
+			self.deactivate_timer=self.deactivate_delay
+			PlaySound('select00', 0.3)
+			exani_player_manager.ExecuteExaniPredefine(play_manager,self.pics[self.choose],'activate')
+			exani_player_manager.ExecuteExaniPredefine(play_manager,self.pics[self.pre_choose],'deactivate')
+			self.changed=true
 		elseif KeyTrigger'right' then
-			if self.choose~=#self.pics then
-				self.pre_choose=self.choose
-				self.choose=self.choose+1
-				self.activate_timer=self.activate_delay
-				self.deactivate_timer=self.deactivate_delay
-				PlaySound('select00', 0.3)
-				exani_player_manager.ExecuteExaniPredefine(play_manager,self.pics[self.choose],'activate')
-				exani_player_manager.ExecuteExaniPredefine(play_manager,self.pics[self.pre_choose],'deactivate')
-				self.changed=true
-			end
+			self.pre_choose=self.choose
+			self.choose=self.choose+1
+			if self.choose==(#self.pics+1) then self.choose=1 end
+			self.activate_timer=self.activate_delay
+			self.deactivate_timer=self.deactivate_delay
+			PlaySound('select00', 0.3)
+			exani_player_manager.ExecuteExaniPredefine(play_manager,self.pics[self.choose],'activate')
+			exani_player_manager.ExecuteExaniPredefine(play_manager,self.pics[self.pre_choose],'deactivate')
+			self.changed=true
 		elseif KeyTrigger'shoot' then
 			self.is_choose=true
 			exani_player_manager.ExecuteExaniPredefine(play_manager,self.pics[self.choose],'choose')
@@ -398,10 +402,16 @@ function special_difficulty:frame()
 			local x_fix=640/2
 			local y_fix=480/2
 			local dx=0
-			if self.pre_choose<self.choose then
+			if self.pre_choose==1 and self.choose==#self.pics then
+				dx=exani_interpolation(0,self.gap,self.activate_delay-self.activate_timer+1,1,self.activate_delay,'smooth','smooth')
+			elseif self.pre_choose==#self.pics and self.choose==1 then
 				dx=exani_interpolation(0,-self.gap,self.activate_delay-self.activate_timer+1,1,self.activate_delay,'smooth','smooth')
 			else
-				dx=exani_interpolation(0,self.gap,self.activate_delay-self.activate_timer+1,1,self.activate_delay,'smooth','smooth')
+				if self.pre_choose<self.choose then
+					dx=exani_interpolation(0,-self.gap,self.activate_delay-self.activate_timer+1,1,self.activate_delay,'smooth','smooth')
+				else
+					dx=exani_interpolation(0,self.gap,self.activate_delay-self.activate_timer+1,1,self.activate_delay,'smooth','smooth')
+				end
 			end
 			exani_player_manager.SetExaniAttribute(play_manager,self.pics[self.pre_choose],nil,nil,nil,nil,nil,nil,nil,'3d',dx+x_fix,y_fix,self.z,0.5,0.5)
 		end
@@ -445,12 +455,18 @@ function special_difficulty:render()
 		local dx=self.gap*(3-self.choose)
 		if self.activate_timer>0 then
 			if self.pre_choose~=0 then
-				dx=exani_interpolation(self.gap*(3-self.pre_choose),self.gap*(3-self.choose),self.activate_delay-self.activate_timer+1,1,self.activate_delay,'smooth','smooth')
+				if self.pre_choose==1 and self.choose==#self.pics then
+					dx=exani_interpolation(self.gap*(3-self.pre_choose),self.gap*(4-self.pre_choose),self.activate_delay-self.activate_timer+1,1,self.activate_delay,'smooth','smooth')
+				elseif self.pre_choose==#self.pics and self.choose==1 then
+					dx=exani_interpolation(self.gap*(3-self.pre_choose),self.gap*(2-self.pre_choose),self.activate_delay-self.activate_timer+1,1,self.activate_delay,'smooth','smooth')
+				else
+					dx=exani_interpolation(self.gap*(3-self.pre_choose),self.gap*(3-self.choose),self.activate_delay-self.activate_timer+1,1,self.activate_delay,'smooth','smooth')
+				end
 			end
 		end
 		
-		for i=startn,endn do
-		--for i=1,(#self.pics)*self.repeats do
+		--for i=startn,endn do
+		for i=1,(#self.pics)*self.repeats do
 			local x=self.x_offset[i]
 			local n=i%(#self.pics)
 			if n==0 then n=#self.pics end
