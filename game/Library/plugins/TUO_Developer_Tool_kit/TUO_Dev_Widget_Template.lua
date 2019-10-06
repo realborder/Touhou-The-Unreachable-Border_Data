@@ -515,10 +515,11 @@ TUO_Developer_HUD.TemplateWidget={
             local k=0.15*self._ignite_timer+0.85*self._pressed_timer
             local BORDER_WIDTH=min(abs(r-l),abs(t-b))/2*panel.timer/10*k
             local bd=BORDER_WIDTH
-            for i=1,3 do
-                RenderCube(l-i,r+i,b-i,t+i,i/5*15*panel.timer/10,10,10,10)
+            for i=1,5,0.5 do
+                RenderCube(l-i,r+i,b-i,t+i,(5-i)/5*10*panel.timer/10,10,10,10)
             end
             RenderCube(l,r,b,t,255*panel.timer/10,30,30,30)
+            RenderCube(l+bd,r-bd,b+bd,t-bd,255*panel.timer/10,255,255,255)
             RenderCube(l+bd,r-bd,b+bd,t-bd,255*panel.timer/10,255,255,255)
             if self.text then
                 local c=255*(max(0.5,k)-0.5)*2
@@ -911,15 +912,17 @@ TUO_Developer_HUD.TemplateWidget={
             local BORDER_WIDTH=min(abs(r-l),abs(t-b))/2*panel.timer/10*k
             local bd=BORDER_WIDTH
             local bd2=min(abs(r-l),abs(t-b))/2*0.3*2
-            for i=1,3 do
-                RenderCube(l-i,r+i,b-i,t+i,i/5*15*panel.timer/10,10,10,10)
-            end
+            -- for i=1,5,0.5 do
+            --     RenderCube(l-i,r+i,b-i,t+i,(5-i)/5*10*panel.timer/10,10,10,10)
+            -- end
             RenderCube(l,r,b,t,255*panel.timer/10,30,30,30)
+            RenderCube(l+bd,r-bd,b+bd,t-bd,255*panel.timer/10,255,255,255)
             RenderCube(l+bd,r-bd,b+bd,t-bd,255*panel.timer/10,255,255,255)
             
             local w2=t-b-bd2*2
             local d=r-l-2*bd2-w2
             l=l+d*self.flag_timer
+            RenderCube(l+bd2,l+bd2+w2,b+bd2,t-bd2,255*panel.timer/10,c,c,c)
             RenderCube(l+bd2,l+bd2+w2,b+bd2,t-bd2,255*panel.timer/10,c,c,c)
             l=r+GAP*2
             r=l+640

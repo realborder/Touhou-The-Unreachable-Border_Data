@@ -2,6 +2,7 @@
 ---TUO_Developer_Tool_kit 
 ---东方梦无垠开发者工具兼大型高危实验基地 
 ---code by JanrilW
+---还没有完全插件化，请手动在FrameFunc和AfterRender那边加frame和render
 --F3可以开关调试界面（第一次开启需要快速连按3下）
 --F6刷新输入设备
 --F9
@@ -14,7 +15,6 @@
 --------------按下某个键可以改变背景的phase
 --重载指定关卡
 --
---!注意，插件外的鼠标滚轮状态获取函数可能会失效，如有需要请把这里的移出去
 ---------------------------------------------------
 TUO_Developer_Tool_kit = TUO_Developer_Tool_kit or {}
 -- local self=TUO_Developer_Tool_kit
@@ -168,8 +168,16 @@ end
 function TUO_Developer_Tool_kit:init()
 	--
 	self.ttf='f3_word'
-	-- LoadTTF('f3_word','THlib\\UI\\ttf\\yrdzst.ttf',32)
-	LoadTTF('f3_word','THlib\\exani\\times.ttf',32)
+	--这个文件可能放在这几个地方，所以都过一遍
+	local ttfpath={"THlib\\exani\\times.ttf",
+		"Library\\plugins\\TUO_Developer_Tool_kit\\times.ttf",
+		"times.ttf"
+	}
+	local i=1
+	while lfs.attributes(ttfpath[i])==nil do
+		i=i+1
+	end
+	LoadTTF('f3_word',ttfpath[i],32)
 	self.visiable=false --标记界面是否可见
 	self.locked=true --标记是否锁定
 	self.unlock_time_limit=0
@@ -183,7 +191,6 @@ function TUO_Developer_Tool_kit:init()
 end
 
 function TUO_Developer_Tool_kit:frame()
-	--!!!设备输入补充，如果输入发生异常请删除这个
 	if not ext.pause_menu:IsKilled() then
 		GetInputExtra()
 	end
@@ -215,7 +222,7 @@ function TUO_Developer_Tool_kit:frame()
 			else ReloadFiles() end
 		end
 		if CheckKeyState(KEY.F9) then
-			self.KillBoss()
+			self:KillBoss()
 		end
 		if CheckKeyState(KEY.F8) then
 			self:RefreshPanels()
@@ -270,11 +277,11 @@ function TUO_Developer_HUD:KillBoss()
 	end
 	if #boss_list>0 and (not lstg.GetKeyState(KEY.SHIFT)) then 
 		for i=1,#boss_list do boss_list[i].hp=0 end
-	-- elseif debugPoint then
-	-- 	if lstg.GetKeyState(KEY.SHIFT) then 
-	-- 		debugPoint=debugPoint-1
-	-- 	else 
-	-- 		debugPoint=debugPoint+1 end
+	elseif debugPoint then
+		if lstg.GetKeyState(KEY.SHIFT) then 
+			debugPoint=debugPoint-1
+		else 
+			debugPoint=debugPoint+1 end
 	end
 end
 
