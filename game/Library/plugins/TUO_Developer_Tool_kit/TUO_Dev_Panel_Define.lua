@@ -274,7 +274,7 @@ function TUO_Developer_Tool_kit:AddPanels()
 				title='Included Script List',
 				text= 'The list below is all included lua scripts.\n"Reload All" for reload FULL game, please be careful.\n"save" and "load" buttons for save and load your selection.'
 				})
-				panel.list=TUO_Developer_HUD:NewWidget(panel,'slot1','list_box',{
+			panel.list=TUO_Developer_HUD:NewWidget(panel,'slot1','list_box',{
 				monitoring_value=lstg.included
 			})
 
@@ -424,7 +424,31 @@ function TUO_Developer_Tool_kit:AddPanels()
 					TUO_Developer_Tool_kit:Reload()
 				end
 			})
+			--玩家分数记录器
+			TUO_Developer_HUD:NewWidget(panel,'slot1','text_displayer',{
+				title='Player\'s score recorder',
+				text='alfhhjsadlfiaiwbelkgddhzcbdiu'
+			})
+			panel.email_inputer=TUO_Developer_HUD:NewWidget(panel,'slot1','inputer',{
+				text='e-mail'
+			})
+			panel._player_info={}
+			TUO_Developer_HUD:NewWidget(panel,'slot1','button',{
+				text='Confirm',
+				_event_mouseclick=function(widget)
+					local panel=widget.panel
+					local key=widget
+					local email=panel.email_inputer.text
+					if (panel._player_info[email] or 0) > lstg.var.score then return end
+					panel._player_info[email]=lstg.var.score
+				end
+			})
+			TUO_Developer_HUD:NewWidget(panel,'slot1','list_box',{
+				monitoring_value=panel._player_info,
+			})
 
+
+			--效果开关
 			TUO_Developer_HUD:NewWidget(panel,'slot1','text_displayer',{
 				title='Effect Cut',
 				text='The option is designed for the computers with low disposition.'

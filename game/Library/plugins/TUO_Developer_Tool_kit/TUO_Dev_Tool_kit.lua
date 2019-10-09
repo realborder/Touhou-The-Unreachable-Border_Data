@@ -148,7 +148,10 @@ function IndexValueByString(str,value)
 	if not value then
 		for k,v in pairs(tmp_k) do
 			if k==1 then tmp=_G[v]
-			else tmp=tmp[v] end
+			else 
+				if type(tmp)==nil then return nil end
+				tmp=tmp[v] 
+			end
 		end
 		return tmp
 	else
@@ -177,6 +180,8 @@ function TUO_Developer_Tool_kit:init()
 	while lfs.attributes(ttfpath[i])==nil do
 		i=i+1
 	end
+	-- LoadSound('TUO_btn_click',PATH_HEAD..'btn_click.wav')
+
 	LoadTTF('f3_word',ttfpath[i],32)
 	self.visiable=false --标记界面是否可见
 	self.locked=true --标记是否锁定

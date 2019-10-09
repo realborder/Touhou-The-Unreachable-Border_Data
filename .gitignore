@@ -41,7 +41,6 @@ game/Thlib/exani/exani_data/Title_Menu_item_PlayerData/ExaniConfig
 game/Thlib/exani/exani_data/Title_Menu_item_PlayerData/UI_title_test.jpg
 game/Thlib/exani/exani_data/Title_Menu_item_Replay/ExaniConfig
 game/Thlib/exani/exani_data/Title_Menu_item_Replay/UI_title_test.jpg
-game/Thlib/exani/exani_data/Title_Menu_item_Start/_exani_predefine.lua
 game/Thlib/exani/exani_data/Title_Menu_item_Start/ExaniConfig
 game/Thlib/exani/exani_data/Title_Menu_refer/_predefine.lua
 game/Thlib/exani/exani_data/Title_Menu_refer/ExaniConfig
@@ -213,3 +212,9 @@ tools/HGE粒子编辑器/particleed.paq
 tools/textools/texasm.log
 game/Library/data.zip
 game/mod/THUO_Stage1_insiderVer1.zip
+*.ini
+*.xml
+*.jpg
+*.txt
+*.zip
+Touhou-The-Unreachable-Border_Data.iml
