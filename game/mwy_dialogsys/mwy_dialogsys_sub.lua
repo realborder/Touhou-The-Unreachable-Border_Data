@@ -49,13 +49,14 @@ function dialogsys_sub.LoadImage(stage) --对应工程中的load部分
 			end
 		end
 	end
-	if dialogsys_sub.data[stage].dialog then
-		for k,v in pairs(dialogsys_sub.data[stage].dialog) do
-			for _,_v in pairs(v) do
-				CacheTTFString('balloon_font',_v[3])
-			end
-		end
-	end
+	---底层更新之后不再需要在一开始缓存字形了
+	-- if dialogsys_sub.data[stage].dialog then
+	-- 	for k,v in pairs(dialogsys_sub.data[stage].dialog) do
+	-- 		for _,_v in pairs(v) do
+	-- 			-- CacheTTFString('balloon_font',_v[3])
+	-- 		end
+	-- 	end
+	-- end
 end
 
 ---在关卡内应用对话块

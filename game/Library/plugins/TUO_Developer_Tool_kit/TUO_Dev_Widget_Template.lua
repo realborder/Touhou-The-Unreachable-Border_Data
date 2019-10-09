@@ -26,15 +26,15 @@ DeserializeTable=function (widget,t,output,level,index)
             table.insert(widget.display_value,{name='!!!',v=' Reached Table Print Limit',index=0}) return false end
         if type(_v)=='table' then 
             local head=''
-            for i=0,level-1 do head=head..'    ' end
-            if level>0 then head=head..'   +' end
+            for i=0,level-1 do head=head..'  ' end
+            if level>0 then head=head..' +' end
             table.insert(widget.display_value,{name=head.._k,v=_v})
             -- table.insert(widget.display_value,{name=head.._k,v=_v,index=index..tostring(_v)})
             local flag=DeserializeTable(widget,_v,nil,level+1,index..tostring(_v))
             -- if not flag then return false end
         else 
             local head=''
-            for i=0,level do head=head..'    ' end
+            for i=0,level do head=head..'  ' end
             table.insert(widget.display_value,{name=head.._k,v=_v})
             -- table.insert(widget.display_value,{name=head.._k,v=_v,index=index..tostring(_v)})
         end
@@ -279,7 +279,11 @@ TUO_Developer_HUD.TemplateWidget={
                 local color=Color(panel.timer/10*255,255*change[index],50*change[index],50*change[index])
                 -----------------------
                 b=t-HEIGHT
-                RenderTTF2(ttf,v.name..': '..tostring(v.v),l,r,b,t,SIZE,color,'left','top')
+                if self.text then 
+                    RenderTTF2(ttf,self.text..': '..tostring(v.v),l,r,b,t,SIZE,color,'left','top')
+                else
+                    RenderTTF2(ttf,v.name..': '..tostring(v.v),l,r,b,t,SIZE,color,'left','top')
+                end
                 t=t-HEIGHT-GAP
             end
 

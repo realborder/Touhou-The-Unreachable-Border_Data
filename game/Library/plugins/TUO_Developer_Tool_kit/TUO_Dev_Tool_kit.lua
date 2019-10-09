@@ -172,7 +172,8 @@ function TUO_Developer_Tool_kit:init()
 	--
 	self.ttf='f3_word'
 	--这个文件可能放在这几个地方，所以都过一遍
-	local ttfpath={"THlib\\exani\\times.ttf",
+	local ttfpath={"Library\\plugins\\TUO_Developer_Tool_kit\\simfang.ttf",
+		"THlib\\exani\\times.ttf",
 		"Library\\plugins\\TUO_Developer_Tool_kit\\times.ttf",
 		"times.ttf"
 	}
@@ -181,8 +182,11 @@ function TUO_Developer_Tool_kit:init()
 		i=i+1
 	end
 	-- LoadSound('TUO_btn_click',PATH_HEAD..'btn_click.wav')
-
+	RemoveResource('global',8,'f3_word')
+	RemoveResource('stage',8,'f3_word')
 	LoadTTF('f3_word',ttfpath[i],32)
+	
+	-- LoadTTF('f3_word','SimSun',32)
 	self.visiable=false --标记界面是否可见
 	self.locked=true --标记是否锁定
 	self.unlock_time_limit=0
