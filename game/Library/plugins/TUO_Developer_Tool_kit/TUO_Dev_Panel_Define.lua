@@ -1,6 +1,20 @@
 
 --------------------------------------------
 ---添加面板，为了方便阅读相关内容全部放在这里
+
+--检测输入的是否是邮箱的函数
+function CheckEmail(string)
+    if not string then
+        return false
+    end
+ 
+    if (string:match("[A-Za-z0-9%.%%%+%-]+@[A-Za-z0-9%.%%%+%-]+%.%w%w%w?%w?")) then
+        return true
+    else
+        return false
+    end
+end
+
 function TUO_Developer_Tool_kit:AddPanels()
 	---全输入监测（已完成）（键盘、鼠标、手柄）---------------------------------------------------------
 		self.hud.NewPanel('输入监测', nil,
@@ -426,21 +440,24 @@ function TUO_Developer_Tool_kit:AddPanels()
 			--玩家分数记录器
 			TUO_Developer_HUD:NewWidget(panel,'slot1','text_displayer',{
 				title='Player\'s score recorder',
-				text='alfhhjsadlfiaiwbelkgddhzcbdiu'
+				text='请在下方输入你的电子邮箱'
 			})
 			panel.email_inputer=TUO_Developer_HUD:NewWidget(panel,'slot1','inputer',{
-				text='e-mail'
+				text=''
 			})
 			panel._player_info={}
 			TUO_Developer_HUD:NewWidget(panel,'slot1','button',{
-				text='Confirm',
+				text='确认',
 				_event_mouseclick=function(widget)
 					local panel=widget.panel
 					local key=widget
 					local email=panel.email_inputer.text
-					if (panel._player_info[email] or 0) > lstg.var.score then return end
-					panel._player_info[email]=lstg.var.score
+					if CheckEmail(email) then
+					    if (panel._player_info[email] or 0) > lstg.var.score then return end
+					        panel._player_info[email]=lstg.var.score
+					else return end	
 				end
+
 			})
 			TUO_Developer_HUD:NewWidget(panel,'slot1','list_box',{
 				monitoring_value=panel._player_info,
