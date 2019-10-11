@@ -271,7 +271,7 @@ function TUO_Developer_HUD.frame()
     --直接点击
     for k,v in pairs(self.panel) do
         if v.mouseDrop then
-            if MouseTrigger(_MOUSE.LEFT_BUTTON) then self.cur=k end
+            if MouseTrigger(_MOUSE.LEFT_BUTTON) then self.cur=k PlaySound('TUO_Dev_HUD_panel',4) end
         end
     end
     --翻页

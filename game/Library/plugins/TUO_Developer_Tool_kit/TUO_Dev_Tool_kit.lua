@@ -182,6 +182,10 @@ function TUO_Developer_Tool_kit:init()
 		i=i+1
 	end
 	-- LoadSound('TUO_btn_click',PATH_HEAD..'btn_click.wav')
+	LoadSound('TUO_Dev_HUD_unlock',PATH_HEAD..'TUO_Dev_HUD_unlock.wav')
+	LoadSound('TUO_Dev_HUD_open',PATH_HEAD..'TUO_Dev_HUD_open.wav')
+	LoadSound('TUO_Dev_HUD_close',PATH_HEAD..'TUO_Dev_HUD_close.wav')
+	LoadSound('TUO_Dev_HUD_panel',PATH_HEAD..'TUO_Dev_HUD_panel.wav')
 	RemoveResource('global',8,'f3_word')
 	RemoveResource('stage',8,'f3_word')
 	LoadTTF('f3_word',ttfpath[i],32)
@@ -220,7 +224,8 @@ function TUO_Developer_Tool_kit:frame()
 		if self.unlock_count>=self.UNLOCK_COUNT and self.unlock_time_limit>0 then 
 			self.locked=false 
 			self.visiable = not self.visiable
-			if self.visiable then Log('F3调试界面已开启') else Log('F3调试界面已关闭') end
+			if self.visiable then Log('F3调试界面已开启') PlaySound('TUO_Dev_HUD_unlock',4)
+			else Log('F3调试界面已关闭') end
 		end
 	else
 		if CheckKeyState(KEY.F10) then 
@@ -238,7 +243,13 @@ function TUO_Developer_Tool_kit:frame()
 		end
 		if CheckKeyState(KEY.F3) then
 			self.visiable = not self.visiable
-			if self.visiable then Log('F3调试界面已开启') else Log('F3调试界面已关闭') end
+			if self.visiable then 
+				Log('F3调试界面已开启') 
+				PlaySound('TUO_Dev_HUD_open',4)
+			else
+				Log('F3调试界面已关闭') 
+				PlaySound('TUO_Dev_HUD_close',4)
+			end
 		end
 		if CheckKeyState(KEY.F5) then
 			if lstg.GetKeyState(KEY.SHIFT) then
@@ -259,6 +270,7 @@ function TUO_Developer_Tool_kit:frame()
 			else
 				if hud.cur==num then hud.cur=1 else hud.cur=hud.cur+1 end
 			end
+			PlaySound('TUO_Dev_HUD_panel',4)
 		end
 		--鼠标滚轮的操作写HUD里了
 
