@@ -13,7 +13,7 @@ local self=TUO_Developer_HUD
 self.self=TUO_Developer_Tool_kit
 
 
-local SIDE_X1,SIDE_X2,SIDE_X3,SIDE_X4=-107,56,72,620
+local SIDE_X1,SIDE_X2,SIDE_X3,SIDE_X4=-107,35,72,620
 ---------------------------------
 ---粗糙的补间函数
 local expl = function(vstart,vend,t)  return vstart+(vend-vstart)*sin(90*t) end
@@ -248,7 +248,7 @@ function TUO_Developer_HUD.init()
     self.cur=1
     self.scroll_force=0
     self.timer=0
-    self.alpha=0.75
+    self.alpha=0.9
 end
 
 function TUO_Developer_HUD.frame()

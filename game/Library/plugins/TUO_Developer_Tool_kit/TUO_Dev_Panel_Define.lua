@@ -204,8 +204,8 @@ function TUO_Developer_Tool_kit:AddPanels()
 				TUO_Developer_HUD:NewWidget(panel,'slot1','button',{
 					_index=i,
 					text=v_,
-					width=50,
-					x_pos2=(i-1)*54
+					width=60,
+					x_pos2=(i-1)*64	
 				})
 			end
 			
@@ -394,7 +394,34 @@ function TUO_Developer_Tool_kit:AddPanels()
 			)
 
 		end)
-
+	---玩家分数记录器
+			self.hud.NewPanel('玩家分数记录',nil,function(panel)
+				TUO_Developer_HUD:NewWidget(panel,'slot1','text_displayer',{
+					title='玩家分数记录器',
+					text='请在下方输入你的电子邮箱'
+				})
+				panel.email_inputer=TUO_Developer_HUD:NewWidget(panel,'slot1','inputer',{
+					text=''
+				})
+				panel._player_info={}
+				TUO_Developer_HUD:NewWidget(panel,'slot1','button',{
+					text='确认',
+					_event_mouseclick=function(widget)
+						local panel=widget.panel
+						local key=widget
+						local email=panel.email_inputer.text
+						if CheckEmail(email) then
+							if (panel._player_info[email] or 0) > lstg.var.score then return end
+								panel._player_info[email]=lstg.var.score
+						else return end	
+					end
+	
+				})
+				TUO_Developer_HUD:NewWidget(panel,'slot1','list_box',{
+					monitoring_value=panel._player_info,
+				})
+			end)
+				
 	---一些杂项和设置
 
 		self.hud.NewPanel('其他',nil,function(panel)
@@ -411,6 +438,7 @@ function TUO_Developer_Tool_kit:AddPanels()
 			})
 			TUO_Developer_HUD:NewWidget(panel,'slot1','button',{
 				text='锁定',
+				width=64,
 				_event_mouseclick=function(widget)
 					TUO_Developer_Tool_kit.visiable=false 
 					TUO_Developer_Tool_kit.hud.timer=0
@@ -424,6 +452,7 @@ function TUO_Developer_Tool_kit:AddPanels()
 			})
 			TUO_Developer_HUD:NewWidget(panel,'slot1','button',{
 				text='重载 (F5)',
+				width=96,
 				_event_mouseclick=function(widget)
 					TUO_Developer_Tool_kit:RefreshPanels()
 				end
@@ -433,35 +462,12 @@ function TUO_Developer_Tool_kit:AddPanels()
 			})
 			TUO_Developer_HUD:NewWidget(panel,'slot1','button',{
 				text='重载 (Shift + F5)',
+				width=135,
 				_event_mouseclick=function(widget)
 					TUO_Developer_Tool_kit:Reload()
 				end
 			})
-			--玩家分数记录器
-			TUO_Developer_HUD:NewWidget(panel,'slot1','text_displayer',{
-				title='Player\'s score recorder',
-				text='请在下方输入你的电子邮箱'
-			})
-			panel.email_inputer=TUO_Developer_HUD:NewWidget(panel,'slot1','inputer',{
-				text=''
-			})
-			panel._player_info={}
-			TUO_Developer_HUD:NewWidget(panel,'slot1','button',{
-				text='确认',
-				_event_mouseclick=function(widget)
-					local panel=widget.panel
-					local key=widget
-					local email=panel.email_inputer.text
-					if CheckEmail(email) then
-					    if (panel._player_info[email] or 0) > lstg.var.score then return end
-					        panel._player_info[email]=lstg.var.score
-					else return end	
-				end
 
-			})
-			TUO_Developer_HUD:NewWidget(panel,'slot1','list_box',{
-				monitoring_value=panel._player_info,
-			})
 
 
 			--效果开关
@@ -511,7 +517,7 @@ function TUO_Developer_Tool_kit:AddPanels()
 				text='Hello LuaSTG!'
 			})
 			TUO_Developer_HUD:NewWidget(panel,'slot1','text_displayer',{
-				text='华文隶书大胜利！！！'
+				text='华文中宋大胜利！！！'
 			})
 
 			TUO_Developer_HUD:NewWidget(panel,'slot1','switch',{
@@ -524,11 +530,12 @@ function TUO_Developer_Tool_kit:AddPanels()
 				text_off='test test'
 			})
 			TUO_Developer_HUD:NewWidget(panel,'slot1','inputer',{
-				text='但是你打不了中文啊（悲）',
+				text='HSV大法好！！！！',
 			})
-
-			TUO_Developer_HUD:NewWidget(panel,'slot1','list_box',{
-				monitoring_value='lstg',
+			TUO_Developer_HUD:NewWidget(panel,'slot1','text_displayer',{
+				text='取色器测试，请确保你使用了支持HSV颜色对象的底层'
+			})
+			TUO_Developer_HUD:NewWidget(panel,'slot1','color_sampler',{
 			})
 		end)
 end

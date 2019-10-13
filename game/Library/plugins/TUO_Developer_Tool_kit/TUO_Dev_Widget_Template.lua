@@ -76,6 +76,8 @@ local expl = function(vstart,vend,t)  return vstart+(vend-vstart)*sin(90*t) end
 local RenderCube= function(l,r,b,t,ca,cr,cg,cb) 
     if ca and cr and cg and cb then
         SetImageState('white','',Color(ca,cr,cg,cb)) end
+    if ca and (not cr) then
+        SetImageState('white','',ca) end
     RenderRect('white',l,r,b,t)
 end
 -----------------------------------
@@ -140,6 +142,8 @@ TUO_Developer_HUD.TemplateWidget={
                     -- elseif self.panel.focusedWidget==self._index then
                     -- else -- 如果焦点在别人身上那没事了
                     -- end
+                elseif self._mouse_stay and MousePress(0) then
+                    if self._event_mousehold then self._event_mousehold(self) end
                 -- 鼠标停留的时候鼠标被抬起，同时自身已经被按下
                 elseif self._mouse_stay and self._pressed and MouseIsReleased(0) then
                     self._pressed=false
@@ -939,6 +943,225 @@ TUO_Developer_HUD.TemplateWidget={
 
         end,
     },
+    ['color_sampler']={
+        initfunc=function(self)
+            self.enable=true
+            self.flag_timer=0
+            self.monitoring_value=nil
+
+            --颜色信息
+            self.alpha=100
+            self.hue=0
+            self.saturation=0
+            self.lightness=0
+            self.color=HSVColor(100,0,0,0)
+            self.colorpre=HSVColor(100,0,0,0)
+            
+            self._event_mousehold=function(self)
+                --兼容性保证
+                if not HSVColor then return end
+                local w=self.ringw
+                local l=self.hitbox.l
+                local b,t=self.hitbox.b,self.hitbox.t
+                local r=l+t-b
+                local x,y=(l+r)/2,(b+t)/2
+                local r1=x-l
+                local r2=r1-w
+                local r3=r2-w/2
+                local r4=r3-w
+                local l2=l+t-b+16
+                local mx,my=MouseState.x_in_UI,MouseState.y_in_UI
+                local mr=Dist(mx,my,x,y)
+                local ma=atan2(my-y,mx-x)
+                if mr>r3 and mr<r1 then
+                    self.hue=(ma+360)%360
+                    self.color=HSVColor(self.alpha,self.hue,self.saturation,self.lightness)
+                elseif mr<r3 then
+                    --xy中心
+                    local xc,yc=x,y
+                    local x,y=mr*cos(ma-self.hue+30),mr*sin(ma-self.hue+30)
+                    local b=yc-r4
+                    local l=xc-cos(30)*r4
+                    local w=2*cos(30)*r4
+                    local h=(1+sin(30))*r4
+                    x,y=x+w/2,y+r4
+                    local dx=w/2-x
+                    local y1=y/h
+                    dx=dx/y1
+                    x=w/2+dx
+                    local x1=x/w
+                    x1=min(1,max(0,x1))
+                    y1=min(1,max(0,y1))
+                    self.saturation=100*(1-x1)
+                    self.lightness=100*y1
+                    self.color=HSVColor(self.alpha,self.hue,self.saturation,self.lightness)
+                elseif mx>l2 and mx<l2+16 and my<t and my>b then
+                    self.alpha=(my-b)/(t-b)*100
+                    self.color=HSVColor(self.alpha,self.hue,self.saturation,self.lightness)
+                end
+            end
+            ---排版
+            self.width=512
+            self.height=256
+            self.gap=12
+            self.size=0.8
+            self.ringw=16
+        end,
+        framefunc=function(self)
+            if self.monitoring_value then
+                local v=IndexValueByString(self.monitoring_value)
+                if type(v)=='boolean'  then
+                    self.flag=v
+                end
+            end
+            if self.flag then
+                self.flag_timer=min(1,self.flag_timer+0.1)
+            else
+                self.flag_timer=max(0,self.flag_timer-0.1)
+            end
+            if not self._pressed then self.colorpre=self.color end
+        end,
+        renderfunc=function(self)
+            local panel=self.panel
+            local alpha=panel.timer/10
+            --排版
+            local TOP_OFFSET=16
+            local WIDTH=self.width
+            local HEIGHT=self.height
+            local SIZE=self.size
+            local GAP=self.gap
+            local x_pos=self._x_pos
+            ---lrbt初始值
+            local l=expl(x_pos+36,x_pos,panel.timer/10)
+            local r=l+WIDTH
+            local t=480-TOP_OFFSET+panel.y_offset 
+            local b
+            ---slot2锁定位置不滚动
+            if self._position_lock then t=480-TOP_OFFSET end
+            ---沿用上一个控件的y
+            if panel.__DH_last_top~=0 and panel.__DH_last_x_pos==self._x_pos then
+                t=panel.__DH_last_top-GAP 
+            end
+            b=t-HEIGHT
+            self.hitbox={l=l,r=r,b=b,t=t}
+            t=t-HEIGHT-GAP
+            panel.__DH_last_top=t
+            panel.__DH_last_x_pos=x_pos
+            
+            local l=self.hitbox.l
+            local r=self.hitbox.r
+            local b=self.hitbox.b
+            local t=self.hitbox.t
+            local ttf=self.ttf
+            --兼容性保证
+            if not HSVColor then 
+                RenderTTF2(ttf,'底层不支持HSV颜色对象构造，控件不可用',l,r,b,t,1,Color(255,0,0,0))
+                return
+            end
+            ----渲染大色环
+            do
+                local w=self.ringw
+                local l=l
+                local b,t=b,t
+                local r=l+t-b
+                local x,y=(l+r)/2,(b+t)/2
+                local r1=x-l
+                local r2=r1-w
+                local r3=r2-w/2
+                local r4=r3-w
+                --SV跟随色相环
+                    for i=0,359 do
+                        SetImageState('white','',HSVColor(100*alpha,i,self.saturation,self.lightness))
+                        sp.misc.RenderFanShape('white',x,y,i,i+1,r2,r3)
+                    end
+                --纯色色相环
+                    for i=0,359 do
+                        SetImageState('white','',HSVColor(100*alpha,i,100,100))
+                        sp.misc.RenderFanShape('white',x,y,i,i+1,r1,r2)
+                    end
+                    for i=0,359 do
+                        if int(self.hue)==i then 
+                            for j=1,3,0.5 do
+                                SetImageState('white','',Color(10*(4-j)*alpha,10,10,10))
+                                sp.misc.RenderFanShape('white',x,y,i-j,i+1+j,r1+j,r2-j)
+                            end
+                            SetImageState('white','',HSVColor(100*alpha,i,100,100))
+                            sp.misc.RenderFanShape('white',x,y,i,i+1,r1,r2)
+                        end
+                    end
+                --渐变三角色块
+                    local c1={x+r4*cos(self.hue+120),   y+r4*sin(self.hue+120), 0.5}
+                    local c2={x+r4*cos(self.hue),       y+r4*sin(self.hue),     0.5}
+                    local c3={x+r4*cos(self.hue-120),   y+r4*sin(self.hue-120), 0.5}
+                    SetImageState('white','',Color(255*alpha,255,255,255),HSVColor(100*alpha,self.hue,100,100),Color(255*alpha,0,0,0),Color(255*alpha,0,0,0))
+                    Render4V('white',c1[1],c1[2],c1[3],c2[1],c2[2],c2[3],c3[1],c3[2],c3[3],c3[1],c3[2],c3[3])
+                --显示当前选取的颜色的位置，这段代码是_event_mousehold中函数的反演函数
+                    do  
+                        local w=self.ringw
+                        local l=self.hitbox.l
+                        local b,t=self.hitbox.b,self.hitbox.t
+                        local r=l+t-b
+                        local xc,yc=(l+r)/2,(b+t)/2
+                        local b=yc-r4
+                        local l=xc-cos(30)*r4
+                        local w=2*cos(30)*r4
+                        local h=(1+sin(30))*r4
+                        local x1=1-self.saturation/100
+                        local y1=self.lightness/100
+                        local x=x1*w
+                        local dx=(x-w/2)*y1
+                        local y=y1*h
+                        x=w/2-dx
+                        x,y=x-w/2,y-r4
+                        local r,a=Dist(0,0,x,y),atan2(y,x)
+                        a=a-30+self.hue
+                        x,y=r*cos(a)+xc,r*sin(a)+yc
+                        SetImageState('white','',Color(160*alpha,64,64,64))
+                        sp.misc.RenderRing('white', x, y, 6, 5, 32, 0)
+                        SetImageState('white','',Color(160*alpha,255,255,255))
+                        sp.misc.RenderRing('white', x, y, 5, 4, 32, 0)
+                    end
+            end
+            ----渲染透明度条
+                l=l+t-b+16
+                do
+                    local r=l+16
+                    SetImageState('white','',Color(255*alpha,180,180,180))
+                    for i=0,16-4,4 do for j=0,t-b-4,4 do
+                            if (i/4+j/4)%2==0 then RenderRect('white',l+i,l+i+4,b+j,b+j+4) end
+                    end end
+                    SetImageState('white','',Color(255*alpha,255,255,255))
+                    for i=0,16-4,4 do for j=0,t-b-4,4 do
+                            if (i/4+j/4)%2==1 then RenderRect('white',l+i,l+i+4,b+j,b+j+4) end
+                    end end
+                    SetImageState('white','',HSVColor(100*alpha,self.hue,self.saturation,self.lightness),HSVColor(100*alpha,self.hue,self.saturation,self.lightness),HSVColor(0,self.hue,self.saturation,self.lightness),HSVColor(0,self.hue,self.saturation,self.lightness))
+                    RenderRect('white',l,r,b,t)
+                    local a=self.alpha/100*(t-b)+b
+                    RenderCube(l-2,r+2,a-2,a+2,alpha*150,20,20,20)
+                end
+            ----渲染信息
+                l=l+24
+                r=l+48
+                b=t-32
+                RenderCube(l,r,b,t,self.color)
+                t=b b=t-32
+                RenderCube(l,r,b,t,self.colorpre)
+                t=b-8 b=t-16
+                local disp={
+                    string.format('A:%d',self.color.a),
+                    string.format('R:%d',self.color.r),
+                    string.format('G:%d',self.color.g),
+                    string.format('B:%d',self.color.b),
+                    string.format('H:%d',self.hue),
+                    string.format('S:%d',self.saturation),
+                    string.format('V:%d',self.lightness),
+                }
+                for k,v in pairs(disp) do
+                    RenderTTF2(ttf,v,l,r,b,t,self.size,Color(255*panel.timer/10,0,0,0),'top','left')
+                    t=t-16 b=t-16
+                end
+        end,
+    },
     ['texture_displayer']={
         initfunc=function(self)
         end,
@@ -971,7 +1194,7 @@ end
 function TUO_Developer_HUD:NewWidget(panel,x_pos,template,para)
     local tpl_g=self.TemplateWidget['_GENERAL']
     local tpl=self.TemplateWidget[template]
-    local x_pos_list={slot1=72,slot2=620}
+    local x_pos_list={slot1=53,slot2=620}
     local tmp_widget={}
     if not tpl then return error('Template \"'..template..'\" dosen\'t exist!') end
     --把_GENERAL里的东西迁过去
