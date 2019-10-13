@@ -186,7 +186,6 @@ function TUO_Developer_Tool_kit:init()
 	LoadSound('TUO_Dev_HUD_open',PATH_HEAD..'TUO_Dev_HUD_open.wav')
 	LoadSound('TUO_Dev_HUD_close',PATH_HEAD..'TUO_Dev_HUD_close.wav')
 	LoadSound('TUO_Dev_HUD_panel',PATH_HEAD..'TUO_Dev_HUD_panel.wav')
-	RemoveResource('global',8,'f3_word')
 	RemoveResource('stage',8,'f3_word')
 	LoadTTF('f3_word',ttfpath[i],32)
 	
@@ -204,6 +203,8 @@ function TUO_Developer_Tool_kit:init()
 end
 
 function TUO_Developer_Tool_kit:frame()
+	--切关时迷之报错，拿这个先顶一下	
+	if stage.next_stage then return end
 	if not ext.pause_menu:IsKilled() then
 		GetInputExtra()
 	end
@@ -284,6 +285,8 @@ function TUO_Developer_Tool_kit:frame()
 	end
 end
 function TUO_Developer_Tool_kit:render()
+	--切关时迷之报错，拿这个先顶一下
+	if stage.next_stage then return end	
 	--这里用exanieditor的字体了
 	if self.hud.timer>0 then
 		self.hud:render()
