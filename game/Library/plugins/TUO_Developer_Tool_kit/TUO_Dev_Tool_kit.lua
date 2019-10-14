@@ -168,6 +168,51 @@ function IndexValueByString(str,value)
 end
 
 
+function TUO_Developer_Tool_kit:KillBoss()
+	--适配多boss
+	local boss_list={}
+	for _,o in ObjList(GROUP_ENEMY) do
+		if o._bosssys then table.insert(boss_list,o) end
+	end
+	if #boss_list>0 and (not lstg.GetKeyState(KEY.SHIFT)) then 
+		for i=1,#boss_list do boss_list[i].hp=0 end
+	elseif debugPoint then
+		if lstg.GetKeyState(KEY.SHIFT) then 
+			debugPoint=debugPoint-1
+		else 
+			debugPoint=debugPoint+1 end
+	end
+end
+
+function TUO_Developer_Tool_kit:Reload()
+	Log('开始重载整个插件',4)
+	local ReloadSingleFile=function(path)
+		if not(lfs.attributes(path) == nil) then 
+			local r,err=xpcall(lstg.DoFile,debug.traceback,path)
+			if r then 
+				Log('成功重载脚本：'..path,2)
+				-- flag=true
+			else
+				Log('重载脚本：'..path..' 的时候发生错误\n\t错误详细信息:\n\t\t'..err,1) 
+			end
+		else
+			Log('脚本 '..path..' 不存在',1) 
+		end
+	end
+	local PATH_HEAD='Library\\plugins\\TUO_Developer_Tool_kit\\'
+	local DoFilePlus=function(path)
+		if lfs.attributes(path) == nil then
+			path=PATH_HEAD..path
+		end 
+		ReloadSingleFile(path)
+	end
+	TUO_Developer_Tool_kit = {}
+	DoFilePlus"TUO_Dev_HUD.lua"
+	DoFilePlus"TUO_Dev_Panel_Define.lua"
+	DoFilePlus"TUO_Dev_Widget_Template.lua"
+	DoFilePlus'TUO_Dev_Tool_kit.lua'
+end
+
 function TUO_Developer_Tool_kit:init()
 	--
 	self.ttf='f3_word'
@@ -293,50 +338,6 @@ function TUO_Developer_Tool_kit:render()
 	end
 end
 
-function TUO_Developer_HUD:KillBoss()
-	--适配多boss
-	local boss_list={}
-	for _,o in ObjList(GROUP_ENEMY) do
-		if o._bosssys then table.insert(boss_list,o) end
-	end
-	if #boss_list>0 and (not lstg.GetKeyState(KEY.SHIFT)) then 
-		for i=1,#boss_list do boss_list[i].hp=0 end
-	elseif debugPoint then
-		if lstg.GetKeyState(KEY.SHIFT) then 
-			debugPoint=debugPoint-1
-		else 
-			debugPoint=debugPoint+1 end
-	end
-end
-
-function TUO_Developer_Tool_kit:Reload()
-	Log('开始重载整个插件',4)
-	local ReloadSingleFile=function(path)
-		if not(lfs.attributes(path) == nil) then 
-			local r,err=xpcall(lstg.DoFile,debug.traceback,path)
-			if r then 
-				Log('成功重载脚本：'..path,2)
-				-- flag=true
-			else
-				Log('重载脚本：'..path..' 的时候发生错误\n\t错误详细信息:\n\t\t'..err,1) 
-			end
-		else
-			Log('脚本 '..path..' 不存在',1) 
-		end
-	end
-	local PATH_HEAD='Library\\plugins\\TUO_Developer_Tool_kit\\'
-	local DoFilePlus=function(path)
-		if lfs.attributes(path) == nil then
-			path=PATH_HEAD..path
-		end 
-		ReloadSingleFile(path)
-	end
-	TUO_Developer_Tool_kit = {}
-	DoFilePlus"TUO_Dev_HUD.lua"
-	DoFilePlus"TUO_Dev_Panel_Define.lua"
-	DoFilePlus"TUO_Dev_Widget_Template.lua"
-	DoFilePlus'TUO_Dev_Tool_kit.lua'
-end
 
 
 

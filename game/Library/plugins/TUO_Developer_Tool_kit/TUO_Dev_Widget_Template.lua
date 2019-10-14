@@ -950,12 +950,15 @@ TUO_Developer_HUD.TemplateWidget={
             self.monitoring_value=nil
 
             --颜色信息
-            self.alpha=100
-            self.hue=0
-            self.saturation=0
-            self.lightness=0
-            self.color=HSVColor(100,0,0,0)
-            self.colorpre=HSVColor(100,0,0,0)
+            if HSVColor then 
+                self.alpha=100
+                self.hue=0
+                self.saturation=0
+                self.lightness=0
+                self.color=HSVColor(100,0,0,0)
+                self.colorpre=HSVColor(100,0,0,0)
+            end
+
             
             self._event_mousehold=function(self)
                 --兼容性保证
