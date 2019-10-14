@@ -425,118 +425,141 @@ function TUO_Developer_Tool_kit:AddPanels()
 	---一些杂项和设置
 
 		self.hud.NewPanel('其他',nil,function(panel)
-			TUO_Developer_HUD:NewWidget(panel,'slot1','text_displayer',{
-				title='杂项',
-				text='改变背景透明度。'
-			})
-			TUO_Developer_HUD:NewWidget(panel,'slot1','value_slider',{
-				monitoring_value='TUO_Developer_HUD.alpha',
-				max_value=1
-			})
-			TUO_Developer_HUD:NewWidget(panel,'slot1','text_displayer',{
-				text='锁定这个插件。'
-			})
-			TUO_Developer_HUD:NewWidget(panel,'slot1','button',{
-				text='锁定',
-				width=64,
-				_event_mouseclick=function(widget)
-					TUO_Developer_Tool_kit.visiable=false 
-					TUO_Developer_Tool_kit.hud.timer=0
-					TUO_Developer_Tool_kit.locked=true
-					TUO_Developer_Tool_kit.unlock_time_limit=0
-					TUO_Developer_Tool_kit.unlock_count=0
-				end
-			})
-			TUO_Developer_HUD:NewWidget(panel,'slot1','text_displayer',{
-				text='重载所有面板。'
-			})
-			TUO_Developer_HUD:NewWidget(panel,'slot1','button',{
-				text='重载 (F5)',
-				width=96,
-				_event_mouseclick=function(widget)
-					TUO_Developer_Tool_kit:RefreshPanels()
-				end
-			})
-			TUO_Developer_HUD:NewWidget(panel,'slot1','text_displayer',{
-				text='重载整个插件，请小心操作。'
-			})
-			TUO_Developer_HUD:NewWidget(panel,'slot1','button',{
-				text='重载 (Shift + F5)',
-				width=135,
-				_event_mouseclick=function(widget)
-					TUO_Developer_Tool_kit:Reload()
-				end
-			})
+			--杂项
+				TUO_Developer_HUD:NewWidget(panel,'slot1','text_displayer',{
+					title='杂项',
+					text='改变背景透明度。'
+				})
+				TUO_Developer_HUD:NewWidget(panel,'slot1','value_slider',{
+					monitoring_value='TUO_Developer_HUD.alpha',
+					max_value=1
+				})
+				TUO_Developer_HUD:NewWidget(panel,'slot1','text_displayer',{
+					text='锁定这个插件。'
+				})
+				TUO_Developer_HUD:NewWidget(panel,'slot1','button',{
+					text='锁定',
+					width=64,
+					_event_mouseclick=function(widget)
+						TUO_Developer_Tool_kit.visiable=false 
+						TUO_Developer_Tool_kit.hud.timer=0
+						TUO_Developer_Tool_kit.locked=true
+						TUO_Developer_Tool_kit.unlock_time_limit=0
+						TUO_Developer_Tool_kit.unlock_count=0
+					end
+				})
+				TUO_Developer_HUD:NewWidget(panel,'slot1','text_displayer',{
+					text='重载所有面板。'
+				})
+				TUO_Developer_HUD:NewWidget(panel,'slot1','button',{
+					text='重载 (F5)',
+					width=96,
+					_event_mouseclick=function(widget)
+						TUO_Developer_Tool_kit:RefreshPanels()
+					end
+				})
+				TUO_Developer_HUD:NewWidget(panel,'slot1','text_displayer',{
+					text='重载整个插件，请小心操作。'
+				})
+				TUO_Developer_HUD:NewWidget(panel,'slot1','button',{
+					text='重载 (Shift + F5)',
+					width=135,
+					_event_mouseclick=function(widget)
+						TUO_Developer_Tool_kit:Reload()
+					end
+				})
 
 
 
 			--效果开关
+				TUO_Developer_HUD:NewWidget(panel,'slot1','text_displayer',{
+					title='效果开关',
+					text='以下是为电脑配置低的用户准备的选项。'
+				})
+				TUO_Developer_HUD:NewWidget(panel,'slot1','switch',{
+					text_on='关卡背景：开',
+					text_off='关卡背景：关',
+					flag=true
+				})
+				TUO_Developer_HUD:NewWidget(panel,'slot1','switch',{
+					text_on='符卡背景展开和收回效果：开',
+					text_off='符卡背景展开和收回效果：关',
+					flag=true
+				})
+				TUO_Developer_HUD:NewWidget(panel,'slot1','switch',{
+					text_on='开卡特效：开',
+					text_off='开卡特效：关',
+					flag=true
+				})
+				TUO_Developer_HUD:NewWidget(panel,'slot1','switch',{
+					text_on='其他特效：开',
+					text_off='其他特效：关',
+					flag=true
+				})
+
+			--调节world位置
+			TUO_Developer_HUD._scrl=32
 			TUO_Developer_HUD:NewWidget(panel,'slot1','text_displayer',{
-				title='效果开关',
-				text='以下是为电脑配置低的用户准备的选项。'
-			})
-			TUO_Developer_HUD:NewWidget(panel,'slot1','switch',{
-				text_on='关卡背景：开',
-				text_off='关卡背景：关',
-				flag=true
-			})
-			TUO_Developer_HUD:NewWidget(panel,'slot1','switch',{
-				text_on='符卡背景展开和收回效果：开',
-				text_off='符卡背景展开和收回效果：关',
-				flag=true
-			})
-			TUO_Developer_HUD:NewWidget(panel,'slot1','switch',{
-				text_on='开卡特效：开',
-				text_off='开卡特效：关',
-				flag=true
-			})
-			TUO_Developer_HUD:NewWidget(panel,'slot1','switch',{
-				text_on='其他特效：开',
-				text_off='其他特效：关',
-				flag=true
-			})
-			--沙盒
-			_you_can_never_find_this_variable=23333333
+					title='world位置调节',
+					text='调节world横向位置，请谨慎使用。\n最左端为默认位置'
+				})
 			TUO_Developer_HUD:NewWidget(panel,'slot1','value_displayer',{
-				title='沙盒（高危试验场地）',
-				monitoring_value='_you_can_never_find_this_variable'
-			})
-			TUO_Developer_HUD:NewWidget(panel,'slot1','value_gauge',{
-				monitoring_value='_you_can_never_find_this_variable',
-				max_value=23333333
-			})
+					monitoring_value='TUO_Developer_HUD._scrl'
+				})
 			TUO_Developer_HUD:NewWidget(panel,'slot1','value_slider',{
-				monitoring_value='_you_can_never_find_this_variable',
-				max_value=23333333
-			})
-			TUO_Developer_HUD:NewWidget(panel,'slot1','button',{
-				text='Hello LuaSTG!',
-				_event_mouseclick=function()  end}
-			)
-			TUO_Developer_HUD:NewWidget(panel,'slot1','text_displayer',{
-				text='Hello LuaSTG!'
-			})
-			TUO_Developer_HUD:NewWidget(panel,'slot1','text_displayer',{
-				text='华文中宋大胜利！！！'
+				monitoring_value='TUO_Developer_HUD._scrl',
+				text='world_left',
+				max_value=128,
+				min_value=32,
+				_event_valuechange=function(widget)
+					lstg.world.scrl=TUO_Developer_HUD._scrl
+					lstg.world.scrr=TUO_Developer_HUD._scrl+384
+				end
+
 			})
 
-			TUO_Developer_HUD:NewWidget(panel,'slot1','switch',{
-				text_on='Ohhhh man!',
-				text_off='Creeper?'
-			})
+			--沙盒
+				_you_can_never_find_this_variable=23333333
+				TUO_Developer_HUD:NewWidget(panel,'slot1','value_displayer',{
+					title='沙盒（高危试验场地）',
+					monitoring_value='_you_can_never_find_this_variable'
+				})
+				TUO_Developer_HUD:NewWidget(panel,'slot1','value_gauge',{
+					monitoring_value='_you_can_never_find_this_variable',
+					max_value=23333333
+				})
+				TUO_Developer_HUD:NewWidget(panel,'slot1','value_slider',{
+					monitoring_value='_you_can_never_find_this_variable',
+					max_value=23333333
+				})
+				TUO_Developer_HUD:NewWidget(panel,'slot1','button',{
+					text='Hello LuaSTG!',
+					_event_mouseclick=function()  end}
+				)
+				TUO_Developer_HUD:NewWidget(panel,'slot1','text_displayer',{
+					text='Hello LuaSTG!'
+				})
+				TUO_Developer_HUD:NewWidget(panel,'slot1','text_displayer',{
+					text='华文中宋大胜利！！！'
+				})
 
-			TUO_Developer_HUD:NewWidget(panel,'slot1','switch',{
-				text_on='test|test',
-				text_off='test test'
-			})
-			TUO_Developer_HUD:NewWidget(panel,'slot1','inputer',{
-				text='HSV大法好！！！！',
-			})
-			TUO_Developer_HUD:NewWidget(panel,'slot1','text_displayer',{
-				text='取色器测试，请确保你使用了支持HSV颜色对象的底层'
-			})
-			TUO_Developer_HUD:NewWidget(panel,'slot1','color_sampler',{
-			})
+				TUO_Developer_HUD:NewWidget(panel,'slot1','switch',{
+					text_on='Ohhhh man!',
+					text_off='Creeper?'
+				})
+
+				TUO_Developer_HUD:NewWidget(panel,'slot1','switch',{
+					text_on='test|test',
+					text_off='test test'
+				})
+				TUO_Developer_HUD:NewWidget(panel,'slot1','inputer',{
+					text='HSV大法好！！！！',
+				})
+				TUO_Developer_HUD:NewWidget(panel,'slot1','text_displayer',{
+					text='取色器测试，请确保你使用了支持HSV颜色对象的底层'
+				})
+				TUO_Developer_HUD:NewWidget(panel,'slot1','color_sampler',{
+				})
 		end)
 end
 

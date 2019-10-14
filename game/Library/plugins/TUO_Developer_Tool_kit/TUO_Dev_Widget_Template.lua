@@ -451,6 +451,7 @@ TUO_Developer_HUD.TemplateWidget={
                 local v=(self.max_value-self.min_value)*k+self.min_value
                 v=min(self.max_value,max(self.min_value,v))
                 IndexValueByString(self.monitoring_value,v)
+                if self._event_valuechange then self._event_valuechange(self) end
                 w2=3
                 h=h*1.2
             end
@@ -460,8 +461,6 @@ TUO_Developer_HUD.TemplateWidget={
             panel.__DH_last_top=t 
             panel.__DH_last_x_pos=x_pos        
         end,
-        _event_change=function(self,value)
-        end
     },
     -- 按钮
         -- 主要参数为：
