@@ -114,7 +114,7 @@ function stage_init:frame()
 	elseif self.timer==31 then
 		--沙雕加载资源，以后再改
 		dialogsys_sub.Init()
-		local STAGE={'player','st1','st2','st3'--[[,'st4','st5','st6a','st6b','ex']]} --未制作的关卡暂时屏蔽
+		local STAGE={'st1','st2','st3'--[[,'st4','st5','st6a','st6b','ex']]} --未制作的关卡暂时屏蔽
 		for _,v in pairs(STAGE) do
 			dialogsys_sub.LoadImage(v)
 		end

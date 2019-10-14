@@ -45,7 +45,7 @@ function dialogsys_sub.LoadImage(stage) --对应工程中的load部分
 			local imgname=k.."_dialog_"
 			for _k,_v in pairs(v.emolist) do 
 				LoadImageFromFile(imgname.._k,PATH..imgname.._k..".png") 
-				Print('[mwy_dialogsys]加载'..PATH..imgname.._k..".png")
+				-- Print('[mwy_dialogsys]加载'..PATH..imgname.._k..".png")
 			end
 		end
 	end

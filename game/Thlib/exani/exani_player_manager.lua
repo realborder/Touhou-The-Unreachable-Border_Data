@@ -148,7 +148,7 @@ function exani_player_manager.LoadAllResource()
 		if not exani_resource_list[v] then error(v) end
 		for _,_v in pairs(exani_resource_list[v]) do
 			local imgname=string.sub(_v,string.len(path)+1,-5)
-			Print('[exani]加载exani '..name..'的名为'..imgname..'的部件，文件路径：'.._v)
+			-- Print('[exani]加载exani '..name..'的名为'..imgname..'的部件，文件路径：'.._v)
 			LoadImageFromFile(imgname,_v)
 
 		end
