@@ -265,3 +265,10 @@ function KeyInputTemp:Deactivate(id)
 end
 KeyInputTemp.Del=KeyInputTemp.Delete
 KeyInputTemp.Recycle=KeyInputTemp.Delete
+
+--重载
+local OriginalFocusLoseFunc=FocusLoseFunc
+function FocusLoseFunc()
+    OriginalFocusLoseFunc()
+    for i=0,7 do MouseState['MouseButton_'..i]=false end
+end

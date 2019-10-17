@@ -184,7 +184,7 @@ function AfterRender()
 	--暂停菜单渲染
 	ext.pause_menu:render()
 	--开发者工具套件渲染
-	TUO_Developer_Tool_kit:render()
+	if TUO_Developer_Tool_kit then 	TUO_Developer_Tool_kit:render() end
 end
 
 function FocusLoseFunc()
