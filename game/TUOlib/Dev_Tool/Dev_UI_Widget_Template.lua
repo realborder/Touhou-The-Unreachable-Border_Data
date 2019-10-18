@@ -95,14 +95,14 @@ end
     ---text string 标题
 local title=TUO_Developer_UI:NewWidgetTemplate('title')
 function title:init()
-    self.text=nil
+    self.text='默认标题'
     self.height=24
     self.gap_t=self.height*2
     self.gap_b=0
 end
 
 function title:frame() 
-    if not self.text then self.visiable=false end
+    if not self.text then self.visiable=false else self.visiable=true end
 end
 function title:render(alpha,l,r,b,t)
     -- if alpha==nil then alpha=1 Print('?') end
@@ -703,13 +703,17 @@ function switch:init()
     self.monitoring_value=nil
     self._event_mouseclick=function(self)
         self.flag= not self.flag
-        if self.monitoring_value and type(self.monitoring_value)=='string' then
+        local m=self.monitoring_value
+        if type(m)=='string' then
             local v=IndexValueByString(self.monitoring_value)
             if type(v)=='boolean' or type(v)=='nil' then
                 IndexValueByString(self.monitoring_value,self.flag)
             end
+        elseif type(m)=='function' then
+            m(self.flag)
         end
-        if self._event_switched then self._event_switched(self,self.flag) end
+
+        if self._event_switched then self:_event_switched(self.flag) end
     end
     ---排版
     self.box_width=36
@@ -720,9 +724,14 @@ function switch:init()
 end
 function switch:frame()
     if self.monitoring_value then
-        local v=IndexValueByString(self.monitoring_value)
-        if type(v)=='boolean'  then
-            self.flag=v
+        local m=self.monitoring_value
+        if type(m)=='string' then
+            local v=IndexValueByString(self.monitoring_value)
+            if type(v)=='boolean'  then
+                self.flag=v
+            end
+        elseif type(m)=='function' then
+            self.flag=m()
         end
     end
     if self.flag then

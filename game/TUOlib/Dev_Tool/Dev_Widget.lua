@@ -24,6 +24,8 @@ function TUO_Developer_UI:AttachWidget(panel,template,x_pos)
     local x_pos=x_pos or 53
     local tmp_widget={
         visiable=true,
+        visiable_pre=true,
+        visiable_timer=0,
         enable=true,
         --鼠标是否停留
         _mouse_stay=false,
@@ -69,6 +71,9 @@ end
 
 function TUO_Developer_UI:DoWidgetFrame(module,panel,widget)
     widget.timer=widget.timer+1
+    if widget.visiable_pre~=widget.visiable then widget.visiable_timer=10 end
+    if widget.visiable_timer>0 then widget.visiable_timer=widget.visiable_timer-1 end
+    widget.visiable_pre=widget.visiable
     ---通用处理
         ---位置处理
             ---排版
@@ -102,8 +107,7 @@ function TUO_Developer_UI:DoWidgetFrame(module,panel,widget)
                     end
                 end
                 t=t+self.topbar_width*(1+self.timer)*0.2
-                if not widget.visiable then b=t
-                else b=t-HEIGHT end
+                b=t-HEIGHT
             --碰撞箱赋值
                 widget.hitbox.l=l
                 widget.hitbox.r=r
@@ -112,9 +116,17 @@ function TUO_Developer_UI:DoWidgetFrame(module,panel,widget)
             ---模版帧函数，这让模版有机会更新自己的碰撞箱
                 if widget.tpl_frame then widget:tpl_frame() end
                 b=widget.hitbox.b
+                if not widget.visiable then 
+                    b=t
+                    widget.hitbox.b=b
+                end
             --更新位置
                 b=b-GAP_B
-                panel._DH_last_top=b
+                if widget.visiable_timer==0 then
+                    panel._DH_last_top=b
+                else
+                    panel._DH_last_top=widget.real_hitbox.b-GAP_B
+                end
                 panel._DH_last_x_pos=x
                 panel._DH_last_l=r
         ---自定义帧函数
@@ -125,70 +137,75 @@ function TUO_Developer_UI:DoWidgetFrame(module,panel,widget)
                 local ux,uy=MouseState.x_in_UI,MouseState.y_in_UI
                 local hb_aim=widget.hitbox
                 local hb=widget.real_hitbox
-                for k,v in pairs({'l','r','b','t'}) do hb[v]=hb[v]+(hb_aim[v]-hb[v])*0.2 end
+                for k,v in pairs({'l','r','b','t'}) do hb[v]=hb[v]+(hb_aim[v]-hb[v])*0.5 end
                 local l,r,b,t=hb.l,hb.r,hb.b,hb.t
                 if ux>l and ux<r and uy>b and uy<t then widget._mouse_stay=true else widget._mouse_stay=false end
             
-                --鼠标划入事件
-                if widget._mouse_stay and (not _mouse_stay_pre) then 
-                    if widget._tpl_event_mousedrop then widget:_tpl_event_mousedrop() end
-                    if widget._event_mousedrop then widget:_event_mousedrop() end
-                end
-                --鼠标离开事件
-                if (not widget._mouse_stay) and _mouse_stay_pre then 
-                    if widget._tpl_event_mouseleave then widget:_tpl_event_mouseleave() end
-                    if widget._event_mouseleave then widget:_event_mouseleave() end
-                end
 
-                if widget._mouse_stay then
-                    --鼠标按下
-                    if MouseTrigger(0) then
-                        widget._pressed=true
-                        if widget._tpl_event_mousepress then widget:_tpl_event_mousepress() end
-                        if widget._event_mousepress then widget:_event_mousepress() end
+                if widget.enable then
+                    --鼠标划入事件
+                    if widget._mouse_stay and (not _mouse_stay_pre) then 
+                        if widget._tpl_event_mousedrop then widget:_tpl_event_mousedrop() end
+                        if widget._event_mousedrop then widget:_event_mousedrop() end
                     end
-                    --鼠标在内部按压后抬起
-                    if widget._pressed and MouseIsReleased(0) then
-                        widget._pressed=false
-                        if widget._tpl_event_mouseclick then widget:_tpl_event_mouseclick() end
-                        if widget._event_mouseclick then widget:_event_mouseclick() end
+                    --鼠标离开事件
+                    if (not widget._mouse_stay) and _mouse_stay_pre then 
+                        if widget._tpl_event_mouseleave then widget:_tpl_event_mouseleave() end
+                        if widget._event_mouseleave then widget:_event_mouseleave() end
                     end
-                    --鼠标在外部按压后抬起，拖入
-                    if not widget._pressed and MouseIsReleased(0) then
-                        if widget._tpl_event_dragin then widget:_tpl_event_dragin() end
-                        if widget._event_dragin then widget:_event_dragin() end
-                    end
-                    --鼠标持续按压
-                    if widget._pressed and MouseIsDown(0) then
-                        if widget._tpl_event_mousehold then widget:_tpl_event_mousehold(self) end
-                        if widget._event_mousehold then widget:_event_mousehold(self) end
-                    end
-                else
-                    --拖出
-                    if MouseIsDown(0) and _mouse_stay_pre then 
-                        if widget._tpl_event_dragout then widget:_tpl_event_dragout() end
-                        if widget._event_dragout then widget:_event_dragout() end
-                    end
-                    --鼠标持续按压
-                    if widget._pressed and MouseIsDown(0) then
-                        if widget._tpl_event_mousehold then widget:_tpl_event_mousehold(self) end
-                        if widget._event_mousehold then widget:_event_mousehold(self) end
-                    end
-                    if not MouseIsDown(0) then
-                        widget._pressed=false
+
+                    if widget._mouse_stay then
+                        --鼠标按下
+                        if MouseTrigger(0) then
+                            widget._pressed=true
+                            if widget._tpl_event_mousepress then widget:_tpl_event_mousepress() end
+                            if widget._event_mousepress then widget:_event_mousepress() end
+                        end
+                        --鼠标在内部按压后抬起
+                        if widget._pressed and MouseIsReleased(0) then
+                            widget._pressed=false
+                            if widget._tpl_event_mouseclick then widget:_tpl_event_mouseclick() end
+                            if widget._event_mouseclick then widget:_event_mouseclick() end
+                        end
+                        --鼠标在外部按压后抬起，拖入
+                        if not widget._pressed and MouseIsReleased(0) then
+                            if widget._tpl_event_dragin then widget:_tpl_event_dragin() end
+                            if widget._event_dragin then widget:_event_dragin() end
+                        end
+                        --鼠标持续按压
+                        if widget._pressed and MouseIsDown(0) then
+                            if widget._tpl_event_mousehold then widget:_tpl_event_mousehold(self) end
+                            if widget._event_mousehold then widget:_event_mousehold(self) end
+                        end
+                    else
+                        --拖出
+                        if MouseIsDown(0) and _mouse_stay_pre then 
+                            if widget._tpl_event_dragout then widget:_tpl_event_dragout() end
+                            if widget._event_dragout then widget:_event_dragout() end
+                        end
+                        --鼠标持续按压
+                        if widget._pressed and MouseIsDown(0) then
+                            if widget._tpl_event_mousehold then widget:_tpl_event_mousehold(self) end
+                            if widget._event_mousehold then widget:_event_mousehold(self) end
+                        end
+                        if not MouseIsDown(0) then
+                            widget._pressed=false
+                        end
                     end
                 end
             end
         ---timer变换
-            if widget._mouse_stay then
-                widget._ignite_timer=widget._ignite_timer+(1-widget._ignite_timer)*0.2
-            else
-                widget._ignite_timer=widget._ignite_timer+(0-widget._ignite_timer)*0.2
-            end
-            if widget._pressed then
-                widget._pressed_timer=widget._pressed_timer+(1-widget._pressed_timer)*0.2
-            else
-                widget._pressed_timer=widget._pressed_timer+(0-widget._pressed_timer)*0.2
+            if widget.enable then
+                if widget._mouse_stay then
+                    widget._ignite_timer=widget._ignite_timer+(1-widget._ignite_timer)*0.2
+                else
+                    widget._ignite_timer=widget._ignite_timer+(0-widget._ignite_timer)*0.2
+                end
+                if widget._pressed then
+                    widget._pressed_timer=widget._pressed_timer+(1-widget._pressed_timer)*0.2
+                else
+                    widget._pressed_timer=widget._pressed_timer+(0-widget._pressed_timer)*0.2
+                end
             end
     ---模版帧后函数
         if widget.tpl_afterframe then widget:tpl_afterframe() end

@@ -159,8 +159,13 @@ function TUO_Developer_UI:RenderPanel(module,panel)
         local r=widget.hitbox.r
         local b=widget.hitbox.b
         local t=widget.hitbox.t
-        local alpha=panel.pressed_timer*-self.timer
-        if widget.hitbox.t~=widget.hitbox.b then
+        local k=1
+        local f=widget.enable if not f then k=0.5 end
+        local alpha=panel.pressed_timer*-self.timer*min(1,(widget.real_hitbox.t-widget.real_hitbox.b)/8)*k
+        -- if widget.real_hitbox.t-widget.real_hitbox.b>0.1 then
+        --     self:RenderWidget(widget,alpha,l,r,b,t)
+        -- end
+        if widget.visiable then
             self:RenderWidget(widget,alpha,l,r,b,t)
         end
     end
