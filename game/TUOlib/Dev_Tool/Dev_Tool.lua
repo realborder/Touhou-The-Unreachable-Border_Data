@@ -75,8 +75,8 @@ end
 function TUO_Developer_Tool_kit:SortAllTemplate()
 	local t=self.ui.TemplateWidget
 	for k,v in pairs(t) do
-		_G['TDU_New_'..k]=function(self)
-			return TUO_Developer_UI:AttachWidget(self,k) end
+		_G['TDU_New_'..k]=function(self,x)
+			return TUO_Developer_UI:AttachWidget(self,k,x) end
 	end
 end
 
