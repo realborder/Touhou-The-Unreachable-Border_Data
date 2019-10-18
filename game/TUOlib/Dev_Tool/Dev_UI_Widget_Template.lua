@@ -482,6 +482,7 @@ function list_box:init()
     self.selection={}
     self.select_timer={}
     self._ban_pressed_effect=true
+    self._ban_mul_select=false
 end
 function list_box:frame()
     --处理数据
@@ -518,9 +519,11 @@ function list_box:frame()
                     table.insert(self.display_value,{name=tostring(self.monitoring_value),v=''})
                     DeserializeTable2(self,self.monitoring_value)
                 end
-            else self.display_value={'* List is empty'}
+            else self.display_value={name='',v='* List is empty'}
             end
-        elseif self.refreshfunc then self.refreshfunc() end
+        elseif self.refresh then self:refresh() 
+        else self.display_value={name='',v='* List is empty'} self.visiable=false self.vanish_cause_novalue=true return end
+        if self.vanish_cause_novalue then self.visiable=true end
         --对display_value进行排序
         if self.display_value and type(self.display_value[1].name)=='string' then 
             table.sort(self.display_value,function(v1,v2)  return v1.name<v2.name end)
@@ -545,7 +548,7 @@ function list_box:frame()
             b=t-HEIGHT
             local ux,uy=MouseState.x_in_UI,MouseState.y_in_UI
             local flag=(ux>l and ux<r and uy>b and uy<t)
-            local mul=lstg.GetKeyState(KEY.CTRL)
+            local mul=lstg.GetKeyState(KEY.CTRL) and (not self._ban_mul_select)
             if MouseTrigger(0) and flag then
                 if mul then
                     local ori=self.selection[i] or false

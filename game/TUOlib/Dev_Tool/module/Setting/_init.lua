@@ -104,6 +104,7 @@ end
 local setting=TUO_Developer_UI:NewPanel()
 function setting:init()
     self.name="游戏设置"
+    (TDU_New_title(self)).text='特效开关'
 end
 
 local toolsetting=TUO_Developer_UI:NewPanel()

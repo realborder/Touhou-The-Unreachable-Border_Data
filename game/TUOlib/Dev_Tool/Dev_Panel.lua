@@ -141,6 +141,7 @@ function TUO_Developer_UI:DoPanelFrame(module,panel)
             if panel.frame then panel:frame(module) end
             panel._DH_last_top=0
             panel._DH_last_x_pos=0
+            panel._DH_last_l=0
             if panel.widget then
                 for _,widget in pairs(panel.widget) do
                     self:DoWidgetFrame(module,panel,widget)

@@ -18,15 +18,16 @@ end
 ---@param template TemplateWidget
 function TUO_Developer_UI:AttachWidget(panel,template,x_pos)
     local tpl=self.TemplateWidget[template]
-    local x_pos_list={slot1=53,slot2=620}
+    local x_pos_list={slot1=53,slot2=620,world=440}
     local lock=(x_pos=='slot2')
-    local x_pos=x_pos or x_pos_list[x_pos]
-    local x_pos=x_pos or 53
+    if type(x_pos)=='string' then x_pos=x_pos_list[x_pos] 
+    else x_pos=x_pos or 53 end
     local tmp_widget={
         visiable=true,
         visiable_pre=true,
         visiable_timer=0,
         enable=true,
+        panel=panel,
         --鼠标是否停留
         _mouse_stay=false,
         --点燃计时器，鼠标停留在控件上就会使其处于点燃状态
@@ -85,15 +86,15 @@ function TUO_Developer_UI:DoWidgetFrame(module,panel,widget)
                 local GAP_B=widget.gap_b
                 local GAP_R=widget.gap_r
                 local x=widget.x
-                local t=panel.pressed_timer
+                local pt=panel.pressed_timer
 
             ---lrbt初始值
-                local l=itpl(x-12,x,t)-self.leftbar_width*(1+self.timer)
+                local l=itpl(x-12,x,pt)-self.leftbar_width*(1+self.timer)
                 local r=l+widget.width
                 local t=TOP+panel.y_offset+self.topbar_width*(1+self.timer)
                 local b
             ---slot2锁定位置不滚动
-                if self._position_lock then t=TOP end
+                if widget._position_lock then t=TOP+self.topbar_width*(1+self.timer) end
             ---沿用上一个控件的y
                 if panel._DH_last_top~=0 and panel._DH_last_x_pos==x then
                     if widget._stay_in_this_line then
