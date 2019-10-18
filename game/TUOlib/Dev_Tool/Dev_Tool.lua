@@ -72,6 +72,14 @@ function TUO_Developer_Tool_kit:LoadResource()
 	
 end
 
+function TUO_Developer_Tool_kit:SortAllTemplate()
+	local t=self.ui.TemplateWidget
+	for k,v in pairs(t) do
+		_G['TDU_New_'..k]=function(self)
+			return TUO_Developer_UI:AttachWidget(self,k) end
+	end
+end
+
 function TUO_Developer_Tool_kit:LoadAllModule()
 	local folders=plus.EnumFiles(PATH_HEAD..'\\module')
 	for i,v in pairs(folders) do
@@ -119,6 +127,7 @@ function TUO_Developer_Tool_kit:init()
 	self.UNLOCK_COUNT=3
 	self.ui=TUO_Developer_UI
 	self.ui:init()
+	self:SortAllTemplate()
 	self:LoadAllModule()
 	-- self:AddPanels()
 	Log('初始化完毕',4)
