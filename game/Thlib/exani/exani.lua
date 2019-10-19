@@ -59,8 +59,9 @@ keyFrame.copy=function(tab)
 	return ins
 end
 
-layers=Class(object)
+local layers={}
 function layers:init(list)
+	local self={}
 	---需要渲染的缓存
 	self.renderFrame={
 		flag=false,
@@ -105,7 +106,9 @@ function layers:init(list)
 	
 	---最后发现还是得记录一下上级exani名字(用于遮罩),也许可以优化,这名字起的不好,其实是包含关系
 	self.parent=''
+	return self
 end
+
 function layers:render()
 	if self.renderFlag then
 		if self.renderFrame.flag then
@@ -237,7 +240,7 @@ function exani:init(dir)
 	self.imgList={}
 	self.isContainShader=false
 	for k,v in pairs(self.layerList) do
-		table.insert(self.picList,New(layers,v))
+		table.insert(self.picList,layers.init(v))
 	end
 	table.sort(self.picList,function(a,b) return a.Prio<b.Prio end)
 	exani.CheckShader(self)
@@ -262,6 +265,12 @@ function exani:frame()
 		for k,v in pairs(self.picList) do
 			v.screenMode=self.viewmode
 		end
+	end
+end
+
+function exani:render()
+	for i=1,#self.picList do
+		layers.render(self.picList[i])
 	end
 end
 

@@ -1,6 +1,6 @@
 local EXANI_PATH="THlib\\exani\\exani_data\\"
 
-layers_player={}
+local layers_player={}
 function layers_player.init(list)
 	local self={}
 	self.Prio=list[1]
