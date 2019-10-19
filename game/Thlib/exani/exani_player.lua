@@ -1,7 +1,8 @@
 local EXANI_PATH="THlib\\exani\\exani_data\\"
 
-layers_player=Class(object)
-function layers_player:init(list)
+layers_player={}
+function layers_player.init(list)
+	local self={}
 	self.Prio=list[1]
 	self.renderFlag=false
 	self.keyFrames={}
@@ -30,6 +31,7 @@ function layers_player:init(list)
 	self.nextFrame=nil
 	self.current_frame=0
 	self.screenMode='world'
+	return self
 end
 
 function layers_player:render()
@@ -244,7 +246,7 @@ function exani_player:init(name)
 	self.picList={}---------
 	self.isContainShader=false
 	for k,v in pairs(self.layerList) do
-		table.insert(self.picList,New(layers_player,v))
+		table.insert(self.picList,layers_player.init(v))
 	end
 	table.sort(self.picList,function(a,b) return a.Prio<b.Prio end)
 	for k,v in pairs(self.picList) do
@@ -316,6 +318,12 @@ function exani_player:frame()
 			end
 			exani_player.UpdateLayers(self)
 		end
+	end
+end
+
+function exani_player:render()
+	for i=1,#self.picList do
+		layers_player.render(self.picList[i])
 	end
 end
 
