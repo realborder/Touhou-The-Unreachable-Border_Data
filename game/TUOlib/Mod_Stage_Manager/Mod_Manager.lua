@@ -28,6 +28,7 @@ function m:DoFile(path,arch)
     end
 end
 function m:RefreshModList()
+    if lfs.attributes(PATH)==nil then return false end 
     local old_mod_list=self.modlist
     self.modlist={}
     local mods=plus.EnumFiles(PATH)
@@ -41,6 +42,7 @@ function m:RefreshModList()
             -- table.insert(self.modlist,{name=PATH..'\\'..v.name,is_stage=flag2})
         end
     end
+    return true
 end
 
 function m:GetModList()

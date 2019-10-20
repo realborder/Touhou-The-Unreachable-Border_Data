@@ -85,6 +85,7 @@ function TUO_Developer_UI:DoWidgetFrame(module,panel,widget)
                 local GAP_T=widget.gap_t
                 local GAP_B=widget.gap_b
                 local GAP_R=widget.gap_r
+                if not widget.visiable then GAP_B=0 GAP_T=0 GAP_R=0 end
                 local x=widget.x
                 local pt=panel.pressed_timer
 
@@ -107,7 +108,7 @@ function TUO_Developer_UI:DoWidgetFrame(module,panel,widget)
                         t=panel._DH_last_top-GAP_T
                     end
                 end
-                t=t+self.topbar_width*(1+self.timer)*0.2
+                t=t+self.topbar_width*(1+self.timer)*0.25
                 b=t-HEIGHT
             --碰撞箱赋值
                 widget.hitbox.l=l

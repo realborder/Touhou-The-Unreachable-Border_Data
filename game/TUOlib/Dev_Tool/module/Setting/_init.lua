@@ -93,18 +93,40 @@ function sandbox:init()
         switch.text_on='cheat on'
         switch.text_off='cheat off'
 
-    local color_sampler=TUO_Developer_UI:AttachWidget(self,'color_sampler')
-    -- local switch2=TUO_Developer_UI:AttachWidget(self,'switch')
-    -- switch2.monitoring_value=function(v) if type(v)~=nil then list_box.visiable=v else return list_box.visiable end end
-    -- switch2.text_on='color on'
-    -- switch2.text_off='color off'
+    local color_sampler
+
+    local switch2=TUO_Developer_UI:AttachWidget(self,'switch')
+    switch2.monitoring_value=function(v) 
+        return color_sampler.visiable
+        -- if type(v)~=nil then color_sampler.visiable=v else return color_sampler.visiable end 
+    end
+    switch2._event_switched=function(self,v) 
+        color_sampler.visiable=v
+    end
+    switch2.text_on='已显示色环'
+    switch2.text_off='已隐藏色环'
+    
+    color_sampler=TUO_Developer_UI:AttachWidget(self,'color_sampler')
+
+    TDU_New_text_displayer(self).text='游戏内直接选取颜色！！就问你爽不爽！'
+    
+
 
 end
 
 local setting=TUO_Developer_UI:NewPanel()
 function setting:init()
     self.name="游戏设置"
-    (TDU_New_title(self)).text='特效开关'
+
+    TDU_New_title(self).text='特效开关'
+    TDU_New_text_displayer(self).text='关闭或开启游戏内特效，注意，这可能会使画面变得有些奇怪。\n目前可以调整的包括：\n    boss带来的背景扭曲特效（已实装）\n    boss符卡展开特效（已实装）\n    boss符卡宣告立绘特效\n    其他特效（如三面背景和魔理沙B机体的黑洞特效）'
+    local sw1=TDU_New_switch(self)
+    sw1.text_on="背景扭曲特效和符卡展开特效 启用"
+    sw1.text_off="背景扭曲特效和符卡展开特效 禁用"
+    sw1.monitoring_value='tuolib.effect_cut.enable_boss_effect'
+    TDU_New_title(self).text='游戏设置查看'
+    TDU_New_value_displayer(self).monitoring_value='setting'
+
 end
 
 local toolsetting=TUO_Developer_UI:NewPanel()

@@ -486,12 +486,14 @@ function list_box:init()
 end
 function list_box:frame()
     --处理数据
-        for i,v in pairs(self.display_value) do
-            self.select_timer[i]=self.select_timer[i] or 0
-            if self.selection[i] then 
-                self.select_timer[i]=min(1,self.select_timer[i]+0.1)
-            else
-                self.select_timer[i]=max(0,self.select_timer[i]-0.05)
+        if type(self.display_value)=='table' then 
+            for i,v in pairs(self.display_value) do
+                self.select_timer[i]=self.select_timer[i] or 0
+                if self.selection[i] then 
+                    self.select_timer[i]=min(1,self.select_timer[i]+0.1)
+                else
+                    self.select_timer[i]=max(0,self.select_timer[i]-0.05)
+                end
             end
         end
 
@@ -525,9 +527,11 @@ function list_box:frame()
         else self.display_value={name='',v='* List is empty'} self.visiable=false self.vanish_cause_novalue=true return end
         if self.vanish_cause_novalue then self.visiable=true end
         --对display_value进行排序
-        if self.display_value and type(self.display_value[1].name)=='string' then 
-            table.sort(self.display_value,function(v1,v2)  return v1.name<v2.name end)
+        if self.display_value and self.display_value[1] and (type(self.display_value[1].name)=='string' or type(self.display_value[1].name)=='number')  then 
+            local sortfunc=self.sortfunc or function(v1,v2)  return v1.name<v2.name end
+            table.sort(self.display_value,sortfunc)
         end
+
     --处理排版
         if not self.display_value then return end
         --排版
@@ -585,36 +589,41 @@ function list_box:render(alpha,l,r,b,t)
     for i,v in pairs(self.display_value) do  
         local color=Color(alpha*255,20,20,20)
         b=t-HEIGHT
-        local ux,uy=MouseState.x_in_UI,MouseState.y_in_UI
-        local flag=(ux>l and ux<r and uy>b and uy<t)
-        if flag then
-            RenderCube(l,r,b,t,25*alpha,20,20,20)
-        end
-        if i%2==0 then
-            RenderCube(l,r,b,t,25*alpha,20,20,20)
-        else
-            RenderCube(l,r,b,t,25*alpha,255,255,255)
-        end
-        --选择高亮
-        local colorw=Color(alpha*255,0,0,0)
-        if self.select_timer[i] and self.select_timer[i]>0 then
-            local l,r=l+GAP,r-GAP
-            local m=(l+r)/2
-            local l2=itpl(l,m,self.select_timer[i])
-            local r2=itpl(r,m,self.select_timer[i])
-            RenderCube(l,l2,b-GAP/2,t+GAP/2,color)
-            RenderCube(r2,r,b-GAP/2,t+GAP/2)
-            local c=self.select_timer[i]*255
-            colorw=Color(alpha*255,c,c,c)
-        end
-        RenderCube(l,l+2,b-GAP/2,t+GAP/2,color)
-        RenderCube(r-2,r,b-GAP/2,t+GAP/2)
-        if type(v)~='table' then 
-            RenderTTF2(ttf,tostring(v),l+2+GAP,r+2+GAP,b,t,SIZE,colorw,'left','top')
-        else
-            RenderTTF2(ttf,v.name..': '..tostring(v.v),l+2+GAP,r+2+GAP,b,t,SIZE,colorw,'left','top')
+        if b<480 then
+            local ux,uy=MouseState.x_in_UI,MouseState.y_in_UI
+            local flag=(ux>l and ux<r and uy>b and uy<t)
+            if flag then
+                RenderCube(l,r,b,t,25*alpha,20,20,20)
+            end
+            if i%2==0 then
+                RenderCube(l,r,b,t,25*alpha,20,20,20)
+            else
+                RenderCube(l,r,b,t,25*alpha,255,255,255)
+            end
+            --选择高亮
+            local colorw=Color(alpha*255,0,0,0)
+            if self.select_timer[i] and self.select_timer[i]>0 then
+                local l,r=l+GAP,r-GAP
+                local m=(l+r)/2
+                local l2=itpl(l,m,self.select_timer[i])
+                local r2=itpl(r,m,self.select_timer[i])
+                RenderCube(l,l2,b-GAP/2,t+GAP/2,color)
+                RenderCube(r2,r,b-GAP/2,t+GAP/2)
+                local c=self.select_timer[i]*255
+                colorw=Color(alpha*255,c,c,c)
+            end
+            RenderCube(l,l+2,b-GAP/2,t+GAP/2,color)
+            RenderCube(r-2,r,b-GAP/2,t+GAP/2)
+            if type(v)~='table' then 
+                RenderTTF2(ttf,tostring(v),l+2+GAP,r+2+GAP,b,t,SIZE,colorw,'left','top')
+            elseif v.name=='' then
+                RenderTTF2(ttf, tostring(v.v),l+2+GAP,r+2+GAP,b,t,SIZE,colorw,'left','top')
+            else
+                RenderTTF2(ttf,v.name..': '..tostring(v.v),l+2+GAP,r+2+GAP,b,t,SIZE,colorw,'left','top')
+            end
         end
         t=t-HEIGHT-GAP
+        if t<0 then break end
     end
     t=t-GAP
     RenderCube(l,r,t,t+GAP/2+2)
@@ -704,7 +713,7 @@ function switch:init()
     self.flag=false
     self.flag_timer=0
     self.monitoring_value=nil
-    self._event_mouseclick=function(self)
+    self._tpl_event_mouseclick=function(self)
         self.flag= not self.flag
         local m=self.monitoring_value
         if type(m)=='string' then

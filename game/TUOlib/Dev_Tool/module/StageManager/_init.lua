@@ -55,19 +55,19 @@ function quickboost:init()
     local start_btn=TDU_New_button(self)
     start_btn.text='快速启动'
     start_btn._event_mouseclick=function(self)
-        local _stage,plr_index
-        local cur
-        for i,v in pairs(diff_list.selection) do
-            if v then cur=i end break
-        end
-        local d
-        if cur then d=diff_list.display_value[cur].v end
-        Print(d)
+        ----------
+            local _stage,plr_index
+            local cur
+            for i,v in pairs(diff_list.selection) do
+                if v then cur=i end break
+            end
+            local d
+            if cur then d=diff_list.display_value[cur].v end
+            Print(d)
 
-        for i=1,#plr_list.selection do
-            if plr_list.selection[i] then plr_index=i end break
-        end
-        -- if plr_index then plr_index=
+            for i=1,#plr_list.selection do
+                if plr_list.selection[i] then plr_index=i end break
+            end
         if d and plr_index then
             -- if type(stage_name)~='string' then Print('!'..type(stage_name)) return end
             -- if type(plr_index)~='number' then Print('!'..type(plr_index)) return end
@@ -78,7 +78,7 @@ function quickboost:init()
                 -- stage.current_stage.task={}
                 stage.current_stage.task[1]=coroutine.create(function() end)
                 -- stage.current_stage.task[2]=coroutine.create(function() end)
-                stage.group.FinishStage()
+                -- stage.group.FinishStage()
             end
             
             scoredata.player_select=plr_index

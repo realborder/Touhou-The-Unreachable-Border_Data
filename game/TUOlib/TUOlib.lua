@@ -14,3 +14,5 @@ Include'TUOlib\\Dev_Tool\\Dev_Tool.lua'
 
 ---mod和关卡管理器
 Include'TUOlib\\Mod_Stage_Manager\\Mod_Manager.lua'
+---特效开关
+Include'TUOlib\\Effect_Cut.lua'

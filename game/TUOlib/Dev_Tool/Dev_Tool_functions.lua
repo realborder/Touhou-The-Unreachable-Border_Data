@@ -87,7 +87,7 @@ function IndexValueByString(str,value)
 		else
 		table.insert(tmp_k,string.sub(str,pospre,pos-1)) end
     end
-	if not value then
+	if type(value)=='nil' then
 		for k,v in pairs(tmp_k) do
 			if k==1 then tmp=_G[v]
 			else 

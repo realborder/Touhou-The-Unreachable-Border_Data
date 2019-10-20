@@ -78,7 +78,7 @@ function TUO_Developer_UI:frame()
         if self.timer==0 then return end
     ------在完全不显示的时候会彻底关掉自身的逻辑
         --鼠标滚轮
-        if MouseState.WheelDelta~=0 then self.module_a_offset=min(max(0,self.module_a_offset-MouseState.WheelDelta/9),(#self.module-1)*self.module_da) end
+        if MouseState.WheelDelta~=0 and self.timer>0 then self.module_a_offset=min(max(0,self.module_a_offset-MouseState.WheelDelta/9),(#self.module-1)*self.module_da) end
 
         --处理模块的点击逻辑和位置
             for _,module in pairs(self.module) do
