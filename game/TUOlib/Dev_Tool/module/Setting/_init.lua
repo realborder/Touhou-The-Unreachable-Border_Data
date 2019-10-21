@@ -3,26 +3,35 @@ local AllSetting=TUO_Developer_UI:NewModule()
 function AllSetting:init()
     self.name='设置'
 end
-function AllSetting:render()
-    --测试用
-        -- local list={
-        --     self.panel[1].widget[2].monitoring_value,
-        --     self.panel[1].widget[2].display_value[2].name,
-        --     self.panel[1].widget[2].display_value[2].v,
-        --     self.panel[1].widget[2].hitbox.t,
-        --     self.panel[1].widget[2].hitbox.b,
-        -- }
-        -- local t=400
-        -- -- Print('AAOOOSDAOOE')
-        -- for k,v in pairs(list) do
-        --     RenderTTF2('f3_word',tostring(v),53,53,t,t,1,Color(0xFF000000))
-        --     t=t-24
-        -- end
+
+
+local setting=TUO_Developer_UI:NewPanel()
+function setting:init()
+    self.name="游戏设置"
+
+    TDU_New_title(self).text='特效开关'
+    TDU_New_text_displayer(self).text='关闭或开启游戏内特效，注意，这可能会使画面变得有些奇怪。\n目前可以调整的包括：\n    boss带来的背景扭曲特效（已实装）\n    boss符卡展开特效（已实装）\n    boss符卡宣告立绘特效\n    其他特效（如三面背景和魔理沙B机体的黑洞特效）'
+    local sw1=TDU_New_switch(self)
+    sw1.text_on="背景扭曲特效和符卡展开特效 启用"
+    sw1.text_off="背景扭曲特效和符卡展开特效 禁用"
+    sw1.monitoring_value='tuolib.effect_cut.enable_boss_effect'
+    TDU_New_title(self).text='游戏设置查看'
+    TDU_New_value_displayer(self).monitoring_value='setting'
+    TDU_New_title(self).text='world参数查看'
+    TDU_New_value_displayer(self).monitoring_value='lstg.world'
+    TDU_New_title(self).text='screen参数查看'
+    TDU_New_value_displayer(self).monitoring_value='screen'
+
+end
+
+local toolsetting=TUO_Developer_UI:NewPanel()
+function toolsetting:init()
+    self.name="工具设置"
 end
 local sandbox=TUO_Developer_UI:NewPanel()
 function sandbox:init()
     lstg.test_value=0
-    self.name="测试场地"
+    self.name="控件测试"
     -- local title=TUO_Developer_UI:AttachWidget(self,'title')
     --     title.text='标题控件测试'
     local title=TDU_New_title(self)
@@ -114,22 +123,28 @@ function sandbox:init()
 
 end
 
-local setting=TUO_Developer_UI:NewPanel()
-function setting:init()
-    self.name="游戏设置"
-
-    TDU_New_title(self).text='特效开关'
-    TDU_New_text_displayer(self).text='关闭或开启游戏内特效，注意，这可能会使画面变得有些奇怪。\n目前可以调整的包括：\n    boss带来的背景扭曲特效（已实装）\n    boss符卡展开特效（已实装）\n    boss符卡宣告立绘特效\n    其他特效（如三面背景和魔理沙B机体的黑洞特效）'
-    local sw1=TDU_New_switch(self)
-    sw1.text_on="背景扭曲特效和符卡展开特效 启用"
-    sw1.text_off="背景扭曲特效和符卡展开特效 禁用"
-    sw1.monitoring_value='tuolib.effect_cut.enable_boss_effect'
-    TDU_New_title(self).text='游戏设置查看'
-    TDU_New_value_displayer(self).monitoring_value='setting'
-
-end
-
-local toolsetting=TUO_Developer_UI:NewPanel()
-function toolsetting:init()
-    self.name="工具设置"
+local sandbox2=TUO_Developer_UI:NewPanel()
+function sandbox2:init()
+    self.name="浮窗测试"
+    local btn1=TDU_New_button(self)
+    btn1.text='通知浮窗'
+    btn1._event_mouseclick=function(self)
+        TUO_Developer_Flow:MsgWindow('开玩笑的wwwww\n')
+        TUO_Developer_Flow:MsgWindow('他会一直纠缠你\n')
+        TUO_Developer_Flow:MsgWindow('那你会永远也点不完\n')
+        TUO_Developer_Flow:MsgWindow('如果你看到它\n')
+        TUO_Developer_Flow:MsgWindow('这个消息提示框\n')
+        TUO_Developer_Flow:MsgWindow('……\n')
+        TUO_Developer_Flow:MsgWindow('不过吧……不知道你有没有听说过\n')
+        TUO_Developer_Flow:MsgWindow('这个信息是随便编的，下面可以不用看了。\n')
+        TUO_Developer_Flow:NewFlow('infowin',function() end)
+    end
+    local btn2=TDU_New_button(self)
+    btn2.text='错误消息浮窗'
+    btn2._event_mouseclick=function(self)
+        TUO_Developer_Flow:NewFlow('errorwin',function(self) 
+            local r,err=xpcall(error,debug.traceback,'错误信息是我编的')
+            self.text=err
+        end)
+    end
 end

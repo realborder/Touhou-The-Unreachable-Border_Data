@@ -28,6 +28,8 @@ function TUO_Developer_UI:init()
     --展开用timer，范围是0到1
     self.timer=0
 
+    self.mouse_click_list={}
+
     self.bgalpha=0.9
     self.module={}
     self.scroll_force=0
@@ -84,7 +86,6 @@ function TUO_Developer_UI:frame()
             for _,module in pairs(self.module) do
                 self:DoModuleFrame(module)
             end
-
 end
 function TUO_Developer_UI:render()
     SetViewMode'ui'    
@@ -128,4 +129,6 @@ function TUO_Developer_UI:render()
             RenderTTF2(self.core.ttf,self.module[self.cur].name,UI_L+32+5,UI_R,480-self.topbar_width*-self.timer,480,1.2,Color(255*-self.timer,255,255,255),'vcenter')
         end
     end
+
+
 end

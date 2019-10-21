@@ -23,13 +23,14 @@ local Log=function (text,level)
 	Print('[TUO_Developer_Tool_kit] '..text) 
 end
 local DT_FILE_LIST={
-	"Dev_UI.lua",
-	"Dev_Module.lua",
-	"Dev_Panel.lua",
-	-- "Dev_UI_Panel_Define.lua",
-	"Dev_Widget.lua",
-	"Dev_UI_Widget_Template.lua",
-	"Dev_Tool_functions.lua"
+	"Dev_UI.lua", --UI层
+	"Dev_Module.lua", --UI里的模块
+	"Dev_Panel.lua", --UI里的模块里的面板
+	"Dev_Widget.lua", --UI里的模块里的面板里的控件
+	"Dev_UI_Widget_Template.lua", --UI里的模块里的面板里的控件的模版
+	"Dev_Flow.lua", --UI全局浮动面板
+	"Dev_Flow_Template.lua", --UI全局浮动面板的模板
+	"Dev_Tool_functions.lua" --其他功能
 }
 for k,v in pairs(DT_FILE_LIST) do IncludePlus(v) end
 
@@ -125,11 +126,14 @@ function TUO_Developer_Tool_kit:init()
 	self.UNLOCK_TIME_LIMIT=60
 	self.unlock_count=0
 	self.UNLOCK_COUNT=3
+	self.mouse_click_list={}
+	self.mouseR_click_list={}
 	self.ui=TUO_Developer_UI
 	self.ui:init()
 	self:SortAllTemplate()
 	self:LoadAllModule()
-	-- self:AddPanels()
+	self.flow=TUO_Developer_Flow
+	self.flow:init()
 	Log('初始化完毕',4)
 end
 
@@ -192,20 +196,57 @@ function TUO_Developer_Tool_kit:frame()
 			end
 		end
 		if CheckKeyState(KEY.TAB) then end
-
-		self.ui:frame()
+		if not self.flow.ban_UI_frame then
+			self.ui:frame()
+		end
+		self.flow:frame()
 	end
+	--点击效果
+	if MouseTrigger(0) and self.mouse_click_list then
+		table.insert(self.mouse_click_list,{x=MouseState.x_in_UI,y=MouseState.y_in_UI,timer=20})
+	end 
+	if MouseTrigger(2) and self.mouseR_click_list then
+		table.insert(self.mouseR_click_list,{x=MouseState.x_in_UI,y=MouseState.y_in_UI,timer=20})
+	end 
+
 end
 function TUO_Developer_Tool_kit:render()
 	--切关时迷之报错，拿这个先顶一下
-	if stage.next_stage or not self.ui then return end	
+	if stage.next_stage or not self.ui then return end
+	SetViewMode'ui'
 	if self.ui.timer~=0 then
 		self.ui:render()
+	end
+	self.flow:render()
+
+
+	--点击效果
+	if self.mouse_click_list then
+        for i, v in pairs(self.mouse_click_list) do
+            v.timer=v.timer-1
+            if v.timer<=0 then self.mouse_click_list[i]=nil end
+			for i=0,2,0.5 do
+				sp.misc.DrawCircle2(v.x,v.y,(1+2*sin(90*(20-v.timer)/20))*(10+i),32,'mul+rev',(2-i)*30*v.timer/20,255,255,255,0)
+			end
+			sp.misc.DrawCircle2(v.x,v.y,(1+2*sin(90*(20-v.timer)/20))*10,32,'mul+add',150*v.timer/20,255,255,255,0)
+
+		end
+	end
+	if self.mouseR_click_list then
+        for i, v in pairs(self.mouseR_click_list) do
+            v.timer=v.timer-1
+            if v.timer<=0 then self.mouseR_click_list[i]=nil end
+			for i=0,2,0.5 do
+				sp.misc.DrawCircle2(v.x,v.y,(1+2*sin(90*(20-v.timer)/20))*(10+i),32,'mul+alpha',(2-i)*30*v.timer/20,255,255,255,0)
+			end
+			sp.misc.DrawCircle2(v.x,v.y,(1+2*sin(90*(20-v.timer)/20))*10,32,'mul+rev',150*v.timer/20,255,255,255,0)
+		end
 	end
 end
 
 function TUO_Developer_Tool_kit:Reload()
 	Log('开始重载整个插件',4)
+	local errwin=TUO_Developer_Flow.ErrorWindow
 	local ReloadSingleFile=function(path)
 		if not(lfs.attributes(path) == nil) then 
 			local r,err=xpcall(lstg.DoFile,debug.traceback,path)
@@ -214,6 +255,7 @@ function TUO_Developer_Tool_kit:Reload()
 				-- flag=true
 			else
 				Log('重载脚本：'..path..' 的时候发生错误\n\t错误详细信息:\n\t\t'..err,1) 
+				errwin(err)
 			end
 		else
 			Log('脚本 '..path..' 不存在',1) 

@@ -215,13 +215,16 @@ end
 
 function TUO_Developer_UI:RenderWidget(widget,alpha,l,r,b,t)
     if b>480-self.topbar_width or t<0 then return end
+    if widget._ignite_timer>0 and not widget._ban_ignite_effect then
+        RenderCube(l,r,b,t,alpha*widget._ignite_timer*35,255,255,255)
+        -- RenderCube(l,r,b,t,alpha*widget._ignite_timer*25,50,50,50)
+    end
+    if widget._pressed_timer>0 and not widget._ban_pressed_effect then
+        RenderCube(l,r,b,t,alpha*widget._pressed_timer*65,255,255,255)
+        -- RenderCube(l,r,b,t,alpha*widget._pressed_timer*25,50,50,50)
+    end
     if widget.tpl_render then widget:tpl_render(alpha,l,r,b,t) end
     if widget.render then widget:render(alpha,l,r,b,t) end    
     if widget.tpl_afterrender then widget:tpl_afterrender(alpha,l,r,b,t) end
-    if widget._ignite_timer>0 and not widget._ban_ignite_effect then
-        RenderCube(l,r,b,t,alpha*widget._ignite_timer*25,50,50,50)
-    end
-    if widget._pressed_timer>0 and not widget._ban_pressed_effect then
-        RenderCube(l,r,b,t,alpha*widget._pressed_timer*25,50,50,50)
-    end
+
 end

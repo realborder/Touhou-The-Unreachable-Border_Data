@@ -475,7 +475,7 @@ function list_box:init()
     self.keep_refresh=true
     self.cur=1
     self.gap=2
-    self.gap_t=6
+    self.gap_t=2
     self.gap_b=4
     self.monitoring_value=nil
     self.display_value={}
@@ -635,7 +635,8 @@ end
     -- _event_textchange function 文本内容发生变化后调用的函数
 local inputer=TUO_Developer_UI:NewWidgetTemplate('inputer')
 function inputer:init()
-        self.text='empty'
+        self.text=''
+        self.txtepre=''
         self.enable=true
         self.connected=false
         self.connect_timer=0
@@ -644,7 +645,7 @@ function inputer:init()
                 self.connected=true
                 KeyInputTemp:Activate(self.text)
             end
-            Print('_tpl_event_mousepress')
+            -- Print('_tpl_event_mousepress')
         end
         self._tpl_event_mouseleave=function(self)
             if self.connected then
@@ -652,7 +653,7 @@ function inputer:init()
                 self.text=KeyInputTemp:Pull()
                 KeyInputTemp:Deactivate()
             end
-            Print('_tpl_event_mousepress')
+            -- Print('_tpl_event_mousepress')
         end
         ---排版
         self.width=360
@@ -666,9 +667,11 @@ function inputer:frame()
     if self.connected then
         self.text=KeyInputTemp:Pull()
         self.connect_timer=self.connect_timer+(1-self.connect_timer)*0.2
+        if self.text~=self.txtepre then if self._event_textchange then self:_event_textchange() end end
     else
         self.connect_timer=self.connect_timer+(0-self.connect_timer)*0.2
     end
+    
 end
 function inputer:render(alpha,l,r,b,t)        
     --排版
@@ -680,7 +683,6 @@ function inputer:render(alpha,l,r,b,t)
     local l=self.hitbox.l
     local r=self.hitbox.r
     local t=self.hitbox.t
-    local oringinal_t=t
     local b=self.hitbox.b
 
     local h=2+(HEIGHT-2)*self.connect_timer
@@ -691,7 +693,7 @@ function inputer:render(alpha,l,r,b,t)
         RenderCube(l-i,r+i,b-i,b+h+i,(5-i)/5*10*alpha,10,10,10)
     end
     RenderCube(l,r,b,b+h,255*alpha,30,30,30)
-    local m=(r-l)/1.56
+    local m=(r+l)/2
     local l2=m+(l-m)*self._ignite_timer
     local r2=m+(r-m)*self._ignite_timer
     RenderCube(l2,r2,b,b+2,255*alpha,150,150,150)
