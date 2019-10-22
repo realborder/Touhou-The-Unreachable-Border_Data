@@ -120,11 +120,6 @@ function TUO_Developer_Tool_kit:LoadAllModule()
 		end
 	end
 	--排序
-	-- table.sort(self.ui.module,
-	-- function(v1,v2) 
-	-- 	local 
-		
-	-- end)
 end
 
 
