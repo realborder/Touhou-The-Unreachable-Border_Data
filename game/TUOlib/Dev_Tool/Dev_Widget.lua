@@ -12,6 +12,13 @@ local RenderCube= function(l,r,b,t,ca,cr,cg,cb)
     RenderRect('white',l,r,b,t)
 end
 
+
+function TUO_Developer_UI:SetWidgetSlot(x_pos)
+    TUO_Developer_UI.widget_x_pos=x_pos
+end
+
+
+
 ------------------------------------------------------
 ---以模板新建控件并排在面板上
 ---@param panel panel 

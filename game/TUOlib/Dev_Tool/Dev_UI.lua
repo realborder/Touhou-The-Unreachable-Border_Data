@@ -34,6 +34,7 @@ function TUO_Developer_UI:init()
     self.module={}
     self.scroll_force=0
     self.left_for_world=false
+    self.left_for_world_timer=0
 
     --模块排版
         --每个模块选项之间的角度差
@@ -76,7 +77,15 @@ function TUO_Developer_UI:frame()
                 if abs(self.timer)>0.97 then self.timer=1 end
 
             end
+            if self.left_for_world then
+                self.left_for_world_timer=self.left_for_world_timer+(1-self.left_for_world_timer)*0.2
+                if self.left_for_world_timer>0.99 then self.left_for_world_timer=1 end
+            else
+                self.left_for_world_timer=self.left_for_world_timer+(0-self.left_for_world_timer)*0.4
+                if self.left_for_world_timer<0.01 then self.left_for_world_timer=0 end
+            end
         end
+        
         if self.timer==0 then return end
     ------在完全不显示的时候会彻底关掉自身的逻辑
         --鼠标滚轮
@@ -96,11 +105,18 @@ function TUO_Developer_UI:render()
         if self.timer>0 then
             RenderCube(UI_L,UI_R,0,480,155*self.timer,0,0,0)
         elseif self.timer<0 then
-            if self.left_for_world then
-                RenderCube(UI_L,lstg.world.scrl,0,480,155*-self.timer,255,255,255)
-                RenderCube(lstg.world.scrr,UI_R,0,480)
-                RenderCube(lstg.world.scrl,lstg.world.scrr,0,lstg.world.scrb)
-                RenderCube(lstg.world.scrl,lstg.world.scrr,lstg.world.scrt,480)
+            if self.left_for_world_timer>0 then
+                local t=self.left_for_world_timer
+                local w=lstg.world
+                local mx,my=(w.scrl+w.scrr)/2,(w.scrb+w.scrt)/2
+                local l=lstg.world.scrl*t+mx*(1-t)
+                local r=lstg.world.scrr*t+mx*(1-t)
+                local b=lstg.world.scrb*t+my*(1-t)
+                local t=lstg.world.scrt*t+my*(1-t)
+                RenderCube(UI_L,l,0,480,155*-self.timer,255,255,255)
+                RenderCube(r,UI_R,0,480)
+                RenderCube(l,r,0,b)
+                RenderCube(l,r,t,480)
             else
                 RenderCube(UI_L,UI_R,0,480,155*-self.timer,255,255,255)
             end

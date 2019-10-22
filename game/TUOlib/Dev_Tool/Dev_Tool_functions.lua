@@ -91,8 +91,9 @@ function IndexValueByString(str,value)
 		for k,v in pairs(tmp_k) do
 			if k==1 then tmp=_G[v]
 			else 
-				if type(tmp)==nil then return nil end
-				tmp=tmp[v] 
+				if tmp==nil then return 
+				else tmp=tmp[v] end
+				 
 			end
 		end
 		return tmp

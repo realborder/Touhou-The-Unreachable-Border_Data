@@ -65,8 +65,13 @@ function quickboost:init()
             if cur then d=diff_list.display_value[cur].v end
             Print(d)
 
-            for i=1,#plr_list.selection do
-                if plr_list.selection[i] then plr_index=i end break
+            for i=1,#(plr_list.selection) do
+                if plr_list.selection[i]==true then plr_index=i end break
+            end
+            if not d then TUO_Developer_Flow:ErrorWindow('无法进入关卡：关卡名错误') end
+            if not plr_index then 
+                TUO_Developer_Flow:MsgWindow('这是一个已知问题，不用告诉我们。目前只有第一个机体是能成功进入关卡的。')
+                TUO_Developer_Flow:ErrorWindow('无法进入关卡：机体名错误\n    错误发生位置:  TUOlib\\Dev_Tool\\module\\StageManager\\_init.lua:72') 
             end
         if d and plr_index then
             -- if type(stage_name)~='string' then Print('!'..type(stage_name)) return end
@@ -106,7 +111,11 @@ function quickboost:init()
         for i=1,#plr_list.selection do
             if plr_list.selection[i] then plr_index=i end break
         end
-        -- if plr_index then plr_index=
+        if not d then TUO_Developer_Flow:ErrorWindow('无法进入关卡：关卡名错误') end
+        if not plr_index then 
+            TUO_Developer_Flow:MsgWindow('这是一个已知问题，不用告诉我们。目前只有第一个机体是能成功进入关卡的。')
+            TUO_Developer_Flow:ErrorWindow('无法进入关卡：机体名错误\n    错误发生位置:  TUOlib\\Dev_Tool\\module\\StageManager\\_init.lua:112') 
+        end
         if d and plr_index then
             if type(plr_index)~='number' then Print('!'..type(plr_index)) return end
             if string.find(tostring(stage.current_stage.name),'@',1,true)~=nil then 

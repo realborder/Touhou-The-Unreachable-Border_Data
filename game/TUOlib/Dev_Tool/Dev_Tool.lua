@@ -77,7 +77,11 @@ function TUO_Developer_Tool_kit:SortAllTemplate()
 	local t=self.ui.TemplateWidget
 	for k,v in pairs(t) do
 		_G['TDU_New_'..k]=function(self,x)
+			x=TUO_Developer_Tool_kit.ui.widget_x_pos or x
 			return TUO_Developer_UI:AttachWidget(self,k,x) end
+	end
+	function TDU_New(Template)
+		return _G['TDU_New_'..Template]
 	end
 end
 
@@ -104,6 +108,7 @@ function TUO_Developer_Tool_kit:LoadAllModule()
 		if v.init then v:init() end 
 		if v.panel then
 			for _,panel in pairs(v.panel) do
+				self.ui.SetWidgetSlot()
 				if panel.init then panel:init() end
 				if panel.widget then
 					for _,widget in pairs(panel.widget) do
@@ -114,6 +119,12 @@ function TUO_Developer_Tool_kit:LoadAllModule()
 			if #(v.panel)~=0 then v.cur=1 end
 		end
 	end
+	--排序
+	-- table.sort(self.ui.module,
+	-- function(v1,v2) 
+	-- 	local 
+		
+	-- end)
 end
 
 
@@ -217,7 +228,9 @@ function TUO_Developer_Tool_kit:render()
 	if self.ui.timer~=0 then
 		self.ui:render()
 	end
-	self.flow:render()
+	if self.flow then
+		self.flow:render() 
+	end
 
 
 	--点击效果

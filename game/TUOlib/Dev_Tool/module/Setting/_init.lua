@@ -10,11 +10,20 @@ function setting:init()
     self.name="游戏设置"
 
     TDU_New_title(self).text='特效开关'
-    TDU_New_text_displayer(self).text='关闭或开启游戏内特效，注意，这可能会使画面变得有些奇怪。\n目前可以调整的包括：\n    boss带来的背景扭曲特效（已实装）\n    boss符卡展开特效（已实装）\n    boss符卡宣告立绘特效\n    其他特效（如三面背景和魔理沙B机体的黑洞特效）'
-    local sw1=TDU_New_switch(self)
-    sw1.text_on="背景扭曲特效和符卡展开特效 启用"
-    sw1.text_off="背景扭曲特效和符卡展开特效 禁用"
-    sw1.monitoring_value='tuolib.effect_cut.enable_boss_effect'
+    TDU_New_text_displayer(self).text='关闭或开启游戏内特效，注意，这可能会使画面不会正常显示。\n目前可以调整的包括：\n    boss带来的背景扭曲特效\n    boss符卡展开特效\n    boss符卡宣告立绘特效\n    其他特效（如三面背景和魔理沙B机体的黑洞特效）'
+    -- local sw1=TDU_New_switch(self)
+    -- sw1.text_on="背景扭曲特效和符卡展开特效 启用"
+    -- sw1.text_off="背景扭曲特效和符卡展开特效 禁用"
+    -- sw1.monitoring_value='tuolib.effect_cut.enable_boss_effect'
+    local sw2=TDU_New_switch(self)
+    sw2.text_on="shader 启用"
+    sw2.text_off="shader 禁用"
+    sw2.monitoring_value='tuolib.effect_cut.enable_shader'
+    local sw3=TDU_New_switch(self)
+    sw3.text_on="背景 启用"
+    sw3.text_off="背景 禁用"
+    sw3.monitoring_value='tuolib.effect_cut.enable_background'
+    sw3.enable=false
     TDU_New_title(self).text='游戏设置查看'
     TDU_New_value_displayer(self).monitoring_value='setting'
     TDU_New_title(self).text='world参数查看'

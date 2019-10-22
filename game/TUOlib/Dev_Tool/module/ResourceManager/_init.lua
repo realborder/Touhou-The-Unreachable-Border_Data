@@ -54,14 +54,17 @@ for i=1,#res_type_t do
             return out
         end
 
-        TDU_New_title(self,'slot2').text='操作'
-        local totop=TDU_New_button(self,'slot2')
+
+        
+        TUO_Developer_UI:SetWidgetSlot('slot2')
+        TDU_New_title(self).text='操作'
+        local totop=TDU_New_button(self)
         totop.text='回到顶部'
         totop._event_mouseclick=function(self) set.y_offset_aim=0 end
-        local preview=TDU_New_button(self,'slot2')
+        local preview=TDU_New_button(self)
         preview.text='预览'
-        preview._event_mouseclick=function(self) set.y_offset_aim=0 end
-        local toglobal=TDU_New_button(self,'slot2')
+        preview._event_mouseclick=function(self) TUO_Developer_Flow:MsgWindow('该功能开发中，下个快照见！') end
+        local toglobal=TDU_New_button(self)
         toglobal.text='切换到关卡池'
         toglobal.mode=0
         toglobal._event_mouseclick=function(self)
@@ -77,16 +80,16 @@ for i=1,#res_type_t do
                 -- l2.visiable=false
             end
         end
-        local txt2=TDU_New_text_displayer(self,'slot2')
+        local txt2=TDU_New_text_displayer(self)
         txt2.text='输入文字以筛选'
         txt2.gap_t=12
-        local txt=TDU_New_inputer(self,'slot2')
+        local txt=TDU_New_inputer(self)
         txt.text=''
         txt.width=120
         txt._event_textchange=function(self)
             search=self.text
         end
-        local btnclr=TDU_New_button(self,'slot2')
+        local btnclr=TDU_New_button(self)
         btnclr.text='清除'
         btnclr.width=64
         btnclr._event_mouseclick=function(self)
