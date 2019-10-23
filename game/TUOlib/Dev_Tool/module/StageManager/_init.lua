@@ -157,25 +157,36 @@ function modmgr:init()
     swc_reload.text_on='保护模式 开'
     swc_reload.text_off='保护模式 关'
     swc_reload.monitoring_value='tuolib.mod_manager.protect_mode'
+    local btn_refresh=TDU_New_button(self,'slot2')
+    btn_refresh.text='刷新列表'
+    btn_refresh._event_mouseclick=function(self)
+        tuolib.mod_manager:RefreshModList()
+    end
     local btn_reload=TDU_New_button(self,'slot2')
-    btn_reload.text='重载zip内容'
+    btn_reload.text='加载Mod'
     btn_reload._event_mouseclick=function(self)
         for k,v in pairs(list.display_value) do
             if list.selection[k] then
-                tuolib.mod_manager.ReloadMod(v.name)
+                -- local r=lstg.FindFiles('_editor_output.lua',v.name)
+                -- TUO_Developer_Flow:MsgWindow(tostring(r))
+                local r,err=tuolib.mod_manager.LoadMod(v.name)
+                if not r then TUO_Developer_Flow:ErrorWindow(err) 
+                else 
+                    TUO_Developer_Flow:MsgWindow('成功加载：'..v.name) 
+                    InitAllClass()
+                end
             end
         end
     end
     local btn_reloadall=TDU_New_button(self,'slot2')
-    btn_reloadall.text='重载所有关卡zip'
+    btn_reloadall.text='卸载Mod'
     btn_reloadall._event_mouseclick=function(self)
-        tuolib.mod_manager.ReloadAllStageMod()
-    end
-    local btn_reloadall2=TDU_New_button(self,'slot2')
-    btn_reloadall2.text='重载所有zip'
-    btn_reloadall2._event_mouseclick=function(self)
-        tuolib.mod_manager.ReloadAllMod()
-    end
+        for k,v in pairs(list.display_value) do
+            if list.selection[k] then
+                TUO_Developer_Flow:MsgWindow('成功加载：'..v.name)
+                tuolib.mod_manager.UnloadMod(v.name)
+            end
+        end    end
     local totop=TDU_New_button(self,'slot2')
     totop.text='回到顶部'
     totop.gap_t=12

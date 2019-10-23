@@ -44,12 +44,24 @@ local PATH='TUOlib\\Dev_Tool\\module\\WuHan\\ScoreRecord.dat'
 local player_score_list={}
 local cur_player_email
 local cur_player_name
+local default_score={
+    {name='',score=1000000},
+    {name='',score=900000},
+    {name='',score=800000},
+    {name='',score=700000},
+    {name='',score=600000},
+    {name='',score=500000},
+    {name='',score=400000},
+    {name='',score=300000},
+    {name='',score=200000},
+    {name='',score=100000},
+}
 local function LoadScore()
 	local f,msg
 	f,msg=io.open(PATH,'r')
 	if f==nil then
         TUO_Developer_Flow:MsgWindow('玩家分数数据文件不存在，已重新创建。')
-        player_score_list=DeSerialize(Serialize({}))
+        player_score_list=DeSerialize(Serialize(default_score))
 	else
 		player_score_list=DeSerialize(f:read('*a'))
 		f:close()
@@ -140,9 +152,10 @@ function wuhan2:init()
     TDU_New_title(self).text='玩家信息登记'
     TDU_New_text_displayer(self).text=tip1
     textbox=TDU_New_inputer(self)
+    textbox.width=196
     local tiper=TDU_New'text_displayer'(self)
     local tiper2=TDU_New'text_displayer'(self)
-    tiper2.text='你的机签'
+    tiper2.text='你的机签，不填写会置为\"unkonow\"'
     tiper2.visiable=false
     textbox2=TDU_New'inputer'(self)
     textbox2.visiable=false
@@ -158,8 +171,6 @@ function wuhan2:init()
             tiper2.visiable=false
             textbox2.visiable=false
         else
-            -- TUO_Developer_Flow:MsgWindow('!!')
-
             if CheckEmail(textbox.text) then 
                 tiper.visiable=false 
                 btn.enable=true
@@ -170,7 +181,6 @@ function wuhan2:init()
                 btn.enable=false
                 tiper2.visiable=false
                 textbox2.visiable=false
-
             end
         end
     end
@@ -178,7 +188,8 @@ function wuhan2:init()
     btn.enable=false
     btn._event_mouseclick=function(widget)
         local player_email=textbox.text
-        TUO_Developer_Flow:MsgWindow('新的玩家：'..player_email)
+        TUO_Developer_Flow:MsgWindow('新的玩家：'..textbox2.text..'\nEmail:'..player_email)
+        TUO_Developer_UI.visiable=false
         cur_player_email=player_email
         if string.len(textbox2.text)>0 then 
             cur_player_name=textbox2.text end
@@ -189,12 +200,19 @@ function wuhan2:init()
         textbox2.visiable=false
     end
 
+
 end
 local wuhan3=TUO_Developer_UI:NewPanel()
 function wuhan3:init()
     LoadScore()
     SaveScore()
     self.name="分数排行榜"
+    -- TDU_New'title'(self).text='当前玩家信息'
+    -- TDU_New'value_displayer'(self).monitoring_value=
+    --     function(widget) 
+    --         return {{name='玩家名',v=cur_player_name},{name='邮箱',v=cur_player_email}} 
+    --     end    
+
     TDU_New'title'(self).text='分数排行榜'
     listbox=TDU_New'list_box'(self)
     listbox.monitoring_value=function(widget)

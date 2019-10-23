@@ -483,9 +483,17 @@ function reimu_playerA:init(slot)
 		{ 110, 120, 95, 85, 60, 70 },
 	}
 end
-
+local dmg_offset={
+	{1,1,1,1,1,1},
+	{1,1,1,1,1,1},
+	{0.95,1.1,0.95,1,1,1,1},
+	{0.9,1.15,1.15,0.9,1,1},
+	{1,1.1,1.3,1.1,1,1},
+	{1,1.3,1.5,1.5,1.3,1},
+	{1,1.1,1.4,1.4,1.1,1}
+}
 local function high_shoot(self)
-	local num = int(self.support)+1
+	local num=#(self.sp)
 	if self.timer % 8 < 4 then
 		--local num = int(lstg.var.power / 100) + 1
 		for i = 1, 6 do
@@ -495,20 +503,12 @@ local function high_shoot(self)
 						self.supporty + self.sp[i][2],
 						8,
 						self.anglelist[num][i],
-						self.target, 900, 0.7)
+						self.target, 900, 0.7*dmg_offset[num][i])
 			end
 		end
 	end
 end
-local dmg_offset={
-	{1,1,1,1,1,1},
-	{1,1,1,1,1,1},
-	{0.95,1.1,0.95,1,1,1,1},
-	{0.9,1.1,1.1,0.9,1,1},
-	{0.9,1.05,1.2,1.05,0.9,1},
-	{1,1.1,1.3,1.3,1.1,1},
-	{1,1.1,1.4,1.4,1.1,1}
-}
+
 local function slow_shoot(self)
 	local num=#(self.sp)
 	for i = 1, 6 do

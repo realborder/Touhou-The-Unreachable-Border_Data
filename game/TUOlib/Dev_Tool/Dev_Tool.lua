@@ -179,7 +179,7 @@ function TUO_Developer_Tool_kit:frame()
 			else ReloadFiles() end
 		end
 		if CheckKeyState(KEY.F9) then
-			self:KillBoss()
+			WipeOutBossHp()
 		end
 		if CheckKeyState(KEY.F8) then
 			self:RefreshPanels()
