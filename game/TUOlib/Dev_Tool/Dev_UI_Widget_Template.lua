@@ -98,7 +98,7 @@ function title:init()
     self.text='默认标题'
     self.height=24
     self.gap_t=self.height*2
-    self.gap_b=0
+    self.gap_b=6
 end
 
 function title:frame() 

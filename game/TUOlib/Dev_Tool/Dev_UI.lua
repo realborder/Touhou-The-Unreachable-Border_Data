@@ -30,7 +30,7 @@ function TUO_Developer_UI:init()
 
     self.mouse_click_list={}
 
-    self.bgalpha=0.9
+    self.bgalpha=0.8
     self.module={}
     self.scroll_force=0
     self.left_for_world=false
@@ -113,12 +113,12 @@ function TUO_Developer_UI:render()
                 local r=lstg.world.scrr*t+mx*(1-t)
                 local b=lstg.world.scrb*t+my*(1-t)
                 local t=lstg.world.scrt*t+my*(1-t)
-                RenderCube(UI_L,l,0,480,155*-self.timer,255,255,255)
+                RenderCube(UI_L,l,0,480,255*self.bgalpha*-self.timer,255,255,255)
                 RenderCube(r,UI_R,0,480)
                 RenderCube(l,r,0,b)
                 RenderCube(l,r,t,480)
             else
-                RenderCube(UI_L,UI_R,0,480,155*-self.timer,255,255,255)
+                RenderCube(UI_L,UI_R,0,480,255*self.bgalpha*-self.timer,255,255,255)
             end
             RenderCube(UI_L,UI_L+self.leftbar_width*-self.timer,0,480,255*-self.timer,255,255,255)
 
