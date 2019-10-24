@@ -43,6 +43,7 @@ function TUO_Developer_UI:DoModuleFrame(module)
         ----点击
         if module.mouse_stay and module.mouse_pressed and (not MouseIsDown(0)) and abs(module.angle)<self.module_angle_limit then
             module.mouse_pressed=true
+            PlaySound('TUO_Dev_HUD_panel',2,0.75)
             self.cur=module.slot
         end
         if module.mouse_stay and MouseTrigger(0) and abs(module.angle)<self.module_angle_limit then module.mouse_pressed=true end 
@@ -55,7 +56,7 @@ function TUO_Developer_UI:DoModuleFrame(module)
     elseif self.timer<0 and self.cur==module.slot then
         local uy=MouseState.y_in_UI
         -- if uy>480-self.topbar_width and MouseIsPressed(0) or lstg.GetKeyState(KEY.ESCAPE) then  self.cur=nil end
-        if uy>480-self.topbar_width and uy<480 and MouseIsPressed(0) then  self.cur=nil end
+        if uy>480-self.topbar_width and uy<480 and MouseIsPressed(0) then  self.cur=nil PlaySound('TUO_Dev_HUD_panel',2,0.75)  end
 
         if module.frame then module:frame() end 
         if module.panel then

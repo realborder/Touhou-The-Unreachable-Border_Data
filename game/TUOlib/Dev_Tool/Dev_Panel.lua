@@ -111,6 +111,7 @@ function TUO_Developer_UI:DoPanelFrame(module,panel)
     --点击
         if panel.mouse_stay and MouseTrigger(0) then
             panel.mouse_pressed=true
+            PlaySound('TUO_Dev_HUD_panel',1.5,-1)
             module.cur=panel.slot
         end
     --timer变化

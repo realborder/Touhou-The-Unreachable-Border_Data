@@ -336,14 +336,18 @@ function stage_main_menu:init()
 	
 	PlayMusic('menu')
 end
-function stage_main_menu:frame()
-	if self.timer==30 then
-		--武汉例会专用
-		TUO_Developer_Tool_kit.locked=false 
-		TUO_Developer_Tool_kit.ui.visiable = true
-	end		
+-- function stage_main_menu:frame()
+-- 	if self.timer==30 then
+-- 		--武汉例会专用
+-- 		if not _tiped then
+-- 			TUO_Developer_Tool_kit.locked=false 
+-- 			TUO_Developer_Tool_kit.ui.visiable = true
+-- 			TUO_Developer_Flow:MsgWindow('东方梦无垠的内测功能面板支持鼠标操作。\n在接下来弹出的界面里按下唯一的圆形按钮即可进入活动页面。')
+-- 			_tiped=true
+-- 		end
+-- 	end		
 
-end
+-- end
 ---------------------------------------
 
 other_setting_menu=Class(simple_menu)
