@@ -336,7 +336,14 @@ function stage_main_menu:init()
 	
 	PlayMusic('menu')
 end
+function stage_main_menu:frame()
+	if self.timer==30 then
+		--武汉例会专用
+		TUO_Developer_Tool_kit.locked=false 
+		TUO_Developer_Tool_kit.ui.visiable = true
+	end		
 
+end
 ---------------------------------------
 
 other_setting_menu=Class(simple_menu)

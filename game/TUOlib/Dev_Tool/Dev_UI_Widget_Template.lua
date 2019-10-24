@@ -497,39 +497,40 @@ function list_box:frame()
             end
         end
 
-        if (not self.keep_refresh) then return end
-        if self.monitoring_value then
-            if type(self.monitoring_value)=='function' then self.display_value=self.monitoring_value(self) 
-            elseif type(self.monitoring_value)=='string' then  
-                self.display_value={}
-                local v_tmp=IndexValueByString(self.monitoring_value)
-                if type(v_tmp)=='table' then  DeserializeTable2(self,v_tmp) 
-                else table.insert(self.display_value,{name=self.monitoring_value,panel=v_tmp}) end
-            elseif type(self.monitoring_value)=='table' then 
-                --支持显示表中表
-                self.display_value={}
-                --存的是索引值，先索引再拆
-                if self.monitoring_value.use_G then
-                    for _k,_v in pairs(self.monitoring_value) do
-                        if type(_v)=='string' then 
-                            local v_tmp=IndexValueByString(_v)
-                            if type(v_tmp)=='table' then  DeserializeTable2(self,v_tmp) 
-                            else table.insert(self.display_value,{name=_v,panel=v_tmp}) end
+        if self.keep_refresh then 
+            if self.monitoring_value then
+                if type(self.monitoring_value)=='function' then self.display_value=self.monitoring_value(self) 
+                elseif type(self.monitoring_value)=='string' then  
+                    self.display_value={}
+                    local v_tmp=IndexValueByString(self.monitoring_value)
+                    if type(v_tmp)=='table' then  DeserializeTable2(self,v_tmp) 
+                    else table.insert(self.display_value,{name=self.monitoring_value,panel=v_tmp}) end
+                elseif type(self.monitoring_value)=='table' then 
+                    --支持显示表中表
+                    self.display_value={}
+                    --存的是索引值，先索引再拆
+                    if self.monitoring_value.use_G then
+                        for _k,_v in pairs(self.monitoring_value) do
+                            if type(_v)=='string' then 
+                                local v_tmp=IndexValueByString(_v)
+                                if type(v_tmp)=='table' then  DeserializeTable2(self,v_tmp) 
+                                else table.insert(self.display_value,{name=_v,panel=v_tmp}) end
+                            end
                         end
+                    else --存的不是索引值， 直接拆
+                        table.insert(self.display_value,{name=tostring(self.monitoring_value),v=''})
+                        DeserializeTable2(self,self.monitoring_value)
                     end
-                else --存的不是索引值， 直接拆
-                    table.insert(self.display_value,{name=tostring(self.monitoring_value),v=''})
-                    DeserializeTable2(self,self.monitoring_value)
+                else self.display_value={name='',v='* List is empty'}
                 end
-            else self.display_value={name='',v='* List is empty'}
+            elseif self.refresh then self:refresh() 
+            else self.display_value={name='',v='* List is empty'} self.visiable=false self.vanish_cause_novalue=true return end
+            if self.vanish_cause_novalue then self.visiable=true end
+            --对display_value进行排序
+            if self.display_value and self.display_value[1] and (type(self.display_value[1].name)=='string' or type(self.display_value[1].name)=='number')  then 
+                local sortfunc=self.sortfunc or function(v1,v2)  return v1.name<v2.name end
+                table.sort(self.display_value,sortfunc)
             end
-        elseif self.refresh then self:refresh() 
-        else self.display_value={name='',v='* List is empty'} self.visiable=false self.vanish_cause_novalue=true return end
-        if self.vanish_cause_novalue then self.visiable=true end
-        --对display_value进行排序
-        if self.display_value and self.display_value[1] and (type(self.display_value[1].name)=='string' or type(self.display_value[1].name)=='number')  then 
-            local sortfunc=self.sortfunc or function(v1,v2)  return v1.name<v2.name end
-            table.sort(self.display_value,sortfunc)
         end
 
     --处理排版

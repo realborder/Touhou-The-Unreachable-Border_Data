@@ -126,3 +126,6 @@ function WipeOutBossHp()
 			debugPoint=debugPoint+1 end
 	end
 end
+
+
+

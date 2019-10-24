@@ -183,8 +183,8 @@ function modmgr:init()
     btn_reloadall._event_mouseclick=function(self)
         for k,v in pairs(list.display_value) do
             if list.selection[k] then
-                TUO_Developer_Flow:MsgWindow('成功加载：'..v.name)
                 tuolib.mod_manager.UnloadMod(v.name)
+                TUO_Developer_Flow:MsgWindow('成功卸载：'..v.name)
             end
         end    end
     local totop=TDU_New_button(self,'slot2')

@@ -94,7 +94,7 @@ local rule=
 现在他是一个刷分游戏。
 
 符卡系统与原作差别不小，可以分段释放也可以 一 直 按X一口气放完。
-擦弹擦够75个子弹就能放必杀技消弹（按C键释放）。
+擦弹擦够50个子弹就能放必杀技消弹（按C键释放）。
 消弹和擦弹增加最大得点和资源增长量，但专心避弹可以提高火力（最高6p
 和得分倍率（最高五倍）。
 
@@ -115,18 +115,18 @@ local rule3=[[
             X可以加强符卡攻击。
 
 必杀技：按C消耗灵力来释放，伤害低，时间短，但擦弹就可以充能。
-    擦够75个子弹即可释放，擦的越多消耗灵力越少。
+    擦够50个子弹即可释放，擦到125个之后消耗灵力会最少。
 
 梦现指针：位于屏幕左侧，用以指示玩家行为是偏向混关还是偏向避弹。
     宣卡和释放必杀会使其偏向梦境侧，资源和最大得点↑，火力和分数倍率↓
     专心避弹会使其偏向现实侧，资源和最大得点↓，但火力和分数倍率↑
-    指针值在大于一格的时候资源会自动上涨。
+    指针值在大于一格的时候资源会自动上涨，在击败一个boss之后才会结算。
 
 炸，你能拿到最大得点，扭，你能获得分数倍率，到底该咋办呢？]]
 
 local tip1=[[
 请在下方的输入框里输入你的邮箱，这是我们发送 SteamKey 的唯一依据。
-请务必确认你输入了正确的邮箱。
+请务必确认你输入了正确的邮箱。由于引擎限制，游戏中右SHIFT不可用。
 推荐使用QQ邮箱，以防意外发生时方便联系。]]
 
 local textbox,textbox2,listbox
@@ -142,6 +142,14 @@ function wuhan1:init()
     btn.text='开始游戏'
     btn._event_mouseclick=function(widget)
         m.cur=2
+        btn.enable=false
+        local r,err= tuolib.mod_manager.LoadMod('mod\\TUO_BossRush_WuHanOnly.zip')
+        if r then
+            InitAllClass()
+            TUO_Developer_Flow:MsgWindow('武汉高校东方例会所用模块已成功加载。')
+        else
+            TUO_Developer_Flow:ErrorWindow('武汉高校东方例会所用模块加载失败。请截屏并联系云绝万里。\n'..err)
+        end
     end
     TDU_New_title(self).text='游戏系统详细介绍'
     TDU_New_text_displayer(self).text=rule3
@@ -155,11 +163,12 @@ function wuhan2:init()
     textbox.width=196
     local tiper=TDU_New'text_displayer'(self)
     local tiper2=TDU_New'text_displayer'(self)
-    tiper2.text='你的机签，不填写会置为\"unkonow\"'
+    tiper2.text='你的机签，不填写会置为\"unknown\"'
     tiper2.visiable=false
     textbox2=TDU_New'inputer'(self)
     textbox2.visiable=false
     textbox2.width=96
+    local list=TDU_New'list_box'(self)
     local btn=TDU_New'button'(self)
     tiper.text='邮箱格式错误'
     tiper.visiable=false
@@ -168,33 +177,54 @@ function wuhan2:init()
         if string.len(textbox.text)<5 then 
             tiper.visiable=false
             btn.enable=false
+            list.visiable=false
             tiper2.visiable=false
             textbox2.visiable=false
         else
             if CheckEmail(textbox.text) then 
                 tiper.visiable=false 
                 btn.enable=true
+                list.visiable=true
                 tiper2.visiable=true
                 textbox2.visiable=true
             else 
                 tiper.visiable=true 
                 btn.enable=false
+                list.visiable=false
                 tiper2.visiable=false
                 textbox2.visiable=false
             end
         end
     end
+    list.keep_refresh=false
+    list.width=96
+    list.visiable=false
+    list.selection={false,true,false,false}
+    list._ban_mul_select=true
+    list.display_value={'Easy','Normal','Hard','Lunatic'}
     btn.text='确认'
     btn.enable=false
     btn._event_mouseclick=function(widget)
         local player_email=textbox.text
-        TUO_Developer_Flow:MsgWindow('新的玩家：'..textbox2.text..'\nEmail:'..player_email)
+        local diff
+        for i=1,4 do
+            if list.selection[i] then diff=list.display_value[i] end
+        end
+        -- TUO_Developer_Flow:MsgWindow('新的玩家：'..textbox2.text..'\nEmail:'..player_email..'\n难度: '..diff)
+        m.cur=3
+        ResetPool()
+        scoredata.player_select=1
+        lstg.var.player_name=player_list[1][2]
+        lstg.var.rep_player=player_list[1][3]
+        stage.group.PracticeStart('BossRush@'..diff)
+
         TUO_Developer_UI.visiable=false
         cur_player_email=player_email
         if string.len(textbox2.text)>0 then 
             cur_player_name=textbox2.text end
         textbox.text=''
         textbox2.text=''
+        list.visiable=false
         btn.visiable=false
         tiper2.visiable=false
         textbox2.visiable=false
@@ -214,6 +244,11 @@ function wuhan3:init()
     --     end    
 
     TDU_New'title'(self).text='分数排行榜'
+    local btn=TDU_New'button'(self)
+    btn.text='返回'
+    btn._event_mouseclick=function(self)
+        m.cur=2
+    end
     listbox=TDU_New'list_box'(self)
     listbox.monitoring_value=function(widget)
         local t={}
@@ -235,9 +270,11 @@ function stage.group.ReturnToTitle(save_rep,finish)
         table.insert(player_score_list,{email=cur_player_email,score=lstg.var.score,name=cur_player_name})
         cur_player_email=nil
         SaveScore()
+        TUO_Developer_UI.visiable=true
     elseif cur_player_email then
         table.insert(player_score_list,{email=cur_player_email,score=lstg.var.score,name='unknown'})
         cur_player_email=nil
+        TUO_Developer_UI.visiable=true
         SaveScore()
     end
 end

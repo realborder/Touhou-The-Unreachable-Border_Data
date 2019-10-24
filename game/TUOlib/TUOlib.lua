@@ -4,8 +4,6 @@
 ---
 ---
 tuolib=tuolib or {}
----开发者工具和UI
-Include'TUOlib\\Dev_Tool\\Dev_Tool.lua'
 ---复杂动画
 
 ---梦现指针系统
@@ -16,3 +14,5 @@ Include'TUOlib\\Dev_Tool\\Dev_Tool.lua'
 Include'TUOlib\\Mod_Stage_Manager\\Mod_Manager.lua'
 ---特效开关
 Include'TUOlib\\Effect_Cut.lua'
+---开发者工具和UI
+Include'TUOlib\\Dev_Tool\\Dev_Tool.lua'

@@ -127,7 +127,7 @@ function TUO_Developer_Tool_kit:init()
 	--
 	self:LoadResource()
 	self.visiable=false --标记界面是否可见
-	self.locked=true --标记是否锁定
+	self.locked=false --标记是否锁定
 	self.unlock_time_limit=0
 	self.UNLOCK_TIME_LIMIT=60
 	self.unlock_count=0
@@ -166,23 +166,23 @@ function TUO_Developer_Tool_kit:frame()
 		end
 		if self.unlock_count>=self.UNLOCK_COUNT and self.unlock_time_limit>0 then 
 			self.locked=false 
-			self.ui.visiable = not self.ui.visiable
+			self.ui.visiable = true
 			if self.ui.visiable then Log('F3调试界面已开启') PlaySound('TUO_Dev_HUD_unlock',4)
 			else Log('F3调试界面已关闭') end
 		end
 	else
 		if CheckKeyState(KEY.F10) then 
-			if lstg.GetKeyState(KEY.SHIFT) then 
-				ResetPool()
-				lstg.included={}
-				stage.Set('none', 'init') 
-			else ReloadFiles() end
+			-- if lstg.GetKeyState(KEY.SHIFT) then 
+			-- 	ResetPool()
+			-- 	lstg.included={}
+			-- 	stage.Set('none', 'init') 
+			-- else ReloadFiles() end
 		end
 		if CheckKeyState(KEY.F9) then
 			WipeOutBossHp()
 		end
 		if CheckKeyState(KEY.F8) then
-			self:RefreshPanels()
+			-- self:RefreshPanels()
 		end
 		if CheckKeyState(KEY.F3) then
 			self.ui.visiable = not self.ui.visiable
