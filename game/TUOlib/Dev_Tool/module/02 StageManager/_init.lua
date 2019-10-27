@@ -28,9 +28,12 @@ function quickboost:init()
     end
     diff_list._event_mousepress=function(self)
         local cur
-        for i,v in pairs(self.selection) do
-            if v then cur=i end break
-        end
+        -- TUO_Developer_Flow:MsgWindow(tostring(#(self.display_value)))
+        local i,name,v= TUO_Developer_UI.GetListSingleSel(self)
+        if i then cur=i end
+        -- for i,v in pairs(self.selection) do
+        --     if v then cur=i end break
+        -- end
         local d
         if cur then d=self.display_value[cur].v end
         if d then
@@ -58,39 +61,36 @@ function quickboost:init()
         ----------
             local _stage,plr_index
             local cur
-            for i,v in pairs(diff_list.selection) do
-                if v then cur=i end break
+            do
+                local i,name,v= TUO_Developer_UI.GetListSingleSel(diff_list)
+                if i then 
+                    cur=i 
+                    -- TUO_Developer_Flow:MsgWindow('关卡'..i)
+                else
+                    TUO_Developer_Flow:ErrorWindow('无法进入关卡：关卡名错误')
+                end
             end
+
             local d
             if cur then d=diff_list.display_value[cur].v end
-            Print(d)
-
-            for i=1,#(plr_list.selection) do
-                if plr_list.selection[i]==true then plr_index=i end break
+            local i,name,v= TUO_Developer_UI.GetListSingleSel(plr_list)
+            if i then
+                -- TUO_Developer_Flow:MsgWindow('机体'..i)
+                plr_index=i
+            else
+                TUO_Developer_Flow:ErrorWindow('无法进入关卡：机体名错误\n    错误发生位置:  TUOlib\\Dev_Tool\\module\\StageManager\\_init.lua:75') 
             end
-            if not d then TUO_Developer_Flow:ErrorWindow('无法进入关卡：关卡名错误') end
-            if not plr_index then 
-                TUO_Developer_Flow:MsgWindow('这是一个已知问题，不用告诉我们。目前只有第一个机体是能成功进入关卡的。')
-                TUO_Developer_Flow:ErrorWindow('无法进入关卡：机体名错误\n    错误发生位置:  TUOlib\\Dev_Tool\\module\\StageManager\\_init.lua:72') 
-            end
-        if d and plr_index then
-            -- if type(stage_name)~='string' then Print('!'..type(stage_name)) return end
-            -- if type(plr_index)~='number' then Print('!'..type(plr_index)) return end
-            -- self.text='!'..type(stage_name)
-            -- exani_player_manager.ClearExani(play_manager,'')
+        -- if d and plr_index then
             ResetPool()
             if string.find(tostring(stage.current_stage.name),'@',1,true)~=nil then 
-                -- stage.current_stage.task={}
                 stage.current_stage.task[1]=coroutine.create(function() end)
-                -- stage.current_stage.task[2]=coroutine.create(function() end)
-                -- stage.group.FinishStage()
             end
             
             scoredata.player_select=plr_index
             lstg.var.player_name=player_list[plr_index][2]
             lstg.var.rep_player=player_list[plr_index][3]
             stage.group.Start(stage.groups[d])
-        end
+        -- end
     end
     local start_btn2=TDU_New_button(self)
     start_btn2.text='单关练习'
@@ -98,29 +98,29 @@ function quickboost:init()
     start_btn2._event_mouseclick=function(self)
         local _stage,plr_index
         local cur
-        for i,v in pairs(diff_list.selection) do
-            if v then cur=i end break
+        do
+            local i,name,v= TUO_Developer_UI.GetListSingleSel(stage_list)
+            if i and v then 
+                cur=i 
+                _stage=v
+                -- TUO_Developer_Flow:MsgWindow('关卡'.._stage)
+            else
+                TUO_Developer_Flow:ErrorWindow('无法进入关卡：关卡名错误')
+            end
         end
+
         local d
         if cur then d=diff_list.display_value[cur].v end
-        for i,v in pairs(stage_list.selection) do
-            if v then cur=i end break
+        local i,name,v= TUO_Developer_UI.GetListSingleSel(plr_list)
+        if i then
+            -- TUO_Developer_Flow:MsgWindow('机体'..i)
+            plr_index=i
+        else
+            TUO_Developer_Flow:ErrorWindow('无法进入关卡：机体名错误\n    错误发生位置:  TUOlib\\Dev_Tool\\module\\StageManager\\_init.lua:75') 
         end
-        if d then _stage=stage_list.display_value[cur].v  end
-
-        for i=1,#plr_list.selection do
-            if plr_list.selection[i] then plr_index=i end break
-        end
-        if not d then TUO_Developer_Flow:ErrorWindow('无法进入关卡：关卡名错误') end
-        if not plr_index then 
-            TUO_Developer_Flow:MsgWindow('这是一个已知问题，不用告诉我们。目前只有第一个机体是能成功进入关卡的。')
-            TUO_Developer_Flow:ErrorWindow('无法进入关卡：机体名错误\n    错误发生位置:  TUOlib\\Dev_Tool\\module\\StageManager\\_init.lua:112') 
-        end
-        if d and plr_index then
-            if type(plr_index)~='number' then Print('!'..type(plr_index)) return end
             if string.find(tostring(stage.current_stage.name),'@',1,true)~=nil then 
                 stage.current_stage.task[1]=coroutine.create(function() end)
-                stage.current_stage.task[2]=coroutine.create(function() end)
+                -- stage.current_stage.task[2]=coroutine.create(function() end)
                 stage.group.FinishStage()
             end
             ResetPool()
@@ -128,7 +128,6 @@ function quickboost:init()
             lstg.var.player_name=player_list[plr_index][2]
             lstg.var.rep_player=player_list[plr_index][3]
             stage.group.PracticeStart(_stage)
-        end
     end
 
 

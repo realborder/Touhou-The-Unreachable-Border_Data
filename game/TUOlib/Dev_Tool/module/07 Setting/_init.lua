@@ -36,6 +36,29 @@ end
 local toolsetting=TUO_Developer_UI:NewPanel()
 function toolsetting:init()
     self.name="工具设置"
+    TDU_New'title'(self).text='杂项'
+    TDU_New'text_displayer'(self).text='改变背景透明度。'
+    local slider=TDU_New'value_slider'(self)
+    slider.monitoring_value='TUO_Developer_UI.bgalpha'
+    slider.max_value=1
+
+    TDU_New'text_displayer'(self).text='重载所有模块的布局。'
+    local btn1=TDU_New'button'(self)
+    btn1.text='重载 (F5)'
+    btn1.width=96
+    btn1._event_mouseclick=function(widget)
+            TUO_Developer_Tool_kit:RefreshCurrentModule()
+        end
+    TDU_New'text_displayer'(self).text='重载整个内测功能面板。'
+    local btn2=TDU_New'button'(self)
+    btn2.text='重载 (Shift + F5)'
+    btn2.width=145
+    btn2.event_mouseclick=function(widget)
+            TUO_Developer_Tool_kit:Reload()
+        end
+    
+
+
 end
 local sandbox=TUO_Developer_UI:NewPanel()
 function sandbox:init()

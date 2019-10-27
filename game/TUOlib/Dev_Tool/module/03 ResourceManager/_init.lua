@@ -4,6 +4,89 @@ function ResourceManager:init()
     self.name='游戏资源管理'
     
 end
+
+local preview=TUO_Developer_UI:NewPanel()
+function preview:init()
+    self.name='[0]脚本'
+    local list
+    TDU_New'title'(self).text='已加载的脚本'
+    TDU_New'text_displayer'(self).text= '这个列表显示了已经载入的脚本。\n重载游戏会把游戏整个重载掉。\nsave和load按钮可以保存和载入您的选区信息。(没有实装）'
+    list=TDU_New'list_box'(self)
+    list.monitoring_value=lstg.included
+
+    TUO_Developer_UI:SetWidgetSlot'slot2'
+    TDU_New'title'(self).text='操作'
+    local btn1=TDU_New'button'(self)
+    btn1.text='重载'
+    btn1._event_mouseclick=function(widget)  
+        local dis=list.display_value
+        local v_tmp={}
+        for i,v in pairs(dis) do
+            if list.selection[i] then 
+                table.insert(v_tmp,v.name) 
+                -- TUO_Developer_Flow:MsgWindow(v.name)
+            end
+            
+        end
+        TUO_Developer_Tool_kit.ReloadFiles(v_tmp)
+    end
+    local btn2=TDU_New'button'(self)
+    btn2.text='反转'
+    btn2._event_mouseclick=function(widget)  
+        local dis=list.display_value
+        local v_tmp={}
+        for i,v in pairs(dis) do
+            if list.selection[i] then 
+                lstg.included[v.name]=not lstg.included[v.name]
+            end
+        end
+    end
+    -- local btn3=TDU_New'button'(self)
+    -- btn3.text='重载游戏'
+    -- btn3._event_mouseclick=function(widget) 
+        -- ResetPool()
+        -- lstg.included={}
+        -- stage.Set('none', 'init') 
+        -- lstg.DoFile('core.lua')
+    -- end
+    local btn4=TDU_New'button'(self)
+	btn4.text='全选'
+    btn4._event_mouseclick=function(widget) 
+        list.selection={}
+        for i=1,#(list.display_value) do
+            list.selection[i]=true
+        end
+    end
+    local btn5=TDU_New'button'(self)
+	btn5.text='全不选'
+	btn5._event_mouseclick=function(widget) 
+        list.selection={}
+    end
+    
+			-- TUO_Developer_HUD:NewWidget(panel,'slot2','button',{text='save1',width=55,
+			-- 	_event_mouseclick=function(widget) 
+			-- 	end
+			-- 	})
+			-- TUO_Developer_HUD:NewWidget(panel,'slot2','button',{text='load1',x_pos2=65,width=55,
+			-- 	_event_mouseclick=function(widget) 
+			-- 	end
+			-- 	})
+			-- TUO_Developer_HUD:NewWidget(panel,'slot2','button',{text='save2',width=55,
+			-- 	_event_mouseclick=function(widget) 
+			-- 	end
+			-- 	})
+			-- TUO_Developer_HUD:NewWidget(panel,'slot2','button',{text='load2',x_pos2=65,width=55,
+			-- 	_event_mouseclick=function(widget) 
+			-- 	end
+			-- 	})
+			
+
+
+		
+
+end
+
+
 local res_type_t={"[1]纹理","[2]图像","[3]动画","[4]音乐","[5]音效","[6]粒子","[7]纹理字体","[8]TTF字体","[9]shader"}
 local st={}
 for i=1,#res_type_t do
@@ -102,9 +185,4 @@ for i=1,#res_type_t do
 
 
     
-end
-local preview=TUO_Developer_UI:NewPanel()
-function preview:init()
-    self.name='预览'
-
 end

@@ -85,6 +85,10 @@ function TUO_Developer_Tool_kit:SortAllTemplate()
 	end
 end
 
+
+
+-------------------------------------------
+---载入所有模块
 function TUO_Developer_Tool_kit:LoadAllModule()
 	local folders=plus.EnumFiles(PATH_HEAD..'\\module')
 	for i,v in pairs(folders) do
@@ -92,9 +96,11 @@ function TUO_Developer_Tool_kit:LoadAllModule()
 			local PATH=PATH_HEAD..'module\\'..v.name..'\\'
 			---!!!注意这里添加面板的逻辑是载入一个模块后把新增的面板塞进模块里，对模块的排序必须放在后面
 			self.ui._panel_temp={}
+			self.ui._module_path_temp=v.name
 			self.ReloadSingleFile(PATH..'_init.lua')
 			self.ui.module[#self.ui.module].panel=self.ui._panel_temp
 			self.ui._panel_temp=nil
+			self.ui._module_path_temp=nil
 			if not(lfs.attributes(PATH..'logo.png')==nil) then
 				Log('发现logo: '..v.name)
 				self.ui.module[#self.ui.module].logo='_Dev_Module_'..v.name
@@ -122,6 +128,15 @@ function TUO_Developer_Tool_kit:LoadAllModule()
 	--排序
 end
 
+-------------------------------------------
+---刷新当前打开的模块的布局
+function TUO_Developer_Tool_kit:RefreshCurrentModule()
+	local ui=self.ui
+	if ui.cur then 
+		self.ui.module={}
+		self:LoadAllModule()
+	end
+end
 
 function TUO_Developer_Tool_kit:init()
 	--
@@ -198,7 +213,7 @@ function TUO_Developer_Tool_kit:frame()
 			if lstg.GetKeyState(KEY.SHIFT) then
 				self:Reload()
 			else
-				-- self:RefreshPanels()
+				self:RefreshCurrentModule()
 			end
 		end
 		if CheckKeyState(KEY.TAB) then end

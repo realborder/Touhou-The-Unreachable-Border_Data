@@ -40,7 +40,7 @@ local function format_json(str)
 	return ret
 end
 
-local PATH='TUOlib\\Dev_Tool\\module\\WuHan\\ScoreRecord.dat'
+local PATH='TUOlib\\Dev_Tool\\module\\'..TUO_Developer_UI._module_path_temp..'\\ScoreRecord.dat'
 local player_score_list={}
 local cur_player_email
 local cur_player_name

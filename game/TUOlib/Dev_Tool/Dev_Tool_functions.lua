@@ -12,16 +12,20 @@ end
 ---重载外部文件或者程序内部指定的单个脚本
 ---@param path string 脚本的路径
 local ReloadSingleFile=function(path)
+	-- TUO_Developer_Flow:MsgWindow('尝试重载指定脚本:'..path)
+
 	if not(lfs.attributes(path) == nil) then 
 		local r,err=xpcall(lstg.DoFile,debug.traceback,path)
 		if r then 
+			TUO_Developer_Flow:MsgWindow('成功重载脚本：'..path)
 			Log('成功重载脚本：'..path,2)
 		else
 			Log('载入脚本：'..path..' 的时候发生错误\n    错误详细信息:\n    '..err,1) 
 		end
 	else
 		Log('脚本 '..path..' 不存在',1) 
-	end
+		TUO_Developer_Flow:ErrorWindow('脚本 '..path..' 不存在')	
+end
 end
 TUO_Developer_Tool_kit.ReloadSingleFile=ReloadSingleFile
 
@@ -30,17 +34,21 @@ TUO_Developer_Tool_kit.ReloadSingleFile=ReloadSingleFile
 ---@param path string 提供具体文件路径以重载，也可以传一个表进去
 local ReloadFiles = function (path)
 	Log('尝试重载指定脚本')
-	if path then
-		if type(path)=='string' then
-			ReloadSingleFile(path)
-		elseif type(path)=='table' then
-			for k,v in pairs(path) do ReloadSingleFile(v) end
+	-- TUO_Developer_Flow:MsgWindow('尝试重载指定脚本')
+	if type(path)=='string' then
+		ReloadSingleFile(path)
+	elseif type(path)=='table' then
+		-- TUO_Developer_Flow:MsgWindow('发现多个文件'..#path)
+		for i,v in ipairs(path) do 
+			ReloadSingleFile(v)
 		end
-	else
-
 	end
 end
 TUO_Developer_Tool_kit.ReloadFiles=ReloadFiles
+
+
+
+
 
 --独立按键检测
 local _KeyDown={}
@@ -128,4 +136,9 @@ function WipeOutBossHp()
 end
 
 
-
+function TUO_Developer_UI.GetListSingleSel(widget)
+	for i=1,#(widget.display_value) do
+		if widget.selection[i] then return i,widget.display_value[i].name,widget.display_value[i].v end
+	end
+	return nil
+end

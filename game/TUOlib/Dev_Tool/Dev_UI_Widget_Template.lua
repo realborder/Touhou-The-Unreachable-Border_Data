@@ -560,7 +560,14 @@ function list_box:frame()
                     self.selection[i]=not ori 
                 else
                     self.selection={}
-                    self.selection[i]=true
+                    for _i=1,#self.display_value do
+                        if _i==i then
+                            self.selection[_i]=true
+                        else
+                            self.selection[_i]=false
+                        end
+                    end
+                    -- self.selection[i]=true
                 end
             end
             t=t-HEIGHT-GAP

@@ -7,13 +7,15 @@ local itpl = function(vstart,vend,t)  return vstart+(vend-vstart)*(cos(180+180*t
 
 
 
-function TUO_Developer_UI:NewModule()
+function TUO_Developer_UI:NewModule(index)
+    index=index or #(self.module)+1
     local tmp={
         name='未命名',
+        path=self._module_path_temp,
         --在主菜单中的槽位
-        slot=#self.module+1,
+        slot=index,
         --在主菜单中的角度
-        angle_aim=self.module_da*(#self.module+1),
+        angle_aim=self.module_da*index,
         angle=360,
         x=0,y=0,r=0,
 
@@ -23,7 +25,10 @@ function TUO_Developer_UI:NewModule()
         pressed_timer=0,
         panel={}
     }
-    table.insert(self.module,tmp)
+    if self.module[index] then 
+        -- TUO_Developer_Flow:ErrorWindow('')
+    end
+    self.module[index]=tmp
     return tmp
 end
 
