@@ -5,7 +5,7 @@
 ---Email:Xiliusha@outlook.com
 ---=====================================
 
-local path="mwy_player\\"
+local path="TUOlib\\TUO_Player\\reimu\\"
 local texname="_reimu_texture"
 local collibox_scale=1.0--碰撞盒缩放，因为碰撞盒缩放和图片精灵渲染缩放分离了，所以不需要调整
 
@@ -211,6 +211,28 @@ function reimu_ccc_gap:frame()
 	end
 end
 
+ray_bullet_killer=Class(object)
+function ray_bullet_killer:init(x,y,a,b,rot,kill_indes)
+	self.x=x self.y=y
+	self.a=a self.b=b
+	self.rot=rot
+	if self.a~=self.b then self.rect=true end
+	self.group=GROUP_PLAYER
+	self.hide=true
+	self.kill_indes=kill_indes
+end
+function ray_bullet_killer:frame()
+	if self.timer==1 then Del(self) end
+end
+function ray_bullet_killer:colli(other)
+	if self.kill_indes then
+		if other.group==GROUP_INDES then
+			Kill(other)
+		end
+	end
+	if other.group==GROUP_ENEMY_BULLET then Kill(other) end
+end
+
 reimu_ccc_stick=Class(object)
 
 function reimu_ccc_stick:init(x,y,a,v)
@@ -236,7 +258,7 @@ function reimu_ccc_stick:frame()
 		self.vx=self.v*cos(self.rot)
 		self.vy=self.v*sin(self.rot)
 	end
-	New(bomb_bullet_killer,self.x,self.y,self.a,self.b,false)
+	New(bomb_bullet_killer2,self.x,self.y,self.a,self.b,self.rot,false)
 end
 
 ----------------------------------------

@@ -825,10 +825,14 @@ end
 
 --列表里的三项分别代表被展示名称，类名和类的name值
 player_list={
-	{"MWY Hakurei Reimu A","reimu_playerA","ReimuA"},
-	{"MWY Hakurei Reimu B","reimu_playerB","ReimuB"},
-	{"MWY Kirisame Marisa A","marisa_playerA","MarisaA"},
-	{"MWY Kirisame Marisa B","marisa_playerB","MarisaB"}
+	{"博丽灵梦 A","reimu_playerA","ReimuA"},
+	{"博丽灵梦 B","reimu_playerB","ReimuB"},
+	{"雾雨魔理沙 A","marisa_playerA","MarisaA"},
+	{"雾雨魔理沙 B","marisa_playerB","MarisaB"},
+	{"东风谷早苗 A","sanae_playerA","SanaeA"},
+	{"东风谷早苗 B","sanae_playerB","SanaeB"},
+	{"宇佐见堇子 A","sumireko_playerA","SumirekoA"},
+	{"宇佐见堇子 B","sumireko_playerB","SumirekoB"},
 }
 
 -- Include'THlib\\player\\reimu\\reimu.lua'

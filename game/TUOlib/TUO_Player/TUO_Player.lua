@@ -1,4 +1,4 @@
-local path="mwy_player\\"
+local path="TUOlib\\TUO_Player\\"
 mwy={}
 mwy.useMWYwis=true ---false则会在各个机体的init方法中应用新的行走图系统
 local  PlayerWalkImageSystem = plus.Class()
@@ -120,5 +120,7 @@ function PlayerWalkImageSystem:UpdateImageByType(t)
 end
 mwy.PlayerWalkImageSystem=PlayerWalkImageSystem
 
-Include(path.."reimu.lua")
-Include(path.."marisa.lua")
+Include(path.."reimu\\reimu.lua")
+Include(path.."marisa\\marisa.lua")
+Include(path.."sanae\\sanae.lua")
+Include(path.."sumireko\\sumireko.lua")

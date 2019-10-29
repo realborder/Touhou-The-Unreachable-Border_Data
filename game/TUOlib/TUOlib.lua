@@ -4,6 +4,8 @@
 ---
 ---
 tuolib=tuolib or {}
+---梦无垠自机
+Include'TUOlib\\TUO_Player\\TUO_Player.lua'
 ---复杂动画
 
 ---梦现指针系统

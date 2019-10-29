@@ -3,7 +3,7 @@
 ---模板来自Xiliusha
 
 
-local path="mwy_player\\"
+local path="TUOlib\\TUO_Player\\marisa\\"
 local texname='marisa_texture'
 local collibox_scale=1.0--碰撞盒缩放，因为碰撞盒缩放和图片精灵渲染缩放分离了，所以不需要调整
 

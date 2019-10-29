@@ -224,13 +224,32 @@ function modmgr:init()
 
 end
 local steptest=TUO_Developer_UI:NewPanel()
-__steptest=steptest
 function steptest:init()
     self.name="步进调试"
-    self.left_for_world=false
-    local world_switch=TDU_New_switch(self,'world')
-    world_switch._event_switched=function(self,v)
-        steptest.left_for_world=v end
-
-    -- world_switch.monitoring_value='__steptest.left_for_world'
+    self.ban_framefunc_timer=0
+    self.left_for_world=true
+    -- local world_switch=TDU_New_switch(self,'world')
+    -- world_switch._event_switched=function(self,v)
+        -- steptest.left_for_world=v end
+    TUO_Developer_UI:SetWidgetSlot('world')
+    TDU_New'title'(self).text='步进调试'
+    local sw1=TDU_New'switch'(self)
+    sw1.monitoring_value='TUO_Developer_Tool_kit.ban_framefunc'
+    sw1.text_on='已冻结帧函数'
+    sw1.text_off='已解冻帧函数'
+    local sw2=TDU_New'switch'(self)
+    sw2.monitoring_value='TUO_Developer_Tool_kit.ban_renderfunc'
+    sw2.text_on='已冻结帧渲染函数'
+    sw2.text_off='已解冻帧渲染函数'
+    local btn1=TDU_New'button'(self)
+    btn1.text='前进一帧'
+    btn1._event_mouseclick=function (widget)
+        TUO_Developer_Tool_kit.ban_framefunc=false
+        steptest.ban_framefunc_timer=1
+    end
+end
+function steptest:frame()
+    self.ban_framefunc_timer=self.ban_framefunc_timer-1
+    if self.ban_framefunc_timer==0 then TUO_Developer_Tool_kit.ban_framefunc=true end
+    
 end

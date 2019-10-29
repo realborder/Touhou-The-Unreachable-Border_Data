@@ -41,7 +41,6 @@ function TUO_Developer_UI:NewPanel()
     return tmp
 end
 
-
 --------------------------------------------------
 ---渲染面板的标题
 function TUO_Developer_UI:RenderPanelTitle(panel)

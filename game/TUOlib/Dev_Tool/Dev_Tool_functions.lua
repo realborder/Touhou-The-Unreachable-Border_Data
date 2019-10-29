@@ -17,7 +17,7 @@ local ReloadSingleFile=function(path)
 	if not(lfs.attributes(path) == nil) then 
 		local r,err=xpcall(lstg.DoFile,debug.traceback,path)
 		if r then 
-			TUO_Developer_Flow:MsgWindow('成功重载脚本：'..path)
+			-- TUO_Developer_Flow:MsgWindow('成功重载脚本：'..path)
 			Log('成功重载脚本：'..path,2)
 		else
 			Log('载入脚本：'..path..' 的时候发生错误\n    错误详细信息:\n    '..err,1) 
@@ -141,4 +141,83 @@ function TUO_Developer_UI.GetListSingleSel(widget)
 		if widget.selection[i] then return i,widget.display_value[i].name,widget.display_value[i].v end
 	end
 	return nil
+end
+
+---性能监视用
+function DoFrame()
+	--标题设置
+	ChangeGameTitle()
+	--切关处理(于ext.lua重载)
+	if stage.next_stage then ChangeGameStage() end
+	--刷新输入(于ext.lua重载)
+	-- jstg.GetInputEx()
+	GetInput()
+	--stage和object逻辑
+	SetPlayer()--清除jstg.current_player指向的自机
+	local t1=os.clock()
+	if GetCurrentSuperPause()<=0 or stage.nopause then
+		ex.Frame()
+		task.Do(stage.current_stage)
+		stage.current_stage:frame()
+		stage.current_stage.timer=stage.current_stage.timer+1
+	end
+	ObjFrame()
+	if GetCurrentSuperPause()<=0 or stage.nopause then
+		for i=1,jstg.GetWorldCount() do
+			jstg.SwitchWorld(i)
+			SetWorldFlag(jstg.worlds[i].world)
+			BoundCheck()
+		end
+	end
+	if GetCurrentSuperPause()<=0 then
+		CollisionCheck(GROUP_PLAYER,GROUP_ENEMY_BULLET)
+		CollisionCheck(GROUP_PLAYER,GROUP_ENEMY)
+		CollisionCheck(GROUP_PLAYER,GROUP_INDES)
+		CollisionCheck(GROUP_ENEMY,GROUP_PLAYER_BULLET)
+		CollisionCheck(GROUP_NONTJT,GROUP_PLAYER_BULLET)
+		CollisionCheck(GROUP_ITEM,GROUP_PLAYER)
+		--由OLC添加，可用于自机bomb
+		CollisionCheck(GROUP_SPELL,GROUP_ENEMY)
+		CollisionCheck(GROUP_SPELL,GROUP_NONTJT)
+		CollisionCheck(GROUP_SPELL,GROUP_ENEMY_BULLET)
+		CollisionCheck(GROUP_SPELL,GROUP_INDES)
+	end
+	UpdateXY()
+	AfterFrame()
+	if stage.next_stage and stage.current_stage then
+		stage.current_stage:del()
+		task.Clear(stage.current_stage)
+		if stage.preserve_res then
+			stage.preserve_res=nil
+		else
+			RemoveResource'stage'
+		end
+		ResetPool()
+	end
+	local t2=os.clock()
+	TUO_Developer_Tool_kit.performance_monitor.frame=t2-t1
+end
+
+function RenderFunc()
+	local t1=os.clock()
+	BeginScene()
+	SetWorldFlag(1)
+	BeforeRender()
+	--加了一层判断，用于在必要的时候关闭渲染，节省性能（实际上不知道有没有这个必要）
+	if not TUO_Developer_Tool_kit.ban_renderfunc then
+		if stage.current_stage.timer and stage.current_stage.timer >= 0 and stage.next_stage == nil then
+			stage.current_stage:render()
+			for i=1,jstg.GetWorldCount() do
+				jstg.SwitchWorld(i)
+				SetWorldFlag(jstg.worlds[i].world)
+				ObjRender()
+				SetViewMode('world')
+				DrawCollider()
+			end
+		end
+	end
+	AfterRender()
+	EndScene()
+	local t2=os.clock()
+	TUO_Developer_Tool_kit.performance_monitor.render=t2-t1
 end

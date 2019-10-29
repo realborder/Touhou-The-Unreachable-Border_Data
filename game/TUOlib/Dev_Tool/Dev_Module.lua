@@ -36,15 +36,16 @@ end
 
 function TUO_Developer_UI:DoModuleFrame(module)
     if self.timer>0 then
-        local cx,cy,r=self.module_cx,self.module_cy,self.module_cr
+        local cx,cy,r=self.module_cx,self.module_cy,self.module_cr*itpl(1.1,1,self.timer)
         module.angle_aim=-self.module_da*(module.slot-1)+self.module_a_offset
-        module.angle=module.angle+(module.angle_aim-module.angle)*0.1
+        module.angle=module.angle+(module.angle_aim-module.angle)*0.2
         -------------------------------------------------
         local x,y=cx+r*cos(module.angle),cy+r*sin(module.angle)
         local r=self.module_r
         -- r=r*(1+0.2*module.stay_timer-0.2*module.pressed_timer)
-        local ux,uy=ScreenToUI(lstg.GetMousePosition())
-        if Dist(x,y,ux,uy)<=r then module.mouse_stay=true else module.mouse_stay=false end
+        local ux,uy=ScreenToUI(lstg.GetMousePosition()) 
+        local exflag=(ux>x and ux<x+300 and abs(uy-y)<24) and abs(module.angle)<self.module_angle_limit
+        if (Dist(x,y,ux,uy)<=r or exflag) or self.cur_sel==module.slot then module.mouse_stay=true else module.mouse_stay=false end
         ----点击
         if module.mouse_stay and module.mouse_pressed and (not MouseIsDown(0)) and abs(module.angle)<self.module_angle_limit then
             module.mouse_pressed=true
@@ -81,6 +82,9 @@ function TUO_Developer_UI:RenderModuleButton(module)
     local stayt=module.stay_timer
     local prest=module.pressed_timer
     local r2=r*(1-0.1*stayt-0.9*prest)
+    SetImageState('white','',Color(155*stayt*self.timer,255,255,255))
+    RenderRect('white',x,x+400,y-24*stayt,y+24*stayt)
+
     for i = 1, 5 do
         sp.misc.DrawCircle(x,y,r+i,32,'',alpha*0.25*(1-i/5),255,255,255,0)
     end
@@ -90,7 +94,9 @@ function TUO_Developer_UI:RenderModuleButton(module)
         SetImageState(module.logo,'',Color(alpha,255,255,255))
         Render(module.logo,x,y,0,0.4)
     end
-    RenderTTF2(self.core.ttf,module.name,x+r+20,x+r+20,y,y,1.3*(1+0.1*stayt),Color(alpha,255,255,255),'left','vcenter')
+
+    local rgb=255*ak-255*stayt
+    RenderTTF2(self.core.ttf,module.name,x+r+20,x+r+20,y,y,1.3*(1+0.1*stayt),Color(alpha,rgb,rgb,rgb),'left','vcenter')
 
 
 end

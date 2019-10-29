@@ -171,9 +171,6 @@ function RenderFunc()
 				SetViewMode('world')
 				DrawCollider()
 			end
-			if Collision_Checker then
-				Collision_Checker.render()
-			end
 		end
 	end
 	AfterRender()
@@ -183,6 +180,10 @@ end
 function AfterRender()
 	--暂停菜单渲染
 	ext.pause_menu:render()
+	if Collision_Checker then
+		SetViewMode'world'
+		Collision_Checker.render()
+	end
 	--开发者工具套件渲染
 	if TUO_Developer_Tool_kit then 	TUO_Developer_Tool_kit:render() end
 end

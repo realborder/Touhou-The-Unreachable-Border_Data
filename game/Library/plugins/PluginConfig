@@ -3,10 +3,5 @@
 		"CollisionChecker2",
 		"Library\\plugins\\CollisionChecker2.zip",
 		true
-	],
-	[
-		"TUO_Developer_Tool_kit",
-		"Library\\plugins\\TUO_Developer_Tool_kit.zip",
-		false
 	]
 ]

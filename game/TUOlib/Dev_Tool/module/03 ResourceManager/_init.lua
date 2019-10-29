@@ -29,6 +29,7 @@ function preview:init()
             
         end
         TUO_Developer_Tool_kit.ReloadFiles(v_tmp)
+        InitAllClass()
     end
     local btn2=TDU_New'button'(self)
     btn2.text='反转'

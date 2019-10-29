@@ -149,6 +149,7 @@ function TUO_Developer_Tool_kit:init()
 	self.UNLOCK_COUNT=3
 	self.mouse_click_list={}
 	self.mouseR_click_list={}
+	self.performance_monitor={}
 	self.ui=TUO_Developer_UI
 	self.ui:init()
 	self:SortAllTemplate()
@@ -163,6 +164,8 @@ function TUO_Developer_Tool_kit:frame()
 	--切关时迷之报错，拿这个先顶一下	
 	if stage.next_stage then return end
 	if not ext.pause_menu:IsKilled() then
+		GetInputExtra()
+	elseif self.ban_framefunc==true then
 		GetInputExtra()
 	end
 	--解锁需要在一秒内连按三下F3
@@ -216,7 +219,6 @@ function TUO_Developer_Tool_kit:frame()
 				self:RefreshCurrentModule()
 			end
 		end
-		if CheckKeyState(KEY.TAB) then end
 		if not self.flow.ban_UI_frame then
 			self.ui:frame()
 		end

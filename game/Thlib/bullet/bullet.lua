@@ -743,6 +743,29 @@ function bomb_bullet_killer:colli(other)
 	if other.group==GROUP_ENEMY_BULLET then Kill(other) end
 end
 --------------------------------------------------------------
+--------------------------------------------------------------
+bomb_bullet_killer2=Class(object)
+function bomb_bullet_killer2:init(x,y,a,b,rot,kill_indes,rect)
+	self.x=x self.y=y
+	self.a=a self.b=b
+	self.rot=rot
+	if rect then self.rect=true end
+	self.group=GROUP_PLAYER
+	self.hide=true
+	self.kill_indes=kill_indes
+end
+function bomb_bullet_killer2:frame()
+	if self.timer==1 then Del(self) end
+end
+function bomb_bullet_killer2:colli(other)
+	if self.kill_indes then
+		if other.group==GROUP_INDES then
+			Kill(other)
+		end
+	end
+	if other.group==GROUP_ENEMY_BULLET then Kill(other) end
+end
+--------------------------------------------------------------
 COLOR_DEEP_RED=1
 COLOR_RED=2
 COLOR_DEEP_PURPLE=3
