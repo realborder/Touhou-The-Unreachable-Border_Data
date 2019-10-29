@@ -23,12 +23,14 @@ end
 ---以模板新建控件并排在面板上
 ---@param panel panel 
 ---@param template TemplateWidget
+---@return table widget
 function TUO_Developer_UI:AttachWidget(panel,template,x_pos)
     local tpl=self.TemplateWidget[template]
     local x_pos_list={slot1=53,slot2=620,world=440}
     local lock=(x_pos=='slot2')
     if type(x_pos)=='string' then x_pos=x_pos_list[x_pos] 
     else x_pos=x_pos or 53 end
+    ---@class table widget
     local tmp_widget={
         visiable=true,
         visiable_pre=true,
@@ -223,12 +225,12 @@ end
 function TUO_Developer_UI:RenderWidget(widget,alpha,l,r,b,t)
     if b>480-self.topbar_width or t<0 then return end
     if widget._ignite_timer>0 and not widget._ban_ignite_effect then
-        RenderCube(l,r,b,t,alpha*widget._ignite_timer*35,255,255,255)
-        -- RenderCube(l,r,b,t,alpha*widget._ignite_timer*25,50,50,50)
+        -- RenderCube(l,r,b,t,alpha*widget._ignite_timer*35,255,255,255)
+        RenderCube(l,r,b,t,alpha*widget._ignite_timer*25,50,50,50)
     end
     if widget._pressed_timer>0 and not widget._ban_pressed_effect then
-        RenderCube(l,r,b,t,alpha*widget._pressed_timer*65,255,255,255)
-        -- RenderCube(l,r,b,t,alpha*widget._pressed_timer*25,50,50,50)
+        -- RenderCube(l,r,b,t,alpha*widget._pressed_timer*65,255,255,255)
+        RenderCube(l,r,b,t,alpha*widget._pressed_timer*25,50,50,50)
     end
     if widget.tpl_render then widget:tpl_render(alpha,l,r,b,t) end
     if widget.render then widget:render(alpha,l,r,b,t) end    

@@ -162,7 +162,7 @@ function TUO_Developer_UI:frame()
 end
 
 function TUO_Developer_UI:RenderMonitorBar()
-
+        SetImageState('white','',Color(0,255,255,255),Color(75,255,255,255),Color(75,255,255,255),Color(0,255,255,255))
         --性能监视条
         local alpha=-self.timer
         local l=540
@@ -170,6 +170,8 @@ function TUO_Developer_UI:RenderMonitorBar()
         local len=40
         local b=480-self.topbar_width*alpha
         local t=480+self.topbar_width*(1-alpha)
+        local m=(t+b)/2
+        RenderCube(l-240,r,m-0.5,m)
         local pm=self.core.performance_monitor
         if pm.frame then
             local k=pm.frame/(1/60)
@@ -186,12 +188,13 @@ function TUO_Developer_UI:RenderMonitorBar()
                     fpre[pm.frame_pre_cur]=k
                 end
             end
-            local t=b+len*k
+            local t=b+len*k/2
             RenderCube(l,r,b,t,alpha*255,255,150*(1-k),150*(1-k))
             b=t
         end
         if pm.render then
             local k=pm.render/(1/60)
+            local k2=1-min(1,k)
             if not self.core.ban_framefunc then 
 
                 if not pm.render_pre then pm.render_pre={} end
@@ -202,8 +205,8 @@ function TUO_Developer_UI:RenderMonitorBar()
                     fpre[pm.frame_pre_cur]=k
                 end
             end
-            local t=b+len*k
-            RenderCube(l,r,b,t,alpha*255,150*(1-k),150*(1-k),255)
+            local t=b+len*k/2
+            RenderCube(l,r,b,t,alpha*255,175*k2,255,175*k2)
         end
         -- if pm.frame_pre_cur then
             if pm.frame_pre and #pm.frame_pre<240  then
@@ -212,11 +215,13 @@ function TUO_Developer_UI:RenderMonitorBar()
                     r=l l=r-1
                     local b=480-self.topbar_width*alpha
                     local k=pm.frame_pre[i]
-                    t=b+self.topbar_width*k
-                    RenderCube(l,r,b,t,a*255,255,150*(1-k),150*(1-k))
+                    local k2=1-min(1,k)
+                    t=b+self.topbar_width*k/2
+                    RenderCube(l,r,b,t,a*255,255,150*k2,150*k2)
                     k=pm.render_pre[i]
-                    b=t t=b+self.topbar_width*k
-                    RenderCube(l,r,b,t,a*255,150*(1-k),150*(1-k),255)
+                    k2=1-min(1,k)
+                    b=t t=b+self.topbar_width*k/2
+                    RenderCube(l,r,b,t,a*255,175*k2,255,175*k2)
                 end
             else
                 for i=pm.frame_pre_cur,pm.frame_pre_cur-239,-1 do
@@ -225,16 +230,18 @@ function TUO_Developer_UI:RenderMonitorBar()
                     local a=alpha*min(120,i-(pm.frame_pre_cur-239))/120
                     local i=i if i<1 then i=i+240 end
                     local k=pm.frame_pre[i]
-                    t=b+self.topbar_width*k
-                    RenderCube(l,r,b,t,a*255,255,150*(1-k),150*(1-k))
+                    local k2=1-min(1,k)
+                    t=b+self.topbar_width*k/2
+                    RenderCube(l,r,b,t,a*255,255,150*k2,150*k2)
                     k=pm.render_pre[i]
-                    b=t t=b+self.topbar_width*k
-                    RenderCube(l,r,b,t,a*255,150*(1-k),150*(1-k),255)
+                    k2=1-min(1,k)
+                    b=t t=b+self.topbar_width*k/2
+                    RenderCube(l,r,b,t,a*255,175*k2,255,175*k2)
 
                 end
             end
         -- end
-
+        
 end
 
 

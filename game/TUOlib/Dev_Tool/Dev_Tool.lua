@@ -189,13 +189,6 @@ function TUO_Developer_Tool_kit:frame()
 			else Log('F3调试界面已关闭') end
 		end
 	else
-		if CheckKeyState(KEY.F10) then 
-			-- if lstg.GetKeyState(KEY.SHIFT) then 
-			-- 	ResetPool()
-			-- 	lstg.included={}
-			-- 	stage.Set('none', 'init') 
-			-- else ReloadFiles() end
-		end
 		if CheckKeyState(KEY.F9) then
 			WipeOutBossHp()
 		end
@@ -218,6 +211,9 @@ function TUO_Developer_Tool_kit:frame()
 			else
 				self:RefreshCurrentModule()
 			end
+		end
+		if CheckKeyState(KEY.F10) then
+			self.ReloadSelectedFile()
 		end
 		if not self.flow.ban_UI_frame then
 			self.ui:frame()

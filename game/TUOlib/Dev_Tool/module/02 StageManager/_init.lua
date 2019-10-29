@@ -7,19 +7,18 @@ end
 local quickboost=TUO_Developer_UI:NewPanel()
 function quickboost:init()
     self.name="快速启动"
-    (TDU_New_title(self)).text='关卡列表'
-
-    (TDU_New_value_displayer(self)).monitoring_value=function(self)
+    TDU_New_title(self).text='关卡列表'
+    TDU_New_value_displayer(self).monitoring_value=function(self)
         return {{name='stage.current_stage.name',v=stage.current_stage.name}} end
     
-    (TDU_New_text_displayer(self)).text='选择难度'
+    TDU_New_text_displayer(self).text='选择难度'
     local diff_list=TDU_New_list_box(self)
-    local text_displayer1=TDU_New_text_displayer(self)
-
-    text_displayer1.text='选择关卡'
+    TDU_New_text_displayer(self).text='选择关卡'
     local stage_list=TDU_New_list_box(self)
+    diff_list.width=256
     diff_list._ban_mul_select=true
     stage_list._ban_mul_select=true
+    stage_list.width=256
     diff_list.refresh=function(self)
         self.display_value={}
         for i,v in ipairs(stage.groups) do
@@ -46,8 +45,9 @@ function quickboost:init()
         end
     end
 
-    (TDU_New_text_displayer(self)).text='选择机体'
+    TDU_New_text_displayer(self).text='选择机体'
     local plr_list=TDU_New_list_box(self)
+    plr_list.width=256
     plr_list.refresh=function(self)
         self.display_value={}
         for i=1,#player_list do
@@ -131,7 +131,7 @@ function quickboost:init()
     end
 
 
-    (TDU_New_value_displayer(self)).monitoring_value='stage.groups'
+    TDU_New_value_displayer(self).monitoring_value='stage.groups'
 end
 local modmgr=TUO_Developer_UI:NewPanel()
 function modmgr:init()

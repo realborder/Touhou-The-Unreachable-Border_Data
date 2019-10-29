@@ -44,8 +44,10 @@ function TUO_Developer_UI:DoModuleFrame(module)
         local r=self.module_r
         -- r=r*(1+0.2*module.stay_timer-0.2*module.pressed_timer)
         local ux,uy=ScreenToUI(lstg.GetMousePosition()) 
-        local exflag=(ux>x and ux<x+300 and abs(uy-y)<24) and abs(module.angle)<self.module_angle_limit
-        if (Dist(x,y,ux,uy)<=r or exflag) or self.cur_sel==module.slot then module.mouse_stay=true else module.mouse_stay=false end
+        local exflag=(ux>x and ux<x+300 and abs(uy-y)<24) 
+        if ((Dist(x,y,ux,uy)<=r or exflag) and abs(module.angle)<self.module_angle_limit) or self.cur_sel==module.slot then
+            module.mouse_stay=true else module.mouse_stay=false 
+        end
         ----点击
         if module.mouse_stay and module.mouse_pressed and (not MouseIsDown(0)) and abs(module.angle)<self.module_angle_limit then
             module.mouse_pressed=true
@@ -82,8 +84,8 @@ function TUO_Developer_UI:RenderModuleButton(module)
     local stayt=module.stay_timer
     local prest=module.pressed_timer
     local r2=r*(1-0.1*stayt-0.9*prest)
-    SetImageState('white','',Color(155*stayt*self.timer,255,255,255))
-    RenderRect('white',x,x+400,y-24*stayt,y+24*stayt)
+    SetImageState('white','',Color((-50*prest+155*stayt)*self.timer,255,255,255))
+    RenderRect('white',x,x+400,y-24*(0.7+0.3*stayt),y+24*(0.7+0.3*stayt))
 
     for i = 1, 5 do
         sp.misc.DrawCircle(x,y,r+i,32,'',alpha*0.25*(1-i/5),255,255,255,0)
@@ -95,7 +97,7 @@ function TUO_Developer_UI:RenderModuleButton(module)
         Render(module.logo,x,y,0,0.4)
     end
 
-    local rgb=255*ak-255*stayt
+    local rgb=max(0,255*ak-255*stayt)
     RenderTTF2(self.core.ttf,module.name,x+r+20,x+r+20,y,y,1.3*(1+0.1*stayt),Color(alpha,rgb,rgb,rgb),'left','vcenter')
 
 

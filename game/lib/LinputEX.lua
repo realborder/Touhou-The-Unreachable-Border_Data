@@ -14,6 +14,7 @@ _MOUSE={
 MouseStatePre={}
 
 KeyInputTemp={
+    enable=false,
     temp={},
     keys={
         [{'0',')'}]=0x30

@@ -180,3 +180,26 @@ function sandbox2:init()
         end)
     end
 end
+local tip=[[
+F1: 返回模块选择界面
+F3: 显示/隐藏这个内测功能面板
+F5: 重载所有模块的面板的布局
+Shift+F5: 重载整个内测功能面板
+F9: 榨干Boss（误
+F10：重载在资源管理模块里选中的文件
+Tab: 在模块内切换面板，同时按住Shift以反向切换
+Ctrl+Tab: 切换模块，同时按住Shift以反向切换]]
+local tips=TUO_Developer_UI:NewPanel()
+function tips:init()
+    self.name='帮助信息'
+    TDU_New'title'(self).text='快捷键列表'
+    TDU_New'text_displayer'(self).text=tip
+end
+local about_txt=[[
+这个是为东方梦无垠开发者和内测人员准备的功能。
+没了。]]
+local about=TUO_Developer_UI:NewPanel()
+function about:init()
+    self.name='关于'
+    TDU_New'text_displayer'(self).text=about_txt
+end
