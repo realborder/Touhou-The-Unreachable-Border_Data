@@ -1007,6 +1007,140 @@ function color_sampler:render(alpha,l,r,b,t)
         end
 end
 
+local object_list=TUO_Developer_UI:NewWidgetTemplate('object_list')
+function object_list:init()
+    self.keep_refresh=true
+    self.cur=1
+    self.gap=2
+    self.gap_t=2
+    self.gap_b=4
+    self.display_value={}
+    self._ban_pressed_effect=true
+    self._ban_mul_select=true
+end
+function object_list:frame()
+	if self.keep_refresh then
+		if self.refresh then self:refresh()
+		else self.display_value={name='',v='* List is empty'} self.visiable=false self.vanish_cause_novalue=true return end
+		if self.vanish_cause_novalue then self.visiable=true end
+		--对display_value进行排序
+		if self.display_value and self.display_value[1] and (type(self.display_value[1].name)=='string' or type(self.display_value[1].name)=='number')  then 
+			local sortfunc=self.sortfunc or function(v1,v2)  return v1.name<v2.name end
+			table.sort(self.display_value,sortfunc)
+		end
+	end
+
+--处理排版
+	if not self.display_value then return end
+	--排版
+	local WIDTH=self.width
+	local HEIGHT=self.height
+	local SIZE=self.size
+	local GAP_T=self.gap_t
+	local GAP=self.gap
+	---lrbt初始值
+	local l=self.hitbox.l
+	local r=self.hitbox.r
+	local t=self.hitbox.t
+	local oringinal_t=t
+	local b=self.hitbox.b
+	t=t-2-GAP
+
+	for i,v in pairs(self.display_value) do  
+		b=t-HEIGHT
+		local ux,uy=MouseState.x_in_UI,MouseState.y_in_UI
+		local flag=(ux>l and ux<r and uy>b and uy<t)
+		local mul=lstg.GetKeyState(KEY.CTRL) and (not self._ban_mul_select)
+		if MouseTrigger(0) and flag then
+			if mul then
+				local ori=self.selection[i] or false
+				self.selection[i]=not ori 
+			else
+				self.selection={}
+				for _i=1,#self.display_value do
+					if _i==i then
+						self.selection[_i]=true
+					else
+						self.selection[_i]=false
+					end
+				end
+				-- self.selection[i]=true
+			end
+		end
+		t=t-HEIGHT-GAP
+	end
+	t=t-GAP
+	b=t+GAP/2+2
+	self.hitbox.b=b
+	self.hitbox.t=oringinal_t
+end
+
+function object_list:render(alpha,l,r,b,t)
+    if not self.display_value then return end
+    --排版
+    local WIDTH=self.width
+    local HEIGHT=self.height
+    local SIZE=self.size
+    local GAP_T=self.gap_t
+    local GAP=self.gap
+    ---lrbt初始值
+    local l=self.hitbox.l
+    local r=self.hitbox.r
+    local t=self.hitbox.t
+    local oringinal_t=t
+    local b=self.hitbox.b
+    RenderCube(l,r,t-2-GAP/2,t,Color(255*alpha,30,30,30))
+    t=t-2-GAP
+
+    for i,v in pairs(self.display_value) do  
+        local color=Color(alpha*255,20,20,20)
+        b=t-HEIGHT
+        if b<480 then
+            local ux,uy=MouseState.x_in_UI,MouseState.y_in_UI
+            local flag=(ux>l and ux<r and uy>b and uy<t)
+            if flag then
+                RenderCube(l,r,b,t,25*alpha,20,20,20)
+            end
+            if i%2==0 then
+                RenderCube(l,r,b,t,25*alpha,20,20,20)
+            else
+                RenderCube(l,r,b,t,25*alpha,255,255,255)
+            end
+            --选择高亮
+            local colorw=Color(alpha*255,0,0,0)
+            RenderCube(l,l+2,b-GAP/2,t+GAP/2,color)
+            RenderCube(r-2,r,b-GAP/2,t+GAP/2)
+            if type(v)~='table' then 
+                RenderTTF2(ttf,tostring(v),l+2+GAP,r+2+GAP,b,t,SIZE,colorw,'left','top')
+            elseif v.name=='' then
+                RenderTTF2(ttf, tostring(v.v),l+2+GAP,r+2+GAP,b,t,SIZE,colorw,'left','top')
+            else
+                if type(v.v)~='table' then
+					RenderTTF2(ttf,v.name..': '..tostring(v.v),l+2+GAP,r+2+GAP,b,t,SIZE,colorw,'left','top')
+				else
+					RenderTTF2(ttf,v.name,l+2+GAP,r+2+GAP,b,t,SIZE,colorw,'left','top')
+					local count=i+1
+					for key,value in pairs(v.v) do
+						t=t-HEIGHT-GAP
+						b=t-HEIGHT
+						if count%2==0 then
+							RenderCube(l,r,b,t,25*alpha,20,20,20)
+						else
+							RenderCube(l,r,b,t,25*alpha,255,255,255)
+						end
+						RenderTTF2(ttf,key..': '..tostring(value),l+12+GAP,r+12+GAP,b,t,SIZE,colorw,'left','top')
+						count=count+1
+					end
+				end
+            end
+        end
+        t=t-HEIGHT-GAP
+        if t<0 then break end
+    end
+    t=t-GAP
+    RenderCube(l,r,t,t+GAP/2+2)
+end
+
 local texture_displayer=TUO_Developer_UI:NewWidgetTemplate('texture_displayer')
 
 local check_boxes=TUO_Developer_UI:NewWidgetTemplate('check_boxes')
