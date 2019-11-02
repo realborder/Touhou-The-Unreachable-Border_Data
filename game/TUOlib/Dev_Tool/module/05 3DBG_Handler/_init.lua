@@ -3,6 +3,18 @@ local _3DBG_Handler=TUO_Developer_UI:NewModule()
 function _3DBG_Handler:init()
     self.name='3D背景处理'
 end
+
+local tip1=[[
+注意，入口文件名必须和目录名一致。
+]]
+local bgl=TUO_Developer_UI:NewPanel()
+function bgl:init()
+    self.name='背景脚本列表'
+
+end
+
+
+
 local _3dbg_info=TUO_Developer_UI:NewPanel()
 function _3dbg_info:init()
     self.name="3D信息"

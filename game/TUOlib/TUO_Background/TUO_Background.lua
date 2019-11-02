@@ -1,4 +1,5 @@
-tuolib.BGHandler={}
+local m={}
+tuolib.BGHandler=m
 
 
 ------------------------------------
@@ -14,3 +15,18 @@ function UnLoadImageAndTex(texname)
     end
     return false
 end 
+
+------------------------------------
+---背景初始化
+function m.init()
+
+end
+
+
+
+------------------------------------
+---载入背景库中的背景
+function m.LoadAllBG()
+
+
+end

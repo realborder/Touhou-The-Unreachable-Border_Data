@@ -12,8 +12,8 @@ end
 ---重载外部文件或者程序内部指定的单个脚本
 ---@param path string 脚本的路径
 local ReloadSingleFile=function(path)
-	-- TUO_Developer_Flow:MsgWindow('尝试重载指定脚本:'..path)
-
+	-- path=string.gsub(path,'\\','/')
+	-- lstg.FileManager.FileExistEx(path)
 	if not(lfs.attributes(path) == nil) then 
 		local r,err=xpcall(lstg.DoFile,debug.traceback,path)
 		if r then 

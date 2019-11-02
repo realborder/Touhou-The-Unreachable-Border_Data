@@ -85,12 +85,10 @@ function TUO_Developer_Tool_kit:SortAllTemplate()
 	end
 end
 
-
-
 -------------------------------------------
----载入所有模块
+---载入所有模块（旧的、使用plus库来枚举文件的实现）
 function TUO_Developer_Tool_kit:LoadAllModule()
-	local folders=plus.EnumFiles(PATH_HEAD..'\\module')
+	local folders=plus.EnumFiles(PATH_HEAD..'module')
 	for i,v in pairs(folders) do
 		if v.isDirectory then
 			local PATH=PATH_HEAD..'module\\'..v.name..'\\'
@@ -125,7 +123,48 @@ function TUO_Developer_Tool_kit:LoadAllModule()
 			if #(v.panel)~=0 then v.cur=1 end
 		end
 	end
-	--排序
+end
+
+
+-------------------------------------------
+---载入所有模块
+---使用FileManager库的实现，仍有问题，如果要使用还要修改ReloadSingleFile里判断文件是否存在的代码
+function TUO_Developer_Tool_kit:LoadAllModule_new()
+	local folders=lstg.FileManager.EnumFilesEx(PATH_HEAD..'module')
+	for i,v in pairs(folders) do
+		if v[2] then
+			local PATH=PATH_HEAD..'module\\'..v[1]
+			---!!!注意这里添加面板的逻辑是载入一个模块后把新增的面板塞进模块里，对模块的排序必须放在后面
+			self.ui._panel_temp={}
+			self.ui._module_path_temp=v[1]
+			self.ReloadSingleFile(PATH..'_init.lua')
+			self.ui.module[#self.ui.module].panel=self.ui._panel_temp
+			self.ui._panel_temp=nil
+			self.ui._module_path_temp=nil
+			if not(lfs.attributes(PATH..'logo.png')==nil) then
+				Log('发现logo: '..v[1])
+				self.ui.module[#self.ui.module].logo='_Dev_Module_'..v[1]
+				LoadImageFromFile('_Dev_Module_'..v[1],PATH..'logo.png')
+
+			end
+
+		end
+	end
+	for k,v in pairs(self.ui.module) do 
+		if v.init then v:init() end 
+		if v.panel then
+			for _,panel in pairs(v.panel) do
+				self.ui.SetWidgetSlot()
+				if panel.init then panel:init() end
+				if panel.widget then
+					for _,widget in pairs(panel.widget) do
+						if widget.init then widget:init() end
+					end
+				end
+			end
+			if #(v.panel)~=0 then v.cur=1 end
+		end
+	end
 end
 
 -------------------------------------------
@@ -263,6 +302,9 @@ function TUO_Developer_Tool_kit:render()
 			sp.misc.DrawCircle2(v.x,v.y,(1+2*sin(90*(20-v.timer)/20))*10,32,'mul+rev',150*v.timer/20,255,255,255,0)
 		end
 	end
+	--鼠标位置
+	-- SetImageState('white','',Color(125,255,255,255))
+	-- sp.misc.RenderRing('white',MouseState.x_in_UI,MouseState.y_in_UI,32,34,32,0,360,0.5)
 end
 
 function TUO_Developer_Tool_kit:Reload()
