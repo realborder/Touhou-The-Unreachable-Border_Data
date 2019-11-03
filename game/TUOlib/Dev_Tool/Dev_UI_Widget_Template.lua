@@ -1030,7 +1030,7 @@ function object_list:frame()
 		end
 	end
 
---处理排版
+    --处理排版
 	if not self.display_value then return end
 	--排版
 	local WIDTH=self.width

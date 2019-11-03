@@ -13,7 +13,7 @@ local RenderCube= function(l,r,b,t,ca,cr,cg,cb)
 end
 
 
-function TUO_Developer_UI:SetWidgetSlot(x_pos)
+function TUO_Developer_UI.SetWidgetSlot(x_pos)
     TUO_Developer_UI.widget_x_pos=x_pos
 end
 
@@ -66,7 +66,24 @@ function TUO_Developer_UI:AttachWidget(panel,template,x_pos)
     table.insert(panel.widget,tmp_widget)
     return tmp_widget
 end 
--- CreateWidget=function(panel,template,x_pos) TUO_Developer_UI.AttachWidget(TUO_Developer_UI,panel,template,x_pos) end
+
+
+
+------------------------------------------------------
+---以模板新建控件并按照新建的顺序排在当前面板上
+---@param template TemplateWidget
+---@return table widget
+function Neww(template,x)
+    local panel=TUO_Developer_UI._panel_temp
+    local x_pos=x or TUO_Developer_UI.widget_x_pos
+    if panel then
+        return TUO_Developer_UI:AttachWidget(panel,template,x_pos)
+    else
+
+
+    end
+end
+
 
 ------------------------------------------------------
 ---

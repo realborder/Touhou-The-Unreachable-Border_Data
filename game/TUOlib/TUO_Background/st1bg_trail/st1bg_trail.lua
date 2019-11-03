@@ -23,7 +23,7 @@ function st1bg_trail:init()
 	--
 	background.init(self,false)
 	--resource
-	self.load_res()
+	st1bg_trail.load_res()
 	-- LoadImageFromFile('woods_ground','road1.png')
 	-- LoadImageFromFile('_woods_leaf','woods_leaf.png')
 	SetImageState('image:st1bg_road','',Color(255,255,255,255))

@@ -145,7 +145,15 @@ end
 
 function TUO_Developer_UI.GetListSingleSel(widget)
 	for i=1,#(widget.display_value) do
-		if widget.selection[i] then return i,widget.display_value[i].name,widget.display_value[i].v end
+		if widget.selection[i] then 
+			if type(widget.display_value[i])=='table' then
+				local name,v=widget.display_value[i].name,widget.display_value[i].v
+				return i,name,v 
+			else
+				local name=widget.display_value[i]
+				return i,name
+			end
+		end
 	end
 	return nil
 end

@@ -33,7 +33,7 @@ end
 function st3bg_magic_forest:init(ph,dph)
 	--
 	background.init(self,false)
-	self.load_res()
+	st3bg_magic_forest.load_res()
 	SetImageState('image:st3_grass','',Color(255,255,255,255))
 	SetImageState('image:st3_leaves','',Color(200,195,195,195))
 	SetImageState('image:st3_river','',Color(100,255,255,255))

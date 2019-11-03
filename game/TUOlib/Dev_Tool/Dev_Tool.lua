@@ -74,15 +74,15 @@ function TUO_Developer_Tool_kit:LoadResource()
 end
 
 function TUO_Developer_Tool_kit:SortAllTemplate()
-	local t=self.ui.TemplateWidget
-	for k,v in pairs(t) do
-		_G['TDU_New_'..k]=function(self,x)
-			x=TUO_Developer_Tool_kit.ui.widget_x_pos or x
-			return TUO_Developer_UI:AttachWidget(self,k,x) end
-	end
-	function TDU_New(Template)
-		return _G['TDU_New_'..Template]
-	end
+	-- local t=self.ui.TemplateWidget
+	-- for k,v in pairs(t) do
+	-- 	_G['TDU_New_'..k]=function(self,x)
+	-- 		x=TUO_Developer_Tool_kit.ui.widget_x_pos or x
+	-- 		return TUO_Developer_UI:AttachWidget(self,k,x) end
+	-- end
+	-- function TDU_New(Template)
+	-- 	return _G['TDU_New_'..Template]
+	-- end
 end
 
 -------------------------------------------
@@ -113,7 +113,9 @@ function TUO_Developer_Tool_kit:LoadAllModule()
 		if v.panel then
 			for _,panel in pairs(v.panel) do
 				self.ui.SetWidgetSlot()
+				self.ui._panel_temp=panel
 				if panel.init then panel:init() end
+				self.ui._panel_temp=nil
 				if panel.widget then
 					for _,widget in pairs(panel.widget) do
 						if widget.init then widget:init() end

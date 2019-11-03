@@ -11,7 +11,7 @@ Include'TUOlib\\TUO_Player\\TUO_Player.lua'
 ---梦现指针系统
 
 ---3d背景处理器
-
+Include'TUOlib\\TUO_Background\\TUO_Background.lua'
 ---mod和关卡管理器
 Include'TUOlib\\Mod_Stage_Manager\\Mod_Manager.lua'
 ---特效开关

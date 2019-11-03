@@ -27,6 +27,7 @@ function infowin:init()
     self.hitbox={l=UI_L,r=UI_R,b=240-180,t=240+180}
 end
 function infowin:frame()
+    if type(self.text)~='string' then return end
     local i=1
     local flag=string.find(self.text,'\n')
     while flag do

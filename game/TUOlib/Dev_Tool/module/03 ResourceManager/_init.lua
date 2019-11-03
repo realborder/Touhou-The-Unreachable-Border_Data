@@ -10,9 +10,9 @@ function preview:init()
     self.name='[0]脚本'
     local list
     local search=''
-    TDU_New'title'(self).text='已加载的脚本'
-    TDU_New'text_displayer'(self).text= '这个列表显示了已经载入的脚本。\n重载游戏会把游戏整个重载掉。\nsave和load按钮可以保存和载入您的选区信息。(没有实装）'
-    list=TDU_New'list_box'(self)
+    Neww'title'.text='已加载的脚本'
+    Neww'text_displayer'.text= '这个列表显示了已经载入的脚本。\n重载游戏会把游戏整个重载掉。\nsave和load按钮可以保存和载入您的选区信息。(没有实装）'
+    list=Neww'list_box'
     list.monitoring_value=lstg.included
     list.monitoring_value=function()
         local t1=lstg.included
@@ -29,9 +29,9 @@ function preview:init()
         return out
     end
 
-    TUO_Developer_UI:SetWidgetSlot'slot2'
-    TDU_New'title'(self).text='操作'
-    local btn1=TDU_New'button'(self)
+    TUO_Developer_UI.SetWidgetSlot'slot2'
+    Neww'title'.text='操作'
+    local btn1=Neww'button'
     btn1.text='重载 (F10)'
     local func=function(widget)  
         local dis=list.display_value
@@ -48,7 +48,7 @@ function preview:init()
     end
     btn1._event_mouseclick=func
     TUO_Developer_Tool_kit.ReloadSelectedFile=func
-    local sw1=TDU_New'switch'(self)
+    local sw1=Neww'switch'
     sw1.text_on='实时重载 开启'
     sw1.text_off='实时重载 关闭'
     sw1.frame=function(widget)
@@ -60,12 +60,12 @@ function preview:init()
         end
     end
 
-    local totop=TDU_New_button(self)
+    local totop=Neww'button'
     totop.text='回到顶部'
     totop.gap_t=10
     totop._event_mouseclick=function(self) preview.y_offset_aim=0 end
 
-    local btn2=TDU_New'button'(self)
+    local btn2=Neww'button'
     btn2.text='反转'
     btn2._event_mouseclick=function(widget)  
         local dis=list.display_value
@@ -76,7 +76,7 @@ function preview:init()
             end
         end
     end
-    -- local btn3=TDU_New'button'(self)
+    -- local btn3=Neww'button'
     -- btn3.text='重载游戏'
     -- btn3._event_mouseclick=function(widget) 
         -- ResetPool()
@@ -84,7 +84,7 @@ function preview:init()
         -- stage.Set('none', 'init') 
         -- lstg.DoFile('core.lua')
     -- end
-    local btn4=TDU_New'button'(self)
+    local btn4=Neww'button'
 	btn4.text='全选'
     btn4._event_mouseclick=function(widget) 
         list.selection={}
@@ -92,22 +92,22 @@ function preview:init()
             list.selection[i]=true
         end
     end
-    local btn5=TDU_New'button'(self)
+    local btn5=Neww'button'
 	btn5.text='全不选'
 	btn5._event_mouseclick=function(widget) 
         list.selection={}
     end
     
-    local txt2=TDU_New_text_displayer(self)
+    local txt2=Neww'text_displayer'
     txt2.text='输入文字以筛选'
     txt2.gap_t=12
-    local txt=TDU_New_inputer(self)
+    local txt=Neww'inputer'
     txt.text=''
     txt.width=120
     txt._event_textchange=function(self)
         search=self.text
     end
-    local btnclr=TDU_New_button(self)
+    local btnclr=Neww'button'
     btnclr.text='清除'
     btnclr.width=64
     btnclr._event_mouseclick=function(self)
@@ -127,11 +127,11 @@ for i=1,#res_type_t do
         local l1,l2
         local search=''    
         self.name=res_type_t[i]
-        TDU_New_title(self).text='全局池'
-        TDU_New_value_displayer(self).monitoring_value=function()
+        Neww'title'.text='全局池'
+        Neww'value_displayer'.monitoring_value=function()
             return {{name='数量',v=#(l1.display_value)}}
         end
-        l1=TDU_New_list_box(self)
+        l1=Neww'list_box'
         l1.sortfunc=function(v1,v2)  return v1.v<v2.v end
         l1.monitoring_value=function()
             local t1,t2=lstg.EnumRes(i)
@@ -147,11 +147,11 @@ for i=1,#res_type_t do
             end
             return out
         end
-        TDU_New_title(self).text='关卡池'
-        TDU_New_value_displayer(self).monitoring_value=function()
+        Neww'title'.text='关卡池'
+        Neww'value_displayer'.monitoring_value=function()
             return {{name='数量',v=#(l2.display_value)}}
         end
-        l2=TDU_New_list_box(self)
+        l2=Neww'list_box'
         l2.sortfunc=function(v1,v2)  return v1.v<v2.v end
         l2.monitoring_value=function()
             local t1,t2=lstg.EnumRes(i)
@@ -170,15 +170,15 @@ for i=1,#res_type_t do
 
 
         
-        TUO_Developer_UI:SetWidgetSlot('slot2')
-        TDU_New_title(self).text='操作'
-        local totop=TDU_New_button(self)
+        TUO_Developer_UI.SetWidgetSlot('slot2')
+        Neww'title'.text='操作'
+        local totop=Neww'button'
         totop.text='回到顶部'
         totop._event_mouseclick=function(self) set.y_offset_aim=0 end
-        local preview=TDU_New_button(self)
+        local preview=Neww'button'
         preview.text='预览'
         preview._event_mouseclick=function(self) TUO_Developer_Flow:MsgWindow('该功能开发中，下个快照见！') end
-        local toglobal=TDU_New_button(self)
+        local toglobal=Neww'button'
         toglobal.text='切换到关卡池'
         toglobal.mode=0
         toglobal._event_mouseclick=function(self)
@@ -194,16 +194,16 @@ for i=1,#res_type_t do
                 -- l2.visiable=false
             end
         end
-        local txt2=TDU_New_text_displayer(self)
+        local txt2=Neww'text_displayer'
         txt2.text='输入文字以筛选'
         txt2.gap_t=12
-        local txt=TDU_New_inputer(self)
+        local txt=Neww'inputer'
         txt.text=''
         txt.width=120
         txt._event_textchange=function(self)
             search=self.text
         end
-        local btnclr=TDU_New_button(self)
+        local btnclr=Neww'button'
         btnclr.text='清除'
         btnclr.width=64
         btnclr._event_mouseclick=function(self)

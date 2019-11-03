@@ -51,6 +51,7 @@ function TUO_Developer_UI:init()
         self.module_a_offset_aim=0
     --面板排版
         self.topbar_width=32
+        self.topbar_width_aim=32
         self.panel_top_offset=16
         self.panel_left_offset=16
         self.leftbar_width=107+35
@@ -80,12 +81,14 @@ function TUO_Developer_UI:frame()
             if self.left_for_world then
                 self.left_for_world_timer=self.left_for_world_timer+(1-self.left_for_world_timer)*0.2
                 if self.left_for_world_timer>0.99 then self.left_for_world_timer=1 end
+                self.topbar_width_aim=16
             else
                 self.left_for_world_timer=self.left_for_world_timer+(0-self.left_for_world_timer)*0.4
                 if self.left_for_world_timer<0.01 then self.left_for_world_timer=0 end
+                self.topbar_width_aim=32
             end
         end
-        
+        self.topbar_width=self.topbar_width+(self.topbar_width_aim-self.topbar_width)*0.2
         if self.timer==0 then return end
     ------在完全不显示的时候会彻底关掉自身的逻辑
         --模块和面板快速切换，按下Ctrl+Tab才会回退到一开始的页面
@@ -165,8 +168,8 @@ function TUO_Developer_UI:RenderMonitorBar()
         SetImageState('white','',Color(0,255,255,255),Color(75,255,255,255),Color(75,255,255,255),Color(0,255,255,255))
         --性能监视条
         local alpha=-self.timer
-        local l=540
-        local r=545
+        local r=745-200*(self.topbar_width/32)
+        local l=r-1
         local len=40
         local b=480-self.topbar_width*alpha
         local t=480+self.topbar_width*(1-alpha)
@@ -292,10 +295,12 @@ function TUO_Developer_UI:render()
     if self.timer<0 then
         RenderCube(UI_L,UI_R,480-self.topbar_width*-self.timer,480,255*-self.timer,30,30,30)
         if self.cur then
-            RenderTTF2(self.core.ttf,self.module[self.cur].name,UI_L+32+5,UI_R,480-self.topbar_width*-self.timer,480,1.2,Color(255*-self.timer,255,255,255),'vcenter')
+            local SIZE=1.2*self.topbar_width/32
+            RenderTTF2(self.core.ttf,self.module[self.cur].name,UI_L+32+5,UI_R,480-self.topbar_width*-self.timer,480,SIZE,Color(255*-self.timer,255,255,255),'vcenter')
         end
         local text=string.format('fps:%.1f | objects:%d',GetFPS(),GetnObj())
-        RenderTTF2(self.core.ttf,text,UI_L+32+5,UI_R-12,480-self.topbar_width*-self.timer,480,1,Color(255*-self.timer,255,255,255),'vcenter','right')
+        local SIZE=self.topbar_width/32
+        RenderTTF2(self.core.ttf,text,UI_L+32+5,UI_R-12,480-self.topbar_width*-self.timer,480,SIZE,Color(255*-self.timer,255,255,255),'vcenter','right')
         self:RenderMonitorBar()
 
     end
@@ -303,10 +308,11 @@ function TUO_Developer_UI:render()
     if self.timer<0 then
         local t=-self.timer
         local x,y=-115+20*t,480-self.topbar_width*t*0.5
-        local p1,p2,p3={x+3,y},{x+3+8,y+8},{x+8,y+8}
+        local s=self.topbar_width/32
+        local p1,p2,p3={x+3*s,y},{x+3*s+8*s,y+8*s},{x+8*s,y+8*s}
         SetImageState('white','',Color(255*t,255,255,255))
         Render4V('white',x,y,0.5,p1[1],p1[2],0.5,p2[1],p2[2],0.5,p3[1],p3[2],0.5)
-        p1,p2,p3={x+3,y},{x+3+8,y-8},{x+8,y-8}
+        p1,p2,p3={x+3*s,y},{x+3*s+8*s,y-8*s},{x+8*s,y-8*s}
         Render4V('white',x,y,0.5,p1[1],p1[2],0.5,p2[1],p2[2],0.5,p3[1],p3[2],0.5)
     end
 

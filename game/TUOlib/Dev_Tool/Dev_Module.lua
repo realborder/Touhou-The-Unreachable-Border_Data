@@ -64,8 +64,15 @@ function TUO_Developer_UI:DoModuleFrame(module)
     elseif self.timer<0 and self.cur==module.slot then
         local uy=MouseState.y_in_UI
         -- if uy>480-self.topbar_width and MouseIsPressed(0) or lstg.GetKeyState(KEY.ESCAPE) then  self.cur=nil end
-        if uy>480-self.topbar_width and uy<480 and MouseIsPressed(0) then  self.cur=nil PlaySound('TUO_Dev_HUD_panel',2,0.75)  end
-
+        if uy>480-self.topbar_width and uy<480 and MouseIsPressed(0) then self.cur=nil PlaySound('TUO_Dev_HUD_panel',2,0.75)  end
+        
+        -- if uy>480-self.topbar_width and uy<480 and MouseIsPressed(2) then 
+        --     if self.topbar_width>24 then
+        --         self.topbar_width_aim=16
+        --     else
+        --         self.topbar_width_aim=32
+        --     end
+        -- end
         if module.frame then module:frame() end 
         if module.panel then
             for _,panel in pairs(module.panel) do

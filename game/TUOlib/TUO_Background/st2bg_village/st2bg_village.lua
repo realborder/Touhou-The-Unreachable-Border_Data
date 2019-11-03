@@ -22,7 +22,7 @@ end
 function st2bg_village:init()
 	--
 	background.init(self,false)
-	self.load_res()
+	st2bg_village.load_res()
 	SetImageState('image:bg_test','',Color(255,255,255,255))
 	self.fogc=Color(255,215,226,255)
 	--set 3d camera and fog

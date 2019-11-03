@@ -17,23 +17,14 @@ function m:init()
 end
 function m:DoFile(path,arch)
     if self.protect_mode then
-        -- local fs=lstg.FindFiles("", "lua", arch)
-        -- for _,v in pairs(fs) do
-        --     local fileflag=string.find(v[1],path)
-        --     local archflag=(arch==v[2])
-        --     if fileflag and archflag then
-                local r,err=xpcall(lstg.DoFile,debug.traceback,path,arch)
-                if r then 
-                    Print('成功重载脚本：'..path,2)
-                    return true
-                else
-                    Print('重载脚本：'..path..' 的时候发生错误\n\t错误详细信息:\n\t\t'..err,1)
-                    return r,err
-                end
-            -- else
-        --         return false,'压缩包内脚本不存在'
-        --     end
-        -- end
+        local r,err=xpcall(lstg.DoFile,debug.traceback,path,arch)
+        if r then 
+            Print('成功重载脚本：'..path,2)
+            return true
+        else
+            Print('重载脚本：'..path..' 的时候发生错误\n\t错误详细信息:\n\t\t'..err,1)
+            return r,err
+        end
     else
         lstg.DoFile(path,arch)
         return true

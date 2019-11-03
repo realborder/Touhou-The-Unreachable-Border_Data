@@ -9,48 +9,48 @@ local setting=TUO_Developer_UI:NewPanel()
 function setting:init()
     self.name="游戏设置"
 
-    TDU_New_title(self).text='特效开关'
-    TDU_New_text_displayer(self).text='关闭或开启游戏内特效，注意，这可能会使画面不会正常显示。\n目前可以调整的包括：\n    boss带来的背景扭曲特效\n    boss符卡展开特效\n    boss符卡宣告立绘特效\n    其他特效（如三面背景和魔理沙B机体的黑洞特效）'
-    -- local sw1=TDU_New_switch(self)
+    Neww'title'.text='特效开关'
+    Neww'text_displayer'.text='关闭或开启游戏内特效，注意，这可能会使画面不会正常显示。\n目前可以调整的包括：\n    boss带来的背景扭曲特效\n    boss符卡展开特效\n    boss符卡宣告立绘特效\n    其他特效（如三面背景和魔理沙B机体的黑洞特效）'
+    -- local sw1=Neww'switch'
     -- sw1.text_on="背景扭曲特效和符卡展开特效 启用"
     -- sw1.text_off="背景扭曲特效和符卡展开特效 禁用"
     -- sw1.monitoring_value='tuolib.effect_cut.enable_boss_effect'
-    local sw2=TDU_New_switch(self)
+    local sw2=Neww'switch'
     sw2.text_on="shader 启用"
     sw2.text_off="shader 禁用"
     sw2.monitoring_value='tuolib.effect_cut.enable_shader'
-    local sw3=TDU_New_switch(self)
+    local sw3=Neww'switch'
     sw3.text_on="背景 启用"
     sw3.text_off="背景 禁用"
     sw3.monitoring_value='tuolib.effect_cut.enable_background'
     sw3.enable=false
-    TDU_New_title(self).text='游戏设置查看'
-    TDU_New_value_displayer(self).monitoring_value='setting'
-    TDU_New_title(self).text='world参数查看'
-    TDU_New_value_displayer(self).monitoring_value='lstg.world'
-    TDU_New_title(self).text='screen参数查看'
-    TDU_New_value_displayer(self).monitoring_value='screen'
+    Neww'title'.text='游戏设置查看'
+    Neww'value_displayer'.monitoring_value='setting'
+    Neww'title'.text='world参数查看'
+    Neww'value_displayer'.monitoring_value='lstg.world'
+    Neww'title'.text='screen参数查看'
+    Neww'value_displayer'.monitoring_value='screen'
 
 end
 
 local toolsetting=TUO_Developer_UI:NewPanel()
 function toolsetting:init()
     self.name="工具设置"
-    TDU_New'title'(self).text='杂项'
-    TDU_New'text_displayer'(self).text='改变背景透明度。'
-    local slider=TDU_New'value_slider'(self)
+    Neww'title'.text='杂项'
+    Neww'text_displayer'.text='改变背景透明度。'
+    local slider=Neww'value_slider'
     slider.monitoring_value='TUO_Developer_UI.bgalpha'
     slider.max_value=1
 
-    TDU_New'text_displayer'(self).text='重载所有模块的布局。'
-    local btn1=TDU_New'button'(self)
+    Neww'text_displayer'.text='重载所有模块的布局。'
+    local btn1=Neww'button'
     btn1.text='重载 (F5)'
     btn1.width=96
     btn1._event_mouseclick=function(widget)
             TUO_Developer_Tool_kit:RefreshCurrentModule()
         end
-    TDU_New'text_displayer'(self).text='重载整个内测功能面板。'
-    local btn2=TDU_New'button'(self)
+    Neww'text_displayer'.text='重载整个内测功能面板。'
+    local btn2=Neww'button'
     btn2.text='重载 (Shift + F5)'
     btn2.width=145
     btn2.event_mouseclick=function(widget)
@@ -62,11 +62,12 @@ function toolsetting:init()
 end
 local sandbox=TUO_Developer_UI:NewPanel()
 function sandbox:init()
+    ----下面陈列的是最原始的创建控件的方法最新的方法见其他代码
     lstg.test_value=0
     self.name="控件测试"
     -- local title=TUO_Developer_UI:AttachWidget(self,'title')
     --     title.text='标题控件测试'
-    local title=TDU_New_title(self)
+    local title=Neww'title'
         title.text='标题控件测试'
 
     local value_displayer=TUO_Developer_UI:AttachWidget(self,'value_displayer')
@@ -149,7 +150,7 @@ function sandbox:init()
     
     color_sampler=TUO_Developer_UI:AttachWidget(self,'color_sampler')
 
-    TDU_New_text_displayer(self).text='游戏内直接选取颜色！！就问你爽不爽！'
+    Neww'text_displayer'.text='游戏内直接选取颜色！！就问你爽不爽！'
     
 
 
@@ -158,7 +159,7 @@ end
 local sandbox2=TUO_Developer_UI:NewPanel()
 function sandbox2:init()
     self.name="浮窗测试"
-    local btn1=TDU_New_button(self)
+    local btn1=Neww'button'
     btn1.text='通知浮窗'
     btn1._event_mouseclick=function(self)
         TUO_Developer_Flow:MsgWindow('开玩笑的wwwww\n')
@@ -171,7 +172,7 @@ function sandbox2:init()
         TUO_Developer_Flow:MsgWindow('这个信息是随便编的，下面可以不用看了。\n')
         TUO_Developer_Flow:NewFlow('infowin',function() end)
     end
-    local btn2=TDU_New_button(self)
+    local btn2=Neww'button'
     btn2.text='错误消息浮窗'
     btn2._event_mouseclick=function(self)
         TUO_Developer_Flow:NewFlow('errorwin',function(self) 
@@ -192,8 +193,8 @@ Ctrl+Tab: 切换模块，同时按住Shift以反向切换]]
 local tips=TUO_Developer_UI:NewPanel()
 function tips:init()
     self.name='帮助信息'
-    TDU_New'title'(self).text='快捷键列表'
-    TDU_New'text_displayer'(self).text=tip
+    Neww'title'.text='快捷键列表'
+    Neww'text_displayer'.text=tip
 end
 local about_txt=[[
 这个是为东方梦无垠开发者和内测人员准备的功能。
@@ -201,5 +202,5 @@ local about_txt=[[
 local about=TUO_Developer_UI:NewPanel()
 function about:init()
     self.name='关于'
-    TDU_New'text_displayer'(self).text=about_txt
+    Neww'text_displayer'.text=about_txt
 end

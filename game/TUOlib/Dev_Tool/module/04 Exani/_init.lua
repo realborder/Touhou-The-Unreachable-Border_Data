@@ -7,10 +7,10 @@ end
 local exani_display=TUO_Developer_UI:NewPanel()
 function exani_display:init()
     self.name="exani对象"
-	TDU_New_title(self).text='exani列表'
-	TDU_New_text_displayer(self).text='全部exani'
+	Neww'title'.text='exani列表'
+	Neww'text_displayer'.text='全部exani'
 	
-    local exani_list=TDU_New_list_box(self)
+    local exani_list=Neww'list_box'
 	exani_list._ban_mul_select=true
 	exani_list.refresh=function(self)
         self.display_value={}
@@ -19,8 +19,8 @@ function exani_display:init()
         end
     end
 	
-	TDU_New_text_displayer(self).text='活动exani'
-	local active_exani_list=TDU_New_object_list(self)
+	Neww'text_displayer'.text='活动exani'
+	local active_exani_list=Neww'object_list'
 	active_exani_list.width=500
 	active_exani_list._ban_mul_select=true
 	active_exani_list.refresh=function(self)

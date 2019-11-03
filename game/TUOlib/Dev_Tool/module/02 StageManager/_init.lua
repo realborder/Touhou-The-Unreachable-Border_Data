@@ -7,14 +7,14 @@ end
 local quickboost=TUO_Developer_UI:NewPanel()
 function quickboost:init()
     self.name="快速启动"
-    TDU_New_title(self).text='关卡列表'
-    TDU_New_value_displayer(self).monitoring_value=function(self)
+    Neww'title'.text='关卡列表'
+    Neww'value_displayer'.monitoring_value=function(self)
         return {{name='stage.current_stage.name',v=stage.current_stage.name}} end
     
-    TDU_New_text_displayer(self).text='选择难度'
-    local diff_list=TDU_New_list_box(self)
-    TDU_New_text_displayer(self).text='选择关卡'
-    local stage_list=TDU_New_list_box(self)
+    Neww'text_displayer'.text='选择难度'
+    local diff_list=Neww'list_box'
+    Neww'text_displayer'.text='选择关卡'
+    local stage_list=Neww'list_box'
     diff_list.width=256
     diff_list._ban_mul_select=true
     stage_list._ban_mul_select=true
@@ -45,8 +45,8 @@ function quickboost:init()
         end
     end
 
-    TDU_New_text_displayer(self).text='选择机体'
-    local plr_list=TDU_New_list_box(self)
+    Neww'text_displayer'.text='选择机体'
+    local plr_list=Neww'list_box'
     plr_list.width=256
     plr_list.refresh=function(self)
         self.display_value={}
@@ -55,7 +55,7 @@ function quickboost:init()
         end
     end
 
-    local start_btn=TDU_New_button(self)
+    local start_btn=Neww'button'
     start_btn.text='快速启动'
     start_btn._event_mouseclick=function(self)
         ----------
@@ -92,7 +92,7 @@ function quickboost:init()
             stage.group.Start(stage.groups[d])
         -- end
     end
-    local start_btn2=TDU_New_button(self)
+    local start_btn2=Neww'button'
     start_btn2.text='单关练习'
     start_btn2._stay_in_this_line=true
     start_btn2._event_mouseclick=function(self)
@@ -131,7 +131,7 @@ function quickboost:init()
     end
 
 
-    TDU_New_value_displayer(self).monitoring_value='stage.groups'
+    Neww'value_displayer'.monitoring_value='stage.groups'
 end
 local modmgr=TUO_Developer_UI:NewPanel()
 function modmgr:init()
@@ -139,29 +139,30 @@ function modmgr:init()
 
 
 
-    (TDU_New_title(self)).text='mod包列表'
-    (TDU_New_text_displayer(self)).text='以下是所有mod文件夹中有zip后缀名的文件列表，已默认加载文件名中带有\n“STAGE”的文件。\n请注意，安全模式仅保证加载mod时出错不会使游戏报错退出，不保证运行时\n出错退出。'
+    (Neww'title').text='mod包列表'
+    (Neww'text_displayer').text='以下是所有mod文件夹中有zip后缀名的文件列表，已默认加载文件名中带有\n“STAGE”的文件。\n请注意，安全模式仅保证加载mod时出错不会使游戏报错退出，不保证运行时\n出错退出。'
     
-    local list=TDU_New_list_box(self)
+    local list=Neww'list_box'
     list.refresh=function(self)
         self.display_value={}
         for k,v in pairs(tuolib.mod_manager.modlist) do
             table.insert(self.display_value,{name=k,v=tostring(v)})
         end
     end
-    local title2=TDU_New_title(self,'slot2')
+    TUO_Developer_UI.SetWidgetSlot('slot2')
+    local title2=Neww'title'
     title2.text='操作'
 
-    local swc_reload=TDU_New_switch(self,'slot2')
+    local swc_reload=Neww'switch'
     swc_reload.text_on='保护模式 开'
     swc_reload.text_off='保护模式 关'
     swc_reload.monitoring_value='tuolib.mod_manager.protect_mode'
-    local btn_refresh=TDU_New_button(self,'slot2')
+    local btn_refresh=Neww'button'
     btn_refresh.text='刷新列表'
     btn_refresh._event_mouseclick=function(self)
         tuolib.mod_manager:RefreshModList()
     end
-    local btn_reload=TDU_New_button(self,'slot2')
+    local btn_reload=Neww'button'
     btn_reload.text='加载Mod'
     btn_reload._event_mouseclick=function(self)
         for k,v in pairs(list.display_value) do
@@ -177,7 +178,7 @@ function modmgr:init()
             end
         end
     end
-    local btn_reloadall=TDU_New_button(self,'slot2')
+    local btn_reloadall=Neww'button'
     btn_reloadall.text='卸载Mod'
     btn_reloadall._event_mouseclick=function(self)
         for k,v in pairs(list.display_value) do
@@ -186,11 +187,11 @@ function modmgr:init()
                 TUO_Developer_Flow:MsgWindow('成功卸载：'..v.name)
             end
         end    end
-    local totop=TDU_New_button(self,'slot2')
+    local totop=Neww'button'
     totop.text='回到顶部'
     totop.gap_t=12
     totop._event_mouseclick=function(widget) widget.panel.y_offset_aim=0 end
-    local rev=TDU_New_button(self,'slot2')
+    local rev=Neww'button'
     rev.text='反转逻辑值'
     rev._event_mouseclick=function(widget)  
         for k,v in pairs(list.display_value) do
@@ -199,7 +200,7 @@ function modmgr:init()
             end
         end
     end
-    local revsel=TDU_New_button(self,'slot2')
+    local revsel=Neww'button'
     revsel.text='反选'
     revsel.gap_t=12
     revsel._event_mouseclick=function(widget) 
@@ -207,7 +208,7 @@ function modmgr:init()
             list.selection[i]=not list.selection[i]
         end
     end
-    local selall=TDU_New_button(self,'slot2')
+    local selall=Neww'button'
     selall.text='全选'
     selall._event_mouseclick=function(widget) 
         list.selection={}
@@ -215,7 +216,7 @@ function modmgr:init()
             list.selection[i]=true
         end
     end
-    local diselall=TDU_New_button(self,'slot2')
+    local diselall=Neww'button'
     diselall.text='全不选'
     diselall._event_mouseclick=function(widget) 
         list.selection={}
@@ -231,17 +232,17 @@ function steptest:init()
     -- local world_switch=TDU_New_switch(self,'world')
     -- world_switch._event_switched=function(self,v)
         -- steptest.left_for_world=v end
-    TUO_Developer_UI:SetWidgetSlot('world')
-    TDU_New'title'(self).text='步进调试'
-    local sw1=TDU_New'switch'(self)
+    TUO_Developer_UI.SetWidgetSlot('world')
+    Neww'title'.text='步进调试'
+    local sw1=Neww'switch'
     sw1.monitoring_value='TUO_Developer_Tool_kit.ban_framefunc'
     sw1.text_on='已冻结帧函数'
     sw1.text_off='已解冻帧函数'
-    local sw2=TDU_New'switch'(self)
+    local sw2=Neww'switch'
     sw2.monitoring_value='TUO_Developer_Tool_kit.ban_renderfunc'
     sw2.text_on='已冻结帧渲染函数'
     sw2.text_off='已解冻帧渲染函数'
-    local btn1=TDU_New'button'(self)
+    local btn1=Neww'button'
     btn1.text='前进一帧'
     btn1._event_mouseclick=function (widget)
         TUO_Developer_Tool_kit.ban_framefunc=false
