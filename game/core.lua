@@ -5,7 +5,7 @@
 
 ---@class lstg @内建函数库
 lstg=lstg or {}
-TUO_VERSION='Snapshot 19w11a'
+TUO_VERSION='Snapshot 19w12a'
 local TITLE='东方梦无垠 ~ The Unreachabe Oneiroborder | '..TUO_VERSION
 
 ----------------------------------------
@@ -21,6 +21,7 @@ lstg.DoFile("lib\\Lobject.lua")--Luastg的Class、object
 lstg.DoFile("lib\\Lresources.lua")--资源的加载函数、资源枚举和判断
 lstg.DoFile("lib\\Lscreen.lua")--world、3d、viewmode的参数设置
 lstg.DoFile("lib\\Linput.lua")--按键状态更新
+lstg.DoFile("lib\\LinputEX.lua")--追加输入暂存和鼠标操作
 lstg.DoFile("lib\\Ltask.lua")--task
 lstg.DoFile("lib\\Lstage.lua")--stage关卡系统
 lstg.DoFile("lib\\Ltext.lua")--文字渲染

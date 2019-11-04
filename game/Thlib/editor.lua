@@ -502,7 +502,6 @@ function _drop_item(itemclass, num, x, y)
 				New(item_bomb,x+r2*cos(a),y+r2*sin(a))
 			end
 		end,
-		--【修改标记】增加中P道具
 		[item_power_mid] = function()
 			for i=1,num do
 				local r2=sqrt(ran:Float(1,4))*sqrt(num-1)*5

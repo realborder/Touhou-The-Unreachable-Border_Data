@@ -13,7 +13,7 @@ function DR_Pin:init()
 	if not var.dr then var.dr=0.01 end--梦(dream)现(reality)指针值
 	var.cp=0.0--combo_point 连击点数，用来控制dr的减少
 	tmpv.bonus_count=0
-	C_BOUNS_LIMIT_IN_CHAPTER=2000
+	C_BOUNS_LIMIT_IN_CHAPTER=2500
 	K_dr=0.003--用于控制dr的增长，每个chapter可能都要微调，所以记在lstg.var里了
 	
 
@@ -22,7 +22,7 @@ function DR_Pin:init()
 	K_dr_enemy=1.0 --遗漏敌机梦现指针变化系数
 	K_graze_c_max=125 --擦弹计数上限
 	K_graze_c_min=50 --擦弹计数下限
-	K_dr_graze_c=0.04  --擦弹系数
+	K_dr_graze_c=0.2  --擦弹系数
 	K_graze_c_k=(-0.75)/(K_graze_c_max - K_graze_c_min) --释放灵击POWWER减少比例
 	K_dr_collectline=22.4 --梦现指针指向现实侧时收点线降低系数
 	K_dr_dist=0.2 --梦现指针指向现实侧时道具吸收范围变大系数

@@ -5,7 +5,7 @@ LoadImageGroup('preimg','bullet1',80*2,0,32*2,32*2,1,8)
 LoadImageGroup('arrow_big','bullet1',0,0,16*2,16*2,1,16,5*bk,5*bk)
 LoadImageGroup('gun_bullet','bullet1',24*2,0,16*2,16*2,1,16,5*bk,5*bk)
 LoadImageGroup('gun_bullet_void','bullet1',56*2,0,16*2,16*2,1,16,5*bk,5*bk)
-LoadImageGroup('butterfly','bullet1',112*2,0,32*2,32*2,1,8,8*bk,8*bk)
+LoadImageGroup('butterfly','bullet1',112*2,0,32*2,32*2,1,8,8*bk,4*bk)
 LoadImageGroup('square','bullet1',152*2,0,16*2,16*2,1,16,6*bk,6*bk)
 LoadImageGroup('ball_mid','bullet1',176*2,0,32*2,32*2,1,8,8*bk,8*bk)
 LoadImageGroup('mildew','bullet1',208*2,0,16*2,16*2,1,16,4*bk,4*bk)
@@ -735,6 +735,29 @@ function bomb_bullet_killer:frame()
 	if self.timer==1 then Del(self) end
 end
 function bomb_bullet_killer:colli(other)
+	if self.kill_indes then
+		if other.group==GROUP_INDES then
+			Kill(other)
+		end
+	end
+	if other.group==GROUP_ENEMY_BULLET then Kill(other) end
+end
+--------------------------------------------------------------
+--------------------------------------------------------------
+bomb_bullet_killer2=Class(object)
+function bomb_bullet_killer2:init(x,y,a,b,rot,kill_indes,rect)
+	self.x=x self.y=y
+	self.a=a self.b=b
+	self.rot=rot
+	if rect then self.rect=true end
+	self.group=GROUP_PLAYER
+	self.hide=true
+	self.kill_indes=kill_indes
+end
+function bomb_bullet_killer2:frame()
+	if self.timer==1 then Del(self) end
+end
+function bomb_bullet_killer2:colli(other)
 	if self.kill_indes then
 		if other.group==GROUP_INDES then
 			Kill(other)

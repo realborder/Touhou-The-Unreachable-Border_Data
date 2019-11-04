@@ -168,7 +168,8 @@ local SCBG_LOADER_EFFECT_NAME="scbg_loaderV2"--【开卡特效】
 
 ---开始捕获用于执行扭曲特效的画面
 function background.WarpEffectCapture()
-	if IsValid(_boss) then
+	local enable_bosseff=tuolib.effect_cut.enable_boss_effect
+	if IsValid(_boss) and enable_bosseff then
 		PushRenderTarget(RENDER_BUFFER_NAME)
 		RenderClear(Color(0,0,0,0))
 	end
@@ -176,6 +177,8 @@ end
 
 ---停止捕获用于执行扭曲特效的画面并应用扭曲特效、绘制出来，同时还有开卡特效
 function background.WarpEffectApply(scbg_spread)
+	local enable_bosseff=tuolib.effect_cut.enable_boss_effect
+	if not enable_bosseff then return end
 	local is_sc_bg = (scbg_spread and scbg_spread~=0 and scbg_spread~=1)--【卡背展开】
 	if IsValid(_boss) then
 		PopRenderTarget(RENDER_BUFFER_NAME)
