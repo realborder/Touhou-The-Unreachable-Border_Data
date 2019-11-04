@@ -19,53 +19,59 @@ end
 ---phaseinfo表用来记录所有的phase固有属性
 ---stt表用来记录当前3d参数的起始点，
 ---cur表用来记录当前3d参数
-function bg_template:InitPhaseInfo()
-	self.ph={
+function bg_template:InitPhaseInfo(phase)
+	self.phaseinfo={
 		{
-			duration=180,
-			eye={0,0,0},
-			at={1,0,0},
+			time=0,
+			duration=1,
+			eye={5,0,5},
+			at={5.11,0,0},
 			up={0,0,1},
-			fogdist={5,10},
+			fogdist={0.1,15},
 			fogc={255,255,255},
 			z={0.1,15},
-			fovy=0.7
+			fovy={0.5}
+		},
+		{
+			time=60,
+			duration=60,
+			itpl=function(v1,v2,t)
+				return v1+(v2-v1)*t
+			end,
+			eye={5,0,3},
+			at={5.06,0,0},
+			up={0,0,0.5},
+			fogdist={0.1,15},
+			fogc={255,255,255},
+			z={0.1,15},
+			fovy={0.8}
 		},
 	}
-
-
-
+	tuolib.BGHandler.DoPhaseLogic(self,1)
 end
 
-function bg_template:init()
+function bg_template:init(phase)
 	--
 	background.init(self,false)
 	bg_template.load_res()
 	self.speed=0.03--即行走速度
 	self.xpos=0--等效的摄像机x轴位置,x轴方向向前
-	
-	--设置3D属性
-	Set3D('eye',0,0,5)
-	Set3D('at',5,0,0)--向x正方向看
-	-- Set3D('eye',0,0.5,0)
-	-- Set3D('at',1.38,0.5,0)--向x正方向看
-	Set3D('up',0,0,1)
-	Set3D('z',0.1,12)--z轴裁剪距离为0则雾化会出问题
-	Set3D('fovy',0.7)
-	Set3D('fog',5,10,Color(0xFFFFFFFF))
-	
-	
+	bg_template.InitPhaseInfo(self,phase)
+
+	SetImageState('bg_test','',Color(0xA0FFFFFF))
 end
 
 function bg_template:frame()
 	self.xpos=self.xpos-self.speed
-	
+
 
 	task.Do(self)
 end
 
 function bg_template:render()
 	SetViewMode'3d'
+	tuolib.BGHandler.DoPhaseLogic(self)
+
 	local showboss = IsValid(_boss)
 
 	if showboss then background.WarpEffectCapture() end
@@ -74,12 +80,13 @@ function bg_template:render()
 	--以上是固定要放进去的代码
 	--下面是渲染
 	local x=self.xpos%1
-	for dx=12,-1,-1 do
-		for y=5,-5,-1 do
-			Render4V('bg_test',x+dx+1,y,-0.1,x+dx+1,y+1,-0.1,x+dx,y+1,-0.1,x+dx,y,-0.1)
+	for z=-3.1,-0.1,1 do
+		for dx=12,-1,-1 do
+			for y=5,-5,-1 do
+				Render4V('bg_test',x+dx+1,y,z,x+dx+1,y+1,z,x+dx,y+1,z,x+dx,y,z)
+			end
 		end
 	end
-	
 
 	if showboss then background.WarpEffectApply() end
 	--恢复viewmode至正常

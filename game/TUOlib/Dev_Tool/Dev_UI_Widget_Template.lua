@@ -131,6 +131,7 @@ function value_displayer:init()
     self.value_change={}
 end
 function value_displayer:frame()
+    if self.monitoring_value==nil then return end
     ----处理数据
         if type(self.monitoring_value)=='function' then self.display_value=self.monitoring_value(self) 
         elseif type(self.monitoring_value)=='string' then  
@@ -291,6 +292,8 @@ function value_slider:frame()
     local m
     if type(self.monitoring_value)=='string' then 
         m=IndexValueByString(self.monitoring_value)
+    elseif type(self.monitoring_value)=='function' then
+        m=self.monitoring_value(self)
     else
         m=self.monitoring_value
     end
@@ -315,7 +318,11 @@ function value_slider:frame()
         local k=(mx-(l+BORDER_WIDTH))/(r-l-2*BORDER_WIDTH)
         local v=(self.max_value-self.min_value)*k+self.min_value
         v=min(self.max_value,max(self.min_value,v))
-        IndexValueByString(self.monitoring_value,v)
+        if type(self.monitoring_value)=='string' then
+            IndexValueByString(self.monitoring_value,v)
+        elseif type(self.monitoring_value)=='function' then
+            self.monitoring_value(self,v)
+        end
         if self._event_valuechange then self:_event_valuechange() end
     end
 end
@@ -888,15 +895,15 @@ function color_sampler:frame()
 end
 function color_sampler:render(alpha,l,r,b,t)
     --排版
-    local WIDTH=self.width
-    local HEIGHT=self.height
-    local SIZE=self.size
-    local GAP_T=self.gap_t
+        local WIDTH=self.width
+        local HEIGHT=self.height
+        local SIZE=self.size
+        local GAP_T=self.gap_t
     ---lrbt初始值
-    local l=self.hitbox.l
-    local r=self.hitbox.r
-    local t=self.hitbox.t
-    local b=self.hitbox.b
+        local l=self.hitbox.l
+        local r=self.hitbox.r
+        local t=self.hitbox.t
+        local b=self.hitbox.b
     
     --兼容性保证
     if not HSVColor then 

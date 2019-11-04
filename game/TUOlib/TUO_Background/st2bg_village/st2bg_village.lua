@@ -6,7 +6,6 @@ function st2bg_village.load_res()
 		_LoadImageFromFile(para1,PATH..para2,...)
 	end
 
-	_LoadImageFromFile('image:'.."bg_test","bg_test.png",true,0,0,false,0)
 	_LoadImageFromFile('image:'.."st2bg_land","st2bg_land.png",true,0,0,false,0)
 	_LoadImageFromFile('image:'.."st2bg_land_l","st2bg_land_l.png",true,0,0,false,0)
 	_LoadImageFromFile('image:'.."st2bg_land_r","st2bg_land_r.png",true,0,0,false,0)
