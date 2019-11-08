@@ -35,9 +35,9 @@ function bg_template:InitPhaseInfo(phase)
 		{
 			time=60,
 			duration=60,
-			itpl=function(v1,v2,t)
-				return v1+(v2-v1)*t
-			end,
+			-- itpl=function(v1,v2,t)
+			-- 	return v1+(v2-v1)*t
+			-- end,
 			eye={5,0,3},
 			at={5.06,0,0},
 			up={0,0,0.5},

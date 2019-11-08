@@ -116,4 +116,14 @@ function m.DoPhaseLogic(self,InitPhase)
     Set3D('fovy',cur.fovy[1])
 end
 
+function m.GetCurPhase(self)
+    for i,v in ipairs(self.cur) do
+        if self.timer>v.time then
+            return i
+        end
+    end
+    return 0
+end
+
+
 m:init()

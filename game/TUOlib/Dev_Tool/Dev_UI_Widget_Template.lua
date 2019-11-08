@@ -70,7 +70,11 @@ end
 
 ---------------------------------
 ---粗糙的补间函数
-local itpl = function(vstart,vend,t)  return vstart+(vend-vstart)*(cos(180+180*t)+1)/2 end
+-- local itpl = function(vstart,vend,t)  return vstart+(vend-vstart)*(cos(180+180*t)+1)/2 end
+
+-------------------------
+---带缓冲的补间函数（如果出问题就换回上面的）
+local itpl = function(vstart,vend,t) return vstart+(vend-vstart)*(sin(1.17*180*(t-0.5))/(2*sin(1.17*0.5*180))+0.5) end
 
 ------------------------------
 ---更快捷的方块渲染
