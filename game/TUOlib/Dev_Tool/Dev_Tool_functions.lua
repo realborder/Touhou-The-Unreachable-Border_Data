@@ -142,7 +142,12 @@ function WipeOutBossHp()
 	end
 end
 
-
+-------------------------------
+---返回单选框目前选中的索引，name值和value值
+---@param widget table 列表框控件
+---@return number 选中项索引值
+---@return string 选中项name值
+---@return string 选中项value值
 function TUO_Developer_UI.GetListSingleSel(widget)
 	for i=1,#(widget.display_value) do
 		if widget.selection[i] then 
@@ -151,7 +156,7 @@ function TUO_Developer_UI.GetListSingleSel(widget)
 				return i,name,v 
 			else
 				local name=widget.display_value[i]
-				return i,name
+				return i,name,nil
 			end
 		end
 	end

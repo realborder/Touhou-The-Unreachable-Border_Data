@@ -154,7 +154,7 @@ function TUO_Developer_UI:frame()
         if lstg.GetKeyState(KEY.F1) then self.cur=nil self.cur_sel=nil end
         --鼠标滚轮
         if MouseState.WheelDelta~=0 and self.timer>0 then
-            self.module_a_offset=min(max(0,self.module_a_offset-MouseState.WheelDelta/9),(#self.module-1)*self.module_da)
+            self.module_a_offset=min(max(0,self.module_a_offset-MouseState.WheelDelta/6),(#self.module-1)*self.module_da)
         end
         if MouseTrigger(0) or MouseTrigger(2) or MouseState.WheelDelta~=0 then  self.cur_sel=nil end
 

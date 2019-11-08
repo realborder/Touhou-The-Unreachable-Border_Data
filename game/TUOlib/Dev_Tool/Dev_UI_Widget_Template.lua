@@ -112,7 +112,7 @@ function title:render(alpha,l,r,b,t)
     -- if alpha==nil then alpha=1 Print('?') end
     local title=self.text
     local color=Color(alpha*255,0,0,0)
-    RenderTTF2(ttf,title,l,r,b,t,1.2,color,'left','top')
+    RenderTTF2(ttf,title,l,r,b,t,1.2,color,'left','vcenter')
     local y_c=t-self.height
     local y_h=sin(alpha*90)
     local wr=itpl(l,l+160,alpha)
@@ -291,8 +291,10 @@ function value_slider:init()
     self.deviated=false
     self.value_pre=0
     self.changetimer=0
+    self.force_int=false
 end
 function value_slider:frame()
+    self.l=self.width-self.borderwidth*2
     local m
     if type(self.monitoring_value)=='string' then 
         m=IndexValueByString(self.monitoring_value)
@@ -322,6 +324,7 @@ function value_slider:frame()
         local k=(mx-(l+BORDER_WIDTH))/(r-l-2*BORDER_WIDTH)
         local v=(self.max_value-self.min_value)*k+self.min_value
         v=min(self.max_value,max(self.min_value,v))
+        if self.force_int then if v-int(v)>0.5 then v=int(v)+1 else v=int(v) end end --强制取证
         if type(self.monitoring_value)=='string' then
             IndexValueByString(self.monitoring_value,v)
         elseif type(self.monitoring_value)=='function' then
@@ -634,11 +637,11 @@ function list_box:render(alpha,l,r,b,t)
             RenderCube(l,l+2,b-GAP/2,t+GAP/2,color)
             RenderCube(r-2,r,b-GAP/2,t+GAP/2)
             if type(v)~='table' then 
-                RenderTTF2(ttf,tostring(v),l+2+GAP,r+2+GAP,b,t,SIZE,colorw,'left','top')
+                RenderTTF2(ttf,tostring(v),l+2+GAP,r+2+GAP,b,t,SIZE,colorw,'left','vcenter')
             elseif v.name=='' then
-                RenderTTF2(ttf, tostring(v.v),l+2+GAP,r+2+GAP,b,t,SIZE,colorw,'left','top')
+                RenderTTF2(ttf, tostring(v.v),l+2+GAP,r+2+GAP,b,t,SIZE,colorw,'left','vcenter')
             else
-                RenderTTF2(ttf,v.name..': '..tostring(v.v),l+2+GAP,r+2+GAP,b,t,SIZE,colorw,'left','top')
+                RenderTTF2(ttf,v.name..': '..tostring(v.v),l+2+GAP,r+2+GAP,b,t,SIZE,colorw,'left','vcenter')
             end
         end
         t=t-HEIGHT-GAP
@@ -885,9 +888,13 @@ function color_sampler:init()
 end
 function color_sampler:frame()
     if self.monitoring_value then
-        local v=IndexValueByString(self.monitoring_value)
-        if type(v)=='boolean'  then
-            self.flag=v
+        if type(self.monitoring_value)=='string' then
+
+        elseif type(self.monitoring_value)=='function' then
+            local color=self:monitoring_value()
+            local a,h,s,v=color:AHSV()
+            self.color=color
+            self.alpha,self.hue,self.saturation,self.lightness=a,h,s,v
         end
     end
     if self.flag then
@@ -1018,6 +1025,114 @@ function color_sampler:render(alpha,l,r,b,t)
         end
 end
 
+local saperater=TUO_Developer_UI:NewWidgetTemplate('saperater')
+function saperater:init()
+        self.enable=true
+        ---排版
+        self.height=2
+        self.gap_t=3
+        self.gap_b=3
+end
+function saperater:render(alpha,l,r,b,t)        
+    ---lrbt初始值
+    local l=self.hitbox.l
+    local r=self.hitbox.r
+    local t=self.hitbox.t
+    local b=self.hitbox.b
+    RenderCube(l,r,b,t,100,0,0,0)
+end
+
+
+-- 列表框，监视或存放一列值，可以对其中的内容进行删改
+    ---魔改自 list_box，只改了渲染
+    -- 主要参数为：
+    -- monitoring_value 与value_displayer的逻辑一样
+    -- keep_refresh boolean 是否持续根据被监测变量刷新列表
+    -- width number
+    -- refreshfunc function 如果没有 monitoring_value 则会尝试调用这个函数
+local checkbox_l=TUO_Developer_UI:NewWidgetTemplate('checkbox_l')
+function checkbox_l:init()
+    self.cur=1
+    self.gap=2
+    self.gap_t=2
+    self.gap_b=4
+    self.display_value={}
+    self.cur=nil
+    self.select_timer={}
+end
+function checkbox_l:frame()
+    if self.refresh then self:refresh() end
+    if type(self.display_value)=='table' then 
+        for i,v in pairs(self.display_value) do
+            self.select_timer[i]=self.select_timer[i] or 0
+            if self.cur==i then 
+                self.select_timer[i]=min(1,self.select_timer[i]+0.1)
+            else
+                self.select_timer[i]=max(0,self.select_timer[i]-0.05)
+            end
+        end
+    end
+
+    local l=self.hitbox.l+2
+    local r=self.hitbox.r+4
+    local t=self.hitbox.t
+    local b=self.hitbox.b
+    local dw=self.width/(#self.display_value)
+    for i,v in pairs(self.display_value) do  
+        r=l+dw
+        local ux,uy=MouseState.x_in_UI,MouseState.y_in_UI
+        if MouseTrigger(0) and ux>l and ux<r and uy>b and uy<t then
+            self.cur=i
+        end
+        l=r
+    end
+end
+function checkbox_l:render(alpha,l,r,b,t)
+    if not self.display_value then return end
+    --排版
+    local WIDTH=self.width
+    local HEIGHT=self.height
+    local SIZE=self.size
+    local GAP_T=self.gap_t
+    local GAP=self.gap
+    ---lrbt初始值
+    local l=self.hitbox.l
+    local r=self.hitbox.r
+    local t=self.hitbox.t
+    local oringinal_t=t
+    local b=self.hitbox.b
+
+    RenderCube(l,r+4,t,t+2,Color(255*alpha,30,30,30))
+    RenderCube(l,r+4,b+2,b)
+    RenderCube(l,l+2,b,t)
+    RenderCube(r+2,r+4,b,t)
+    l=l+2
+    -- t=t-2-GAP
+    local dw=self.width/(#self.display_value)
+    for i,v in pairs(self.display_value) do  
+        local color=Color(alpha*255,20,20,20)
+        r=l+dw
+        local ux,uy=MouseState.x_in_UI,MouseState.y_in_UI
+        local flag=(ux>l and ux<r and uy>b and uy<t)
+        if flag then
+            RenderCube(l,r,b,t,25*alpha,20,20,20)
+        end
+
+        --选择高亮
+        local colorw=Color(alpha*255,0,0,0)
+        if self.select_timer[i] and self.select_timer[i]>0 then
+            local m=(t+b)/2
+            local dh=itpl(0,t-b,self.select_timer[i])/2
+            RenderCube(l,r,m-dh,m+dh,color)
+            local c=self.select_timer[i]*255
+            colorw=Color(alpha*255,c,c,c)
+        end
+        RenderTTF2(ttf,tostring(v),l+2,r-2,b,t,SIZE,colorw,'center','vcenter')
+        l=r
+    end
+end
+        
+
 local object_list=TUO_Developer_UI:NewWidgetTemplate('object_list')
 function object_list:init()
     self.keep_refresh=true
@@ -1122,14 +1237,14 @@ function object_list:render(alpha,l,r,b,t)
             RenderCube(l,l+2,b-GAP/2,t+GAP/2,color)
             RenderCube(r-2,r,b-GAP/2,t+GAP/2)
             if type(v)~='table' then 
-                RenderTTF2(ttf,tostring(v),l+2+GAP,r+2+GAP,b,t,SIZE,colorw,'left','top')
+                RenderTTF2(ttf,tostring(v),l+2+GAP,r+2+GAP,b,t,SIZE,colorw,'left','vcenter')
             elseif v.name=='' then
-                RenderTTF2(ttf, tostring(v.v),l+2+GAP,r+2+GAP,b,t,SIZE,colorw,'left','top')
+                RenderTTF2(ttf, tostring(v.v),l+2+GAP,r+2+GAP,b,t,SIZE,colorw,'left','vcenter')
             else
                 if type(v.v)~='table' then
-					RenderTTF2(ttf,v.name..': '..tostring(v.v),l+2+GAP,r+2+GAP,b,t,SIZE,colorw,'left','top')
+					RenderTTF2(ttf,v.name..': '..tostring(v.v),l+2+GAP,r+2+GAP,b,t,SIZE,colorw,'left','vcenter')
 				else
-					RenderTTF2(ttf,v.name,l+2+GAP,r+2+GAP,b,t,SIZE,colorw,'left','top')
+					RenderTTF2(ttf,v.name,l+2+GAP,r+2+GAP,b,t,SIZE,colorw,'left','vcenter')
 					local count=i+1
 					for key,value in pairs(v.v) do
 						t=t-HEIGHT-GAP
@@ -1139,7 +1254,7 @@ function object_list:render(alpha,l,r,b,t)
 						else
 							RenderCube(l,r,b,t,25*alpha,255,255,255)
 						end
-						RenderTTF2(ttf,key..': '..tostring(value),l+12+GAP,r+12+GAP,b,t,SIZE,colorw,'left','top')
+						RenderTTF2(ttf,key..': '..tostring(value),l+12+GAP,r+12+GAP,b,t,SIZE,colorw,'left','vcenter')
 						count=count+1
 					end
 				end

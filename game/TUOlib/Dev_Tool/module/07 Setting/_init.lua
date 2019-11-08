@@ -151,7 +151,7 @@ function sandbox:init()
     color_sampler=TUO_Developer_UI:AttachWidget(self,'color_sampler')
 
     Neww'text_displayer'.text='游戏内直接选取颜色！！就问你爽不爽！'
-    
+    Neww'checkbox_l'.display_value={1,2,3,4,5,6}
 
 
 end
@@ -198,7 +198,7 @@ function tips:init()
 end
 local about_txt=[[
 这个是为东方梦无垠开发者和内测人员准备的功能。
-没了。]]
+先写这么多。]]
 local about=TUO_Developer_UI:NewPanel()
 function about:init()
     self.name='关于'

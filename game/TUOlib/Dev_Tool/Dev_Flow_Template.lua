@@ -43,7 +43,7 @@ function infowin:render(alpha,l,r,b,t)
     RenderTTF2(ttf,self.text,l+50,r-50,b+40,t-40,1,Color(255*alpha,40,40,40),'left','top')
 end
 function TUO_Developer_Flow:MsgWindow(msg)
-TUO_Developer_Flow:NewFlow('infowin',function(self) self.text=msg end)
+    TUO_Developer_Flow:NewFlow('infowin',function(self) self.text=tostring(msg) end)
 end
 local errorwin=TUO_Developer_Flow:NewFlowTemplate('errorwin')
 function errorwin:init()

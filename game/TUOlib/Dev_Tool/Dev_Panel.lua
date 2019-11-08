@@ -131,7 +131,7 @@ function TUO_Developer_UI:DoPanelFrame(module,panel)
         if module.cur==panel.slot then
             local mx,my=MouseState.x_in_UI,MouseState.y_in_UI
             if MouseState.WheelDelta~=0 and mx>=UI_L+self.leftbar_width then
-                panel.y_offset_aim=max(0,panel.y_offset_aim-MouseState.WheelDelta/3)
+                panel.y_offset_aim=max(0,panel.y_offset_aim-MouseState.WheelDelta/1.5)
             end
             if lstg.GetLastKey()==KEY.PGUP then panel.y_offset_aim=max(0,panel.y_offset_aim-480) end
             if lstg.GetLastKey()==KEY.PGDN then panel.y_offset_aim=panel.y_offset_aim+480 end
