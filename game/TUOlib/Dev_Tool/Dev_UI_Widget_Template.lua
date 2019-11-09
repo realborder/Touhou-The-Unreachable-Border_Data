@@ -170,6 +170,7 @@ function value_displayer:frame()
     local change=self.value_change
     local b,t=self.hitbox.b,self.hitbox.t
     local oringinal_t=t
+    if not self.display_value then self.display_value={{name='nil',v='nil'}} end
     for _,v in pairs(self.display_value) do  
         local index=v.index or v.name
         change[index]=change[index] or 0
@@ -892,9 +893,13 @@ function color_sampler:frame()
 
         elseif type(self.monitoring_value)=='function' then
             local color=self:monitoring_value()
-            local a,h,s,v=color:AHSV()
-            self.color=color
-            self.alpha,self.hue,self.saturation,self.lightness=a,h,s,v
+            if color then
+                self.color=color
+                self.alpha=color.a/255*100
+                self.hue=color.h
+                self.saturation=color.s
+                self.lightness=color.v
+            end
         end
     end
     if self.flag then
@@ -932,18 +937,18 @@ function color_sampler:render(alpha,l,r,b,t)
         local r2=r1-w
         local r3=r2-w/2
         local r4=r3-w
-        --SV跟随色相环
+        --色相环1——SV跟随
             for i=0,359 do
                 SetImageState('white','',HSVColor(100*alpha,i,self.saturation,self.lightness))
                 sp.misc.RenderFanShape('white',x,y,i,i+1,r2,r3)
             end
-        --纯色色相环
+        --色相环2
             for i=0,359 do
                 SetImageState('white','',HSVColor(100*alpha,i,100,100))
                 sp.misc.RenderFanShape('white',x,y,i,i+1,r1,r2)
             end
             for i=0,359 do
-                if int(self.hue)==i then 
+                if int(self.hue)==i then --对选中的色相值描边强调
                     for j=1,3,0.5 do
                         SetImageState('white','',Color(10*(4-j)*alpha,10,10,10))
                         sp.misc.RenderFanShape('white',x,y,i-j,i+1+j,r1+j,r2-j)

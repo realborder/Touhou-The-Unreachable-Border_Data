@@ -21,6 +21,8 @@ end
 function m:init()
     self.list = {}
     self:LoadAllBG()
+    --为了模拟震动效果留的，因为计算涉及三维向量，暂且偷个懒
+    self.camera_offset=0
 end
 
 ------------------------------------
@@ -89,7 +91,7 @@ m.itpl = {
         return v1 + (v2 - v1) * t
     end,
     ["ACC_DEC"] = function(v1, v2, t)
-        return v1 + (v2 - v1) * (-cos(180 * t) + 1) / 2
+        return v1 + (v2 - v1) * ((-cos(180 * t)) + 1) / 2
     end,
     ["ACC"] = function(v1, v2, t)
         return v1 + (v2 - v1) * sin(90 * t)
@@ -148,8 +150,8 @@ end
 
 function m.Apply3DParamater(self)
         --应用参数
-        Print(string.format("eye:%.2f ,%.2f %.2f", self.cur.eye[1], self.cur.eye[2], self.cur.eye[3]))
-        Print(string.format("eye:%.2f ,%.2f %.2f", self.cur.at[1], self.cur.at[2], self.cur.at[3]))
+        -- Print(string.format("eye:%.2f ,%.2f %.2f", self.cur.eye[1], self.cur.eye[2], self.cur.eye[3]))
+        -- Print(string.format("eye:%.2f ,%.2f %.2f", self.cur.at[1], self.cur.at[2], self.cur.at[3]))
     
         local cur = self.cur
         Set3D("eye", cur.eye[1], cur.eye[2], cur.eye[3])
@@ -164,6 +166,8 @@ end
 ---获背景当前的阶段索引
 ---@param self table
 function m.GetCurPhase(self)
+    if not IsValid(self) then return end
+    if not self.phaseinfo then return end
     for i, v in ipairs(self.phaseinfo) do
         if self.timer < v.time then
             return i-1

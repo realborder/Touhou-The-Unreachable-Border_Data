@@ -96,17 +96,17 @@ local info_tmp={
     fovy={0.8}
 }
 local info_max={
-    eye=5,
-    at=5,
-    up=5,
+    eye=10,
+    at=10,
+    up=1,
     fogdist=32,
     z=64,
     fovy=3.13
 }
 local info_min={
-    eye=-5,
-    at=-5,
-    up=-5,
+    eye=-10,
+    at=-10,
+    up=-1,
     fogdist=0.1,
     z=0.01,
     fovy=0.01
@@ -144,8 +144,12 @@ function phsys:init()
                 
             end
             widget.display_value={}
-            for i=1,#(bg.phaseinfo) do
-                table.insert(widget.display_value,i)
+            if bg.phaseinfo then
+                for i=1,#(bg.phaseinfo) do
+                    table.insert(widget.display_value,i)
+                end
+            else
+                widget.display_value={}
             end
         end
     end
@@ -211,6 +215,20 @@ function phsys:init()
     s2.width=276
     s2.max_value=1000
     s2.min_value=0
+    s2.frame=function(widget)
+        if _3DBG_Handler.bgtemp then
+            local bg=_3DBG_Handler.bgtemp
+            if bg.cur then
+                local p=bg.phaseinfo
+                local cur=tuolib.BGHandler.GetCurPhase(bg)
+                if cur==#p then
+                    widget.max_value=1000
+                else
+                    widget.max_value=p[cur+1].time-p[cur].time
+                end
+            end
+        end
+    end
     s2.monitoring_value=function(widget,value) 
         local cur=tuolib.BGHandler.GetCurPhase(_3DBG_Handler.bgtemp)
         if value==nil then 
@@ -331,22 +349,25 @@ function phsys:init()
     txt3.gap_t=10
     local cs=Neww'color_sampler'
     cs.gap_t=1
-    -- cs.monitoring_value=function(widget)
-    --     if not widget._mouse_stay then
-    --         if cb.cur==1 then
-    --             if _3DBG_Handler.bgtemp and _3DBG_Handler.bgtemp.cur and _3DBG_Handler.bgtemp.cur.fogc then
-    --                 local f=_3DBG_Handler.bgtemp.cur.fogc
-    --                 return Color(255,f[1],f[2],f[3])
-    --             end
-    --         else
-    --             local cur=tuolib.BGHandler.GetCurPhase(_3DBG_Handler.bgtemp)
-    --             if cur then
-    --                 local f=_3DBG_Handler.bgtemp.phaseinfo[cur].fogc
-    --                 return Color(255,f[1],f[2],f[3])
-    --             end
-    --         end
-    --     end
-    -- end
+    cs.height=200
+    cs.monitoring_value=function(widget)
+        if not widget._mouse_stay then
+            if cb.cur==1 then
+                if _3DBG_Handler.bgtemp and _3DBG_Handler.bgtemp.cur and _3DBG_Handler.bgtemp.cur.fogc then
+                    local f=_3DBG_Handler.bgtemp.cur.fogc
+                    return Color(255,f[1],f[2],f[3])
+                end
+            else
+                local cur=tuolib.BGHandler.GetCurPhase(_3DBG_Handler.bgtemp)
+                if cur then
+                    local f=_3DBG_Handler.bgtemp.phaseinfo[cur].fogc
+                    return Color(255,f[1],f[2],f[3])
+                end
+            end
+        else
+            return 
+        end
+    end
     cs._event_mousehold=function(widget)
         if cb.cur==1 then
             if _3DBG_Handler.bgtemp and _3DBG_Handler.bgtemp.cur and _3DBG_Handler.bgtemp.cur.fogc then
@@ -367,13 +388,23 @@ function phsys:init()
     end
 
 end
-
+function phsys:frame()
+    if IsValid(_3DBG_Handler.bgtemp) and _3DBG_Handler.bgtemp.phaseinfo then
+        for i,v in ipairs(self.widget) do
+            v.enable=true
+        end
+    else
+        for i,v in ipairs(self.widget) do
+            v.enable=false
+        end
+    end
+end 
 
 
 local _3dbg_info=TUO_Developer_UI:NewPanel()
 function _3dbg_info:init()
     self.name="背景对象信息"
-    TUO_Developer_UI.SetWidgetSlot('world')
+    -- TUO_Developer_UI.SetWidgetSlot('world')
 
     Neww'title'.text='lstg.view3d信息'
     Neww'value_displayer'.monitoring_value=function(widget)
