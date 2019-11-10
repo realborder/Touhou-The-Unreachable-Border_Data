@@ -170,7 +170,7 @@ function m.GetCurPhase(self)
     if not self.phaseinfo then return end
     for i, v in ipairs(self.phaseinfo) do
         if self.timer < v.time then
-            return i-1
+            return max(1,i-1)
         end
     end
     return #self.phaseinfo

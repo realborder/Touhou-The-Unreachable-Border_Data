@@ -45,13 +45,6 @@ function bgl:init()
     -- sw1._event_switched=function(widget,flag)
     --     self.auto_reload=flag
     -- end
-    local bt3=Neww'button'
-    bt3.text='删除背景'
-    bt3.width=72
-    bt3._stay_in_this_line=true
-    bt3._event_mouseclick=function(widget)
-        if IsValid(_3DBG_Handler.bgtemp) then RawDel(_3DBG_Handler.bgtemp) end
-    end
     local bt4=Neww'button'
     bt4.text='刷新全部'
     bt4.width=72
@@ -59,6 +52,16 @@ function bgl:init()
     bt4._event_mouseclick=function(widget)
         tuolib.BGHandler.LoadAllBG()
     end
+    
+    local bt3=Neww'button'
+    bt3.text='删除背景对象'
+    bt3.width=72*1.5
+    bt3._stay_in_this_line=true
+    bt3._event_mouseclick=function(widget)
+        if IsValid(_3DBG_Handler.bgtemp) then RawDel(_3DBG_Handler.bgtemp) end
+    end
+    
+
     
     bglist=Neww'list_box'
     bglist.monitoring_value=function()
@@ -185,19 +188,47 @@ function phsys:init()
     s1.width=276
     s1.max_value=2000
     s1.min_value=0
+    s1.force_int=true
     s1.monitoring_value=function(widget,value) 
-        local cur=tuolib.BGHandler.GetCurPhase(_3DBG_Handler.bgtemp)
+        local bg=_3DBG_Handler.bgtemp
+        local cur=tuolib.BGHandler.GetCurPhase(bg)
         if not cur then return 0 end
         if value==nil then 
             if cur then
-                return _3DBG_Handler.bgtemp.phaseinfo[cur].time
+                return bg.phaseinfo[cur].time
             else
                 return 0
             end
         else
-            _3DBG_Handler.bgtemp.phaseinfo[cur].time=value
+            local max_v,min_v=2000,0
+            if bg.phaseinfo[cur-1] then
+                min_v=bg.phaseinfo[cur-1].time+bg.phaseinfo[cur-1].duration+1
+            end
+            if bg.phaseinfo[cur+1] then
+                max_v=bg.phaseinfo[cur+1].time-1
+            end
+            value=max(min_v,min(max_v,value))
+            if value>bg.phaseinfo[cur].time then bg.timer=value end
+            bg.phaseinfo[cur].time=value
+            bg.phaseinfo[cur].duration=max(1,min(bg.phaseinfo[cur].duration,max_v-value))
         end
     end
+    s1.render=function (self,alpha,l,r,b,t)
+        local bg=_3DBG_Handler.bgtemp
+        if not IsValid(bg) and (not bg.phaseinfo) then return end
+        local cur=tuolib.BGHandler.GetCurPhase(bg)
+        local yc=(t+b)/2
+        local h=self.w/2
+        local w2=0.5
+        for i,v in ipairs( bg.phaseinfo) do
+            local pos=max(0,min(self.max_value-self.min_value,v.time-self.min_value))/(self.max_value-self.min_value)*self.l
+            local m=l+pos+self.borderwidth
+            SetImageState('white','',Color(155*alpha,125,125,125))
+            RenderRect('white',m-w2,m+w2,yc-h,yc+h)
+            RenderTTF2('f3_word',tostring(i),m,m,yc+h*4,yc+h*6,0.5,Color(0xFF000000),'botttom','center')
+        end
+    end
+    
     local v2=Neww'value_displayer'
     v2.text='变换时间'
     v2.gap_b=0
@@ -215,6 +246,7 @@ function phsys:init()
     s2.width=276
     s2.max_value=1000
     s2.min_value=0
+    s2.force_int=true
     s2.frame=function(widget)
         if _3DBG_Handler.bgtemp then
             local bg=_3DBG_Handler.bgtemp
@@ -228,6 +260,19 @@ function phsys:init()
                 end
             end
         end
+    end
+    s2.render=function (self,alpha,l,r,b,t)
+        local bg=_3DBG_Handler.bgtemp
+        if not IsValid(bg) and (not bg.phaseinfo) then return end
+        local cur=tuolib.BGHandler.GetCurPhase(bg)
+        local yc=(t+b)/2
+        local h=self.w/2
+        local w2=0.5
+        local t=bg.timer-bg.phaseinfo[cur].time
+        local pos=max(0,min(self.max_value-self.min_value,t-self.min_value))/(self.max_value-self.min_value)*self.l
+        local m=l+pos+self.borderwidth
+        SetImageState('white','',Color(0,255,0,0),Color(255*alpha,255,0,0),Color(255*alpha,255,0,0),Color(0,255,0,0))
+        RenderRect('white',l,m,yc-h,yc+h)
     end
     s2.monitoring_value=function(widget,value) 
         local cur=tuolib.BGHandler.GetCurPhase(_3DBG_Handler.bgtemp)
@@ -405,6 +450,30 @@ local _3dbg_info=TUO_Developer_UI:NewPanel()
 function _3dbg_info:init()
     self.name="背景对象信息"
     -- TUO_Developer_UI.SetWidgetSlot('world')
+
+    Neww'title'.text='phase信息'
+    Neww'value_displayer'.monitoring_value=function()
+        local t={}
+        local bg=_3DBG_Handler.bgtemp
+        local cur=tuolib.BGHandler.GetCurPhase(bg)
+        if cur then
+            for _,ph in pairs(bg.phaseinfo) do
+                table.insert(t,{name=tostring(_),v=''})
+                for k,v in pairs(ph) do
+                    if type(v)=='table' then
+                        for i,_v in ipairs(v) do
+                            table.insert(t,{name='    '..k..'['..i..']',v=_v})
+                        end
+                    else
+                        table.insert(t,{name=k,v=v})
+                    end
+                end
+            end
+        end
+        return t
+
+    end
+
 
     Neww'title'.text='lstg.view3d信息'
     Neww'value_displayer'.monitoring_value=function(widget)

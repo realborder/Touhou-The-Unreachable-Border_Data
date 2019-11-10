@@ -325,7 +325,7 @@ function value_slider:frame()
         local k=(mx-(l+BORDER_WIDTH))/(r-l-2*BORDER_WIDTH)
         local v=(self.max_value-self.min_value)*k+self.min_value
         v=min(self.max_value,max(self.min_value,v))
-        if self.force_int then if v-int(v)>0.5 then v=int(v)+1 else v=int(v) end end --强制取证
+        if self.force_int then if v-int(v)>0.5 then v=int(v)+1 else v=int(v) end end --强制取整数
         if type(self.monitoring_value)=='string' then
             IndexValueByString(self.monitoring_value,v)
         elseif type(self.monitoring_value)=='function' then

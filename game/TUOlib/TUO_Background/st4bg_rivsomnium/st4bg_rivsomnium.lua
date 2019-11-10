@@ -27,9 +27,9 @@ end
 function cracks:init(index,layer)
 	self.index=index
 	self.img='st4bg_crack'..index
-	self.group=GROUP_ENEMY
-	self.a=10
-	self.b=10
+	-- self.group=GROUP_ENEMY
+	-- self.a=10
+	-- self.b=10
 	self.layer=layer
 	self.x=c_pos[index][1]
 	self.y=c_pos[index][2]
@@ -43,16 +43,27 @@ function cracks:init(index,layer)
 	self.dhs=math.random(0.45,0.75)
 end
 function cracks:frame()
+	if self.timer==2 then
+		lstg.var.timeslow=4
+	elseif self.timer>15 then
+		lstg.var.timeslow=1
+	end
 	if self.y<=-500 then RawDel(self) end
 	self.vscale=1-self.dhs*self.timer/60
 end
 function cracks:render()
-	local alpha=min(1,self.timer/60)
-	local alpha2=1-min(1,self.timer/60)
-	SetImageState(self.img,'',Color((1-alpha)*255*alpha2,255,255,255))
+	-- local alpha=min(1,self.timer/60)
+	local alpha2=1-min(1,self.timer/30)
+	-- SetImageState(self.img,'',Color((1-alpha)*255*alpha2,255,255,255))
+	SetImageState(self.img,'',Color(255*alpha2,255,255,255))
 	object.render(self)
-	SetImageState(self.img,'mul+add',Color(alpha*255*alpha2,255,255,255))
-	object.render(self)
+	-- SetImageState(self.img,'mul+add',Color(alpha*255*alpha2,255,255,255))
+	-- object.render(self)
+	-- if self.index==1 then
+	-- 	local r=128*(1+self.timer/30)
+	-- 	local alpha=(1-min(1,self.timer/30))*255
+	-- 	sp.misc.DrawCircle2(0,144,r,32,'',alpha,255,255,255,0)
+	-- end
 end
 cracks[1]=cracks.init
 cracks[2]=cracks.del
@@ -60,6 +71,52 @@ cracks[3]=cracks.frame
 cracks[4]=cracks.render
 cracks[5]=cracks.colli
 cracks[6]=cracks.kill
+
+local riv_cracks=Class(object)
+
+--因为init里会调用frame，所以frame提前了
+
+function riv_cracks:frame()
+	if not IsValid(self.master) then RawDel(self) end
+	local dx,dy=self.speed*cos(self.va),self.speed*sin(self.va)
+	self.x=self.x+dx
+	self.y=self.y+dy
+	if self.x<-10 then RawDel(self) end
+end
+
+function riv_cracks:init(master,rep)
+	self.master=master
+	self.index=int(math.random(1,16))
+	self.img='st4bg_rivsomnium_crack'..self.index
+	-- self.group=GROUP_ENEMY
+	-- self.a=10
+	-- self.b=10
+	self.layer=self.master.layer+1
+	self.bound=false
+	self.x=15
+	self.size=0.05+math.random()^4
+	self.y=math.random(-10,10)*self.size
+	self.va=180+math.random(-1,1)*self.size*10
+	self.z=self.size*10-3
+	self.size=self.size*math.random(3,5)
+	self.speed=0.03*math.random(1,1.25)
+	self.omiga=math.random(-0.3,0.3)
+	if rep then for i=1,rep*5 do riv_cracks.frame(self) end end
+end
+
+function riv_cracks:render()
+	SetViewMode'3d'
+	local dx=cos(self.rot)*self.size
+	local dy=sin(self.rot)*self.size
+	local x,y,z=self.x,self.y,self.z
+	Render4V(self.img,x-dx,y+dy,z,x+dy,y+dx,z,x+dx,y-dy,z,x-dy,y-dx,z)
+end
+riv_cracks[1]=riv_cracks.init
+riv_cracks[2]=riv_cracks.del
+riv_cracks[3]=riv_cracks.frame
+riv_cracks[4]=riv_cracks.render
+riv_cracks[5]=riv_cracks.colli
+riv_cracks[6]=riv_cracks.kill
 
 
 
@@ -76,10 +133,13 @@ function st4bg_rivsomnium.load_res()
 		{'st4bg_tree2','st4bg_tree2.png'},
 		{'st4bg_cloud','st4bg_cloud.png'},
 		{'st4bg_rivsomnium_flow','st4bg_rivsomnium_flow.png'},
+		{'st4bg_stary_sky','st4bg_stary_sky.png'},
 	}
 	for _,v in pairs(res_list) do
 		_LoadImageFromFile(v[1],PATH..v[2],true,0,0,false,0)
 	end
+	LoadImageGroupFromFile('st4bg_rivsomnium_crack',PATH..'st4bg_rivsomnium_crack.png',true,4,4)
+	for i=1,16 do SetImageState('st4bg_rivsomnium_crack'..i,'mul+add',Color(0xFFFFFFFF)) end
 	local TEXNAME='st4bg_crack'
 	lstg.LoadTexture(TEXNAME,PATH..'st4bg_crack.png',true)
 	local coor_temp={
@@ -121,7 +181,10 @@ function st4bg_rivsomnium:frame()
 	self.xpos=self.xpos-self.speed
 
 	tuolib.BGHandler.DoPhaseLogic(self)
-
+	local phase=tuolib.BGHandler.GetCurPhase(self)
+	if phase>=7 and self.timer%5==0 then
+		New(riv_cracks,self)
+	end
 	task.Do(self)
 end
 
@@ -176,9 +239,15 @@ function st4bg_rivsomnium:render()
 			end
 			if phase==6 then
 				local time_end=self.phaseinfo[6].duration-1
-				local time={time_end-60*3,time_end-60*2,time_end-60,time_end}
+				local time={time_end-30,time_end-20,time_end-10,time_end}
 				local t=self.timer-self.phaseinfo[6].time
+				if t==time[1] then 
+					misc.ShakeScreen(time[4]-time[1],5) 
+				elseif t==time[4] then 
+					
+				end
 				SetViewMode'world'
+
 				if t>=time[1] and t<time[2] then
 					if t==time[1] then misc.ShakeScreen(30,3) end
 					Render('st4bg_crack_b1',0,0)
@@ -193,18 +262,30 @@ function st4bg_rivsomnium:render()
 					for i=1,#c_pos do
 						New(cracks,i,self.layer)
 					end
+					for i=1,150 do
+						New(riv_cracks,self,i)
+					end
 				end
 				SetViewMode'3d'
 			end
 		end
 	elseif phase>=7 then
+		local dx=5
+		local dy=5
+		local z=-1
+		local dddx=(self.xpos*0.25)%(dx*2)
+		for ddx=-4*dx,4*dx,dx*2 do
+			for ddy=-4*dy,4*dy,dy*2 do
+				rfv('st4bg_stary_sky',dddx+ddx+dx,ddy-dy,z,dddx+ddx+dx,ddy+dy,z,dddx+ddx-dx,ddy+dy,z,dddx+ddx-dx,ddy-dy,z)
+			end
+		end
 		for i=1,3 do
 			local speed=1+0.5*sin(60*i-45)
 			local x,dx=10,(-self.xpos*speed)%10
 			local dddy=speed*5
 			local y=5
 			for z=i-0.5,i+0.5,0.1 do
-				SetImageState('st4bg_rivsomnium_flow','mul+add',Color(15*(1-(abs(z-i)*2)^8),20,255,255))
+				SetImageState('st4bg_rivsomnium_flow','mul+add',Color(15*(1-(abs(z-i)*2)^8),255,255,255))
 				for ddx=-10,10,10 do
 					for ddy=-10+dddy,10+dddy,10 do
 						rfv('st4bg_rivsomnium_flow',x-dx+ddx,y+ddy,z,-dx+ddx,y+ddy,z,-dx+ddx,-y+ddy,z,x-dx+ddx,-y+ddy,z)
