@@ -393,7 +393,9 @@ end
 
 function exani_player:DoPredefine()
 	exani_player.GetActionValue(self)
-	if type(self.future_action[1][1])=='string' then --默认强制补间后面的不是action字符串
+	if type(self.future_action[1][1])=='string' and
+	  (self.current_frame<min(self.future_action[2].startf,self.future_action[2].endf) or
+	  self.current_frame>max(self.future_action[2].startf,self.future_action[2].endf)) then
 		self.replay_round=1
 		self.pre_interval=self.play_interval
 		self.play_interval=1
@@ -408,8 +410,20 @@ function exani_player:DoPredefine()
 		self.isStop=false
 		self.isforce=true
 	else
-		self.start_frame=self.future_action[1].startf
-		self.end_frame=self.future_action[1].endf
+		if type(self.future_action[1][1])=='string' then
+			self.start_frame=self.current_frame
+			self.end_frame=self.future_action[2].endf
+			table.remove(self.future_action,1)
+		else
+			local min_frame=min(self.future_action[1].startf,self.future_action[1].endf)
+			local max_frame=max(self.future_action[1].startf,self.future_action[1].endf)
+			if self.current_frame>=min_frame and self.current_frame<=max_frame then
+				self.start_frame=self.current_frame
+			else
+				self.start_frame=self.future_action[1].startf
+			end
+			self.end_frame=self.future_action[1].endf
+		end
 		if self.pre_interval and self.pre_interval~=-100 then self.play_interval=self.pre_interval self.pre_interval=-100 end
 		if self.start_frame>=self.end_frame then self.play_interval=-abs(self.play_interval)
 		elseif self.start_frame< self.end_frame then self.play_interval=abs(self.play_interval) end

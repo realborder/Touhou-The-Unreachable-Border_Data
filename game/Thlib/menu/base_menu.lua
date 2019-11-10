@@ -27,7 +27,7 @@ function base_menu:init(name,title,options,pre_menu,has_logo)
 	self.choosed=false --选中选项(包括z和x)
 	self.pre_choose=1
 	
-	self.change_delay=15
+	self.change_delay=1
 	self.change_timer=0
 	
 	self.init_delay=30 --init时间
