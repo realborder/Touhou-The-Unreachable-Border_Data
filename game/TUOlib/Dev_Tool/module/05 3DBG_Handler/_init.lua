@@ -168,6 +168,20 @@ function phsys:init()
 
     end
 
+    local v0=Neww'value_displayer'
+    v0.text='当前时刻'
+    v0.gap_b=0
+    v0.width=276
+    v0.monitoring_value=function() 
+        local cur=tuolib.BGHandler.GetCurPhase(_3DBG_Handler.bgtemp)
+        if cur then
+            return {{name='',v=string.format('%.2f sec',_3DBG_Handler.bgtemp.timer/60)}} 
+        else
+            return {{name='',v='nil'}} 
+        end
+    end
+
+
     local v1=Neww'value_displayer'
     v1.text= '触发时刻'
     v1.width=276
@@ -176,7 +190,9 @@ function phsys:init()
         if _3DBG_Handler.bgtemp and _3DBG_Handler.bgtemp.phaseinfo then 
             local cur=tuolib.BGHandler.GetCurPhase(_3DBG_Handler.bgtemp)
             if cur then
-                return {{name='',v=tostring(_3DBG_Handler.bgtemp.phaseinfo[cur].time)}} 
+                local time=_3DBG_Handler.bgtemp.phaseinfo[cur].time
+                
+                return {{name='',v=string.format('%d (%.2f sec)',time,time/60)}} 
             else
                 return {{name='',v='nil'}}
             end
@@ -186,7 +202,7 @@ function phsys:init()
 
     local s1=Neww'value_slider'
     s1.width=276
-    s1.max_value=2000
+    s1.max_value=60*60
     s1.min_value=0
     s1.force_int=true
     s1.monitoring_value=function(widget,value) 
@@ -200,7 +216,7 @@ function phsys:init()
                 return 0
             end
         else
-            local max_v,min_v=2000,0
+            local max_v,min_v=s1.max_value,0
             if bg.phaseinfo[cur-1] then
                 min_v=bg.phaseinfo[cur-1].time+bg.phaseinfo[cur-1].duration+1
             end
@@ -253,10 +269,12 @@ function phsys:init()
             if bg.cur then
                 local p=bg.phaseinfo
                 local cur=tuolib.BGHandler.GetCurPhase(bg)
-                if cur==#p then
-                    widget.max_value=1000
-                else
-                    widget.max_value=p[cur+1].time-p[cur].time
+                if cur then
+                    if cur==#p then
+                        widget.max_value=1000
+                    else
+                        widget.max_value=p[cur+1].time-p[cur].time
+                    end
                 end
             end
         end
@@ -265,14 +283,16 @@ function phsys:init()
         local bg=_3DBG_Handler.bgtemp
         if not IsValid(bg) and (not bg.phaseinfo) then return end
         local cur=tuolib.BGHandler.GetCurPhase(bg)
-        local yc=(t+b)/2
-        local h=self.w/2
-        local w2=0.5
-        local t=bg.timer-bg.phaseinfo[cur].time
-        local pos=max(0,min(self.max_value-self.min_value,t-self.min_value))/(self.max_value-self.min_value)*self.l
-        local m=l+pos+self.borderwidth
-        SetImageState('white','',Color(0,255,0,0),Color(255*alpha,255,0,0),Color(255*alpha,255,0,0),Color(0,255,0,0))
-        RenderRect('white',l,m,yc-h,yc+h)
+        if cur then
+            local yc=(t+b)/2
+            local h=self.w/2
+            local w2=0.5
+            local t=bg.timer-bg.phaseinfo[cur].time
+            local pos=max(0,min(self.max_value-self.min_value,t-self.min_value))/(self.max_value-self.min_value)*self.l
+            local m=l+pos+self.borderwidth
+            SetImageState('white','',Color(0,255,0,0),Color(255*alpha,255,0,0),Color(255*alpha,255,0,0),Color(0,255,0,0))
+            RenderRect('white',l,m,yc-h,yc+h)
+        end
     end
     s2.monitoring_value=function(widget,value) 
         local cur=tuolib.BGHandler.GetCurPhase(_3DBG_Handler.bgtemp)
