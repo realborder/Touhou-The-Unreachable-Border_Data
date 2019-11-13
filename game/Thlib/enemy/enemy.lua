@@ -63,12 +63,14 @@ function enemybase:frame()
 	if self.hp<=0 then 
 		Kill(self)
 		-- DR_Pin.add(2) --【修改标记】
-		tuolib.DRP_Sys.add(2) 
+		tuolib.DRP_Sys.Event_EnemyKill(self)
 		
 		if self.timer<=self.speedTime then
+			--速破可能也要重写，这块儿保留
 		    if lstg.var.dr>0 then
 		        -- DR_Pin.pin_shift(self.speed_kill_point)
-		        tuolib.DRP_Sys.pin_shift(self.speed_kill_point)
+				tuolib.DRP_Sys.pin_shift(self.speed_kill_point)
+				
 		    else
 		        tuolib.DRP_Sys.pin_shift(-self.speed_kill_point)
 		    end
@@ -144,7 +146,7 @@ function enemy:frame()
 	if self.auto_delete and BoxCheck(self,lstg.world.boundl,lstg.world.boundr,lstg.world.boundb,lstg.world.boundt) and self.flag==false then self.flag=true end
 	if not BoxCheck(self,lstg.world.boundl,lstg.world.boundr,lstg.world.boundb,lstg.world.boundt) and self.flag==true then 
 		-- DR_Pin.add(K_dr_enemy)
-		tuolib.DRP_Sys.add(K_dr_enemy)
+		tuolib.DRP_Sys.Event_EnemyLeave(self)
 		self.flag=false
 		if self.auto_delete then self.bound=true end
 	end

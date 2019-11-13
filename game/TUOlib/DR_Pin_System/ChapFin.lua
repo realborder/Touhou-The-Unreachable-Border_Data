@@ -1,4 +1,4 @@
-	LoadImageFromFile('chapFin','THlib\\chapFin.png')
+LoadImageFromFile('chapFin','THlib\\chapFin.png')
 --用于结算点的obj，奖励chapter分数，结算残机和符卡，以及重置计数
 ChapFin=Class(object)
 function ChapFin:init(isInboss)
@@ -78,6 +78,12 @@ end
 
 function ClearAllEnemyAndBullet()
 	for _,unit in ObjList(GROUP_ENEMY) do
+		if not unit._bosssys then --靠有无挂载boss系统来判断是不是boss
+			unit.drop=false
+			Kill(unit)
+		end
+	end
+	for _,unit in ObjList(GROUP_NONTJT) do
 		if not unit._bosssys then --靠有无挂载boss系统来判断是不是boss
 			unit.drop=false
 			Kill(unit)

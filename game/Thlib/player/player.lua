@@ -249,11 +249,11 @@ function player_class:frame()
 					GetPower(-self.offset)
 					self.graze_c = 0
 					PlaySound('ophide',0.1)
-					self.ccced_in_chapter=true
+					lstg.var.ccced_in_chapter=true
 					self.protect=max(20,self.protect)
 					self.class.ccc(self) -- 释放灵击
 					-- DR_Pin.pin_shift(K_dr_ccced)   --释放灵击梦现指针增加
-					tuolib.DRP_Sys.pin_shift(K_dr_ccced)   --释放灵击梦现指针增加
+					tuolib.DRP_Sys.Event_PlayerCCC()
 					self.ccc_state=1
 				end
 				
@@ -818,114 +818,12 @@ end
 
 --列表里的三项分别代表被展示名称，类名和类的name值
 player_list={
-	{"博丽灵梦 A","reimu_playerA","ReimuA"},
-	{"博丽灵梦 B","reimu_playerB","ReimuB"},
-	{"雾雨魔理沙 A","marisa_playerA","MarisaA"},
-	{"雾雨魔理沙 B","marisa_playerB","MarisaB"},
-	{"东风谷早苗 A","sanae_playerA","SanaeA"},
-	{"东风谷早苗 B","sanae_playerB","SanaeB"},
-	{"宇佐见堇子 A","sumireko_playerA","SumirekoA"},
-	{"宇佐见堇子 B","sumireko_playerB","SumirekoB"},
+	{"博丽灵梦 A型","reimu_playerA","ReimuA"},
+	{"博丽灵梦 B型","reimu_playerB","ReimuB"},
+	{"雾雨魔理沙 A型","marisa_playerA","MarisaA"},
+	{"雾雨魔理沙 B型","marisa_playerB","MarisaB"},
+	{"东风谷早苗 A型","sanae_playerA","SanaeA"},
+	{"东风谷早苗 B型","sanae_playerB","SanaeB"},
+	{"宇佐见堇子 A型","sumireko_playerA","SumirekoA"},
+	{"宇佐见堇子 B型","sumireko_playerB","SumirekoB"},
 }
-
--- Include'THlib\\player\\reimu\\reimu.lua'
--- Include'THlib\\player\\marisa\\marisa.lua'
-
-----------------------------------------
----加载自机
---[[
-local PLAYER_PATH="Library\\players\\"    --自机插件路径
-local PLAYER_PATH_1="Library\\"           --自机插件路径一级路径
-local PLAYER_PATH_2="Library\\players\\"  --自机插件路径二级路径
-local ENTRY_POINT_SCRIPT_PATH=""          --入口点文件路径
-local ENTRY_POINT_SCRIPT="__init__.lua"   --入口点文件
-
----检查目录是否存在，不存在则创建
-local function check_directory()
-	if not plus.DirectoryExists(PLAYER_PATH_1) then
-		plus.CreateDirectory(PLAYER_PATH_1)
-	end
-	if not plus.DirectoryExists(PLAYER_PATH_2) then
-		plus.CreateDirectory(PLAYER_PATH_2)
-	end
-end
-
----检查一个自机插件包是否合法（有入口点文件）
----该函数会装载自机插件包，然后进行检查，如果不是合法的自机插件包，将会卸载掉
----@param player_plugin_path string @插件包路径
----@return boolean
-local function LoadAndCheckValidity(player_plugin_path)
-	lstg.LoadPack(player_plugin_path)
-	local fs=lstg.FindFiles("", "lua", player_plugin_path)
-	for _,v in pairs(fs) do
-		local filename=string.sub(v[1],string.len(ENTRY_POINT_SCRIPT_PATH)+1,-1)
-		if filename==ENTRY_POINT_SCRIPT then
-			return true
-		end
-	end
-	lstg.UnloadPack(player_plugin_path)
-	lstg.Log(4,LOG_MODULE_NAME,"\""..player_plugin_path.."\"不是有效的自机插件包，没有入口点文件\""..ENTRY_POINT_SCRIPT.."\"")
-	return false
-end
-
----储存自机的信息表
----@type table @{{displayname,classname,replayname}, ... }
-player_list={}
---]]
----对自机表进行排序
---local function PlayerListSort()
---	local playerDisplayName={}--{displayname, ... }
---	local pl2id={}--{[displayname]=player_list_pos, ... }
---	for i,v in ipairs(player_list) do
---		table.insert(playerDisplayName,v[1])
---		pl2id[v[1]]=i
---	end
---	table.sort(playerDisplayName)
---	local id2pl={}--{[pos]=player_list_pos}
---	for i,v in ipairs(playerDisplayName) do
---		id2pl[i]=pl2id[v]
---	end
---	local tmp_player_list={}
---	for i,v in ipairs(id2pl) do
---		tmp_player_list[i]=player_list[v]
---	end
---	player_list=tmp_player_list
---end
-
----添加自机信息到自机信息表
----@param displayname string @显示在菜单中的名字
----@param classname string @全局中的自机类名
----@param replayname string @显示在rep信息中的名字
----@param pos number @插入的位置
----@param _replace boolean @是否取代该位置
---[[
-function AddPlayerToPlayerList(displayname,classname,replayname,pos,_replace)
-	if _replace then
-		player_list[pos]={displayname,classname,replayname}
-	elseif pos then
-		table.insert(player_list,pos,{displayname,classname,replayname})
-	else
-		table.insert(player_list,{displayname,classname,replayname})
-	end
-end
-
----加载自机包
-function LoadPlayerPacks()
-	player_list={}--先清空一次
-	
-	check_directory()
-	local fs=lstg.FindFiles(PLAYER_PATH, "zip", "")--罗列插件包
-	for _,v in pairs(fs) do
-		--尝试加载插件包并检查插件包合法性
-		local result=LoadAndCheckValidity(v[1])
-		--加载入口点脚本
-		if result then
-			lstg.DoFile(ENTRY_POINT_SCRIPT, v[1])
-		end
-	end
-	
-	PlayerListSort()
-end
-
-LoadPlayerPacks()
---]]

@@ -23,7 +23,7 @@ Include'ex\\javastage.lua'
 Include'ex\\crazystorm.lua'
 Include'sp\\sp.lua'--OLC神的sp加强库
 
-Include'THlib\\ChapFin.lua'
+-- Include'THlib\\ChapFin.lua'
 
 -- Include'THlib\\exani\\exani_manager.lua'
 Include'THlib\\exani\\exani_player_manager.lua'

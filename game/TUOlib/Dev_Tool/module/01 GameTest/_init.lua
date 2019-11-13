@@ -115,6 +115,9 @@ function basic:init()
 	local gr=Neww'value_displayer'
 	gr.monitoring_value='lstg.var.graze'
 	gr.text='擦弹'
+	local gr2=Neww'value_displayer'
+	gr2.monitoring_value='player.graze_c'
+	gr2.text='必杀技充能'
 
 end
 local drsys=TUO_Developer_UI:NewPanel()

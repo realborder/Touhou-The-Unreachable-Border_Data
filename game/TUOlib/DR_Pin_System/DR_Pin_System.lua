@@ -5,6 +5,7 @@
 ----------------------------------
 local m = {}
 tuolib.DRP_Sys = m
+Include'TUOlib/DR_Pin_System/ChapFin.lua'
 
 function m.load_res()
     LoadImageFromFile("UI_gaming_item_collect_word", "THlib\\UI\\UI_gaming_item_collect_word.png")
@@ -80,6 +81,57 @@ function m:init()
     if not IsValid(self.collect_line) then
         self.collect_line = New(collect_line)
     end
+end
+
+function m.Event_BossCardDelete(boss,card)
+    m.pin_shift(-card.hplen)
+end
+function m.Event_EnemyKill(enemy)
+	m.add(2) 
+end
+function m.Event_EnemyLeave(enemy)
+	m.add(K_dr_enemy)
+end
+function m.Event_ItemLeave()
+	m.add(K_dr_item) --遗漏道具梦现指针往当前侧偏移
+end
+function m.Event_BossCardFinished(missed,spelled,ccced)
+	if (not missed) and (not spelled) and (not ccced) then--符卡或非符NMNBNC指针值-0.2
+		-- DR_Pin.pin_shift(-0.2)
+		m.pin_shift(-0.2)
+	else
+		if (not spelled) and (not ccced) then 
+			-- DR_Pin.pin_shift(-0.05)
+			m.pin_shift(-0.05)
+		end--如果不小心撞了-0.05
+	end
+end
+function m.Event_PlayerMiss()
+	m.reduce(4)
+end
+function m.Event_PlayerSpell()
+	if player.death==0 then
+		-- DR_Pin.pin_shift(2.0)
+		m.pin_shift(2.0)
+	else
+		-- DR_Pin.pin_shift(3.0)--如果是决死的话就多加1
+		m.pin_shift(3.0)--如果是决死的话就多加1
+	end
+end
+function m.Event_PlayerCCC()
+	m.pin_shift(K_dr_ccced)   --释放灵击梦现指针增加
+end
+function m.Event_PlayerGraze()
+	if IsValid(_boss) then 
+		-- DR_Pin.add(0.2) 
+		m.add(0.2) 
+	else 
+		-- DR_Pin.add(0.1) 
+		m.add(0.1) 
+	end
+end
+function m.Event_BossCardFinished()
+
 end
 
 ----------------------------------------
@@ -188,7 +240,7 @@ function m:frame()
         --这段是加灵力的代码
         if abs(var.dr) >= 1.0 then
             -- DR_Pin.GetPower(min((abs(var.dr)-1.0),2.0) * (-2 + sign(var.dr)) / -10 * 0.25)
-            tuolib.DRP_Sys.GetPower(min((abs(var.dr) - 1.0), 2.0) * (-2 + sign(var.dr)) / -10 * 0.25)
+            m.GetPower(min((abs(var.dr) - 1.0), 2.0) * (-2 + sign(var.dr)) / -10 * 0.25)
         end
     end
 end

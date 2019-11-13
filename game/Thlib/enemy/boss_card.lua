@@ -106,7 +106,7 @@ function boss.card:init()  end
 function boss.card:del()
 	local c = boss.GetCurrentCard(self)
 	-- DR_Pin.pin_shift(-c.hplen)
-	tuolib.DRP_Sys.pin_shift(-c.hplen)
+    tuolib.DRP_Sys.Event_BossCardDelete(boss,c)
 	c.timer=0
 	c.speed_kill_minus=0
 end
