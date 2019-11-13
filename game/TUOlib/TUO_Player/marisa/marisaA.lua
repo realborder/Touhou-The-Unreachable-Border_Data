@@ -778,8 +778,8 @@ function marisa_playerA:spell()
 		misc.ShakeScreen(210, 3)
 		--		New(bullet_killer,self.x,self.y)
 		New(player_spell_mask, 64, 64, 255, 30, 210, 30)
-		K_dr_SlowSpell = 1.25 + K_dr_SpellDmg * lstg.var.dr
-		-- New(marisa_kekkai, self.x, self.y, K_dr_SlowSpell, 3, 20, 12) --低速符卡，横坐标，纵坐标，伤害，每帧变化距离，弹数，等待帧数
+		tuolib.DRP_Sys.K_dr_SlowSpell = 1.25 + tuolib.DRP_Sys.K_dr_SpellDmg * lstg.var.dr
+		-- New(marisa_kekkai, self.x, self.y, tuolib.DRP_Sys.K_dr_SlowSpell, 3, 20, 12) --低速符卡，横坐标，纵坐标，伤害，每帧变化距离，弹数，等待帧数
 		self.nextspell = 240
 		self.protect = 360
 	else
@@ -787,9 +787,9 @@ function marisa_playerA:spell()
 		PlaySound('slash', 0.8)
 		New(player_spell_mask, 200, 0, 0, 30, 180, 30)
 		local rot = ran:Int(0, 360)
-		K_dr_HighSpell = 1.0 + K_dr_SpellDmg * lstg.var.dr
+		tuolib.DRP_Sys.K_dr_HighSpell = 1.0 + tuolib.DRP_Sys.K_dr_SpellDmg * lstg.var.dr
 		for i = 1, 8 do
-			-- New(marisa_sp_ef1, 'marisa_sp_ef', self.x, self.y, 8, rot + i * 45, tar1, 1200, K_dr_HighSpell, 40 - 10 * i, self) --高速符卡，图像，横坐标，纵坐标，速度，角度，目标，控制释放，伤害，控制时间，符卡中心
+			-- New(marisa_sp_ef1, 'marisa_sp_ef', self.x, self.y, 8, rot + i * 45, tar1, 1200, tuolib.DRP_Sys.K_dr_HighSpell, 40 - 10 * i, self) --高速符卡，图像，横坐标，纵坐标，速度，角度，目标，控制释放，伤害，控制时间，符卡中心
 		end
 		self.nextspell = 300
 		self.protect = 360
@@ -802,7 +802,7 @@ function marisa_playerA:newSpell()
 	if self.SpellIndex > 3 then
 		----------低速符卡
 		PlaySound('power1', 0.8)
-		K_dr_SlowSpell = 1.25 + K_dr_SpellDmg * lstg.var.dr
+		tuolib.DRP_Sys.K_dr_SlowSpell = 1.25 + tuolib.DRP_Sys.K_dr_SpellDmg * lstg.var.dr
 		New(marisa_blackhole_summoner,self.SpellIndex-3,self)
 		if self.SpellIndex == 4 then
 
@@ -817,12 +817,12 @@ function marisa_playerA:newSpell()
 		----------高速符卡
 		PlaySound('nep00', 0.8)
 		PlaySound('slash', 0.8)
-		K_dr_HighSpell = 1.0 + K_dr_SpellDmg * lstg.var.dr
+		tuolib.DRP_Sys.K_dr_HighSpell = 1.0 + tuolib.DRP_Sys.K_dr_SpellDmg * lstg.var.dr
 		New(marisa_stardust_summoner,self.SpellIndex,self)
 
 	end
 	
-	self.SpellCardHp = max(0, self.SpellCardHp - K_SpellCost)
+	self.SpellCardHp = max(0, self.SpellCardHp - tuolib.DRP_Sys.K_SpellCost)
 end
 
 function marisa_playerA:frame()

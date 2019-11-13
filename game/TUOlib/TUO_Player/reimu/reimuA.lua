@@ -545,8 +545,8 @@ function reimu_playerA:spell()
 		misc.ShakeScreen(210, 3)
 		--		New(bullet_killer,self.x,self.y)
 		New(player_spell_mask, 64, 64, 255, 30, 210, 30)
-		K_dr_SlowSpell = 1.25 + K_dr_SpellDmg * lstg.var.dr
-		New(reimu_kekkai, self.x, self.y, K_dr_SlowSpell, 3, 20, 12) --低速符卡，横坐标，纵坐标，伤害，每帧变化距离，弹数，等待帧数
+		tuolib.DRP_Sys.K_dr_SlowSpell = 1.25 + tuolib.DRP_Sys.K_dr_SpellDmg * lstg.var.dr
+		New(reimu_kekkai, self.x, self.y, tuolib.DRP_Sys.K_dr_SlowSpell, 3, 20, 12) --低速符卡，横坐标，纵坐标，伤害，每帧变化距离，弹数，等待帧数
 		self.nextspell = 240
 		self.protect = 360
 	else
@@ -554,9 +554,9 @@ function reimu_playerA:spell()
 		PlaySound('slash', 0.8)
 		New(player_spell_mask, 200, 0, 0, 30, 180, 30)
 		local rot = ran:Int(0, 360)
-		K_dr_HighSpell = 1.0 + K_dr_SpellDmg * lstg.var.dr
+		tuolib.DRP_Sys.K_dr_HighSpell = 1.0 + tuolib.DRP_Sys.K_dr_SpellDmg * lstg.var.dr
 		for i = 1, 8 do
-			New(reimu_sp_ef1, 'reimu_sp_ef', self.x, self.y, 8, rot + i * 45, tar1, 1200, K_dr_HighSpell, 40 - 10 * i, self) --高速符卡，图像，横坐标，纵坐标，速度，角度，目标，控制释放，伤害，控制时间，符卡中心
+			New(reimu_sp_ef1, 'reimu_sp_ef', self.x, self.y, 8, rot + i * 45, tar1, 1200, tuolib.DRP_Sys.K_dr_HighSpell, 40 - 10 * i, self) --高速符卡，图像，横坐标，纵坐标，速度，角度，目标，控制释放，伤害，控制时间，符卡中心
 		end
 		self.nextspell = 300
 		self.protect = 360
@@ -570,26 +570,26 @@ function reimu_playerA:newSpell()
 		----------低速符卡
 		PlaySound('power1', 0.8)
 		--PlaySound('cat00',0.8)
-		K_dr_SlowSpell = 1.25 + K_dr_SpellDmg * lstg.var.dr
+		tuolib.DRP_Sys.K_dr_SlowSpell = 1.25 + tuolib.DRP_Sys.K_dr_SpellDmg * lstg.var.dr
 		if self.SpellIndex == 4 then
 			--低速符卡1
 			self.protect=45
 			for i = 1, 9 do
-				New(reimu_orb_T, player.x, player.y, 6, i * 20, 2 + deep, 0.7 + 0.3 * deep, K_dr_SlowSpell*0.7, player, (i - 1) * 5)
+				New(reimu_orb_T, player.x, player.y, 6, i * 20, 2 + deep, 0.7 + 0.3 * deep, tuolib.DRP_Sys.K_dr_SlowSpell*0.7, player, (i - 1) * 5)
 			end
 		end
 		if self.SpellIndex == 5 then
 			--低速符卡2
 			self.protect=45
 			for i = 1, 3 do
-				New(reimu_orb_M, player.x, player.y, 2.5, i * 45, 0, 0.7 + 0.3 * deep, K_dr_SlowSpell*0.5, player, (i - 1) * 10)
+				New(reimu_orb_M, player.x, player.y, 2.5, i * 45, 0, 0.7 + 0.3 * deep, tuolib.DRP_Sys.K_dr_SlowSpell*0.5, player, (i - 1) * 10)
 			end
 		end
 		if self.SpellIndex == 6 then
 			--低速符卡3
 			task.New(player, function()
 				if deep == 1 then
-					lstg.tmpvar.orb = New(reimu_orb_H, player.x, player.y, K_dr_SlowSpell,self)
+					lstg.tmpvar.orb = New(reimu_orb_H, player.x, player.y, tuolib.DRP_Sys.K_dr_SlowSpell,self)
 				end
 				local orb = lstg.tmpvar.orb
 				orb.released = false
@@ -609,7 +609,7 @@ function reimu_playerA:newSpell()
 		----------高速符卡
 		PlaySound('nep00', 0.8)
 		PlaySound('slash', 0.8)
-		K_dr_HighSpell = 1.0 + K_dr_SpellDmg * lstg.var.dr
+		tuolib.DRP_Sys.K_dr_HighSpell = 1.0 + tuolib.DRP_Sys.K_dr_SpellDmg * lstg.var.dr
 		local rot = ran:Int(0, 360)
 		local scale = 1.0
 		local radius = 0.8
@@ -639,17 +639,17 @@ function reimu_playerA:newSpell()
 			if deep == 3 then n = 14 end
 		end
 		for i = 1, n do
-			New(reimu_sp_ef1, 'reimu_high_spell', self.x, self.y, 8, rot + i * (360 / n), tar1, 1200, K_dr_HighSpell, n * 3 - 6 * i, self, scale, radius, 1) --高速符卡，图像，横坐标，纵坐标，速度，角度，目标，控制释放，伤害，控制时间，符卡中心
+			New(reimu_sp_ef1, 'reimu_high_spell', self.x, self.y, 8, rot + i * (360 / n), tar1, 1200, tuolib.DRP_Sys.K_dr_HighSpell, n * 3 - 6 * i, self, scale, radius, 1) --高速符卡，图像，横坐标，纵坐标，速度，角度，目标，控制释放，伤害，控制时间，符卡中心
 		end
 		if self.SpellIndex == 3 then
 			for i = 1, n do
-				New(reimu_sp_ef1, 'reimu_high_spell', self.x, self.y, 8, rot + i * (360 / n), tar1, 1200, K_dr_HighSpell, n * 3 - 6 * i, self, scale, 0.6 * radius, -1) --高速符卡，图像，横坐标，纵坐标，速度，角度，目标，控制释放，伤害，控制时间，符卡中心
+				New(reimu_sp_ef1, 'reimu_high_spell', self.x, self.y, 8, rot + i * (360 / n), tar1, 1200, tuolib.DRP_Sys.K_dr_HighSpell, n * 3 - 6 * i, self, scale, 0.6 * radius, -1) --高速符卡，图像，横坐标，纵坐标，速度，角度，目标，控制释放，伤害，控制时间，符卡中心
 			end
 		end
 		self.protect=45
 	end
 	
-	self.SpellCardHp = max(0, self.SpellCardHp - K_SpellCost)
+	self.SpellCardHp = max(0, self.SpellCardHp - tuolib.DRP_Sys.K_SpellCost)
 end
 
 function reimu_playerA:frame()

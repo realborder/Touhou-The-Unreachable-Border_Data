@@ -141,8 +141,36 @@ function drsys:init()
 	cp.text='连击值'
 	local cp2=Neww'value_slider'
 	cp2.monitoring_value='lstg.var.cp'
-	cp2.max_value=5
-	
+    cp2.max_value=5
+    local hd='tuolib.DRP_Sys.'
+    local tmp={
+        'C_BOUNS_LIMIT',
+        'K_dr',
+        'K_dr_ccced',
+        'K_dr_item',
+        'K_dr_enemy',
+        'K_graze_c_max',
+        'K_graze_c_min',
+        'K_dr_graze_c',
+        'K_graze_c_k',
+        'K_dr_collectline',
+        'K_dr_dist',
+        'K_dr_SpellDmg',
+        'K_dr_SlowSpell',
+        'K_dr_HighSpell',
+        'K_dr_BonusLimit',
+        'K_MaxSpell',
+        'K_dr_SpellHp',
+        'K_SpellCost',
+        'K_SpellDecay',
+        'K_BossSpeedKill',
+        'K_cp',
+        'K_dr_reduce'
+    }
+    
+    for i=1,#tmp do
+        Neww'value_displayer'.monitoring_value=hd..tmp[i]
+    end
 end
 local input_monitor=TUO_Developer_UI:NewPanel()
 function input_monitor:init()

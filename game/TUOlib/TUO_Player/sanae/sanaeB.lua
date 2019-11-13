@@ -122,7 +122,7 @@ function sanae_playerA:newSpell()
 	if self.SpellIndex > 3 then
 		----------低速符卡
 		PlaySound('power1', 0.8)
-		K_dr_SlowSpell = 1.25 + K_dr_SpellDmg * lstg.var.dr
+		tuolib.DRP_Sys.K_dr_SlowSpell = 1.25 + tuolib.DRP_Sys.K_dr_SpellDmg * lstg.var.dr
 		if self.SpellIndex == 4 then
 
 		end
@@ -136,11 +136,11 @@ function sanae_playerA:newSpell()
 		----------高速符卡
 		PlaySound('nep00', 0.8)
 		PlaySound('slash', 0.8)
-		K_dr_HighSpell = 1.0 + K_dr_SpellDmg * lstg.var.dr
+		tuolib.DRP_Sys.K_dr_HighSpell = 1.0 + tuolib.DRP_Sys.K_dr_SpellDmg * lstg.var.dr
 
 	end
 	
-	self.SpellCardHp = max(0, self.SpellCardHp - K_SpellCost)
+	self.SpellCardHp = max(0, self.SpellCardHp - tuolib.DRP_Sys.K_SpellCost)
 end
 
 function sanae_playerA:frame()

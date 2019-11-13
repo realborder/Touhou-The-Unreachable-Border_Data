@@ -822,7 +822,7 @@ function reimu_slowspell3:frame()
 	self.rot1=self.rot1+self.omiga1
 	self.rot2=self.rot2-self.omiga2
 	self.a,self.b=(0.5+0.5*self.scale2)*512*0.5,(0.5+0.5*self.scale2)*512*0.5
-	self.player.SpellCardHp=self.player.SpellCardHp-K_SpellDecay/2
+	self.player.SpellCardHp=self.player.SpellCardHp-tuolib.DRP_Sys.K_SpellDecay/2
 
 end
 function reimu_slowspell3:render()
@@ -859,10 +859,10 @@ function reimu_slow_boundary_summoner:init(index,player)
 	elseif self.index==2 then 
 		local dist=100
 		if not IsValid(self.serv) then 
-			self.serv[1]=New(reimu_slowspell2_pre,self.x,self.y,self.x,self.y+dist,0.5*K_dr_SlowSpell)
-			self.serv[2]=New(reimu_slowspell2_pre,self.x,self.y,self.x,self.y-dist,0.5*K_dr_SlowSpell)
-			self.serv[3]=New(reimu_slowspell2_pre,self.x,self.y,self.x+dist,self.y,0.5*K_dr_SlowSpell)
-			self.serv[4]=New(reimu_slowspell2_pre,self.x,self.y,self.x-dist,self.y,0.5*K_dr_SlowSpell)
+			self.serv[1]=New(reimu_slowspell2_pre,self.x,self.y,self.x,self.y+dist,0.5*tuolib.DRP_Sys.K_dr_SlowSpell)
+			self.serv[2]=New(reimu_slowspell2_pre,self.x,self.y,self.x,self.y-dist,0.5*tuolib.DRP_Sys.K_dr_SlowSpell)
+			self.serv[3]=New(reimu_slowspell2_pre,self.x,self.y,self.x+dist,self.y,0.5*tuolib.DRP_Sys.K_dr_SlowSpell)
+			self.serv[4]=New(reimu_slowspell2_pre,self.x,self.y,self.x-dist,self.y,0.5*tuolib.DRP_Sys.K_dr_SlowSpell)
 		end
 	elseif self.index==1 then
 		task.New(self,function()
@@ -1017,7 +1017,7 @@ end
 function reimu_playerB:spell()
 	-- do return end
 	if self.SpellIndex == 6 then
-		New(reimu_slowspell3,self.x,self.y,5,self,int(self.SpellCardHpMax/(1.5*K_SpellDecay)))
+		New(reimu_slowspell3,self.x,self.y,5,self,int(self.SpellCardHpMax/(1.5*tuolib.DRP_Sys.K_SpellDecay)))
 	end
 	do
 		return
@@ -1032,8 +1032,8 @@ function reimu_playerB:spell()
 		PlaySound('cat00', 0.8)
 		misc.ShakeScreen(210, 3)
 		New(player_spell_mask, 64, 64, 255, 30, 210, 30)
-		K_dr_SlowSpell = 1.25 + K_dr_SpellDmg * lstg.var.dr
-		New(reimu_kekkai, self.x, self.y, K_dr_SlowSpell, 3, 20, 12) --低速符卡，横坐标，纵坐标，伤害，每帧变化距离，弹数，等待帧数
+		tuolib.DRP_Sys.K_dr_SlowSpell = 1.25 + tuolib.DRP_Sys.K_dr_SpellDmg * lstg.var.dr
+		New(reimu_kekkai, self.x, self.y, tuolib.DRP_Sys.K_dr_SlowSpell, 3, 20, 12) --低速符卡，横坐标，纵坐标，伤害，每帧变化距离，弹数，等待帧数
 		self.nextspell = 240
 		self.protect = 360
 	else
@@ -1041,9 +1041,9 @@ function reimu_playerB:spell()
 		PlaySound('slash', 0.8)
 		New(player_spell_mask, 200, 0, 0, 30, 180, 30)
 		local rot = ran:Int(0, 360)
-		K_dr_HighSpell = 1.0 + K_dr_SpellDmg * lstg.var.dr
+		tuolib.DRP_Sys.K_dr_HighSpell = 1.0 + tuolib.DRP_Sys.K_dr_SpellDmg * lstg.var.dr
 		for i = 1, 8 do
-			New(reimu_sp_ef1, 'reimu_sp_ef', self.x, self.y, 8, rot + i * 45, tar1, 1200, K_dr_HighSpell, 40 - 10 * i, self) --高速符卡，图像，横坐标，纵坐标，速度，角度，目标，控制释放，伤害，控制时间，符卡中心
+			New(reimu_sp_ef1, 'reimu_sp_ef', self.x, self.y, 8, rot + i * 45, tar1, 1200, tuolib.DRP_Sys.K_dr_HighSpell, 40 - 10 * i, self) --高速符卡，图像，横坐标，纵坐标，速度，角度，目标，控制释放，伤害，控制时间，符卡中心
 		end
 		self.nextspell = 300
 		self.protect = 360
@@ -1055,7 +1055,7 @@ function reimu_playerB:newSpell()
 	if self.SpellIndex > 3 then
 		----------低速符卡
 		PlaySound('power1', 0.8)
-		K_dr_SlowSpell = 1.25 + K_dr_SpellDmg * lstg.var.dr
+		tuolib.DRP_Sys.K_dr_SlowSpell = 1.25 + tuolib.DRP_Sys.K_dr_SpellDmg * lstg.var.dr
 		if self.SpellIndex == 4 then
 		elseif self.SpellIndex == 5 then
 		elseif self.SpellIndex == 6 then
@@ -1066,7 +1066,7 @@ function reimu_playerB:newSpell()
 		----------高速符卡
 		PlaySound('nep00', 0.8)
 		PlaySound('slash', 0.8)
-		K_dr_HighSpell = 1.0 + K_dr_SpellDmg * lstg.var.dr
+		tuolib.DRP_Sys.K_dr_HighSpell = 1.0 + tuolib.DRP_Sys.K_dr_SpellDmg * lstg.var.dr
 		local n, dmg, index
 		index=self.SpellIndex
 		if self.SpellIndex == 1 then
@@ -1097,9 +1097,9 @@ function reimu_playerB:newSpell()
 				n = 20
 			end
 		end
-		New(reimu_boundary, self.x, self.y, n, 20, dmg*K_dr_HighSpell, index)
+		New(reimu_boundary, self.x, self.y, n, 20, dmg*tuolib.DRP_Sys.K_dr_HighSpell, index)
 	end
-	if self.SpellIndex~=6 then self.SpellCardHp = max(0, self.SpellCardHp - K_SpellCost) end
+	if self.SpellIndex~=6 then self.SpellCardHp = max(0, self.SpellCardHp - tuolib.DRP_Sys.K_SpellCost) end
 end
 
 function reimu_playerB:frame()

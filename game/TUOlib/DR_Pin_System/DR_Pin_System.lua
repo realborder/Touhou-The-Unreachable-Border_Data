@@ -28,40 +28,40 @@ end
 --------------------------------------
 ---重设系统各项常数（其实是可变的
 function m:ResetSystemParameter()
-    C_BOUNS_LIMIT_IN_CHAPTER = 2500
-    K_dr = 0.003
+    tuolib.DRP_Sys.C_BOUNS_LIMIT = 2500
+    tuolib.DRP_Sys.K_dr = 0.003
     --用于控制dr的增长，每个chapter可能都要微调，所以记在lstg.var里了
 
-    K_dr_ccced = 1.0 --释放灵击时梦现指针的增加量
-    K_dr_item = 1.0 --遗漏道具梦现指针变化系数
-    K_dr_enemy = 1.0 --遗漏敌机梦现指针变化系数
-    K_graze_c_max = 125 --擦弹计数上限
-    K_graze_c_min = 50 --擦弹计数下限
-    K_dr_graze_c = 0.2 --擦弹系数
-    K_graze_c_k = (-0.75) / (K_graze_c_max - K_graze_c_min) --释放灵击POWWER减少比例
-    K_dr_collectline = 22.4 --梦现指针指向现实侧时收点线降低系数
-    K_dr_dist = 0.2 --梦现指针指向现实侧时道具吸收范围变大系数
-    K_dr_SpellDmg = 0.02 --梦现指针对符卡伤害影响系数
-    K_dr_SlowSpell = 1.25 + K_dr_SpellDmg * lstg.var.dr --低速符卡伤害
-    K_dr_HighSpell = 1.0 + K_dr_SpellDmg * lstg.var.dr --高速符卡伤害
-    K_dr_BonusLimit = 1.0 --获得奖残奖雷所需的最低指针绝对值
+    tuolib.DRP_Sys.K_dr_ccced = 1.0 --释放灵击时梦现指针的增加量
+    tuolib.DRP_Sys.K_dr_item = 1.0 --遗漏道具梦现指针变化系数
+    tuolib.DRP_Sys.K_dr_enemy = 1.0 --遗漏敌机梦现指针变化系数
+    tuolib.DRP_Sys.K_graze_c_max = 125 --擦弹计数上限
+    tuolib.DRP_Sys.K_graze_c_min = 50 --擦弹计数下限
+    tuolib.DRP_Sys.K_dr_graze_c = 0.2 --擦弹系数
+    tuolib.DRP_Sys.K_graze_c_k = (-0.75) / (tuolib.DRP_Sys.K_graze_c_max - tuolib.DRP_Sys.K_graze_c_min) --释放灵击POWWER减少比例
+    tuolib.DRP_Sys.K_dr_collectline = 22.4 --梦现指针指向现实侧时收点线降低系数
+    tuolib.DRP_Sys.K_dr_dist = 0.2 --梦现指针指向现实侧时道具吸收范围变大系数
+    tuolib.DRP_Sys.K_dr_SpellDmg = 0.02 --梦现指针对符卡伤害影响系数
+    tuolib.DRP_Sys.K_dr_SlowSpell = 1.25 + tuolib.DRP_Sys.K_dr_SpellDmg * lstg.var.dr --低速符卡伤害
+    tuolib.DRP_Sys.K_dr_HighSpell = 1.0 + tuolib.DRP_Sys.K_dr_SpellDmg * lstg.var.dr --高速符卡伤害
+    tuolib.DRP_Sys.K_dr_BonusLimit = 1.0 --获得奖残奖雷所需的最低指针绝对值
 
-    K_MaxSpell = 60 --符卡槽耐久最大值基础值
-    K_dr_SpellHp = 3 --梦现指针对符卡槽耐久最大值的影响系数
-    K_SpellCost = 20 --单次符卡攻击消耗的符卡槽耐久
-    K_SpellDecay = 0.1 --每帧符卡槽耐久衰减系数
+    tuolib.DRP_Sys.K_MaxSpell = 60 --符卡槽耐久最大值基础值
+    tuolib.DRP_Sys.K_dr_SpellHp = 3 --梦现指针对符卡槽耐久最大值的影响系数
+    tuolib.DRP_Sys.K_SpellCost = 20 --单次符卡攻击消耗的符卡槽耐久
+    tuolib.DRP_Sys.K_SpellDecay = 0.1 --每帧符卡槽耐久衰减系数
 
-    K_BossSpeedKill = 1 --Boss速破奖励系数
+    tuolib.DRP_Sys.K_BossSpeedKill = 1 --Boss速破奖励系数
 
-    K_cp = 0.2
-    K_dr_reduce = 0.002
+    tuolib.DRP_Sys.K_cp = 0.2
+    tuolib.DRP_Sys.K_dr_reduce = 0.002
 end
 
 -----------------------------------------
 ---重设收点线数据
 function m:ResetCollectline()
     self.collectline_a = 255 --收点线α值
-    self.k_a = (255 - 100) / (K_dr_collectline * 5) --α值改变系数
+    self.k_a = (255 - 100) / (tuolib.DRP_Sys.K_dr_collectline * 5) --α值改变系数
     self.collectline_y = 112
     self.collectline_dy = 112
 end
@@ -90,10 +90,10 @@ function m.Event_EnemyKill(enemy)
 	m.add(2) 
 end
 function m.Event_EnemyLeave(enemy)
-	m.add(K_dr_enemy)
+	m.add(tuolib.DRP_Sys.K_dr_enemy)
 end
 function m.Event_ItemLeave()
-	m.add(K_dr_item) --遗漏道具梦现指针往当前侧偏移
+	m.add(tuolib.DRP_Sys.K_dr_item) --遗漏道具梦现指针往当前侧偏移
 end
 function m.Event_BossCardFinished(missed,spelled,ccced)
 	if (not missed) and (not spelled) and (not ccced) then--符卡或非符NMNBNC指针值-0.2
@@ -119,7 +119,7 @@ function m.Event_PlayerSpell()
 	end
 end
 function m.Event_PlayerCCC()
-	m.pin_shift(K_dr_ccced)   --释放灵击梦现指针增加
+	m.pin_shift(tuolib.DRP_Sys.K_dr_ccced)   --释放灵击梦现指针增加
 end
 function m.Event_PlayerGraze()
 	if IsValid(_boss) then 
@@ -129,6 +129,7 @@ function m.Event_PlayerGraze()
 		-- DR_Pin.add(0.1) 
 		m.add(0.1) 
 	end
+	if player.graze_c<tuolib.DRP_Sys.K_graze_c_max then player.graze_c=min(tuolib.DRP_Sys.K_graze_c_max,player.graze_c + 1 + (lstg.var.dr * tuolib.DRP_Sys.K_dr_graze_c)) end
 end
 function m.Event_BossCardFinished()
 
@@ -139,9 +140,9 @@ end
 function m.add(v)
     local var = lstg.var
     v = abs(v)
-    var.cp = var.cp + v * K_cp
-    if (abs(var.dr) <= 5.0 - v * K_dr) then
-        var.dr = (abs(var.dr) + v * K_dr) * sign(var.dr)
+    var.cp = var.cp + v * tuolib.DRP_Sys.K_cp
+    if (abs(var.dr) <= 5.0 - v * tuolib.DRP_Sys.K_dr) then
+        var.dr = (abs(var.dr) + v * tuolib.DRP_Sys.K_dr) * sign(var.dr)
     else
         var.dr = sign(var.dr) * 5.0
     end --控制dr的增长体现在这里
@@ -205,11 +206,11 @@ function m:frame()
         else
             var.cp = 0.0
         end
-        local drReduce = K_dr_reduce
+        local drReduce = tuolib.DRP_Sys.K_dr_reduce
         if IsValid(_boss) then
-            drReduce = K_dr_reduce / 2
+            drReduce = tuolib.DRP_Sys.K_dr_reduce / 2
         else
-            drReduce = K_dr_reduce
+            drReduce = tuolib.DRP_Sys.K_dr_reduce
         end
         if (var.cp <= 1 and abs(var.dr) > 1 - (1 - var.cp) * drReduce) then --combo_point小于1且dr大于1的情况下d才会渐渐减小，且越接近1减少越慢
             var.dr = (abs(var.dr) - (1 - var.cp) * drReduce) * sign(var.dr)
@@ -217,21 +218,21 @@ function m:frame()
 
         --这段是给资源的代码
         --设置了单章节最大资源计数值，实际的上限会随着指针而改变
-        if abs(var.dr) >= K_dr_BonusLimit then
-            tmpv.bonus_count = tmpv.bonus_count + (abs(var.dr) - K_dr_BonusLimit)
+        if abs(var.dr) >= tuolib.DRP_Sys.K_dr_BonusLimit then
+            tmpv.bonus_count = tmpv.bonus_count + (abs(var.dr) - tuolib.DRP_Sys.K_dr_BonusLimit)
             --指针绝对值多出奖残奖雷阈值的部分会直接加到这个计数变量里
             --具体奖励数量在(2,4)这个区间内分布，偏梦境侧则大于3，偏现实侧则小于3，具体偏移量由指针值定。
             --在此基础上乘一个系数用来控制增长，系数是这个：
-            --( C_BOUNS_LIMIT_IN_CHAPTER   -   tmpv.bonus_count )   /   C_BOUNS_LIMIT_IN_CHAPTER
+            --( tuolib.DRP_Sys.C_BOUNS_LIMIT   -   tmpv.bonus_count )   /   tuolib.DRP_Sys.C_BOUNS_LIMIT
             --也就是一个[0,1]内的系数，bonus_count越高这个系数越小，到最后几乎为0
             --下一行代码很长……但是思路列在上面应该能看明白
-            if tmpv.bonus_count > C_BOUNS_LIMIT_IN_CHAPTER then
-                tmpv.bonus_count = C_BOUNS_LIMIT_IN_CHAPTER
+            if tmpv.bonus_count > tuolib.DRP_Sys.C_BOUNS_LIMIT then
+                tmpv.bonus_count = tuolib.DRP_Sys.C_BOUNS_LIMIT
             end
             tmpv.bonus_rate =
-                (3.0 + sign(var.dr) * (abs(var.dr) - K_dr_BonusLimit) / (5 - K_dr_BonusLimit)) *
-                (C_BOUNS_LIMIT_IN_CHAPTER - tmpv.bonus_count) /
-                C_BOUNS_LIMIT_IN_CHAPTER
+                (3.0 + sign(var.dr) * (abs(var.dr) - tuolib.DRP_Sys.K_dr_BonusLimit) / (5 - tuolib.DRP_Sys.K_dr_BonusLimit)) *
+                (tuolib.DRP_Sys.C_BOUNS_LIMIT - tmpv.bonus_count) /
+                tuolib.DRP_Sys.C_BOUNS_LIMIT
 
             var.chip = var.chip + tmpv.bonus_rate * 0.01 * (1 + min(0, sign(var.dr)) * -1.5)
             var.bombchip = var.bombchip + tmpv.bonus_rate * 0.01 * (1 + max(0, sign(var.dr)) * 0.5)
@@ -261,7 +262,7 @@ function m:render() --左下角字体渲染
         Render("UI_gaming_item_collect_word", 0, player.collect_line + 22)
     end
     --------------------收点线只要有变动就会往不透明变，否则慢慢变回透明
-    local y = min(112, player.collect_line + lstg.var.dr * K_dr_collectline)
+    local y = min(112, player.collect_line + lstg.var.dr * tuolib.DRP_Sys.K_dr_collectline)
     self.collectline_y = self.collectline_y + (y - self.collectline_y) * 0.25
     --平滑处理
     self.collectline_a = max(20, min(200, self.collectline_a - 3 + abs(self.collectline_dy - self.collectline_y) * 100)) --alpha限制在20到200

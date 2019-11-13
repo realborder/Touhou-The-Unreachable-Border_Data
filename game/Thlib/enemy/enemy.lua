@@ -145,7 +145,7 @@ function enemy:frame()
 	
 	if self.auto_delete and BoxCheck(self,lstg.world.boundl,lstg.world.boundr,lstg.world.boundb,lstg.world.boundt) and self.flag==false then self.flag=true end
 	if not BoxCheck(self,lstg.world.boundl,lstg.world.boundr,lstg.world.boundb,lstg.world.boundt) and self.flag==true then 
-		-- DR_Pin.add(K_dr_enemy)
+		-- DR_Pin.add(tuolib.DRP_Sys.K_dr_enemy)
 		tuolib.DRP_Sys.Event_EnemyLeave(self)
 		self.flag=false
 		if self.auto_delete then self.bound=true end

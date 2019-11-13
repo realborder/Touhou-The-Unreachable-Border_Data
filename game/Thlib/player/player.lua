@@ -66,7 +66,7 @@ function player_class:init()
 	self.ccc_state=1--指代必杀充能状态，1代表不能释放，2代表可以释放，3代表擦弹计数到达最大值
 	self.offset=0.0 --灵击火力减损值
 	self.SpellCardHp=0 --屏幕实际显示的符卡槽耐久数值
-	self.SpellCardHpMax=K_MaxSpell --当前最大耐久值
+	self.SpellCardHpMax=tuolib.DRP_Sys.K_MaxSpell --当前最大耐久值
 	self.NextSingleSpell=0 --符卡释放期间单次符卡攻击间隔
 	self.SpellTimer1=-1 --用于符卡开始后帧计时
 	self.KeyDownTimer1=0 --用于记录持续按压时长
@@ -127,7 +127,7 @@ function player_class:frame()
 
 					----符卡逻辑
 						if self.SpellCardHp==0 and self.SpellTimer1>=0 then self.SpellTimer1=-1 self.KeyDownTimer1=0 self.SC_name='' self.nextspell=90 self.bomb_end=true end
-						if self.SpellCardHp>0 and self.SpellTimer1>90 then self.SpellCardHp=max(0,self.SpellCardHp-K_SpellDecay) end
+						if self.SpellCardHp>0 and self.SpellTimer1>90 then self.SpellCardHp=max(0,self.SpellCardHp-tuolib.DRP_Sys.K_SpellDecay) end
 						if self.NextSingleSpell>0 then self.NextSingleSpell=self.NextSingleSpell-1 end
 						if self.SpellTimer1>0 then self.SpellTimer1=self.SpellTimer1+1 end
 						
@@ -149,7 +149,7 @@ function player_class:frame()
 								
 								lstg.var.bomb=lstg.var.bomb-1
 								ui.menu.LoseSpell=15
-								self.SpellCardHpMax=K_MaxSpell+lstg.var.dr*K_dr_SpellHp
+								self.SpellCardHpMax=tuolib.DRP_Sys.K_MaxSpell+lstg.var.dr*tuolib.DRP_Sys.K_dr_SpellHp
 								self.SpellCardHp=self.SpellCardHpMax
 									
 								self.SpellTimer1=1
@@ -240,11 +240,11 @@ function player_class:frame()
 					self.PowerDelay1=-1
 				end
 			--必杀技逻辑（以前叫灵击）
-				if self.graze_c>=K_graze_c_min and self.graze_c_before<K_graze_c_min then self.ccc_state=2 New(player_indicator_eff,2)
-				elseif self.graze_c>=K_graze_c_max and self.graze_c_before<K_graze_c_max then self.ccc_state=3 New(player_indicator_eff,3) end
+				if self.graze_c>=tuolib.DRP_Sys.K_graze_c_min and self.graze_c_before<tuolib.DRP_Sys.K_graze_c_min then self.ccc_state=2 New(player_indicator_eff,2)
+				elseif self.graze_c>=tuolib.DRP_Sys.K_graze_c_max and self.graze_c_before<tuolib.DRP_Sys.K_graze_c_max then self.ccc_state=3 New(player_indicator_eff,3) end
 				self.graze_c_before=self.graze_c
-				if KeyIsDown'special' and (not self.dialog) and self.graze_c>=K_graze_c_min and lstg.var.power>=100 and self.SpellTimer1==-1 then 
-					self.offset = 100*(1.0 + K_graze_c_k * (self.graze_c - K_graze_c_min)) 
+				if KeyIsDown'special' and (not self.dialog) and self.graze_c>=tuolib.DRP_Sys.K_graze_c_min and lstg.var.power>=100 and self.SpellTimer1==-1 then 
+					self.offset = 100*(1.0 + tuolib.DRP_Sys.K_graze_c_k * (self.graze_c - tuolib.DRP_Sys.K_graze_c_min)) 
 					New(bullet_cleaner,player.x,player.y, 125, 20, 45, 1)  New(player_indicator_explode,3) New(player_indicator_explode,1)
 					GetPower(-self.offset)
 					self.graze_c = 0
@@ -252,7 +252,7 @@ function player_class:frame()
 					lstg.var.ccced_in_chapter=true
 					self.protect=max(20,self.protect)
 					self.class.ccc(self) -- 释放灵击
-					-- DR_Pin.pin_shift(K_dr_ccced)   --释放灵击梦现指针增加
+					-- DR_Pin.pin_shift(tuolib.DRP_Sys.K_dr_ccced)   --释放灵击梦现指针增加
 					tuolib.DRP_Sys.Event_PlayerCCC()
 					self.ccc_state=1
 				end
@@ -261,8 +261,8 @@ function player_class:frame()
 				local dist_coe
 				local line = 0.0
 				if(lstg.var.dr<0) then 
-					line = K_dr_collectline
-					dist_coe = 1 - K_dr_dist*min(0,lstg.var.dr)  --dr值为负（现实侧）则增大道具收集范围，最大为(1+5*K_dr_dist)，目前为最大两倍
+					line = tuolib.DRP_Sys.K_dr_collectline
+					dist_coe = 1 - tuolib.DRP_Sys.K_dr_dist*min(0,lstg.var.dr)  --dr值为负（现实侧）则增大道具收集范围，最大为(1+5*tuolib.DRP_Sys.K_dr_dist)，目前为最大两倍
 				else 
 					line=0
 					dist_coe=1
@@ -476,7 +476,7 @@ function player_class:render()
 		Renderspellhp(self.x,self.y,90,360*self.SpellCardHp/self.SpellCardHpMax,60,64,360*self.SpellCardHp/self.SpellCardHpMax+2,1)
 		Render('base_spell_hp',self.x,self.y,0,0.548,0.548)
         Render('base_spell_hp',self.x,self.y,0,0.512,0.512)
-		-- Render('life_node',self.x-63*cos(K_SpellCost/self.SpellCardHpMax),self.y+63*sin(K_SpellCost/self.SpellCardHpMax),K_SpellCost/self.SpellCardHpMax-90,1.1)
+		-- Render('life_node',self.x-63*cos(tuolib.DRP_Sys.K_SpellCost/self.SpellCardHpMax),self.y+63*sin(tuolib.DRP_Sys.K_SpellCost/self.SpellCardHpMax),tuolib.DRP_Sys.K_SpellCost/self.SpellCardHpMax-90,1.1)
 	end
 end
 
@@ -513,7 +513,7 @@ end
 
 function player_class:SpellClear()
 	if self.SpellCardHp>0 then
-		lstg.var.bombchip=lstg.var.bombchip+self.SpellCardHp/K_MaxSpell*0.4
+		lstg.var.bombchip=lstg.var.bombchip+self.SpellCardHp/tuolib.DRP_Sys.K_MaxSpell*0.4
 		self.SpellCardHp=0
 		self.SpellTimer1=-1
 		self.KeyDownTimer1=0

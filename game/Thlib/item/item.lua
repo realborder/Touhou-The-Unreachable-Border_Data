@@ -70,7 +70,7 @@ function item:frame()
 	else self.vy=max(self.dy-0.03,-1.7) end
 	if self.y<lstg.world.boundb then 
 	    Del(self)
-		-- DR_Pin.add(K_dr_item) --遗漏道具梦现指针往当前侧偏移
+		-- DR_Pin.add(tuolib.DRP_Sys.K_dr_item) --遗漏道具梦现指针往当前侧偏移
 		tuolib.DRP_Sys.Event_ItemLeave()
 	end
 	if self.attract>=8 then self.collected=true end
@@ -455,8 +455,6 @@ end
 function item.PlayerGraze()
 	lstg.var.graze=lstg.var.graze+1
 	tuolib.DRP_Sys.Event_PlayerGraze()
-
-	if player.graze_c<K_graze_c_max then player.graze_c=min(K_graze_c_max,player.graze_c + 1 + (lstg.var.dr * K_dr_graze_c)) end
 	
 --	lstg.var.score=lstg.var.score+50
 end

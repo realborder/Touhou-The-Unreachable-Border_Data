@@ -481,7 +481,7 @@ end
 
 function marisa_spark2:frame()
 	task.Do(self)
-	self.player.SpellCardHp=self.player.SpellCardHp-K_SpellDecay/2
+	self.player.SpellCardHp=self.player.SpellCardHp-tuolib.DRP_Sys.K_SpellDecay/2
 	self.x=self.player.x
 	self.y=self.player.y
 	if self.timer>=75 and self.timer%10==1 and self.shoot_wave then
@@ -592,10 +592,10 @@ local releaseUnlimitedSpark=function (self)
 	-- self.nextspell=300
 	self.nextshoot=self.nextshoot+90
 	-- self.protect=360
-	New(marisa_spark2,self.x,self.y,90,15,int(self.SpellCardHpMax/(1.5*K_SpellDecay)),30,self)
+	New(marisa_spark2,self.x,self.y,90,15,int(self.SpellCardHpMax/(1.5*tuolib.DRP_Sys.K_SpellDecay)),30,self)
 	-- New(tasker,function()
 		-- task.Wait(90)
-		-- for i=1,int(self.SpellCardHpMax/K_SpellDecay/10)-9 do
+		-- for i=1,int(self.SpellCardHpMax/tuolib.DRP_Sys.K_SpellDecay/10)-9 do
 			-- New(marisa_spark_wave2,self.x,self.y,90,12,0.9,self)
 			-- task.Wait(10)
 		-- end
@@ -938,7 +938,7 @@ function marisa_playerB:newSpell()
 		----------低速符卡
 		-- PlaySound('power1', 0.8)
 		--PlaySound('cat00',0.8)
-		K_dr_SlowSpell = 1.25 + K_dr_SpellDmg * lstg.var.dr
+		tuolib.DRP_Sys.K_dr_SlowSpell = 1.25 + tuolib.DRP_Sys.K_dr_SpellDmg * lstg.var.dr
 		---------------------------------------------
 		if self.SpellIndex == 4 then
 			releaseMasterSpark(self,90,1)
@@ -952,10 +952,10 @@ function marisa_playerB:newSpell()
 		----------高速符卡
 		-- PlaySound('nep00', 0.8)
 		PlaySound('slash', 0.8)
-		K_dr_HighSpell = 1.0 + K_dr_SpellDmg * lstg.var.dr
+		tuolib.DRP_Sys.K_dr_HighSpell = 1.0 + tuolib.DRP_Sys.K_dr_SpellDmg * lstg.var.dr
 		New(marisa_ray_summoner,self.SpellIndex,self)
 	end
-	if self.SpellIndex ~=6 then self.SpellCardHp = max(0, self.SpellCardHp - K_SpellCost) end
+	if self.SpellIndex ~=6 then self.SpellCardHp = max(0, self.SpellCardHp - tuolib.DRP_Sys.K_SpellCost) end
 end
 
 function marisa_playerB:frame()
