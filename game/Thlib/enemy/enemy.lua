@@ -62,13 +62,15 @@ function enemybase:frame()
 	
 	if self.hp<=0 then 
 		Kill(self)
-		DR_Pin.add(2) --【修改标记】
+		-- DR_Pin.add(2) --【修改标记】
+		tuolib.DRP_Sys.add(2) 
 		
 		if self.timer<=self.speedTime then
 		    if lstg.var.dr>0 then
-		        DR_Pin.pin_shift(self.speed_kill_point)
+		        -- DR_Pin.pin_shift(self.speed_kill_point)
+		        tuolib.DRP_Sys.pin_shift(self.speed_kill_point)
 		    else
-		        DR_Pin.pin_shift(-self.speed_kill_point)
+		        tuolib.DRP_Sys.pin_shift(-self.speed_kill_point)
 		    end
 		end
 		
@@ -89,7 +91,8 @@ function enemybase:colli(other)
 		Damage(self,dmg)
 		self.take_dmg_in_frame=true--【修改标记】
 		if Dist(player,self)<=100 then--贴脸射击
-			DR_Pin.add(0.2 - Dist(player,self) / 1000)
+			-- DR_Pin.add(0.2 - Dist(player,self) / 1000)
+			tuolib.DRP_Sys.add(0.2 - Dist(player,self) / 1000)
 		end
 		if self._master and self._dmg_transfer and IsValid(self._master) then
 			Damage(self._master,dmg*self._dmg_transfer)--敌方子机帮敌机吸收伤害
@@ -140,7 +143,9 @@ function enemy:frame()
 	
 	if self.auto_delete and BoxCheck(self,lstg.world.boundl,lstg.world.boundr,lstg.world.boundb,lstg.world.boundt) and self.flag==false then self.flag=true end
 	if not BoxCheck(self,lstg.world.boundl,lstg.world.boundr,lstg.world.boundb,lstg.world.boundt) and self.flag==true then 
-	    DR_Pin.add(K_dr_enemy) self.flag=false
+		-- DR_Pin.add(K_dr_enemy)
+		tuolib.DRP_Sys.add(K_dr_enemy)
+		self.flag=false
 		if self.auto_delete then self.bound=true end
 	end
 end

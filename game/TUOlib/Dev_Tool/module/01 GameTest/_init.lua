@@ -102,6 +102,9 @@ function basic:init()
 		btntmp._power=i*100
 		btntmp._event_mouseclick=function(widget) lstg.var.power=widget._power end
 	end
+    local p4=Neww'value_displayer'
+    p4.text='火力上限'
+    p4.monitoring_value='player.maxPower'
 
 	local faith=Neww'value_displayer'
 	faith.monitoring_value='lstg.var.faith'

@@ -27,8 +27,8 @@ LoadImage('spellbar2','player',116,0,2,2)
 SetImageState('spellbar2','',Color(0x77D5CFFF))
 
 -----符卡环参数
-		local ring_radius=180
-		local ring_width=16
+	local ring_radius=180
+	local ring_width=16
 ---------
 
 ----Base class of all player characters (abstract)----
@@ -37,15 +37,17 @@ local LOG_MODULE_NAME="[lstg][THlib][player]"
 player_class=Class(object)
 
 function player_class:init()
+	--obj基本信息
 	self.group=GROUP_PLAYER
 	self.y=-176
+	self.layer=LAYER_PLAYER
+
 	self.supportx=0
 	self.supporty=self.y
 	self.hspeed=4
 	self.lspeed=2
 	self.collect_line=112
 	self.slow=0
-	self.layer=LAYER_PLAYER
 	self.lr=1
 	self.lh=0
 	self.fire=0
@@ -84,7 +86,8 @@ function player_class:init()
 	self.ringW_aim,self.ringW=ring_width,ring_width
 	self.ringWithdraw=false --自机被弹用
 	
-	New(DR_Pin)
+	-- New(DR_Pin)
+	tuolib.DRP_Sys:init()
 		
 	lstg.player=self
 	player=self
@@ -99,344 +102,334 @@ end
 
 function player_class:frame()
 	self.grazer.world=self.world
-	-- local _temp_key=nil
-	-- local _temp_keyp=nil
-	-- if self.key then
-	-- 	_temp_key=KeyState
-	-- 	_temp_keyp=KeyStatePre
-	-- 	KeyState=self.key
-	-- 	KeyStatePre=self.keypre
-	-- end
 
-	local boss_in_nonsc=IsValid(_boss) and (not boss.GetCurrentCard(_boss).is_sc) --判断boss是否处在非符状态
+	--判断boss是否处在非符状态
+		local boss_in_nonsc=IsValid(_boss) and (not boss.GetCurrentCard(_boss).is_sc) 
 	
-	--find target
-	if ((not IsValid(self.target)) or (not self.target.colli)) then player_class.findtarget(self) end
-	if not KeyIsDown'shoot' then self.target=nil end
-	if self.bomb_end and not KeyIsDown('spell') then self.bomb_end=false end
-	--
-	local dx=0
-	local dy=0
-	local v=self.hspeed
-	if (self.death==0 or self.death>90) and (not self.lock) and not(self.time_stop) then
-		--低速判定
-		if KeyIsDown'slow' then self.slow=1 else self.slow=0 end
-		--射击和释放符卡
-		if not self.dialog then
-			if KeyIsDown'shoot' and self.nextshoot<=0 then self.class.shoot(self) end
+	--寻找目标
+		if ((not IsValid(self.target)) or (not self.target.colli)) then player_class.findtarget(self) end
+		if not KeyIsDown'shoot' then self.target=nil end
 
-		----新的符卡设计
-			if self.SpellCardHp==0 and self.SpellTimer1>=0 then self.SpellTimer1=-1 self.KeyDownTimer1=0 self.SC_name='' self.nextspell=90 self.bomb_end=true end
-            if self.SpellCardHp>0 and self.SpellTimer1>90 then self.SpellCardHp=max(0,self.SpellCardHp-K_SpellDecay) end
-			if self.NextSingleSpell>0 then self.NextSingleSpell=self.NextSingleSpell-1 end
-			if self.SpellTimer1>0 then self.SpellTimer1=self.SpellTimer1+1 end
+		if self.bomb_end and not KeyIsDown('spell') then self.bomb_end=false end
+	
+	--接下来将会使用的一些变量的定义
+		local dx=0
+		local dy=0
+		local v=self.hspeed
+	--非死亡状态时的逻辑
+		if (self.death==0 or self.death>90) and (not self.lock) and not(self.time_stop) then
+			--低速切换逻辑
+				if KeyIsDown'slow' then self.slow=1 else self.slow=0 end
+			--非对话期间逻辑（射击和符卡）
+				if not self.dialog then
+					--射击逻辑
+						if KeyIsDown'shoot' and self.nextshoot<=0 then self.class.shoot(self) end
+
+					----符卡逻辑
+						if self.SpellCardHp==0 and self.SpellTimer1>=0 then self.SpellTimer1=-1 self.KeyDownTimer1=0 self.SC_name='' self.nextspell=90 self.bomb_end=true end
+						if self.SpellCardHp>0 and self.SpellTimer1>90 then self.SpellCardHp=max(0,self.SpellCardHp-K_SpellDecay) end
+						if self.NextSingleSpell>0 then self.NextSingleSpell=self.NextSingleSpell-1 end
+						if self.SpellTimer1>0 then self.SpellTimer1=self.SpellTimer1+1 end
+						
+						if self.SpellTimer1==90 then self.class.newSpell(self) end
+						
+						if KeyIsDown'spell' and not lstg.var.block_spell and not self.bomb_end then 
+							if self.SpellTimer1>90 then self.KeyDownTimer1=self.KeyDownTimer1+1 end
+							if (lstg.var.bomb>0 and self.death>90) or (self.SpellCardHp==0 and self.nextspell<=0 and self.NextSingleSpell==0 and lstg.var.bomb>0) then
+								item.PlayerSpell()
+								if self.slow==1 then self.SpellIndex=lstg.var.bomb+3
+								else self.SpellIndex=lstg.var.bomb end
+								
+								if self.SpellIndex==1 then self.SC_name=self.cardname.high1 end
+								if self.SpellIndex==2 then self.SC_name=self.cardname.high2 end
+								if self.SpellIndex==3 then self.SC_name=self.cardname.high3 end
+								if self.SpellIndex==4 then self.SC_name=self.cardname.low1 end
+								if self.SpellIndex==5 then self.SC_name=self.cardname.low2 end
+								if self.SpellIndex==6 then self.SC_name=self.cardname.low3 end
+								
+								lstg.var.bomb=lstg.var.bomb-1
+								ui.menu.LoseSpell=15
+								self.SpellCardHpMax=K_MaxSpell+lstg.var.dr*K_dr_SpellHp
+								self.SpellCardHp=self.SpellCardHpMax
+									
+								self.SpellTimer1=1
+								self.KeyDownTimer1=0
+								PlaySound('cat00',0.7)
+								self.class.spell(self)
+								-- New(player_spell_mask,64,64,200,30,60,30)
+								New(bullet_cleaner,player.x,player.y, 270, 60, 90, 1)
+								self.protect=90
+								
+								self.death=0
+								self.nextcollect=90
+								self.NextSingleSpell=180
+								self.nextspell=360
+									
+								ui.menu.HighlightFlag=30
+							else if self.SpellCardHp>0 and self.NextSingleSpell==0 then
+									self.NextSingleSpell=90
+									self.class.newSpell(self)
+								end
+							end
+						else if self.KeyDownTimer1>0 then self.KeyDownTimer1=0 end
+						end
+			--对话期间逻辑
+				else self.nextshoot=15 self.nextspell=30 self.NextSingleSpell=30 end
 			
-			if self.SpellTimer1==90 then self.class.newSpell(self) end
-			
-			if KeyIsDown'spell' and not lstg.var.block_spell and not self.bomb_end then 
-			    if self.SpellTimer1>90 then self.KeyDownTimer1=self.KeyDownTimer1+1 end
-				if (lstg.var.bomb>0 and self.death>90) or (self.SpellCardHp==0 and self.nextspell<=0 and self.NextSingleSpell==0 and lstg.var.bomb>0) then
-			        item.PlayerSpell()
-					if self.slow==1 then self.SpellIndex=lstg.var.bomb+3
-					else self.SpellIndex=lstg.var.bomb end
+			--自机移动逻辑
+				if self.death==0 and not self.lock then
+					if self.slowlock then self.slow=1 end
+					if self.slow==1 then v=self.lspeed end
+					if KeyIsDown'up' then dy=dy+1 end
+					if KeyIsDown'down' then dy=dy-1 end
+					if KeyIsDown'left' then dx=dx-1 end
+					if KeyIsDown'right' then dx=dx+1 end
+					if dx*dy~=0 then v=v*SQRT2_2 end
+					self.x=self.x+v*dx
+					self.y=self.y+v*dy		
+					--[[本来想做全方向摇杆，但是实际操作起来由于阈值的关系仍然是八向摇杆的手感，因此作废
+						local leftX,leftY,rightX,rightY=lstg.XInputManager.GetThumbState(1)
+						local dx,dy=leftX/32768,leftY/32768
+						local a=atan2(dy,dx)
+						self.x=self.x+v*cos(a)
+						self.y=self.y+v*sin(a)
+						--]]
+					--jstg的屎
+						for i=1,#jstg.worlds do -----------------------------------------------------????????????????????
+							if IsInWorld(self.world,jstg.worlds[i].world) then
+								self.x=math.max(math.min(self.x,jstg.worlds[i].pr-8),jstg.worlds[i].pl+8)
+								self.y=math.max(math.min(self.y,jstg.worlds[i].pt-32),jstg.worlds[i].pb+16)
+							end
+						end
 					
-					if self.SpellIndex==1 then self.SC_name=self.cardname.high1 end
-					if self.SpellIndex==2 then self.SC_name=self.cardname.high2 end
-					if self.SpellIndex==3 then self.SC_name=self.cardname.high3 end
-					if self.SpellIndex==4 then self.SC_name=self.cardname.low1 end
-					if self.SpellIndex==5 then self.SC_name=self.cardname.low2 end
-					if self.SpellIndex==6 then self.SC_name=self.cardname.low3 end
-					
-				    lstg.var.bomb=lstg.var.bomb-1
-					ui.menu.LoseSpell=15
-					self.SpellCardHpMax=K_MaxSpell+lstg.var.dr*K_dr_SpellHp
-				    self.SpellCardHp=self.SpellCardHpMax
-						 
-					self.SpellTimer1=1
-					self.KeyDownTimer1=0
-					PlaySound('cat00',0.7)
-					self.class.spell(self)
-					-- New(player_spell_mask,64,64,200,30,60,30)
-					New(bullet_cleaner,player.x,player.y, 270, 60, 90, 1)
-					self.protect=90
-					
-				    self.death=0
-				    self.nextcollect=90
-					self.NextSingleSpell=180
-					self.nextspell=360
-						 
-					ui.menu.HighlightFlag=30
-			    else if self.SpellCardHp>0 and self.NextSingleSpell==0 then
-				         self.NextSingleSpell=90
-					     self.class.newSpell(self)
-					end
 				end
-			else if self.KeyDownTimer1>0 then self.KeyDownTimer1=0 end
-			end
-
-		------------------------------------------------
-		else self.nextshoot=15 self.nextspell=30 self.NextSingleSpell=30 end
-		
-		--自机移动
-		if self.death==0 and not self.lock then
-		if self.slowlock then self.slow=1 end
-		if self.slow==1 then v=self.lspeed end
-		if KeyIsDown'up' then dy=dy+1 end
-		if KeyIsDown'down' then dy=dy-1 end
-		if KeyIsDown'left' then dx=dx-1 end
-		if KeyIsDown'right' then dx=dx+1 end
-		if dx*dy~=0 then v=v*SQRT2_2 end
-		self.x=self.x+v*dx
-		self.y=self.y+v*dy		
-		--[[本来想做全方向摇杆，但是实际操作起来由于阈值的关系仍然是八向摇杆的手感，因此作废
-		local leftX,leftY,rightX,rightY=lstg.XInputManager.GetThumbState(1)
-		local dx,dy=leftX/32768,leftY/32768
-		local a=atan2(dy,dx)
-		self.x=self.x+v*cos(a)
-		self.y=self.y+v*sin(a)
-		--]]
-
-		
-		for i=1,#jstg.worlds do -----------------------------------------------------????????????????????
-			if IsInWorld(self.world,jstg.worlds[i].world) then
-				self.x=math.max(math.min(self.x,jstg.worlds[i].pr-8),jstg.worlds[i].pl+8)
-				self.y=math.max(math.min(self.y,jstg.worlds[i].pt-32),jstg.worlds[i].pb+16)
-			end
-		end
-		
-		end
-		--fire
-		if KeyIsDown'shoot' and not self.dialog then self.fire=self.fire+0.16 else self.fire=self.fire-0.16 end
-		if self.fire<0 then self.fire=0 end
-		if self.fire>1 then self.fire=1 end
-		
-		--- 灵力变化
-		if self.PowerDelay1>0 then self.PowerDelay1=self.PowerDelay1-1 end
-		--if self.PowerDelay2>0 then self.PowerDelay2=self.PowerDelay2-1 end --【旧方案】
-		
-		if lstg.var.dr==5 then self.maxPower=300
-		else if lstg.var.dr==-5 then self.maxPower=600 
-		else if lstg.var.dr<=-2.5 then self.maxPower=500
-		else self.maxPower=400 end end end
-		
-		if lstg.var.power>self.maxPower then
-		    if lstg.var.power-self.maxPower>=100 then
-			    if self.PowerDelay1>=0 then
-			        PlaySound('enep02',0.3,self.x/200,true)
+			--开火蓄力计时器
+				if KeyIsDown'shoot' and not self.dialog then self.fire=self.fire+0.16 else self.fire=self.fire-0.16 end
+				if self.fire<0 then self.fire=0 end
+				if self.fire>1 then self.fire=1 end
+			
+			--火力残留计时器
+				if self.PowerDelay1>0 then self.PowerDelay1=self.PowerDelay1-1 end
+				--if self.PowerDelay2>0 then self.PowerDelay2=self.PowerDelay2-1 end --【旧方案】
+			--火力上限变化
+				if lstg.var.dr==5 then self.maxPower=300
+				else if lstg.var.dr==-5 then self.maxPower=600 
+				else if lstg.var.dr<=-2.5 then self.maxPower=500
+				else self.maxPower=400 end end end
+			--火力残留逻辑
+				if lstg.var.power>self.maxPower then
+					if lstg.var.power-self.maxPower>=100 then
+						if self.PowerDelay1>=0 then
+							PlaySound('enep02',0.3,self.x/200,true)
+							local n=int(self.support)+1
+							local r2=sqrt(ran:Float(1,4))
+							local r1=ran:Float(0,360)
+							New(item_power_mid,self.supportx+self.sp[n][1]+r2*cos(r1),self.supporty+self.sp[n][2]+r2*sin(r1))
+						end
+						self.PowerDelay1=180 self.support=self.support-1
+					end
+					lstg.var.power=self.maxPower
+				end
+				if self.PowerDelay1==0 then
 					local n=int(self.support)+1
-			        local r2=sqrt(ran:Float(1,4))
-		            local r1=ran:Float(0,360)
-		            New(item_power_mid,self.supportx+self.sp[n][1]+r2*cos(r1),self.supporty+self.sp[n][2]+r2*sin(r1))
+					PlaySound('enep02',0.3,self.x/200,true)
+					local r4=sqrt(ran:Float(1,4))
+					local r3=ran:Float(0,360)
+				if self.supportx and self.sp[n][1] then 	
+					New(item_power_mid,self.supportx+self.sp[n][1]+r4*cos(r3),self.supporty+self.sp[n][2]+r4*sin(r3)) end --修复崩溃的bug
+					self.PowerDelay1=-1
 				end
-				self.PowerDelay1=180 self.support=self.support-1
-			end
-		    lstg.var.power=self.maxPower
-		end
-		
-		if self.PowerDelay1==0 then
-		    local n=int(self.support)+1
-		    PlaySound('enep02',0.3,self.x/200,true)
-		    local r4=sqrt(ran:Float(1,4))
-			local r3=ran:Float(0,360)
-		if self.supportx and self.sp[n][1] then 	
-			New(item_power_mid,self.supportx+self.sp[n][1]+r4*cos(r3),self.supporty+self.sp[n][2]+r4*sin(r3)) end --修复崩溃的bug
-			self.PowerDelay1=-1
-		end
-		-----------------------------------------------
-		
-		--必杀技（以前叫灵击）
-		if self.graze_c>=K_graze_c_min and self.graze_c_before<K_graze_c_min then self.ccc_state=2 New(player_indicator_eff,2)
-		elseif self.graze_c>=K_graze_c_max and self.graze_c_before<K_graze_c_max then self.ccc_state=3 New(player_indicator_eff,3) end
-		self.graze_c_before=self.graze_c
-		if KeyIsDown'special' and (not self.dialog) and self.graze_c>=K_graze_c_min and lstg.var.power>=100 and self.SpellTimer1==-1 then 
-		    self.offset = 100*(1.0 + K_graze_c_k * (self.graze_c - K_graze_c_min)) 
-			New(bullet_cleaner,player.x,player.y, 125, 20, 45, 1)  New(player_indicator_explode,3) New(player_indicator_explode,1)
-			GetPower(-self.offset)
-			self.graze_c = 0
-			PlaySound('ophide',0.1)
-			self.ccced_in_chapter=true
-			self.protect=max(20,self.protect)
-			self.class.ccc(self) -- 释放灵击
-			DR_Pin.pin_shift(K_dr_ccced)   --释放灵击梦现指针增加
-			self.ccc_state=1
-		end
-			
-		--道具收集
-		local dist_coe
-		local line = 0.0
-		if(lstg.var.dr<0) then 
-		    line = K_dr_collectline
-			dist_coe = 1 - K_dr_dist*min(0,lstg.var.dr)  --dr值为负（现实侧）则增大道具收集范围，最大为(1+5*K_dr_dist)，目前为最大两倍
-		else 
-		    line=0
-			dist_coe=1
-		end
-		--道具收集范围的平滑变化，其中56和24分别对应低速和高速收点基础范围
-		if KeyIsDown'slow' then self.itemcollect_dist=self.itemcollect_dist+0.1*(56*dist_coe-self.itemcollect_dist)
-		else self.itemcollect_dist=self.itemcollect_dist+0.1*(24*dist_coe-self.itemcollect_dist) end
+			--必杀技逻辑（以前叫灵击）
+				if self.graze_c>=K_graze_c_min and self.graze_c_before<K_graze_c_min then self.ccc_state=2 New(player_indicator_eff,2)
+				elseif self.graze_c>=K_graze_c_max and self.graze_c_before<K_graze_c_max then self.ccc_state=3 New(player_indicator_eff,3) end
+				self.graze_c_before=self.graze_c
+				if KeyIsDown'special' and (not self.dialog) and self.graze_c>=K_graze_c_min and lstg.var.power>=100 and self.SpellTimer1==-1 then 
+					self.offset = 100*(1.0 + K_graze_c_k * (self.graze_c - K_graze_c_min)) 
+					New(bullet_cleaner,player.x,player.y, 125, 20, 45, 1)  New(player_indicator_explode,3) New(player_indicator_explode,1)
+					GetPower(-self.offset)
+					self.graze_c = 0
+					PlaySound('ophide',0.1)
+					self.ccced_in_chapter=true
+					self.protect=max(20,self.protect)
+					self.class.ccc(self) -- 释放灵击
+					-- DR_Pin.pin_shift(K_dr_ccced)   --释放灵击梦现指针增加
+					tuolib.DRP_Sys.pin_shift(K_dr_ccced)   --释放灵击梦现指针增加
+					self.ccc_state=1
+				end
+				
+			--道具收集逻辑
+				local dist_coe
+				local line = 0.0
+				if(lstg.var.dr<0) then 
+					line = K_dr_collectline
+					dist_coe = 1 - K_dr_dist*min(0,lstg.var.dr)  --dr值为负（现实侧）则增大道具收集范围，最大为(1+5*K_dr_dist)，目前为最大两倍
+				else 
+					line=0
+					dist_coe=1
+				end
+			--道具收集范围的平滑变化，其中56和24分别对应低速和高速收点基础范围
+				if KeyIsDown'slow' then self.itemcollect_dist=self.itemcollect_dist+0.1*(56*dist_coe-self.itemcollect_dist)
+				else self.itemcollect_dist=self.itemcollect_dist+0.1*(24*dist_coe-self.itemcollect_dist) end
 
-		if self.y>(self.collect_line + line*lstg.var.dr) or (self.SpellTimer1>0 and self.SpellTimer1<=90) then
-			for i,o in ObjList(GROUP_ITEM) do 
-				local flag=false
-				if o.attract<8 then
-					flag=true			
-				elseif o.attract==8 and o.target~=self then
-					if (not o.target) or o.target.y<self.y then
-						flag=true
-					end
-				end
-				if flag then
-					o.attract=8 o.num=self.item 
-					o.target=self
-				end
-			end
-		-----
-		else
-			if KeyIsDown'slow' then
-				for i,o in ObjList(GROUP_ITEM) do
-					if Dist(self,o)<self.itemcollect_dist then
-						if o.attract<3 then
-							o.attract=max(o.attract,3) 
+				if self.y>(self.collect_line + line*lstg.var.dr) or (self.SpellTimer1>0 and self.SpellTimer1<=90) then
+					for i,o in ObjList(GROUP_ITEM) do 
+						local flag=false
+						if o.attract<8 then
+							flag=true			
+						elseif o.attract==8 and o.target~=self then
+							if (not o.target) or o.target.y<self.y then
+								flag=true
+							end
+						end
+						if flag then
+							o.attract=8 o.num=self.item 
 							o.target=self
-						end	
+						end
+					end
+				else
+					if KeyIsDown'slow' then
+						for i,o in ObjList(GROUP_ITEM) do
+							if Dist(self,o)<self.itemcollect_dist then
+								if o.attract<3 then
+									o.attract=max(o.attract,3) 
+									o.target=self
+								end	
+							end
+						end
+					else
+						for i,o in ObjList(GROUP_ITEM) do
+							if Dist(self,o)<self.itemcollect_dist then 
+								if o.attract<3 then
+									o.attract=max(o.attract,3) 
+									o.target=self
+								end	
+							end
+						end
 					end
 				end
-			else
-				for i,o in ObjList(GROUP_ITEM) do
-					if Dist(self,o)<self.itemcollect_dist then 
-						if o.attract<3 then
-							o.attract=max(o.attract,3) 
-							o.target=self
-						end	
-					end
-				end
-			end
-		end
-		
-		--符卡圈参数控制
-		local k=0
-		if self.SpellTimer1>0 and self.SpellCardHp and self.SpellCardHpMax then k=self.SpellCardHp/self.SpellCardHpMax end
-		self.ringX_aim=player.x
-		self.ringY_aim=player.y
-		self.ringR_aim=ring_radius*k+ring_width
-		self.ringW_aim=ring_width*(0.5+0.5*k)
-		self.ringWithdraw=false
-	elseif self.death==90 then                                 --死亡的90帧内发生的事件
-		if self.time_stop then self.death=self.death-1 end
-		item.PlayerMiss(self)
-		
-		if self.SpellTimer1>0 then 
-			self.ringWithdraw=true
-			if boss_in_nonsc then --自机被敌机收卡
-				self.ringR_aim=ring_radius
-				self.ringW_aim=ring_width
-			else
+			
+			--符卡圈参数控制
+				local k=0
+				if self.SpellTimer1>0 and self.SpellCardHp and self.SpellCardHpMax then k=self.SpellCardHp/self.SpellCardHpMax end
 				self.ringX_aim=player.x
 				self.ringY_aim=player.y
-				self.ringR_aim=0
-				self.ringW_aim=0
+				self.ringR_aim=ring_radius*k+ring_width
+				self.ringW_aim=ring_width*(0.5+0.5*k)
+				self.ringWithdraw=false
+	--死亡计时器为90时的逻辑
+		elseif self.death==90 then
+			if self.time_stop then self.death=self.death-1 end
+			item.PlayerMiss(self)
+			
+			if self.SpellTimer1>0 then 
+				self.ringWithdraw=true
+				if boss_in_nonsc then --自机被敌机收卡
+					self.ringR_aim=ring_radius
+					self.ringW_aim=ring_width
+				else
+					self.ringX_aim=player.x
+					self.ringY_aim=player.y
+					self.ringR_aim=0
+					self.ringW_aim=0
+				end
+			end
+			lstg.var.power=max(0,lstg.var.power-50)
+			New(player_death_ef,self.x,self.y,1)
+			New(player_death_ef,self.x,self.y,2)
+	--死亡计时器为84时的逻辑
+		elseif self.death==84 then
+			if self.time_stop then self.death=self.death-1 end
+			-- self.hide=true
+			self.support=int(lstg.var.power/100)
+	--死亡计时器为65时的逻辑
+		elseif self.death==65 then
+			if not boss_in_nonsc then self.ringWithdraw=false end --自机收回符卡圈到这儿结束
+			self.deathee={}
+			self.deathee[1]=New(deatheff,self.x,self.y,'first')
+			self.deathee[2]=New(deatheff,self.x,self.y,'second')
+	--死亡计时器为50时的逻辑
+		elseif self.death==50 then
+			if self.time_stop then self.death=self.death-1 end
+			self.x=0
+			self.supportx=0
+			self.y=-236
+			self.supporty=-236
+			self.hide=false
+			New(bullet_deleter,self.x,self.y)
+	--自机被弹后重新出现在屏幕上
+		elseif self.death<50 and not(self.lock) and not(self.time_stop) then
+			self.y=-176-1.2*self.death
+		end
+	--自机的符卡被boss收取的逻辑
+		if boss_in_nonsc and self.death<90 and self.death>0 then 
+			self.ringX_aim=_boss.x
+			self.ringY_aim=_boss.y
+			if self.death<65 then 
+				local k=(self.death-1)/65
+				self.ringR_aim=ring_radius*k
+				self.ringW_aim=ring_width*k
 			end
 		end
-		lstg.var.power=max(0,lstg.var.power-50)
-		New(player_death_ef,self.x,self.y,1)
-		New(player_death_ef,self.x,self.y,2)
-
-	elseif self.death==84 then
-		if self.time_stop then self.death=self.death-1 end
-		-- self.hide=true
-		self.support=int(lstg.var.power/100)
-	elseif self.death==65 then
-		if not boss_in_nonsc then self.ringWithdraw=false end --自机收回符卡圈到这儿结束
-		self.deathee={}
-		self.deathee[1]=New(deatheff,self.x,self.y,'first')
-		self.deathee[2]=New(deatheff,self.x,self.y,'second')
-	elseif self.death==50 then
-		if self.time_stop then self.death=self.death-1 end
-		self.x=0
-		self.supportx=0
-		self.y=-236
-		self.supporty=-236
-		self.hide=false
-		New(bullet_deleter,self.x,self.y)
-	elseif self.death<50 and not(self.lock) and not(self.time_stop) then
-		self.y=-176-1.2*self.death
-	end
-	if boss_in_nonsc and self.death<90 and self.death>0 then 
-		self.ringX_aim=_boss.x
-		self.ringY_aim=_boss.y
-		if self.death<65 then 
-			local k=(self.death-1)/65
-			self.ringR_aim=ring_radius*k
-			self.ringW_aim=ring_width*k
+	--by OLC，自机行走图系统	
+		---加上time_stop的限制来实现图像时停
+		if not(self._wisys) then
+			self._wisys=PlayerWalkImageSystem(self)
 		end
-	end
-	
-	--img
-	---加上time_stop的限制来实现图像时停
-	if not(self._wisys) then
-		self._wisys=PlayerWalkImageSystem(self)
-	end
-	if not(self.time_stop) then
-		self._wisys:frame(dx)--by OLC，自机行走图系统
+		if not(self.time_stop) then
+			self._wisys:frame(dx)
 
-	self.lh=self.lh+(self.slow-0.5)*0.3
-	if self.lh<0 then self.lh=0 end
-	if self.lh>1 then self.lh=1 end
+			self.lh=self.lh+(self.slow-0.5)*0.3
+			if self.lh<0 then self.lh=0 end
+			if self.lh>1 then self.lh=1 end
+		--计时器和各种参数变换
+			if self.nextshoot>0 then self.nextshoot=self.nextshoot-1 end
+			if self.nextspell>0 then self.nextspell=self.nextspell-1 end
 
-	if self.nextshoot>0 then self.nextshoot=self.nextshoot-1 end
-	if self.nextspell>0 then self.nextspell=self.nextspell-1 end
+			if self.support>int(lstg.var.power/100) then self.support=self.support-0.0625
+			elseif self.support<int(lstg.var.power/100) then self.support=self.support+0.0625 end
+			if abs(self.support-int(lstg.var.power/100))<0.0625 then self.support=int(lstg.var.power/100) end
 
-	if self.support>int(lstg.var.power/100) then self.support=self.support-0.0625
-	elseif self.support<int(lstg.var.power/100) then self.support=self.support+0.0625 end
-	if abs(self.support-int(lstg.var.power/100))<0.0625 then self.support=int(lstg.var.power/100) end
+			self.supportx=self.x+(self.supportx-self.x)*0.6875
+			self.supporty=self.y+(self.supporty-self.y)*0.6875
 
-	self.supportx=self.x+(self.supportx-self.x)*0.6875
-	self.supporty=self.y+(self.supporty-self.y)*0.6875
-
-	if self.protect>0 then self.protect=self.protect-1 end --无敌时间减少，死亡计时减少
-	if self.death>0 then self.death=self.death-1 end
-
-	lstg.var.pointrate=item.PointRateFunc(lstg.var)
-	--update supports
-		if self.slist then
-			self.sp={}
-			if self.support==7 then-------------------------------------------------?????????????????????????????????
-				for i=1,6 do self.sp[i]=MixTable(self.lh,self.slist[8][i]) self.sp[i][3]=1 end
-			else
-				local s=int(self.support)+1
-				if self.PowerDelay1>0 then s=s+1 end
-				local t=self.support-int(self.support)
-				for i=1,6 do
-					if self.slist[s][i] and self.slist[s+1][i] then
-						self.sp[i]=MixTable(t,MixTable(self.lh,self.slist[s][i]),MixTable(self.lh,self.slist[s+1][i]))
-						self.sp[i][3]=1
-					elseif self.slist[s+1][i] then
-						self.sp[i]=MixTable(self.lh,self.slist[s+1][i])
-						self.sp[i][3]=t
+			if self.protect>0 then self.protect=self.protect-1 end --无敌时间减少，死亡计时减少
+			if self.death>0 then self.death=self.death-1 end
+		--刷新分数上限
+			lstg.var.pointrate=item.PointRateFunc(lstg.var)
+		--更新子机
+			if self.slist then
+				self.sp={}
+				if self.support==7 then-------------------------------------------------?????????????????????????????????
+					for i=1,6 do self.sp[i]=MixTable(self.lh,self.slist[8][i]) self.sp[i][3]=1 end
+				else
+					local s=int(self.support)+1
+					if self.PowerDelay1>0 then s=s+1 end
+					local t=self.support-int(self.support)
+					for i=1,6 do
+						if self.slist[s][i] and self.slist[s+1][i] then
+							self.sp[i]=MixTable(t,MixTable(self.lh,self.slist[s][i]),MixTable(self.lh,self.slist[s+1][i]))
+							self.sp[i][3]=1
+						elseif self.slist[s+1][i] then
+							self.sp[i]=MixTable(self.lh,self.slist[s+1][i])
+							self.sp[i][3]=t
+						end
 					end
 				end
 			end
 		end
-	--
-	end---time_stop
-	if self.time_stop then self.timer=self.timer-1 end
-	
-	
-	-- if self.key then
-	-- 	KeyState=_temp_key
-	-- 	KeyStatePre=_temp_keyp
-	-- end
-	
-	-------符卡环参数的丝滑
-	local dx=self.ringX-self.ringX_aim
-	local dy=self.ringY-self.ringY_aim
-	local dr=self.ringR-self.ringR_aim
-	local dw=self.ringW-self.ringW_aim
-	if abs(dx)<0.5 	then self.ringX=self.ringX_aim else self.ringX=self.ringX+(self.ringX_aim-self.ringX)*0.15 end --符卡圈每帧都会向自机靠近7%，如果距离只有0.5则直接贴脸
-	if abs(dy)<0.5 	then self.ringY=self.ringY_aim else self.ringY=self.ringY+(self.ringY_aim-self.ringY)*0.15 end
-	if abs(dr)<1 	then self.ringR=self.ringR_aim else self.ringR=self.ringR+(self.ringR_aim-self.ringR)*0.07 end
-	if abs(dw)<0.05 then self.ringW=self.ringW_aim else self.ringW=self.ringW+(self.ringW_aim-self.ringW)*0.07 end
-	
+	--时停
+		if self.time_stop then self.timer=self.timer-1 end
+	--符卡环参数的丝滑
+		local dx=self.ringX-self.ringX_aim
+		local dy=self.ringY-self.ringY_aim
+		local dr=self.ringR-self.ringR_aim
+		local dw=self.ringW-self.ringW_aim
+		if abs(dx)<0.5 	then self.ringX=self.ringX_aim else self.ringX=self.ringX+(self.ringX_aim-self.ringX)*0.15 end --符卡圈每帧都会向自机靠近7%，如果距离只有0.5则直接贴脸
+		if abs(dy)<0.5 	then self.ringY=self.ringY_aim else self.ringY=self.ringY+(self.ringY_aim-self.ringY)*0.15 end
+		if abs(dr)<1 	then self.ringR=self.ringR_aim else self.ringR=self.ringR+(self.ringR_aim-self.ringR)*0.07 end
+		if abs(dw)<0.05 then self.ringW=self.ringW_aim else self.ringW=self.ringW+(self.ringW_aim-self.ringW)*0.07 end
+	--梦现指针系统帧逻辑
+		tuolib.DRP_Sys:frame()
 end
 
 function player_class:render()

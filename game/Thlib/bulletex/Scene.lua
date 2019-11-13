@@ -5,7 +5,7 @@ class "Scene" {
 	render = function(self) end, --render (operator)
 	del = function(self) end, --destructure (operator)
 
-	goto = function(self, scene)
+	['goto'] = function(self, scene)
 		Scene.turnto(self, scene)
 		table.insert(Scene.stack, scene)
 	end, --quit and turn to the next scene, record the current scene

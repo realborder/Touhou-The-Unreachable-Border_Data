@@ -1539,7 +1539,7 @@ end
 lib.ex_card = {}
 ---符卡转换
 ---@param c table @通常boss符卡
----@retuen table
+---@return table
 function lib.ex_card.get_init(c)
     local card = {
         name = c.name,

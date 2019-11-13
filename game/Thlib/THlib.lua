@@ -28,7 +28,7 @@ Include'THlib\\ChapFin.lua'
 -- Include'THlib\\exani\\exani_manager.lua'
 Include'THlib\\exani\\exani_player_manager.lua'
 
-Include'THlib\\TUO\\DR_Pin.lua'
+-- Include'THlib\\TUO\\DR_Pin.lua'
 
 Include'THlib\\menu\\base_menu.lua'
 Include'THlib\\menu\\special_menu.lua'

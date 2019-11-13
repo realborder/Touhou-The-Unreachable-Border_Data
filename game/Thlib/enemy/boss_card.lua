@@ -7,7 +7,7 @@
 --~细节：大多数时候只会用到New、init、render和del，其中init、del在编辑器中重载
 
 local ringWidth = 20 --符卡环的宽度
-local ringMaxRadius = 240 --符卡环最大半径
+local ringMaxRadius = 180 --符卡环最大半径
 local ringMinRadius = 45
 
 boss.card = {}
@@ -105,7 +105,8 @@ function boss.card:init()  end
 
 function boss.card:del()
 	local c = boss.GetCurrentCard(self)
-	DR_Pin.pin_shift(-c.hplen)
+	-- DR_Pin.pin_shift(-c.hplen)
+	tuolib.DRP_Sys.pin_shift(-c.hplen)
 	c.timer=0
 	c.speed_kill_minus=0
 end

@@ -276,7 +276,7 @@ end
 
 --符卡环收回效果
 	local ringWidth = 20 --符卡环的宽度
-	local ringMaxRadius = 240 --符卡环最大半径
+	local ringMaxRadius = 180 --符卡环最大半径
 	local ringMinRadius = 45
 --专门用于显示符卡环后续动作的obj
 boss_card_ring=Class(object)

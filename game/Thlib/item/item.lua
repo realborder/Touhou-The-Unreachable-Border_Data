@@ -70,7 +70,8 @@ function item:frame()
 	else self.vy=max(self.dy-0.03,-1.7) end
 	if self.y<lstg.world.boundb then 
 	    Del(self)
-		DR_Pin.add(K_dr_item) --遗漏道具梦现指针往当前侧偏移
+		-- DR_Pin.add(K_dr_item) --遗漏道具梦现指针往当前侧偏移
+		tuolib.DRP_Sys.add(K_dr_item) --遗漏道具梦现指针往当前侧偏移
 	end
 	if self.attract>=8 then self.collected=true end
 end
@@ -304,9 +305,13 @@ end
 
 function item:EndChipBonus(x,y)
 	if (not self.missed_in_chapter) and (not self.spelled_in_chapter) and (not self.ccced_in_chapter) then--符卡或非符NMNBNC指针值-0.2
-		DR_Pin.pin_shift(-0.2)
+		-- DR_Pin.pin_shift(-0.2)
+		tuolib.DRP_Sys.pin_shift(-0.2)
 	else
-		if (not self.spelled_in_chapter) and (not self.ccced_in_chapter) then DR_Pin.pin_shift(-0.05)end--如果不小心撞了-0.05
+		if (not self.spelled_in_chapter) and (not self.ccced_in_chapter) then 
+			-- DR_Pin.pin_shift(-0.05)
+			tuolib.DRP_Sys.pin_shift(-0.05)
+		end--如果不小心撞了-0.05
 	end
 end
 
@@ -428,7 +433,8 @@ function item:PlayerMiss()
 	lstg.var.missed_in_chapter=true
 	if lstg.var.sc_bonus then lstg.var.sc_bonus=0 end
 	ex.ClearBonus(true,false)
-	DR_Pin.reduce(4)
+	-- DR_Pin.reduce(4)
+	tuolib.DRP_Sys.reduce(4)
 	self.protect=360
 	lstg.var.lifeleft=lstg.var.lifeleft-1
 	ui.menu.LoseLife=15
@@ -452,9 +458,11 @@ function item.PlayerSpell()
 	
 	
 	if player.death==0 then
-		DR_Pin.pin_shift(2.0)
+		-- DR_Pin.pin_shift(2.0)
+		tuolib.DRP_Sys.pin_shift(2.0)
 	else
-		DR_Pin.pin_shift(3.0)--如果是决死的话就多加1
+		-- DR_Pin.pin_shift(3.0)--如果是决死的话就多加1
+		tuolib.DRP_Sys.pin_shift(3.0)--如果是决死的话就多加1
 	end
 --	lstg.var.bombchip_bonus=false
 	player.spelled_in_chapter = true
@@ -462,7 +470,13 @@ end
 
 function item.PlayerGraze()
 	lstg.var.graze=lstg.var.graze+1
-	if IsValid(_boss) then DR_Pin.add(0.2) else DR_Pin.add(0.1) end
+	if IsValid(_boss) then 
+		-- DR_Pin.add(0.2) 
+		tuolib.DRP_Sys.add(0.2) 
+	else 
+		-- DR_Pin.add(0.1) 
+		tuolib.DRP_Sys.add(0.1) 
+	end
 	if player.graze_c<K_graze_c_max then player.graze_c=min(K_graze_c_max,player.graze_c + 1 + (lstg.var.dr * K_dr_graze_c)) end
 	
 --	lstg.var.score=lstg.var.score+50
