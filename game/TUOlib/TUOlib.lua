@@ -9,7 +9,7 @@ Include'TUOlib\\TUO_Player\\TUO_Player.lua'
 ---复杂动画
 
 ---梦现指针系统
-
+Include'TUOlib\\DR_Pin_System\\DR_Pin_System.lua'
 ---3d背景处理器
 Include'TUOlib\\TUO_Background\\TUO_Background.lua'
 ---mod和关卡管理器

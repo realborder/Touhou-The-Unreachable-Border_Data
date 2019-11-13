@@ -261,7 +261,7 @@ function st4bg_rivsomnium:render()
 				elseif t==time[4] then
 					misc.ShakeScreen(60,5)
 					for i=1,#c_pos do
-						New(cracks,i,self.layer)
+						New(cracks,i,self.layer+1)
 					end
 					for i=1,150 do
 						New(riv_cracks,self,i)
