@@ -42,8 +42,8 @@ function infowin:render(alpha,l,r,b,t)
     RenderTTF2(ttf,self.title,l+50,r-50,b,t-16,1.4,Color(255*alpha,0,0,0),'center','top')
     RenderTTF2(ttf,self.text,l+50,r-50,b+40,t-40,1,Color(255*alpha,40,40,40),'left','top')
 end
-function TUO_Developer_Flow:MsgWindow(msg)
-    TUO_Developer_Flow:NewFlow('infowin',function(self) self.text=tostring(msg) end)
+function TUO_Developer_Flow:MsgWindow(msg,title)
+    TUO_Developer_Flow:NewFlow('infowin',function(self) self.text=tostring(msg) self.title=(title or '提示') end)
 end
 local errorwin=TUO_Developer_Flow:NewFlowTemplate('errorwin')
 function errorwin:init()

@@ -5,7 +5,7 @@ LoadPS('player_death_ef1','THlib\\player\\player_death_ef1.psi','player_death_pa
 LoadPS('player_death_ef2','THlib\\player\\player_death_ef2.psi','player_death_par')
 LoadPS('graze','THlib\\player\\graze.psi','graze_par')
 LoadImageFromFile('player_spell_mask','THlib\\player\\spellmask.png')
-for i=1,3 do LoadImageFromFile('player_indicator'..i,'THlib\\player\\player_indicator'..i..'.png') end
+for i=1,4 do LoadImageFromFile('player_indicator'..i,'THlib\\player\\player_indicator'..i..'.png') end
 for i=1,3 do SetImageState('player_indicator'..i,'',Color(0x80FFFFFF)) end
 
 LoadTexture('magicsquare','THlib\\player\\player_magicsquare.png')
@@ -590,6 +590,22 @@ function grazer:render()
 	Render('player_aura',self.x,self.y, self.aura,(2-scale))
 	SetImageState('player_aura','',Color(0xC0FFFFFF))
 	Render('player_aura',self.x,self.y,-self.aura,scale)
+	if player.death<50 then 
+		SetImageState('player_indicator4','mul+add',Color(255*min(1,player.protect/10),255,255,255))
+		local scale=0.5+0.5*sin(90*min(3,player.protect/30)/3)
+		Render('player_indicator4',self.x,self.y,self.timer*2,scale)
+	elseif player.death<90 then
+		if player.death>75 then
+			local k=1-(player.death-75)/25
+			SetImageState('player_indicator4','mul+add',Color(255*(1-k),255,255,255))
+			Render('player_indicator4',self.x,self.y,self.timer*2,k*5)
+		end
+		do
+			local k=1-(player.death-50)/40
+			SetImageState('player_indicator4','mul+add',Color(255*(1-k),255,255,255))
+			Render('player_indicator4',self.x,self.y,self.timer*2,k*5)
+		end
+	end
 end
 
 function grazer:colli(other)
@@ -676,13 +692,13 @@ function player_spell_mask:init(r,g,b,t1,t2,t3)
 	self.bcolor={['blend']='mul+add',['a']=0,['r']=r,['g']=g,['b']=b}
 	task.New(self,function()
 		for i=1,t1 do
---			SetImageState('player_spell_mask','mul+add',Color(i*255/t1,r,g,b))
+			-- SetImageState('player_spell_mask','mul+add',Color(i*255/t1,r,g,b))
 			self.bcolor.a=i*255/t1
 			task.Wait(1)
 		end
 		task.Wait(t2)
 		for i=t3,1,-1 do
---			SetImageState('player_spell_mask','mul+add',Color(i*255/t3,r,g,b))
+			-- SetImageState('player_spell_mask','mul+add',Color(i*255/t3,r,g,b))
 			self.bcolor.a=i*255/t3
 			task.Wait(1)
 		end

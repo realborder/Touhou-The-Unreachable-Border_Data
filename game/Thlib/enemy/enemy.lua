@@ -92,10 +92,10 @@ function enemybase:colli(other)
 		end
 		Damage(self,dmg)
 		self.take_dmg_in_frame=true--【修改标记】
-		if Dist(player,self)<=100 then--贴脸射击
-			-- DR_Pin.add(0.2 - Dist(player,self) / 1000)
-			tuolib.DRP_Sys.add(0.2 - Dist(player,self) / 1000)
-		end
+		
+		--贴脸射击
+			tuolib.DRP_Sys.add(5/Dist(player,self))
+		
 		if self._master and self._dmg_transfer and IsValid(self._master) then
 			Damage(self._master,dmg*self._dmg_transfer)--敌方子机帮敌机吸收伤害
 		end

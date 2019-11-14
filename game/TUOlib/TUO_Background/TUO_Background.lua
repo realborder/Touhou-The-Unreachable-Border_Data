@@ -43,13 +43,7 @@ end
 
 function m.LoadSingleBG(name)
     m:DoFile(m.list[name])
-    local v=_G[name]
-    v[1]=v.init
-    v[2]=v.del
-    v[3]=v.frame
-    v[4]=v.render
-    v[5]=v.colli
-    v[6]=v.kill
+    InitSingleClass(_G[name])
 end
 
 

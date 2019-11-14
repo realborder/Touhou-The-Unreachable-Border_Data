@@ -66,12 +66,7 @@ function cracks:render()
 	-- 	sp.misc.DrawCircle2(0,144,r,32,'',alpha,255,255,255,0)
 	-- end
 end
-cracks[1]=cracks.init
-cracks[2]=cracks.del
-cracks[3]=cracks.frame
-cracks[4]=cracks.render
-cracks[5]=cracks.colli
-cracks[6]=cracks.kill
+InitSingleClass(cracks)
 
 local riv_cracks=Class(object)
 
@@ -112,15 +107,7 @@ function riv_cracks:render()
 	local x,y,z=self.x,self.y,self.z
 	Render4V(self.img,x-dx,y+dy,z,x+dy,y+dx,z,x+dx,y-dy,z,x-dy,y-dx,z)
 end
-riv_cracks[1]=riv_cracks.init
-riv_cracks[2]=riv_cracks.del
-riv_cracks[3]=riv_cracks.frame
-riv_cracks[4]=riv_cracks.render
-riv_cracks[5]=riv_cracks.colli
-riv_cracks[6]=riv_cracks.kill
-
-
-
+InitSingleClass(riv_cracks)
 
 function st4bg_rivsomnium:InitPhaseInfo(phase)
 	self.phaseinfo=lstg.DoFile(PATH..'_phase_info.lua')

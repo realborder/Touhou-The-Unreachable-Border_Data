@@ -196,6 +196,22 @@ function tips:init()
     Neww'title'.text='快捷键列表'
     Neww'text_displayer'.text=tip
 end
+
+local logp=TUO_Developer_UI:NewPanel()
+function logp:init()
+    self.name='更新日志'
+    local txt=Neww'text_displayer'
+    txt.text='点击下方链接查看完整更新日志'
+    local txt2=Neww'text_displayer'
+    txt2.text='https://docs.qq.com/doc/DWW1XRmpidVFoZklF'
+    txt2.text_rgb={0,0,255}
+    txt2._event_mouseclick=function(widget)
+        os.execute([[explorer "https://docs.qq.com/doc/DWW1XRmpidVFoZklF"]])
+    end
+    Neww'title'.text='当前版本更新内容'
+    Neww'text_displayer'.text=lstg.DoFile('TUOlib\\Dev_Tool\\module\\07 Setting\\log.lua')
+end
+
 local about_txt=[[
 这个是为东方梦无垠开发者和内测人员准备的功能。
 先写这么多。]]

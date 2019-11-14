@@ -94,14 +94,12 @@ function item:colli(other)
 	IsPlayerEnd()
 end
 
+----已重定义于DR_Pin_System.lua
 function GetPower(v)
 	local before=int(lstg.var.power/100)
 	lstg.var.power=min(player.maxPower,lstg.var.power+v)
 	local after=int(lstg.var.power/100)
 	if after>before then PlaySound('powerup1',0.5) end
-	if lstg.var.power>=400 then
-		lstg.var.score=lstg.var.score+v*100
-	end
 end
 
 function Getlife(v)

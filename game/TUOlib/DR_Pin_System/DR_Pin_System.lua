@@ -4,7 +4,8 @@
 ---说明：原先这个系统是以OBJ的形式写的，年代久远杂乱无章，现整理到TUOlib中
 ----------------------------------
 local m = {}
-tuolib.DRP_Sys = m
+-- tuolib.DRP_Sys = m
+tuolib.DRP_Sys = tuolib.DRP_Sys or m
 Include'TUOlib/DR_Pin_System/ChapFin.lua'
 
 function m.load_res()
@@ -37,10 +38,13 @@ function m:ResetSystemParameter()
     tuolib.DRP_Sys.C_BOUNS_LIMIT = 2500
     tuolib.DRP_Sys.K_dr = 0.003
     --用于控制dr的增长，每个chapter可能都要微调，所以记在lstg.var里了
+    tuolib.DRP_Sys.K_ddr = 0.01
+    --用于控制ddr的增长，每个chapter可能都要微调，所以记在lstg.var里了
+    tuolib.DRP_Sys.K_dr_amplify=0.00005
 
     tuolib.DRP_Sys.K_dr_ccced = 1.0 --释放灵击时梦现指针的增加量
-    tuolib.DRP_Sys.K_dr_item = 1.0 --遗漏道具梦现指针变化系数
-    tuolib.DRP_Sys.K_dr_enemy = 1.0 --遗漏敌机梦现指针变化系数
+    tuolib.DRP_Sys.K_dr_item = 0.05 --遗漏道具梦现指针变化系数
+    tuolib.DRP_Sys.K_dr_enemy = 0.1 --遗漏敌机梦现指针变化系数
     tuolib.DRP_Sys.K_graze_c_max = 125 --擦弹计数上限
     tuolib.DRP_Sys.K_graze_c_min = 50 --擦弹计数下限
     tuolib.DRP_Sys.K_dr_graze_c = 0.2 --擦弹系数
@@ -61,6 +65,7 @@ function m:ResetSystemParameter()
 
     tuolib.DRP_Sys.K_cp = 0.2
     tuolib.DRP_Sys.K_dr_reduce = 0.002
+    tuolib.DRP_Sys.K_ddr_reduce = 0.004
 end
 
 -----------------------------------------
@@ -117,13 +122,13 @@ end
 -------------------------------------
 ---遗漏敌机时触发的事件
 function m.Event_EnemyLeave(enemy)
-	m.add(tuolib.DRP_Sys.K_dr_enemy)
+	m.reduce(tuolib.DRP_Sys.K_dr_enemy)
 end
 
 -------------------------------------
 ---遗漏道具时触发的事件
 function m.Event_ItemLeave()
-	m.add(tuolib.DRP_Sys.K_dr_item) --遗漏道具梦现指针往当前侧偏移
+	m.reduce(tuolib.DRP_Sys.K_dr_item) --遗漏道具梦现指针往当前侧偏移
 end
 
 -------------------------------------
@@ -143,12 +148,12 @@ end
 -------------------------------------
 ---被弹触发的事件
 function m.Event_PlayerMiss()
-	m.reduce(4)
+	m.reduce(5)
 end
 
 -------------------------------------
 ---玩家宣卡触发的事件
-function m.Event_PlayerSpell()
+function m.Event_PlayerSpellCast()
 	if player.death==0 then
 		-- DR_Pin.pin_shift(2.0)
 		m.pin_shift(2.0)
@@ -156,6 +161,11 @@ function m.Event_PlayerSpell()
 		-- DR_Pin.pin_shift(3.0)--如果是决死的话就多加1
 		m.pin_shift(3.0)--如果是决死的话就多加1
 	end
+end
+-------------------------------------
+---玩家使用符卡攻击触发的事件
+function m.Event_PlayerSpellAttack()
+    m.pin_shift(0.5)
 end
 function m.Event_PlayerCCC()
 	m.pin_shift(tuolib.DRP_Sys.K_dr_ccced)   --释放灵击梦现指针增加
@@ -180,16 +190,20 @@ function m.add(v)
     local var = lstg.var
     v = abs(v)
     var.cp = var.cp + v * tuolib.DRP_Sys.K_cp
-    if (abs(var.dr) <= 5.0 - v * tuolib.DRP_Sys.K_dr) then
-        var.dr = (abs(var.dr) + v * tuolib.DRP_Sys.K_dr) * sign(var.dr)
+    if (abs(var.ddr) <= 5.0 - v * tuolib.DRP_Sys.K_ddr) then
+        var.ddr = (abs(var.ddr) + v * tuolib.DRP_Sys.K_ddr) * sign(var.ddr)
     else
-        var.dr = sign(var.dr) * 5.0
+        var.ddr = sign(var.ddr) * 5.0
     end --控制dr的增长体现在这里
 end
 
 function m.reduce(v)
     local var = lstg.var
-    var.dr = max(0.01, abs(var.dr) - v) * sign(var.dr)
+    -- if abs(var.ddr)>0.01 then
+        var.ddr = max(0.01, abs(var.ddr) - v) * sign(var.ddr)
+    -- else
+    --     var.dr = max(0.01, abs(var.dr) - v/5) * sign(var.dr)
+    -- end
 end
 
 ----------------------------------------
@@ -197,15 +211,17 @@ end
 function m.reset()
     local var = lstg.var
     local tmpv = lstg.tmpvar
-    lstg.var.cp = 1.0
-    --重置连击点数
+    -- lstg.var.cp = 1.0
+    --重置连击点数(bu)
     lstg.tmpvar.bonus_count = 0
     --重置奖残奖雷计数！！！！！
 
-    if not var.spelled_in_chapter and not var.ccced_in_chapter then --一心一意想扭的人是会把x键抠掉的，所以即使单chapterMiss了也给一定偏移
-        m.pin_shift(-0.15)
+    if not var.spelled_in_chapter and not var.ccced_in_chapter then 
+        --No bomb 奖励0.5
+        m.pin_shift(-0.5)
+        --no miss 再奖励0.75
         if not var.missed_in_chapter then
-            m.pin_shift(-0.8)
+            m.pin_shift(-0.75)
         end
     end
     var.missed_in_chapter = false
@@ -217,10 +233,10 @@ end
 ---指针数值偏移
 function m.pin_shift(v)
     local var = lstg.var
-    if abs(var.dr + v) <= 5.0 then
-        var.dr = var.dr + v
+    if abs(var.ddr + v) <= 5.0 then
+        var.ddr = var.ddr + v
     else
-        var.dr = sign(var.dr) * 5.0
+        var.ddr = sign(var.ddr) * 5.0
     end
 end
 
@@ -230,31 +246,23 @@ function m:frame()
     self.timer = self.timer + 1
     local var = lstg.var
     local tmpv = lstg.tmpvar
-    tmpv.bonus_rate = 0
-    --这个是具体的奖残奖雷量
 
     if not player.dialog then
-        --这段是cp减少的代码
-        if (var.cp <= 15.0 and var.cp > 5.0) then
-            var.cp = var.cp - 0.2
-        elseif (var.cp <= 5.0 and var.cp > 1.8) then
-            var.cp = var.cp - 0.04
-        elseif (var.cp <= 1.8 and var.cp >= 0.008) then
-            --经历125帧cp归零
-            var.cp = var.cp - 0.008
-        else
-            var.cp = 0.0
-        end
-        local drReduce = tuolib.DRP_Sys.K_dr_reduce
-        if IsValid(_boss) then
-            drReduce = tuolib.DRP_Sys.K_dr_reduce / 2
-        else
-            drReduce = tuolib.DRP_Sys.K_dr_reduce
-        end
-        if (var.cp <= 1 and abs(var.dr) > 1 - (1 - var.cp) * drReduce) then --combo_point小于1且dr大于1的情况下d才会渐渐减小，且越接近1减少越慢
-            var.dr = (abs(var.dr) - (1 - var.cp) * drReduce) * sign(var.dr)
-        end --ddr为0时，dr减的最快
-
+        --连击数衰减
+            var.cp=var.cp+(0-var.cp)*0.01
+            if var.cp<0.01 then var.cp=0 end
+        --ddr衰减
+            local k=1
+            if IsValid(_boss) then k=k/2
+                if boss.GetCurrentCard(_boss).is_sc then 
+                    k=k/2 
+                end 
+            end
+            var.ddr = max(0.00001,(abs(var.ddr) - (1-min(1,var.cp)) * tuolib.DRP_Sys.K_ddr_reduce * k)) * sign(var.ddr)
+        --dr衰减
+            if abs(var.ddr)<1 then var.dr=max(0.00001,abs(var.dr)-m.K_dr*(1-abs(var.ddr)))*sign(var.dr) end
+        --dr变化
+            var.dr=max(-5,min(5,var.dr+var.ddr*tuolib.DRP_Sys.K_dr_amplify))
         --这段是给资源的代码
         --设置了单章节最大资源计数值，实际的上限会随着指针而改变
         if abs(var.dr) >= tuolib.DRP_Sys.K_dr_BonusLimit then
@@ -268,13 +276,13 @@ function m:frame()
             if tmpv.bonus_count > tuolib.DRP_Sys.C_BOUNS_LIMIT then
                 tmpv.bonus_count = tuolib.DRP_Sys.C_BOUNS_LIMIT
             end
-            tmpv.bonus_rate =
+            local bonus_rate =
                 (3.0 + sign(var.dr) * (abs(var.dr) - tuolib.DRP_Sys.K_dr_BonusLimit) / (5 - tuolib.DRP_Sys.K_dr_BonusLimit)) *
                 (tuolib.DRP_Sys.C_BOUNS_LIMIT - tmpv.bonus_count) /
                 tuolib.DRP_Sys.C_BOUNS_LIMIT
 
-            var.chip = var.chip + tmpv.bonus_rate * 0.01 * (1 + min(0, sign(var.dr)) * -1.5)
-            var.bombchip = var.bombchip + tmpv.bonus_rate * 0.01 * (1 + max(0, sign(var.dr)) * 0.5)
+            var.chip = var.chip + bonus_rate * 0.01 * (1 + min(0, sign(var.dr)) * -1.5)
+            var.bombchip = var.bombchip + bonus_rate * 0.01 * (1 + max(0, sign(var.dr)) * 0.5)
         --这一段，若偏向现实侧则残机奖励会2.5倍，若偏向梦境侧则符卡奖励多1.5倍
         end
         --这段是加灵力的代码
@@ -288,6 +296,7 @@ end
 ------------------------------------
 ---原渲染函数
 function m:render() --左下角字体渲染
+    if not IsValid(player) then return end
     local var = lstg.var
     local x, y = -182, -204
 
@@ -352,7 +361,7 @@ function m.GetPower(v)
     if after > before then
         PlaySound("powerup1", 0.5)
     end
-end
+end GetPower=m.GetPower
 ----------------------------------
 ---用于渲染收点线的obj
 collect_line = Class(object)
@@ -363,3 +372,5 @@ end
 function collect_line:render()
     m:render()
 end
+InitSingleClass(collect_line)
+m:init()

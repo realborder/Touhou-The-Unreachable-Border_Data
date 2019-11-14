@@ -29,9 +29,20 @@ function basic:init()
 	local lifeleft1=Neww'value_displayer'
 	lifeleft1.monitoring_value='lstg.var.lifeleft'
 	lifeleft1.text='残机'
+    lifeleft1.width=128
 	local lifeleft2=Neww'value_gauge'
 	lifeleft2.monitoring_value='lstg.var.lifeleft'
-	lifeleft2.max_value=11
+    lifeleft2.max_value=11
+    local suicide=Neww'button'
+    suicide.text='自杀'
+    suicide.width=48
+    suicide._stay_in_this_line=true
+    suicide._event_mouseclick=function()
+        if IsValid(player) then
+            player.protect=0
+            player.death=91
+        end
+    end
 	local lifeleft3=Neww'button'
 	lifeleft3.text='残机归零'
 	lifeleft3._event_mouseclick=function(widget) lstg.var.lifeleft=0 end
@@ -118,8 +129,18 @@ function basic:init()
 	local gr2=Neww'value_displayer'
 	gr2.monitoring_value='player.graze_c'
 	gr2.text='必杀技充能'
+    gr2.gap_b=8
+
+    for i=10,15 do
+        Neww'value_displayer'.monitoring_value=var[i]
+    end
 
 end
+
+
+
+
+
 local drsys=TUO_Developer_UI:NewPanel()
 function drsys:init()
     self.name="梦现指针"
@@ -152,6 +173,8 @@ function drsys:init()
     local tmp={
         'C_BOUNS_LIMIT',
         'K_dr',
+        'K_ddr',
+        'K_dr_amplify',
         'K_dr_ccced',
         'K_dr_item',
         'K_dr_enemy',
@@ -179,7 +202,13 @@ function drsys:init()
         v.monitoring_value=hd..tmp[i]
         v.text=tmp[i]
     end
+    local btn=Neww'button'
+    btn.text='查看说明'
+    btn._event_mouseclick=function(widget) 
+        TUO_Developer_Flow:MsgWindow(lstg.DoFile('TUOlib\\Dev_Tool\\module\\01 GameTest\\explain.lua'),'--梦现指针系统详细算法说明--')
+    end
 end
+
 local input_monitor=TUO_Developer_UI:NewPanel()
 function input_monitor:init()
     self.name="输入监测"
@@ -246,20 +275,3 @@ function input_monitor:init()
 end
 
 
-
-
-	-- 		--绿点和擦弹
-
-
-	-- 		--梦现指针系统
-	-- 		--其他信息
-	-- 			TUO_Developer_HUD:NewWidget(panel,440,'value_displayer',{title='其他信息',monitoring_value='lstg.var.player_name',text='机体名'})
-	-- 			for i,v in pairs(var) do
-	-- 				TUO_Developer_HUD:NewWidget(panel,440,'value_displayer',{monitoring_value=var[i]})
-	-- 			end
-
-
-
-			
-			
-	-- 	end)

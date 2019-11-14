@@ -95,6 +95,15 @@ function InitAllClass()
 		v[6]=v.kill
 	end
 end
+---对单个class的回调函数进行整理，给底层调用
+function InitSingleClass(v)
+	v[1]=v.init
+	v[2]=v.del
+	v[3]=v.frame
+	v[4]=v.render
+	v[5]=v.colli
+	v[6]=v.kill
+end
 
 ----------------------------------------
 ---单位管理
