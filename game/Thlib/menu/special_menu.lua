@@ -610,7 +610,7 @@ function special_player:frame()
 		local stage_pr=menus['stage_menu']
 		task.New(player_menu,function()
 			task.Wait(30)
-			New(mask_fader,'close')
+			New(mask_fader,'close','fullscreen')
 			task.Wait(30)
 			if practice=='stage' then
 				-- Print("关卡练习参数是 "..stage_choices[stage_pr.choose]..'@'..stage_diffs[diff.choose])

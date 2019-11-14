@@ -15,13 +15,19 @@ end
 m.load_res()
 -----------------------------------------
 ---重设系统核心变量
+---值的注意的是，这个函数在关卡开头都会调用
 function m:ResetSystemVariable()
+    --梦(dream)现(reality)指针值
     if not lstg.var.dr then
         lstg.var.dr = 0.01
     end
-    --梦(dream)现(reality)指针值
-    lstg.var.cp = 0.0
+    --指针值的增幅
+    if not lstg.var.ddr then
+        lstg.var.ddr=0
+    end
     --combo_point 连击点数，用来控制dr的减少
+    lstg.var.cp = 0.0
+    
     lstg.tmpvar.bonus_count = 0
 end
 
@@ -82,19 +88,46 @@ function m:init()
         self.collect_line = New(collect_line)
     end
 end
+-------------------------------------
+---故事模式开启触发的事件
+function m.Event_StoryModeStart()
+    if lstg.var.dr then lstg.var.dr=0.01 end
+    if lstg.var.ddr then lstg.var.ddr=0.01 end
+end
 
+-------------------------------------
+---练习模式触发的事件
+function m.Event_PracticeStart()
+    if lstg.var.dr then lstg.var.dr=0.01 end
+    if lstg.var.ddr then lstg.var.ddr=0.01 end
+end
+
+-------------------------------------
+---boss符卡打完之后触发的事件
 function m.Event_BossCardDelete(boss,card)
     m.pin_shift(-card.hplen)
 end
+
+-------------------------------------
+---敌机（包括boss）被击破后触发的事件
 function m.Event_EnemyKill(enemy)
 	m.add(2) 
 end
+
+-------------------------------------
+---遗漏敌机时触发的事件
 function m.Event_EnemyLeave(enemy)
 	m.add(tuolib.DRP_Sys.K_dr_enemy)
 end
+
+-------------------------------------
+---遗漏道具时触发的事件
 function m.Event_ItemLeave()
 	m.add(tuolib.DRP_Sys.K_dr_item) --遗漏道具梦现指针往当前侧偏移
 end
+
+-------------------------------------
+---打完boss一张符卡所触发的事件
 function m.Event_BossCardFinished(missed,spelled,ccced)
 	if (not missed) and (not spelled) and (not ccced) then--符卡或非符NMNBNC指针值-0.2
 		-- DR_Pin.pin_shift(-0.2)
@@ -106,9 +139,15 @@ function m.Event_BossCardFinished(missed,spelled,ccced)
 		end--如果不小心撞了-0.05
 	end
 end
+
+-------------------------------------
+---被弹触发的事件
 function m.Event_PlayerMiss()
 	m.reduce(4)
 end
+
+-------------------------------------
+---玩家宣卡触发的事件
 function m.Event_PlayerSpell()
 	if player.death==0 then
 		-- DR_Pin.pin_shift(2.0)

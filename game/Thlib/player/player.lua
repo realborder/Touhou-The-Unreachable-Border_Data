@@ -125,7 +125,7 @@ function player_class:frame()
 					--射击逻辑
 						if KeyIsDown'shoot' and self.nextshoot<=0 then self.class.shoot(self) end
 
-					----符卡逻辑
+					--符卡逻辑
 						if self.SpellCardHp==0 and self.SpellTimer1>=0 then self.SpellTimer1=-1 self.KeyDownTimer1=0 self.SC_name='' self.nextspell=90 self.bomb_end=true end
 						if self.SpellCardHp>0 and self.SpellTimer1>90 then self.SpellCardHp=max(0,self.SpellCardHp-tuolib.DRP_Sys.K_SpellDecay) end
 						if self.NextSingleSpell>0 then self.NextSingleSpell=self.NextSingleSpell-1 end
@@ -136,7 +136,7 @@ function player_class:frame()
 						if KeyIsDown'spell' and not lstg.var.block_spell and not self.bomb_end then 
 							if self.SpellTimer1>90 then self.KeyDownTimer1=self.KeyDownTimer1+1 end
 							if (lstg.var.bomb>0 and self.death>90) or (self.SpellCardHp==0 and self.nextspell<=0 and self.NextSingleSpell==0 and lstg.var.bomb>0) then
-								item.PlayerSpell()
+								item.PlayerSpellCast()
 								if self.slow==1 then self.SpellIndex=lstg.var.bomb+3
 								else self.SpellIndex=lstg.var.bomb end
 								
@@ -167,11 +167,27 @@ function player_class:frame()
 									
 								ui.menu.HighlightFlag=30
 							else if self.SpellCardHp>0 and self.NextSingleSpell==0 then
+									item.PlayerSpellAttack()
 									self.NextSingleSpell=90
 									self.class.newSpell(self)
 								end
 							end
 						else if self.KeyDownTimer1>0 then self.KeyDownTimer1=0 end
+						end
+					--必杀技逻辑（以前叫灵击）
+						if self.graze_c>=tuolib.DRP_Sys.K_graze_c_min and self.graze_c_before<tuolib.DRP_Sys.K_graze_c_min then self.ccc_state=2 New(player_indicator_eff,2)
+						elseif self.graze_c>=tuolib.DRP_Sys.K_graze_c_max and self.graze_c_before<tuolib.DRP_Sys.K_graze_c_max then self.ccc_state=3 New(player_indicator_eff,3) end
+						self.graze_c_before=self.graze_c
+						if KeyIsDown'special' and self.graze_c>=tuolib.DRP_Sys.K_graze_c_min and lstg.var.power>=100 and self.SpellTimer1==-1 then 
+							item.PlayerCCC()
+							self.offset = 100*(1.0 + tuolib.DRP_Sys.K_graze_c_k * (self.graze_c - tuolib.DRP_Sys.K_graze_c_min)) 
+							New(bullet_cleaner,player.x,player.y, 125, 20, 45, 1)  New(player_indicator_explode,3) New(player_indicator_explode,1)
+							GetPower(-self.offset)
+							self.graze_c = 0
+							PlaySound('ophide',0.1)
+							self.protect=max(20,self.protect)
+							self.class.ccc(self) -- 释放灵击
+							self.ccc_state=1
 						end
 			--对话期间逻辑
 				else self.nextshoot=15 self.nextspell=30 self.NextSingleSpell=30 end
@@ -239,23 +255,7 @@ function player_class:frame()
 					New(item_power_mid,self.supportx+self.sp[n][1]+r4*cos(r3),self.supporty+self.sp[n][2]+r4*sin(r3)) end --修复崩溃的bug
 					self.PowerDelay1=-1
 				end
-			--必杀技逻辑（以前叫灵击）
-				if self.graze_c>=tuolib.DRP_Sys.K_graze_c_min and self.graze_c_before<tuolib.DRP_Sys.K_graze_c_min then self.ccc_state=2 New(player_indicator_eff,2)
-				elseif self.graze_c>=tuolib.DRP_Sys.K_graze_c_max and self.graze_c_before<tuolib.DRP_Sys.K_graze_c_max then self.ccc_state=3 New(player_indicator_eff,3) end
-				self.graze_c_before=self.graze_c
-				if KeyIsDown'special' and (not self.dialog) and self.graze_c>=tuolib.DRP_Sys.K_graze_c_min and lstg.var.power>=100 and self.SpellTimer1==-1 then 
-					self.offset = 100*(1.0 + tuolib.DRP_Sys.K_graze_c_k * (self.graze_c - tuolib.DRP_Sys.K_graze_c_min)) 
-					New(bullet_cleaner,player.x,player.y, 125, 20, 45, 1)  New(player_indicator_explode,3) New(player_indicator_explode,1)
-					GetPower(-self.offset)
-					self.graze_c = 0
-					PlaySound('ophide',0.1)
-					lstg.var.ccced_in_chapter=true
-					self.protect=max(20,self.protect)
-					self.class.ccc(self) -- 释放灵击
-					-- DR_Pin.pin_shift(tuolib.DRP_Sys.K_dr_ccced)   --释放灵击梦现指针增加
-					tuolib.DRP_Sys.Event_PlayerCCC()
-					self.ccc_state=1
-				end
+
 				
 			--道具收集逻辑
 				local dist_coe
@@ -459,17 +459,6 @@ function player_class:render()
 			--这里完全由那些参数控制
 			misc.RenderRing('playerring1',self.ringX,self.ringY,self.ringR,self.ringR+self.ringW, self.ani*3*2,32,16)
 			misc.RenderRing('playerring2',self.ringX,self.ringY,self.ringR,self.ringR-self.ringW, self.ani*3*2,32,16)		
-			-- if self.SpellTimer1<=180 then
-			    -- for i=1,16 do SetImageState('playerring1'..i,'mul+add',Color(255-(self.SpellTimer1-90),255,255,255)) end
-		        -- for i=1,16 do SetImageState('playerring2'..i,'mul+add',Color(255-(self.SpellTimer1-90),255,255,255)) end
-		        -- misc.RenderRing('playerring1',self.x,self.y,180-(self.SpellTimer1-90)*130/90,180-(self.SpellTimer1-90)*130/90+16-(self.SpellTimer1-90)/10, self.ani*3*self.SpellTimer1/90,32,16)
-				-- misc.RenderRing('playerring2',self.x,self.y,180-(self.SpellTimer1-90)*130/90,180-(self.SpellTimer1-90)*130/90-16+(self.SpellTimer1-90)/10, self.ani*3*self.SpellTimer1/90,32,16)
-				
-			    -- --misc.RenderRing('playerring2',self.x,self.y,(1000-self.SpellTimer1)/(1000-90)*180,(1000-self.SpellTimer1)/(1000-90)*180-16,-self.ani*3,32,16)
-			-- else
-			    -- misc.RenderRing('playerring1',self.x,self.y,50,57, self.ani*3*2,32,16)
-				-- misc.RenderRing('playerring2',self.x,self.y,50,43, self.ani*3*2,32,16)
-			-- end
 		end
 
         Renderspellbar(self.x,self.y,90,360,60,64,360,1)

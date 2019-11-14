@@ -211,14 +211,14 @@ function stage.group.render(self)
 end
 
 function stage.group.Start(group)
-	if lstg.var.dr then lstg.var.dr=0.01 end
+	tuolib.DRP_Sys.Event_StoryModeStart()
 	lstg.var.is_practice=false
 	stage.Set('save', group[1])
 	stage.stages[group.title].save_replay = { group[1] }
 end
 
 function stage.group.PracticeStart(stagename)
-	if lstg.var.dr then lstg.var.dr=0.01 end
+	tuolib.DRP_Sys.Event_PracticeStart()
 	lstg.var.is_practice=true
 	stage.Set('save', stagename)
 	stage.stages[stage.stages[stagename].group.title].save_replay = { stagename }

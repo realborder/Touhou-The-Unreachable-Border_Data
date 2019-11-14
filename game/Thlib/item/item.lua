@@ -421,7 +421,6 @@ function item.playercollect(n)
 end
 -----------------------------
 function item:PlayerMiss()
---	lstg.var.chip_bonus=false
 	lstg.var.missed_in_chapter=true
 	if lstg.var.sc_bonus then lstg.var.sc_bonus=0 end
 	ex.ClearBonus(true,false)
@@ -430,26 +429,33 @@ function item:PlayerMiss()
 	self.protect=360
 	lstg.var.lifeleft=lstg.var.lifeleft-1
 	ui.menu.LoseLife=15
-	--self.lifeleft=self.lifeleft-1
---	lstg.var.power=math.max(lstg.var.power-50,100)
 	lstg.var.bomb=3
-	--self.bomb=max(self.bomb,2)
---	if lstg.var.lifeleft>0 then
---		for i=1,7 do
---			local a=90+(i-4)*18+player.x*0.26
---			New(item_power,player.x,player.y+10,3,a)
---		end
---	else New(item_power_full,player.x,player.y+10) end
     lstg.var.bombchip=0
 	self.SpellCardHp=0
 end
 
-function item.PlayerSpell()
+function item.PlayerSpellCast()
 	if lstg.var.sc_bonus then lstg.var.sc_bonus=0 end
 	ex.ClearBonus(false,true)
-	tuolib.DRP_Sys.Event_PlayerSpell()
+	tuolib.DRP_Sys.Event_PlayerSpellCast()
 --	lstg.var.bombchip_bonus=false
 	lstg.var.spelled_in_chapter = true
+end
+
+function item.PlayerSpellAttack()
+	if lstg.var.sc_bonus then lstg.var.sc_bonus=0 end
+	ex.ClearBonus(false,true)
+	tuolib.DRP_Sys.Event_PlayerSpellAttack()
+	lstg.var.spelled_in_chapter = true
+end
+
+function item.PlayerCCC()
+	if lstg.var.sc_bonus then lstg.var.sc_bonus=0 end
+	ex.ClearBonus(false,true)
+	-- DR_Pin.pin_shift(tuolib.DRP_Sys.K_dr_ccced)   --释放灵击梦现指针增加
+	tuolib.DRP_Sys.Event_PlayerCCC()
+	lstg.var.ccced_in_chapter=true
+
 end
 
 function item.PlayerGraze()

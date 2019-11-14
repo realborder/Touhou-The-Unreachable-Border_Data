@@ -245,10 +245,11 @@ function shutter:render()
 end
 
 mask_fader=Class(object)
-function mask_fader:init(mode)
+function mask_fader:init(mode,fullscreen)
 	self.layer=LAYER_TOP+100
 	self.group=GROUP_GHOST
 	self.open=(mode=='open')
+	self.fullscreen=(fullscreen=='fullscreen')
 end
 function mask_fader:frame()
 	if self.timer>30 then
@@ -256,15 +257,28 @@ function mask_fader:frame()
 	end
 end
 function mask_fader:render()
-	SetViewMode'ui'
-	if self.open then
-		SetImageState('white','',Color(max(0,min(255,255-self.timer*8.5)),0,0,0))
+	if self.fullscreen then
+		SetViewMode'ui'
+		self.layer=LAYER_TOP+100
+		if self.open then
+			SetImageState('white','',Color(max(0,min(255,255-self.timer*8.5)),0,0,0))
+		else
+			SetImageState('white','',Color(max(0,min(255,self.timer*8.5)),0,0,0))
+		end
+		local extra=screen.width*(16/9-4/3)/2
+		RenderRect('white',0-extra,screen.width+extra,0,screen.height)
+		SetViewMode'world'
 	else
-		SetImageState('white','',Color(max(0,min(255,self.timer*8.5)),0,0,0))
+		SetViewMode'world'
+		self.layer=LAYER_PLAYER-1
+		if self.open then
+			SetImageState('white','',Color(max(0,min(255,255-self.timer*8.5)),0,0,0))
+		else
+			SetImageState('white','',Color(max(0,min(255,self.timer*8.5)),0,0,0))
+		end
+		local w=lstg.world
+		RenderRect('white',w.l,w.r,w.b,w.t)
 	end
-	local extra=screen.width*(16/9-4/3)/2
-	RenderRect('white',0-extra,screen.width+extra,0,screen.height)
-	SetViewMode'world'
 end
 
 --维持粒子特效直到消失

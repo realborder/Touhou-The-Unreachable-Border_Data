@@ -129,13 +129,19 @@ function drsys:init()
 	Neww'title'.text='梦现指针系统'
 
 	local dr=Neww'value_displayer'
-	dr.title='梦现指针系统'
 	dr.monitoring_value='lstg.var.dr'
 	dr.text='梦现指针值'
 	local dr2=Neww'value_slider'
 	dr2.monitoring_value='lstg.var.dr'
 	dr2.min_value=-5
 	dr2.max_value=5
+	local ddr=Neww'value_displayer'
+	ddr.monitoring_value='lstg.var.ddr'
+	ddr.text='梦现指针增幅'
+	local ddr2=Neww'value_slider'
+	ddr2.monitoring_value='lstg.var.ddr'
+	ddr2.min_value=-5
+	ddr2.max_value=5
 	local cp=Neww'value_displayer'
 	cp.monitoring_value='lstg.var.cp'
 	cp.text='连击值'
@@ -169,7 +175,9 @@ function drsys:init()
     }
     
     for i=1,#tmp do
-        Neww'value_displayer'.monitoring_value=hd..tmp[i]
+        local v=Neww'value_displayer'
+        v.monitoring_value=hd..tmp[i]
+        v.text=tmp[i]
     end
 end
 local input_monitor=TUO_Developer_UI:NewPanel()

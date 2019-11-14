@@ -99,7 +99,7 @@ InitRenderFlag=true
 
 stage_init=stage.New('init',true,true)
 function stage_init:init()
-    New(mask_fader,'open')
+    New(mask_fader,'open','fullscreen')
     jstg.enable_player=true
     LoadTexture('UI_gameInit','THlib\\UI\\UI_gameInit.jpg')
 	LoadImage('UI_gameInit','UI_gameInit',0,0,1920,1080)
@@ -214,7 +214,7 @@ function stage_init:frame()
 		Print('游戏已启动')
 		self.load_process=1
     elseif self.timer==35 then
-        New(mask_fader,'')
+        New(mask_fader,'','fullscreen')
     elseif self.timer>=67 then 
 		stage.Set('none', 'menu') 
 	end
@@ -328,7 +328,7 @@ function stage_main_menu:init()
 
 	-- New(mask_fader,'open')
 	-- InitRenderFlag=false
-	New(mask_fader,'open')
+	New(mask_fader,'open','fullscreen')
 		
 	base_menu.ChangeLocked(menus['main_menu'])
 	exani_player_manager.ExecuteExaniPredefine(play_manager,'Title_Menu_bg','init')
