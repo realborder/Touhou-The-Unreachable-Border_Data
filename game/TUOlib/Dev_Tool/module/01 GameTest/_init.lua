@@ -197,15 +197,46 @@ function drsys:init()
         'K_dr_reduce'
     }
     
-    for i=1,#tmp do
-        local v=Neww'value_displayer'
-        v.monitoring_value=hd..tmp[i]
-        v.text=tmp[i]
-    end
+    -- for i=1,#tmp do
+    --     local v=Neww'value_displayer'
+    --     v.monitoring_value=hd..tmp[i]
+    --     v.text=tmp[i]
+    -- end
+    local explain1=[[
+        使梦现指针增长幅度向正方向偏移的行为（以及偏移量参考值）
+            宣卡（2）
+            决死（3）
+            释放符卡攻击（0.5）
+            使用必杀技（1）
+        
+        使梦现指针增长幅度向负方向偏移的行为（以及偏移量参考值）
+            NBNC一个chapter，包括击破boss一次（0.75）
+            NMNBNC一个chapter，包括击破boss一次（1）
+            NBNC击破符卡（0.15）
+            NMNBNC击破符卡（0.2）]]
+    local explain2=[[
+        使梦现指针增长幅度向当前方向偏移的行为（以及偏移量参考值）
+            贴脸射击（根据靠近的程度）
+            击破敌机（2）
+            擦弹（0.1，boss战中为0.2）
+            敌机或boss被速破（根据速破程度）
+        
+        使梦现指针增长幅度向0偏移的行为（以及偏移量参考值）
+            被弹（-2.5）
+            遗漏敌机（-0.05）
+            遗漏道具（-0.02）]]
+    local explain3=[[
+        梦现指针每帧都会根据梦现指针增长幅度而增长
+        梦现指针增长幅度满了以后上面所说的行为会直接使指针值偏移
+        梦现指针绝对值大于1之后开始自动恢复灵力和补给资源
+        设置梦现指针增长幅度是为了保留容错空间
+        ]]
     local btn=Neww'button'
     btn.text='查看说明'
     btn._event_mouseclick=function(widget) 
-        TUO_Developer_Flow:MsgWindow(lstg.DoFile('TUOlib\\Dev_Tool\\module\\01 GameTest\\explain.lua'),'--梦现指针系统详细算法说明--')
+        TUO_Developer_Flow:MsgWindow(explain3,'--梦现指针系统详细算法说明--')
+        TUO_Developer_Flow:MsgWindow(explain2,'--梦现指针系统详细算法说明--')
+        TUO_Developer_Flow:MsgWindow(explain1,'--梦现指针系统详细算法说明--')
     end
 end
 
