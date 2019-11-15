@@ -20,7 +20,7 @@ function ChapFin:frame()
 	if ext.sc_pr then RawDel(self) return end --如果在符卡练习那就跳过，我知道这种写法很蠢，但是要去每张卡下面改太麻烦了
 	if self.timer==40 then
 		-- DR_Pin.reset()
-		tuolib.DRP_Sys.reset()
+		tuolib.DRP_Sys.Event_ChapterFinished()
 		
 		--残机结算
 		if lstg.var.chip>=100 and not self.flag then

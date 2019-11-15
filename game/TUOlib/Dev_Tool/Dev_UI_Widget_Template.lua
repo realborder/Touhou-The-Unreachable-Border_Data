@@ -235,6 +235,8 @@ function value_gauge:frame()
     local m
     if type(self.monitoring_value)=='string' then 
         m=IndexValueByString(self.monitoring_value)
+    elseif type(self.monitoring_value)=='function' then
+        m=self:monitoring_value()
     else
         m=self.monitoring_value
     end

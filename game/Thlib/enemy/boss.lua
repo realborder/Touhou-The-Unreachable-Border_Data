@@ -14,7 +14,7 @@ function boss:init(x, y, name, cards, bg, diff)
     self.y = y
     self.img = 'undefined'
 	self.ringX=self.x
-	self.ringY=self.y
+    self.ringY=self.y
     --boss魔法阵
     self.aura_alpha = 255 --法阵透明度
     self.aura_alpha_d = 4 --法阵透明度单帧变化值
@@ -100,12 +100,19 @@ LoadTexture('undefined',patch..'undefined.png')
 LoadImage('undefined','undefined',0,0,128,128,32,32)
 SetImageState('undefined','mul+add',Color(0x80FFFFFF))
 LoadImageFromFile('base_hp',patch..'ring00.png')
-SetImageState('base_hp','',Color(0xFFFF0000))
+SetImageState('base_hp','',Color(0xFFFFFFFF))
+LoadImageFromFile('base_hp2',patch..'ring01.png')
+SetImageState('base_hp2','mul+add',Color(0xFFFFFFFF))
 LoadTexture('lifebar',patch..'lifebar.png')
 LoadImage('life_node','lifebar',20,0,12,16)
 LoadImage('hpbar1','lifebar',4,0,2,2)
 SetImageState('hpbar1','',Color(0xFFFFFFFF))
 SetImageState('hpbar2','',Color(0x77D5CFFF))
+LoadImage('hpbar3','lifebar',4,0,2,2)
+SetImageState('hpbar3','',Color(255,200,0,0))
+LoadImage('hpbar4','lifebar',4,0,2,2)
+SetImageState('hpbar4','',Color(255,0,0,200))
+
 LoadTexture('magicsquare',patch..'eff_magicsquare.png')
 LoadImageGroup('boss_aura_3D','magicsquare',0,0,256,256,5,5)
 LoadImageFromFile('dialog_box',patch..'dialog_box.png')
@@ -161,8 +168,6 @@ LoadTTF("balloon_font", patch .. "balloon_font.ttf", 32)
 ---------
 
 
-LoadImage('hpbar3','lifebar',4,0,2,2)
-SetImageState('hpbar3','',Color(255,255,100,100))
 
 Include(patch.."boss_system.lua")--boss行为逻辑
 Include(patch.."boss_function.lua")--boss额外函数

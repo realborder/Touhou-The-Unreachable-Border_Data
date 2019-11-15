@@ -46,12 +46,16 @@ function boss.card:frame()
 	----速破相关
 	local c = boss.GetCurrentCard(self)
 	c.timer=c.timer+1
-	if c.timer>60 then
+	if c.timer>1 then
 		c.hploss=self.maxhp-self.hp
-		c.speed_kill_minus=c.speed_kill_minus+max(0,5.0/3.0-c.takeDmg_inFrame)
+        -- c.speed_kill_minus=min(c.hploss,c.speed_kill_minus+max(0,c.takeDmg_inFrame))
+        local plr_dist=1-max(0,50-abs(player.x-_boss.x))/50 --如果玩家在boss正下方射击那boss虚血也不会掉
+        c.speed_kill_minus=min(c.hploss,c.speed_kill_minus+plr_dist*max(0,10/6-c.takeDmg_inFrame))
+        boss_ui.AddHpBarBreak(self,c.takeDmg_inFrame)
 		c.takeDmg_inFrame=0
 		c.virtualhp=max(0,c.hploss-c.speed_kill_minus)
 		c.hplen=c.virtualhp/self.maxhp
+
 	end
 	if self.timer >= 90 then --符卡圈的平滑移动
 		local dx=self.x-self.ringX
@@ -105,7 +109,7 @@ function boss.card:init()  end
 
 function boss.card:del()
 	local c = boss.GetCurrentCard(self)
-	-- DR_Pin.pin_shift(-c.hplen)
+    -- DR_Pin.pin_shift(-c.hplen)
     tuolib.DRP_Sys.Event_BossCardDelete(boss,c)
 	c.timer=0
 	c.speed_kill_minus=0

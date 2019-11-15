@@ -24,6 +24,14 @@ function boss_ui:init(b)
     --b.ex={}
     --test_ex(b.ex)
     if b.class.sc_image then self.sc_image = New(b.class.sc_image) end
+    self.hp_bar_timer=0
+    --血条被打散的效果列表
+    self.hp_break_list={}
+    self.hp_break_list_max=10
+    self.hp_break_cur=1
+    for i=1,self.hp_break_list_max do
+        table.insert(self.hp_break_list,{0,0,0})
+    end
 end
 
 function boss_ui:frame()
@@ -33,6 +41,16 @@ function boss_ui:frame()
         if self.countdown>0 and self.countdown<=5 and self.countdown%1==0 then PlaySound('timeout2',0.8) 
         -- Print(self.timer) 
     end
+    end
+    if self.drawhp and self.is_combat then
+        self.hp_bar_timer=self.hp_bar_timer+(1-self.hp_bar_timer)*0.05
+        if self.hp_bar_timer>0.999 then self.hp_bar_timer=1 end
+    else
+        self.hp_bar_timer=self.hp_bar_timer+(0-self.hp_bar_timer)*0.07
+        if self.hp_bar_timer<0.001 then self.hp_bar_timer=0 end
+    end
+    for i=1,self.hp_break_list_max do
+        self.hp_break_list[i][2]=max(0,self.hp_break_list[i][2]-1)
     end
 end
 
@@ -59,7 +77,7 @@ function boss_ui:render()
     --     end
     -- end
     --RenderText('bonus',self.ex.status,0,207,0.5,'right')
-    if self.is_combat then
+    if self.hp_bar_timer>0 then
         if self.hpbarlen or self.boss.ex then
             --boss hpbar
             boss_ui.render_hpbar(self)
@@ -150,9 +168,20 @@ function boss_ui:render()
     end
 end
 
+function boss_ui:AddHpBarBreak(dhp)
+    if dhp>0 then
+        local self=self.ui
+        self.hp_break_cur=self.hp_break_cur+1
+        if self.hp_break_cur>self.hp_break_list_max then self.hp_break_cur=1 end
+        self.hp_break_list[self.hp_break_cur]={dhp/self.boss.maxhp*360,self.hp_break_list_max,self.boss.hp/self.boss.maxhp*360+90}
+    end
+end
+
+
 function boss_ui:render_hpbar()
-	local c = boss.GetCurrentCard(self.boss)
-    if not(self.boss.time_sc) and self.drawhp then
+    local c = boss.GetCurrentCard(self.boss)
+    local t=self.hp_bar_timer
+    if not(self.boss.time_sc) and t>0 then
         local mode, type
         if not(self.hpbarcolor1) and not(self.hpbarcolor2) then
             mode = -1 --无血条（时符等）
@@ -168,23 +197,36 @@ function boss_ui:render_hpbar()
             mode = 1 --组合血条（非符）
         end
         if mode == -1 then
-        elseif mode == 0 and type == 1 then
-            misc.Renderhpbar(self.boss.x,self.boss.y,90,360,60,64,360,1)
-            if self.boss.timer<=60 then misc.Renderhp(self.boss.x,self.boss.y,90,360,60,64,360,self.hpbarlen*min(1,self.boss.timer/60))
-			else misc.Renderhp2(self.boss.x,self.boss.y,90,360,60,64,360,self.hpbarlen,c.hplen) end
-            Render('base_hp',self.boss.x,self.boss.y,0,0.548,0.548)
-            Render('base_hp',self.boss.x,self.boss.y,0,0.512,0.512)
+        elseif mode == 0 and (type == 1 or type==2) then
+            -- misc.Renderhpbar(self.boss.x,self.boss.y,90,360,60,64,360,1)
+            local k=(1+0.5*(1-t))
+            local r=64*k
+            local dr=min(1,self.boss.timer/60)*4*t
+            SetImageState('base_hp','',Color(255*t,255,255,255))
+            Render('base_hp',self.boss.x,self.boss.y,0,0.548*k,0.548*k)
+            misc.Renderhp2(self.boss.x,self.boss.y,90,360,r-dr,r,360,self.hpbarlen,c.hplen) 
+            SetImageState('base_hp2','',Color(255*t,255,255,255))
+            Render('base_hp2',self.boss.x,self.boss.y,0,0.548*k,0.548*k)
+            local list=self.hp_break_list
+            for i=1,self.hp_break_list_max do
+                if list[i][2]>0 then
+                    local t=sin(90*list[i][2]/10)
+                    local w=list[i][1]
+                    local a=list[i][3]
+                    if w+a>90+360 then w=90+360-a end
+                    SetImageState('hpbar4','',Color(255*t,255,255*t^3,255*t^3))
+                    -- SetImageState('hpbar4','',Color(255*t,255,0,0))
+                    local k=1-t^4
+                    sp.misc.RenderFanShape('hpbar4',self.boss.x,self.boss.y,a,a+w,r+10*k,r-dr)
+                end
+
+            end
+
             if self.boss.sp_point and #self.boss.sp_point~=0 then
                 for i=1,#self.boss.sp_point do
                     Render('life_node',self.boss.x+61*cos(self.boss.sp_point[i]),self.boss.y+61*sin(self.boss.sp_point[i]),self.boss.sp_point[i]-90,0.5)
                 end
             end
-        elseif mode == 0 and type == 2 then
-            misc.Renderhpbar(self.boss.x,self.boss.y,90,360,60,64,360,1)
-            if self.boss.timer<=60 then misc.Renderhp(self.boss.x,self.boss.y,90,360,60,64,360,self.hpbarlen*min(1,self.boss.timer/60))
-			else misc.Renderhp2(self.boss.x,self.boss.y,90,360,60,64,360,self.hpbarlen,c.hplen) end
-            Render('base_hp',self.boss.x,self.boss.y,0,0.548,0.548)
-            Render('base_hp',self.boss.x,self.boss.y,0,0.512,0.512)
         elseif mode == 2 then
             misc.Renderhpbar(self.boss.x,self.boss.y,90,360,60,64,360,1)
             misc.Renderhp(self.boss.x,self.boss.y,90,self.boss.lifepoint-90,60,64,self.boss.lifepoint-88,self.hpbarlen)
@@ -204,10 +246,14 @@ function boss_ui:render_hpbar()
             SetFontState('bonus','',Color(255,255,255,255))
         end
         if self.boss.show_hp then
-        SetFontState('bonus','',Color(255,0,0,0))
-        RenderText('bonus',int(max(0,self.boss.hp))..'/'..self.boss.maxhp,self.boss.x-1,self.boss.y-40-1,0.6,'centerpoint')
-        SetFontState('bonus','',Color(255,255,255,255))
-        RenderText('bonus',int(max(0,self.boss.hp))..'/'..self.boss.maxhp,self.boss.x,self.boss.y-40,0.6,'centerpoint')
+            SetFontState('bonus','',Color(215,175,20,20))
+            for a=0,330,30 do
+                RenderText('bonus',int(max(0,self.boss.hp))..'/'..self.boss.maxhp,self.boss.x-cos(a),self.boss.y-40-sin(a),1,'centerpoint')
+            end
+            SetFontState('bonus','',Color(255,255,255,255))
+            RenderText('bonus',int(max(0,self.boss.hp))..'/'..self.boss.maxhp,self.boss.x,self.boss.y-40,1,'centerpoint')
+            RenderText('bonus',self.hp_bar_timer,self.boss.x,self.boss.y+40,1,'centerpoint')
+            RenderText('bonus',tostring(self.is_combat),self.boss.x,self.boss.y+50,1,'centerpoint')
         end
     end
 end

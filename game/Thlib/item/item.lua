@@ -62,7 +62,7 @@ function item:frame()
 			local k=(1-dist/600) --目标里子弹的距离越近，这个数越接近1
 			local mag=mag_max*k+mag_min*(1-k)
 			self._rot=a+(a_aim-a)*mag
-			local v=self.v*(1+1.5*k) * (0.5+1.5*self.attract/8)
+			local v=self.v*(1+1.5*k) * (0.5+1.5*self.attract/8)*1.2
 			self.vx = v * cos(self._rot)
 			self.vy = v * sin(self._rot)
 			self.rot=self._rot+90

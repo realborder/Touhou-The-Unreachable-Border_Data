@@ -378,9 +378,9 @@ function player_class:frame()
 		if not(self.time_stop) then
 			self._wisys:frame(dx)
 
-			self.lh=self.lh+(self.slow-0.5)*0.3
-			if self.lh<0 then self.lh=0 end
-			if self.lh>1 then self.lh=1 end
+			self.lh=self.lh+(self.slow-self.lh)*0.2
+			-- if self.lh<0 then self.lh=0 end
+			-- if self.lh>1 then self.lh=1 end
 		--计时器和各种参数变换
 			if self.nextshoot>0 then self.nextshoot=self.nextshoot-1 end
 			if self.nextspell>0 then self.nextspell=self.nextspell-1 end
@@ -586,13 +586,13 @@ end
 function grazer:render()
 	local scale=sin(90*self.player.lh)
 	object.render(self)
-	SetImageState('player_aura','',Color(0xC0FFFFFF)*self.player.lh+Color(0x00FFFFFF)*(1-self.player.lh))
+	SetImageState('player_aura','',Color(0xFFFFFFFF)*self.player.lh+Color(0x00FFFFFF)*(1-self.player.lh))
 	Render('player_aura',self.x,self.y, self.aura,(2-scale))
-	SetImageState('player_aura','',Color(0xC0FFFFFF))
+	SetImageState('player_aura','',Color(0xFFFFFFFF))
 	Render('player_aura',self.x,self.y,-self.aura,scale)
 	if player.death<50 then 
 		SetImageState('player_indicator4','mul+add',Color(255*min(1,player.protect/10),255,255,255))
-		local scale=0.5+0.5*sin(90*min(3,player.protect/30)/3)
+		local scale=1+0.5*sin(90*min(3,player.protect/30)/3)
 		Render('player_indicator4',self.x,self.y,self.timer*2,scale)
 	elseif player.death<90 then
 		if player.death>75 then

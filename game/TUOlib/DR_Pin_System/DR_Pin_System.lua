@@ -108,9 +108,18 @@ function m.Event_PracticeStart()
 end
 
 -------------------------------------
----boss符卡打完之后触发的事件
+---boss符卡打完之后触发的事件,主要是速破奖励
 function m.Event_BossCardDelete(boss,card)
     m.pin_shift(-card.hplen)
+    if card.hplen>0.001 then
+        local a=90
+        local len=a+card.hplen*360
+        while a<len do
+            New(item_faith_minor,boss.x+64*cos(a),boss.y+64*sin(a))
+            -- New(item_point,boss.x+64*cos(a),boss.y+64*sin(a)).attract=8
+            a=a+0.5
+        end
+    end
 end
 
 -------------------------------------
@@ -132,7 +141,7 @@ function m.Event_ItemLeave()
 end
 
 -------------------------------------
----打完boss一张符卡所触发的事件
+---打完boss一张符卡所触发的事件，收取非符和符卡的奖励
 function m.Event_BossCardFinished(missed,spelled,ccced)
 	if (not missed) and (not spelled) and (not ccced) then--符卡或非符NMNBNC指针值-0.2
 		-- DR_Pin.pin_shift(-0.2)
@@ -148,7 +157,7 @@ end
 -------------------------------------
 ---被弹触发的事件
 function m.Event_PlayerMiss()
-	m.reduce(5)
+	m.reduce(2.5)
 end
 
 -------------------------------------
@@ -183,6 +192,28 @@ end
 function m.Event_BossCardFinished()
 
 end
+----------------------------------------
+---关卡结算点触发的事件
+function m.Event_ChapterFinished()
+    local var = lstg.var
+    local tmpv = lstg.tmpvar
+    -- lstg.var.cp = 1.0
+    --重置连击点数(bu)
+    lstg.tmpvar.bonus_count = 0
+    --重置奖残奖雷计数！！！！！
+
+    if not var.spelled_in_chapter and not var.ccced_in_chapter then 
+        --No bomb 奖励0.75
+        m.pin_shift(-0.5)
+        --no miss 再奖励1
+        if not var.missed_in_chapter then
+            m.pin_shift(-1)
+        end
+    end
+    var.missed_in_chapter = false
+    var.spelled_in_chapter = false
+    var.ccced_in_chapter = false
+end
 
 ----------------------------------------
 ---增加连击点数，连击点数的增加会让梦现指针往当前方向偏
@@ -206,28 +237,6 @@ function m.reduce(v)
     -- end
 end
 
-----------------------------------------
----关卡结算点固定会调用的函数
-function m.reset()
-    local var = lstg.var
-    local tmpv = lstg.tmpvar
-    -- lstg.var.cp = 1.0
-    --重置连击点数(bu)
-    lstg.tmpvar.bonus_count = 0
-    --重置奖残奖雷计数！！！！！
-
-    if not var.spelled_in_chapter and not var.ccced_in_chapter then 
-        --No bomb 奖励0.5
-        m.pin_shift(-0.5)
-        --no miss 再奖励0.75
-        if not var.missed_in_chapter then
-            m.pin_shift(-0.75)
-        end
-    end
-    var.missed_in_chapter = false
-    var.spelled_in_chapter = false
-    var.ccced_in_chapter = false
-end
 
 ----------------------------------
 ---指针数值偏移
@@ -260,12 +269,12 @@ function m:frame()
             end
             var.ddr = max(0.00001,(abs(var.ddr) - (1-min(1,var.cp)) * tuolib.DRP_Sys.K_ddr_reduce * k)) * sign(var.ddr)
         --dr衰减
-            if abs(var.ddr)<1 then var.dr=max(0.00001,abs(var.dr)-m.K_dr*(1-abs(var.ddr)))*sign(var.dr) end
+            if abs(var.ddr)<0.5 then var.dr=max(0.00001,abs(var.dr)-m.K_dr*(0.5-abs(var.ddr)))*sign(var.dr) end
         --dr变化
             var.dr=max(-5,min(5,var.dr+var.ddr*tuolib.DRP_Sys.K_dr_amplify))
         --这段是给资源的代码
         --设置了单章节最大资源计数值，实际的上限会随着指针而改变
-        if abs(var.dr) >= tuolib.DRP_Sys.K_dr_BonusLimit then
+        if abs(var.ddr) >= tuolib.DRP_Sys.K_dr_BonusLimit then
             tmpv.bonus_count = tmpv.bonus_count + (abs(var.dr) - tuolib.DRP_Sys.K_dr_BonusLimit)
             --指针绝对值多出奖残奖雷阈值的部分会直接加到这个计数变量里
             --具体奖励数量在(2,4)这个区间内分布，偏梦境侧则大于3，偏现实侧则小于3，具体偏移量由指针值定。

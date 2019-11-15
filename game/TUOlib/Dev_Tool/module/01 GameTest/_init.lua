@@ -275,3 +275,80 @@ function input_monitor:init()
 end
 
 
+local boss_monitor=TUO_Developer_UI:NewPanel()
+function boss_monitor:init()
+    self.name="Boss"
+    self.left_for_world=true
+    TUO_Developer_UI.SetWidgetSlot('world')
+    Neww'title'.text='boss'
+    local sw= Neww'switch'
+    sw.text_on='显示血量 开'
+    sw.text_off='显示血量 关'
+    sw.monitoring_value=function(value)
+        if type(value)=='nil' then
+            if IsValid(_boss) then 
+                return _boss.show_hp
+            else
+                return false
+            end
+        else
+            if IsValid(_boss) then 
+                _boss.show_hp=value
+            else
+                return
+            end
+        end
+    end
+
+    Neww'value_displayer'.monitoring_value=function() return {{name='boss存在',v=tostring(IsValid(_boss))}} end
+    local tmp={
+        'drawhp',
+        'drawname',
+        'drawtime',
+        'drawspell',
+        'needposition',
+        'drawpointer',
+        'is_combat'
+    }
+    for i=1,#tmp do
+        local index=tmp[i]
+        local sw= Neww'switch'
+        sw.text_on=index..' On'
+        sw.text_off=index..' Off'
+        sw.monitoring_value=function(value)
+            if type(value)=='nil' then
+                if IsValid(_boss) then 
+                    return _boss.ui[index]
+                else
+                    return false
+                end
+            else
+                if IsValid(_boss) then 
+                    _boss.ui[index]=value
+                else
+                    return
+                end
+            end
+        end
+    end
+    local tmp2={
+        'hploss',
+        'speed_kill_minus',
+        'virtualhp',
+        'hplen',
+        'takeDmg_inFrame',
+        'timer'
+    }
+    for i=1,#tmp2 do
+        local index=tmp2[i]
+        Neww'value_displayer'.monitoring_value=function()
+            if IsValid(_boss) and _boss.current_card then 
+                return {{name=index,v=_boss.current_card[index]}}
+            else
+                return {{name=index,v='nil'}}
+            end
+        end
+    end
+end
+
+
