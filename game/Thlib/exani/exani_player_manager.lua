@@ -267,6 +267,12 @@ function exani_player_manager:SetExaniAttribute(exani_name,start_frame,end_frame
 	end
 end
 
+function exani_player_manager:SetPlayInterval(exani_name,play_interval)
+	for k,v in pairs(self.exanis) do
+		if v.name==exani_name then v.play_interval=play_interval end
+	end
+end
+
 function exani_player_manager:GetExani(exani_name)
 	for k,v in pairs(self.exanis) do
 		if v.name==exani_name then return v end

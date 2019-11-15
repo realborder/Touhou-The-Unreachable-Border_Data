@@ -276,9 +276,9 @@ function special_difficulty:init()
 	self.choose_delay=25
 	
 	self.activate_timer=0
-	self.activate_delay=49
+	self.activate_delay=10
 	self.deactivate_timer=0
-	self.deactivate_delay=59
+	self.deactivate_delay=10
 	
 	self.cancel_timer=0
 	self.cancel_delay=30
@@ -294,6 +294,8 @@ function special_difficulty:init()
 	self.y=200
 	self.z=10
 	self.tmpdx=0
+	
+	self.multispeed=2
 	
 	self.x_offset={}
 	for i=(#self.pics)*self.repeats/2,1,-1 do
@@ -337,6 +339,7 @@ function special_difficulty:frame()
 	
 	if self.init_timer==self.init_delay then
 		self.activate_timer=self.activate_delay
+		exani_player_manager.SetPlayInterval(play_manager,self.pics[self.choose],self.multispeed)
 		exani_player_manager.ExecuteExaniPredefine(play_manager,self.pics[self.choose],'activate')
 	end
 	if self.activate_timer>0 then
@@ -368,7 +371,9 @@ function special_difficulty:frame()
 			self.activate_timer=self.activate_delay
 			self.deactivate_timer=self.deactivate_delay
 			PlaySound('select00', 0.3)
+			exani_player_manager.SetPlayInterval(play_manager,self.pics[self.choose],self.multispeed)
 			exani_player_manager.ExecuteExaniPredefine(play_manager,self.pics[self.choose],'activate')
+			exani_player_manager.SetPlayInterval(play_manager,self.pics[self.pre_choose],self.multispeed)
 			exani_player_manager.ExecuteExaniPredefine(play_manager,self.pics[self.pre_choose],'deactivate')
 			self.changed=true
 		elseif KeyTrigger'right' then
@@ -378,11 +383,14 @@ function special_difficulty:frame()
 			self.activate_timer=self.activate_delay
 			self.deactivate_timer=self.deactivate_delay
 			PlaySound('select00', 0.3)
+			exani_player_manager.SetPlayInterval(play_manager,self.pics[self.choose],self.multispeed)
 			exani_player_manager.ExecuteExaniPredefine(play_manager,self.pics[self.choose],'activate')
+			exani_player_manager.SetPlayInterval(play_manager,self.pics[self.pre_choose],self.multispeed)
 			exani_player_manager.ExecuteExaniPredefine(play_manager,self.pics[self.pre_choose],'deactivate')
 			self.changed=true
 		elseif KeyTrigger'shoot' then
 			self.is_choose=true
+			exani_player_manager.SetPlayInterval(play_manager,self.pics[self.choose],1)
 			exani_player_manager.ExecuteExaniPredefine(play_manager,self.pics[self.choose],'choose')
 			self.choose_timer=self.choose_delay
 			PlaySound('ok00', 0.3)
@@ -391,6 +399,7 @@ function special_difficulty:frame()
 			self.cancel_timer=self.cancel_delay
 			self.timer=0
 			if self.pre_menu[self.menu_back]~='' then base_menu.ChangeLocked(menus[self.pre_menu[self.menu_back]]) end
+			exani_player_manager.SetPlayInterval(play_manager,self.pics[self.choose],1)
 			exani_player_manager.ExecuteExaniPredefine(play_manager,self.pics[self.choose],'deactivate')
 			PlaySound('cancel00', 0.3)
 		end
