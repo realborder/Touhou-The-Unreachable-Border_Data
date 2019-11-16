@@ -337,6 +337,8 @@ function special_difficulty:frame()
 	end
 	
 	if self.init_timer==self.init_delay then
+		self.current_dx=1.5*self.gap
+		self.destinate_dx=1.5*self.gap
 		self.interval_timer=self.interval_delay
 		exani_player_manager.ExecuteExaniPredefine(play_manager,self.pics[self.choose],'activate')
 	end
