@@ -35,16 +35,16 @@ end
 --------------------------------------
 ---重设系统各项常数（其实是可变的
 function m:ResetSystemParameter()
-    tuolib.DRP_Sys.C_BOUNS_LIMIT = 2500
+    tuolib.DRP_Sys.C_BOUNS_LIMIT = 2700
     tuolib.DRP_Sys.K_dr = 0.003
     --用于控制dr的增长，每个chapter可能都要微调，所以记在lstg.var里了
-    tuolib.DRP_Sys.K_ddr = 0.01
+    tuolib.DRP_Sys.K_ddr = 0.005
     --用于控制ddr的增长，每个chapter可能都要微调，所以记在lstg.var里了
     tuolib.DRP_Sys.K_dr_amplify=0.00005
 
     tuolib.DRP_Sys.K_dr_ccced = 1.0 --释放灵击时梦现指针的增加量
-    tuolib.DRP_Sys.K_dr_item = 0.05 --遗漏道具梦现指针变化系数
-    tuolib.DRP_Sys.K_dr_enemy = 0.1 --遗漏敌机梦现指针变化系数
+    tuolib.DRP_Sys.K_dr_item = 0.02 --遗漏道具梦现指针变化系数
+    tuolib.DRP_Sys.K_dr_enemy = 0.05 --遗漏敌机梦现指针变化系数
     tuolib.DRP_Sys.K_graze_c_max = 125 --擦弹计数上限
     tuolib.DRP_Sys.K_graze_c_min = 50 --擦弹计数下限
     tuolib.DRP_Sys.K_dr_graze_c = 0.2 --擦弹系数
@@ -110,16 +110,16 @@ end
 -------------------------------------
 ---boss符卡打完之后触发的事件,主要是速破奖励
 function m.Event_BossCardDelete(boss,card)
-    m.pin_shift(-card.hplen)
-    if card.hplen>0.001 then
-        local a=90
-        local len=a+card.hplen*360
-        while a<len do
-            New(item_faith_minor,boss.x+64*cos(a),boss.y+64*sin(a))
-            -- New(item_point,boss.x+64*cos(a),boss.y+64*sin(a)).attract=8
-            a=a+0.5
-        end
-    end
+    -- m.pin_shift(-card.hplen)
+    -- if card.hplen>0.001 then
+    --     local a=90
+    --     local len=a+card.hplen*360
+    --     while a<len do
+    --         New(item_faith_minor,boss.x+64*cos(a),boss.y+64*sin(a))
+    --         -- New(item_point,boss.x+64*cos(a),boss.y+64*sin(a)).attract=8
+    --         a=a+0.5
+    --     end
+    -- end
 end
 
 -------------------------------------
@@ -149,7 +149,7 @@ function m.Event_BossCardFinished(missed,spelled,ccced)
 	else
 		if (not spelled) and (not ccced) then 
 			-- DR_Pin.pin_shift(-0.05)
-			m.pin_shift(-0.05)
+			m.pin_shift(-0.15)
 		end--如果不小心撞了-0.05
 	end
 end
@@ -225,16 +225,17 @@ function m.add(v)
         var.ddr = (abs(var.ddr) + v * tuolib.DRP_Sys.K_ddr) * sign(var.ddr)
     else
         var.ddr = sign(var.ddr) * 5.0
+        var.dr = min(5,(abs(var.dr) + v * tuolib.DRP_Sys.K_dr)) * sign(var.dr)
     end --控制dr的增长体现在这里
 end
 
 function m.reduce(v)
     local var = lstg.var
-    -- if abs(var.ddr)>0.01 then
+    if abs(var.ddr)>0.01 then
         var.ddr = max(0.01, abs(var.ddr) - v) * sign(var.ddr)
-    -- else
-    --     var.dr = max(0.01, abs(var.dr) - v/5) * sign(var.dr)
-    -- end
+    else
+        var.dr = max(0.01, abs(var.dr) - v/5) * sign(var.dr)
+    end
 end
 
 
@@ -258,7 +259,7 @@ function m:frame()
 
     if not player.dialog then
         --连击数衰减
-            var.cp=var.cp+(0-var.cp)*0.01
+            var.cp=var.cp+(0-var.cp)*0.015
             if var.cp<0.01 then var.cp=0 end
         --ddr衰减
             local k=1
@@ -274,7 +275,7 @@ function m:frame()
             var.dr=max(-5,min(5,var.dr+var.ddr*tuolib.DRP_Sys.K_dr_amplify))
         --这段是给资源的代码
         --设置了单章节最大资源计数值，实际的上限会随着指针而改变
-        if abs(var.ddr) >= tuolib.DRP_Sys.K_dr_BonusLimit then
+        if abs(var.dr) >= tuolib.DRP_Sys.K_dr_BonusLimit then
             tmpv.bonus_count = tmpv.bonus_count + (abs(var.dr) - tuolib.DRP_Sys.K_dr_BonusLimit)
             --指针绝对值多出奖残奖雷阈值的部分会直接加到这个计数变量里
             --具体奖励数量在(2,4)这个区间内分布，偏梦境侧则大于3，偏现实侧则小于3，具体偏移量由指针值定。
@@ -296,8 +297,9 @@ function m:frame()
         end
         --这段是加灵力的代码
         if abs(var.dr) >= 1.0 then
-            -- DR_Pin.GetPower(min((abs(var.dr)-1.0),2.0) * (-2 + sign(var.dr)) / -10 * 0.25)
-            m.GetPower(min((abs(var.dr) - 1.0), 2.0) * (-2 + sign(var.dr)) / -10 * 0.25)
+            local k=(abs(var.dr) - 1)/4
+            k=k*(1+0.3*sign(var.dr))
+            m.GetPower(k*0.35)
         end
     end
 end

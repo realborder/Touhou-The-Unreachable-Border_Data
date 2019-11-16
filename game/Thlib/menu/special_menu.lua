@@ -319,7 +319,7 @@ function special_difficulty:frame()
 	if self.cancel_timer>0 then
 		self.cancel_timer=self.cancel_timer-1
 		local z=exani_interpolation(self.z-0.5,0,self.cancel_delay-self.cancel_timer+1,1,self.cancel_delay,'smooth','smooth')
-		Set3D('at',0,0,z)
+		Set3D('eye',0,0,z)
 	end
 	
 	if self.delay>0 then self.delay=self.delay-1 end
@@ -333,7 +333,7 @@ function special_difficulty:frame()
 	
 	if self.init_timer>0 and self.init_timer<=self.init_delay then
 		local z=exani_interpolation(0,self.z-0.5,self.init_timer,1,self.init_delay,'smooth','smooth')
-		Set3D('at',0,0,z)
+		Set3D('eye',0,0,z)
 	end
 	
 	if self.init_timer==self.init_delay then

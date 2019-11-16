@@ -228,8 +228,8 @@ function player_class:frame()
 				if self.PowerDelay1>0 then self.PowerDelay1=self.PowerDelay1-1 end
 				--if self.PowerDelay2>0 then self.PowerDelay2=self.PowerDelay2-1 end --【旧方案】
 			--火力上限变化
-				if lstg.var.dr==5 then self.maxPower=300
-				else if lstg.var.dr==-5 then self.maxPower=600 
+				if lstg.var.dr>=5 then self.maxPower=300
+				else if lstg.var.dr<=-5 then self.maxPower=600 
 				else if lstg.var.dr<=-2.5 then self.maxPower=500
 				else self.maxPower=400 end end end
 			--火力残留逻辑

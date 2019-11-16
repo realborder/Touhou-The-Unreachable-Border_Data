@@ -200,6 +200,8 @@ end
 local logp=TUO_Developer_UI:NewPanel()
 function logp:init()
     self.name='更新日志'
+    Neww'title'.text='当前版本更新内容'
+
     local txt=Neww'text_displayer'
     txt.text='点击下方链接查看完整更新日志'
     local txt2=Neww'text_displayer'
@@ -208,7 +210,6 @@ function logp:init()
     txt2._event_mouseclick=function(widget)
         os.execute([[explorer "https://docs.qq.com/doc/DWW1XRmpidVFoZklF"]])
     end
-    Neww'title'.text='当前版本更新内容'
     Neww'text_displayer'.text=lstg.DoFile('TUOlib\\Dev_Tool\\module\\07 Setting\\log.lua')
 end
 
