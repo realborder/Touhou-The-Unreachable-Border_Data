@@ -268,7 +268,7 @@ function special_difficulty:init()
 	self.init_timer=0
 	self.init_delay=30
 	
-	self.choose=1
+	self.choose=2
 	self.pre_choose=0
 	self.changed=false
 	
@@ -293,8 +293,8 @@ function special_difficulty:init()
 	self.z=10
 	self.tmpdx=0
 	
-	self.current_dx=1.5*self.gap
-	self.destinate_dx=1.5*self.gap
+	self.current_dx=0.5*self.gap
+	self.destinate_dx=0.5*self.gap
 	self.multiply=0.1
 	
 	self.x_offset={}
@@ -334,11 +334,12 @@ function special_difficulty:frame()
 	if self.init_timer>0 and self.init_timer<=self.init_delay then
 		local z=exani_interpolation(0,self.z-0.5,self.init_timer,1,self.init_delay,'smooth','smooth')
 		Set3D('eye',0,0,z)
+		self.choose=2
 	end
 	
 	if self.init_timer==self.init_delay then
-		self.current_dx=1.5*self.gap
-		self.destinate_dx=1.5*self.gap
+		self.current_dx=0.5*self.gap
+		self.destinate_dx=0.5*self.gap
 		self.interval_timer=self.interval_delay
 		exani_player_manager.ExecuteExaniPredefine(play_manager,self.pics[self.choose],'activate')
 	end
