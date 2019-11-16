@@ -3,7 +3,7 @@
 ---------------------------------------------------
 _exani_predefine={}
 local _infinite=-1
-_exani_predefine['layer']=LAYER_TOP
+_exani_predefine['layer']=LAYER_TOP+1
 _exani_predefine['viewmode']='ui'
 
 _exani_predefine['init']=				{{startf=1,		endf=46},							'keepA'}
