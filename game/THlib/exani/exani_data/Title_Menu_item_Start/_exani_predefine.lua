@@ -21,7 +21,7 @@ _exani_predefine['viewmode']='ui'
 
 _exani_predefine['init']=				{{startf=1,		endf=26},						'keep'}
 _exani_predefine['keep']=				{{startf=27,	endf=146,	repeatc=_infinite}}
-_exani_predefine['kill']=				{{'FORCE_INTERPOLATION',force_interpolation_time=3},{startf=26,	endf=1}}
+_exani_predefine['kill']=				{{startf=26,	endf=1}}
 _exani_predefine['activate']=			{{startf=146,	endf=191},						'ignite'}
 _exani_predefine['ignite']=				{{startf=192,	endf=391,	repeatc=_infinite}}
 _exani_predefine['deactivate']=			{{'FORCE_INTERPOLATION',force_interpolation_time=3},{startf=191,	endf=146},'keep'}

@@ -307,6 +307,11 @@ function stage_main_menu:init()
 			else
 				menu.FlyOut(menu_other,'right')
 				save_setting()
+				loadConfigure()
+				ChangeVideoMode(setting.resx,setting.resy,setting.windowed,setting.vsync)
+				SetSEVolume(setting.sevolume/100)
+				SetBGMVolume(setting.bgmvolume/100)
+				ResetScreen()
 				base_menu.ChangeLocked(menus['main_menu'])
 			end
 		end},
