@@ -27,10 +27,7 @@ function exani_display:init()
         self.display_value={}
         for _k,_v in ipairs(play_manager.exanis) do
             if _v.isInPlay then
-				--local _v_string="viewmode:".._v.viewmode.."	layer:".._v.layer.."	current_frame:".._v.current_frame.."	start_frame:".._v.start_frame..
-				--				"	end_frame:".._v.end_frame.."	replay_round:".._v.replay_round.."	play_interval:".._v.play_interval
-				table.insert(self.display_value,{name=_v.name,v={viewmode=_v.viewmode,layer=_v.layer,isStop=_v.isStop,current_frame=_v.current_frame,start_frame=_v.start_frame,
-													end_frame=_v.end_frame,replay_round=_v.replay_round,play_interval=_v.play_interval}})
+                table.insert(self.display_value,{name=i,v=_v.name})
 			end
         end
     end
