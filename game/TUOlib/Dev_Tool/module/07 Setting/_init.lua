@@ -182,6 +182,7 @@ function sandbox2:init()
     end
 end
 local tip=[[
+数字键：直接切换到对应模块
 F1: 返回模块选择界面
 F3: 显示/隐藏这个内测功能面板
 F5: 重载所有模块的面板的布局

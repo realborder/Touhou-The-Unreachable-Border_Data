@@ -10,7 +10,16 @@ function bg_template.load_res()
 		{'bg_test','bg_test.png'}
 	}
 	for _,v in pairs(res_list) do
-		_LoadImageFromFile(v[1],PATH..v[2],true,0,0,false,0)
+		--移除旧的并加载新的，仅调试用（也就调试的时候有机会卸载资源）
+		local pool=CheckRes("tex", v[1])
+		if pool then
+			RemoveResource(pool, 1, v[1])
+			RemoveResource(pool, 2, v[1])
+		end
+		local ret,err = xpcall(_LoadImageFromFile,debug.traceback,v[1],PATH..v[2],true,0,0,false,0)
+		if not ret then
+			TUO_Developer_Flow:ErrorWindow(err)
+		end
 	end
 end
 ---------------------------------
