@@ -49,7 +49,8 @@ exaniname_list={
 	'Title_Menu_item_PlayerData',
 	'Title_Menu_item_Replay',
 	'Title_Menu_item_Start',
-	'Title_Menu_LOGO'}
+	'Title_Menu_LOGO'
+}
 
 	
 function clone(tab)

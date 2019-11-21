@@ -84,19 +84,6 @@ function setting_keys_default()
 end
 
 ---------------------------------------
--- LoadImageFromFile('UI_gameInit','THlib\\UI\\UI_gameInit.jpg')
-InitRenderFlag=true
-
--- InitRender=Class(object)
--- function InitRender:init()
--- 	self.layer=LAYER_TOP+20
--- end
-
--- function InitRender:render()
--- 	if InitRenderFlag then Render('UI_gameInit',320,240) end
--- end
-
-
 stage_init=stage.New('init',true,true)
 function stage_init:init()
     New(mask_fader,'open','fullscreen')
@@ -134,11 +121,13 @@ function stage_init:frame()
 			end
 			LoadTexture('UI_gameInit','THlib\\UI\\UI_gameInit.jpg')
 			LoadImage('UI_gameInit','UI_gameInit',0,0,1920,1080)
-		
-			New(exani_player_manager)	
+            
+			New(exani_player_manager)
+            
 			player_menu=New(special_player)
 			
 			diff_menu=New(special_difficulty)
+            
 			RawDel(diff_menu)
 			stage_menu=New(base_menu,'stage_menu','',{
 					{'ChooseStage_item_Stage1','diff_menu','',true},
@@ -165,6 +154,7 @@ function stage_init:frame()
 			replay_menu=New(special_replay)
 			
 			manual_menu=New(special_manual)
+            
 			menu_other=New(other_setting_menu,'Other Settings',{
 				{'Resolution X',function() menu_other.edit=true menu_other.setting_backup=cur_setting.res end},
 				{'Resolution Y',function() menu_other.edit=true menu_other.setting_backup=cur_setting.res end},
@@ -187,11 +177,17 @@ function stage_init:frame()
 						menu_other.pos=7
 					else
 						menu.FlyOut(menu_other,'right')
-						save_setting()
-						base_menu.ChangeLocked(menus['main_menu'])
+                        save_setting()
+                        loadConfigure()
+                        ChangeVideoMode(setting.resx,setting.resy,setting.windowed,setting.vsync)
+                        SetSEVolume(setting.sevolume/100)
+                        SetBGMVolume(setting.bgmvolume/100)
+                        ResetScreen()
+                        base_menu.ChangeLocked(menus['main_menu'])
 					end
 				end},
 			})
+            
 			main_menu=New(base_menu,'main_menu','',{
 					{'Title_Menu_item_Start','start_menu','',true},
 					{'Title_Menu_item_Replay','replay_menu',function() menu.FadeIn2(replay_menu,'right') end,true},
@@ -215,7 +211,7 @@ function stage_init:frame()
 		self.load_process=1
     elseif self.timer==35 then
         New(mask_fader,'','fullscreen')
-    elseif self.timer>=67 then 
+    elseif self.timer>=67 then
 		stage.Set('none', 'menu') 
 	end
     -- if self.timer>=1 then stage.Set('none', 'menu') end
@@ -329,17 +325,27 @@ function stage_main_menu:init()
 		'',
 		true
 	)
-	LoadMusic('menu',music_list.menu[1],music_list.menu[2],music_list.menu[3])
-
-	-- New(mask_fader,'open')
-	-- InitRenderFlag=false
-	New(mask_fader,'open','fullscreen')
-		
-	base_menu.ChangeLocked(menus['main_menu'])
-	exani_player_manager.ExecuteExaniPredefine(play_manager,'Title_Menu_bg','init')
-	exani_player_manager.SetExaniAttribute(play_manager,'Title_Menu_bg',nil,nil,nil,'ui')
 	
-	PlayMusic('menu')
+    if stage.IsReplay then--rep播放后返回rep菜单 add by OLC
+        stage.IsReplay=nil
+        base_menu.ChangeLocked(menus['replay_menu'])
+    else
+        if self.save_replay then
+            menu_replay_saver=New(replay_saver,self.save_replay,self.finish,function()
+                menu.FlyOut(menu_replay_saver,'right')
+                task.New(stage_main_menu,function() task.Wait(30) base_menu.ChangeLocked(menus['main_menu']) end)
+            end)
+            menu.FlyIn(menu_replay_saver,'left')
+        else
+            LoadMusic('menu',music_list.menu[1],music_list.menu[2],music_list.menu[3])
+            New(mask_fader,'open','fullscreen')
+            base_menu.ChangeLocked(menus['main_menu'])
+            exani_player_manager.ExecuteExaniPredefine(play_manager,'Title_Menu_bg','init')
+            exani_player_manager.SetExaniAttribute(play_manager,'Title_Menu_bg',nil,nil,nil,'ui')
+	
+            PlayMusic('menu')
+        end
+    end
 end
 -- function stage_main_menu:frame()
 -- 	if self.timer==30 then
