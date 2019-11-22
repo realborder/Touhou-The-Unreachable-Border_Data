@@ -190,7 +190,9 @@ function TUO_Developer_Tool_kit:init()
 	self.UNLOCK_COUNT=3
 	self.mouse_click_list={}
 	self.mouseR_click_list={}
-	self.performance_monitor={}
+	self.performance_monitor={
+		frame_pre_cur=1
+	}
 	self.ui=TUO_Developer_UI
 	self.ui:init()
 	self:SortAllTemplate()

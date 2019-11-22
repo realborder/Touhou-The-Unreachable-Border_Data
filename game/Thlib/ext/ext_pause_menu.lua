@@ -174,7 +174,7 @@ function ext.pausemenu:frame()
 			if lstg.tmpvar.death then
 				ext.pause_menu_order='Quit and Save Replay'
 			elseif not ext.rep_over then
-				self.t=60
+				self.t=30
 				PlaySound('cancel00',0.3)
 				self.choose=false
 				self:FlyOut()
@@ -182,7 +182,7 @@ function ext.pausemenu:frame()
 		end
 		--直接重开
 		if Lk==ks.retry or Lk==j.retry then
-			self.t=60
+			self.t=30
 			PlaySound('ok00',0.3)
 			self.choose=false
 			if ext.replay.IsReplay() then
@@ -222,7 +222,7 @@ function ext.pausemenu:frame()
 				self.choose=false
 			else
 				if not ext.rep_over then
-					self.t=60
+					self.t=30
 					PlaySound('cancel00',0.3)
 					self:FlyOut()
 				end
@@ -233,7 +233,7 @@ function ext.pausemenu:frame()
 			if self.choose then
 				if self.pos2==1 then
 					--确认选项，推送命令，暂停菜单关闭
-					self.t=60
+					self.t=30
 					PlaySound('ok00',0.3)
 					ext.PushPauseMenuOrder(pause_menu_text[self.pos])
 					self.choose=false
@@ -261,7 +261,7 @@ function ext.pausemenu:frame()
 	--last op
 	self.timer=self.timer+1
 	if self.t>0 then
-		self.t=self.t-1
+		self.t=self.t-3
 	end
 	if self.choose then
 		self.eff=min(self.eff+1,15)
@@ -284,11 +284,14 @@ function ext.pausemenu:render()
 		m=1
 	end
 	--绘制黑色遮罩
-	SetViewMode'ui'
 	SetImageState('white','',pm.mask_color)
 	local extra=(screen.height/9*16-screen.width)/2
-	RenderRect('white',-extra,screen.width+extra,0,screen.height)
+	SetViewMode'world'
+	local w= lstg.world
+	RenderRect('white',w.l,w.r,w.b,w.t)
 	--渲染底图
+	SetViewMode'ui'
+
 	SetImageState('pause_eff','',Color(pm.mask_alph[1]/3,200*self.eff/15+55,200*(1-self.eff/15)+55,200*(1-self.eff/15)+55))
 	Render('pause_eff',-150+180*self.eff/15+dx,-90+dy,4+4*sin(self.timer*3),0.4,0.6)
 	--准备选项
@@ -389,7 +392,7 @@ function ext.pausemenu:FlyIn()
 	self.lock=true
 	
 	self.timer=0
-	self.t=30
+	self.t=15
 	
 	self.eff=0
 	self.mask_color=Color(0,255,255,255)
@@ -400,7 +403,8 @@ function ext.pausemenu:FlyIn()
 		self:PauseSound()
 		PlaySound('pause', 0.5)
 		
-		for i=1,50 do
+		for i=1,30 do
+			local i=sin(i/30*90)*50
 			self.mask_color=Color(i*4.1,0,0,0)
 			self.mask_alph={
 				min(i*8,239),

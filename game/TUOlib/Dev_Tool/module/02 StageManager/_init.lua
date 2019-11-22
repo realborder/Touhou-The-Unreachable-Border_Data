@@ -90,6 +90,7 @@ function quickboost:init()
             lstg.var.player_name=player_list[plr_index][2]
             lstg.var.rep_player=player_list[plr_index][3]
             stage.group.Start(stage.groups[d])
+            TUO_Developer_UI.cur=1
         -- end
     end
     local start_btn2=Neww'button'
@@ -128,6 +129,7 @@ function quickboost:init()
             lstg.var.player_name=player_list[plr_index][2]
             lstg.var.rep_player=player_list[plr_index][3]
             stage.group.PracticeStart(_stage)
+            TUO_Developer_UI.cur=1
     end
 
 

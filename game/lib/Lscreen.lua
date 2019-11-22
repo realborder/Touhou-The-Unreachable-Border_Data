@@ -304,12 +304,12 @@ end
 
 function WorldToUI(x,y)
 	local w=lstg.world
-	-- local x_offset=((16/9)/(4/3)-1)*640
-
-	-- return x_offset+w.scrl+(w.scrr-w.scrl)*(x-w.l)/(w.r-w.l),w.scrb+(w.scrt-w.scrb)*(y-w.b)/(w.t-w.b)
 	return w.scrl+(w.scrr-w.scrl)*(x-w.l)/(w.r-w.l),w.scrb+(w.scrt-w.scrb)*(y-w.b)/(w.t-w.b)
 end  
-
+function UIToWorld(x,y)
+	local w=lstg.world
+	return (x-w.scrl)/(w.scrr-w.scrl)*(w.r-w.l)+w.l,(y-w.scrb)/(w.scrt-w.scrb)*(w.t-w.b)+w.b
+end
 function WorldToScreen(x,y)
 	local w=lstg.world
 	if setting.resx>setting.resy then
