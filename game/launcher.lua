@@ -333,7 +333,7 @@ function stage_main_menu:init()
         if self.save_replay then
             menu_replay_saver=New(replay_saver,self.save_replay,self.finish,function()
                 menu.FlyOut(menu_replay_saver,'right')
-                task.New(stage_main_menu,function() task.Wait(30) base_menu.ChangeLocked(menus['main_menu']) end)
+                base_menu.ChangeLocked(menus['main_menu'])
             end)
             menu.FlyIn(menu_replay_saver,'left')
         else
