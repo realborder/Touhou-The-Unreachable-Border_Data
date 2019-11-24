@@ -256,12 +256,12 @@ function stage_main_menu:init()
 	diff_menu=New(special_difficulty)
 	
 	stage_menu=New(base_menu,'stage_menu','',{
-			{'ChooseStage_item_Stage1','diff_menu','',true},
-			{'ChooseBoss_item_Boss1','diff_menu',function() debugPoint=4 end,true},
-			{'ChooseStage_item_Stage2','diff_menu','',true},
-			{'ChooseBoss_item_Boss2','diff_menu',function() debugPoint=4 end,true},
-			{'ChooseStage_item_Stage3','diff_menu','',true},
-			{'ChooseBoss_item_Boss3','diff_menu',function() debugPoint=5 end,true},
+			{'ChooseStage_item_Stage1','diff_menu',function() lstg.var.start_from_boss=false end,true},
+			{'ChooseBoss_item_Boss1','diff_menu',function() lstg.var.start_from_boss=true end,true},
+			{'ChooseStage_item_Stage2','diff_menu',function() lstg.var.start_from_boss=false end,true},
+			{'ChooseBoss_item_Boss2','diff_menu',function() lstg.var.start_from_boss=true end,true},
+			{'ChooseStage_item_Stage3','diff_menu',function() lstg.var.start_from_boss=false end,true},
+			{'ChooseBoss_item_Boss3','diff_menu',function() lstg.var.start_from_boss=true end,true},
 		},
 		'start_menu',
 		true
