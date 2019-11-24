@@ -266,7 +266,7 @@ function special_difficulty:init()
 	self.has_logo=false
 	self.locked=true
 	self.init_timer=0
-	self.init_delay=30
+	self.init_delay=15
 	
 	self.choose=2
 	self.pre_choose=0
@@ -467,7 +467,7 @@ function special_player:init()
 	self.has_logo=false
 	self.locked=true
 	self.init_timer=0
-	self.init_delay=30
+	self.init_delay=15
 	
 	self.choose=1
 	self.choose_timer=-1

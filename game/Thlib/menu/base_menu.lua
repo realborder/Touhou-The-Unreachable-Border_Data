@@ -30,7 +30,7 @@ function base_menu:init(name,title,options,pre_menu,has_logo)
 	self.change_delay=1
 	self.change_timer=0
 	
-	self.init_delay=30 --init时间
+	self.init_delay=15 --init时间
 	self.init_timer=0 --init后的计时
 	
 	self.choose_delay=30 --选中后播放选中动画的时间以便于跳转下一个菜单
