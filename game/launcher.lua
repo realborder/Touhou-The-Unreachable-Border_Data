@@ -314,7 +314,7 @@ function stage_main_menu:init()
 	})
 	main_menu=New(base_menu,'main_menu','',{
 			{'Title_Menu_item_Start','start_menu','',true},
-			{'Title_Menu_item_Replay','replay_menu',function() menu.FadeIn2(replay_menu,'right') end,true},
+			{'Title_Menu_item_Replay','replay_menu',function() menu.FadeIn2(replay_menu,'right') special_replay.Refresh(replay_menu) end,true},
 			{'Title_Menu_item_PlayerData','','',false},
 			{'Title_Menu_item_Musicroom','','',false},
 			{'Title_Menu_item_Manual','manual_menu','',true},
@@ -326,6 +326,13 @@ function stage_main_menu:init()
 		true
 	)
 	
+    LoadMusic('menu',music_list.menu[1],music_list.menu[2],music_list.menu[3])
+    New(mask_fader,'open','fullscreen')
+    exani_player_manager.ExecuteExaniPredefine(play_manager,'Title_Menu_bg','init')
+    exani_player_manager.SetExaniAttribute(play_manager,'Title_Menu_bg',nil,nil,nil,'ui')
+
+    PlayMusic('menu')
+    
     if stage.IsReplay then--rep播放后返回rep菜单 add by OLC
         stage.IsReplay=nil
         base_menu.ChangeLocked(menus['replay_menu'])
@@ -337,13 +344,7 @@ function stage_main_menu:init()
             end)
             menu.FlyIn(menu_replay_saver,'left')
         else
-            LoadMusic('menu',music_list.menu[1],music_list.menu[2],music_list.menu[3])
-            New(mask_fader,'open','fullscreen')
             base_menu.ChangeLocked(menus['main_menu'])
-            exani_player_manager.ExecuteExaniPredefine(play_manager,'Title_Menu_bg','init')
-            exani_player_manager.SetExaniAttribute(play_manager,'Title_Menu_bg',nil,nil,nil,'ui')
-	
-            PlayMusic('menu')
         end
     end
 end
