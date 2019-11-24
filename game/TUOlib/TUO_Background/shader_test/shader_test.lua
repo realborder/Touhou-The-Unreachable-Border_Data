@@ -69,7 +69,7 @@ function shader_test:render()
 	local showboss = IsValid(_boss)
 	local shader_avalible=CheckRes("fx", 'water_wave')
 
-	RenderClear(Color(0xFF000000))
+	-- RenderClear(Color(0xFF000000))
 	if showboss then background.WarpEffectCapture() end
 	if shader_avalible then PushRenderTarget('rt_shader_test') end
 	RenderClear(Color(0xFF000000))
@@ -91,11 +91,11 @@ function shader_test:render()
 			a=0.9,
 			da=0.6,
 			r1 = 245/255,
-			g1 = 255/255,
+			g1 = 155/255,
 			b1 = 245/255,
-			r2 = 120/255,
-			g2 = 255/255,
-			b2 = 24/255,
+			r2 = 23/255,
+			g2 = 120/255,
+			b2 = 234/255,
 			tex_vision='vision',
 			})
 	end
