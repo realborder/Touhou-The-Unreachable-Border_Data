@@ -104,3 +104,31 @@ end
 ran.GetSeed = function(self)
 	return ranx:GetSeed()
 end
+
+------------------------------
+---直角坐标变换为极坐标
+---@param x number
+---@param y number
+---@param x0 number
+---@param y0 number
+---@return number 
+---@overload fun(x,y):number
+function RectToPolar(x,y,x0,y0)
+	local x0,y0=x0,y0 or 0,0
+	local dx,dy=x-x0,y-y0
+	return hypot(dx,dy),atan2(dy,dx)
+end
+R2P=RectToPolar
+------------------------------
+---极坐标变换为直角坐标
+---@param a number
+---@param r number
+---@param x0 number
+---@param y0 number
+---@return number
+---@overload fun(a:number,r:number):number
+function PolarToRect(a,r,x0,y0)
+	local x0,y0=x0,y0 or 0,0
+	return x0+r*cos(a),y0+r+sin(a)
+end
+P2R=PolarToRect

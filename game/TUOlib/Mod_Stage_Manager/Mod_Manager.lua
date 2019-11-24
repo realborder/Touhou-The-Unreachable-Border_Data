@@ -10,7 +10,7 @@ function m:init()
     if not result then
         for k,v in pairs(ret) do
             if not v.ret then
-                Print('Mod出错'..err)
+                Print('Mod出错'..v.err)
             end
         end
     end    
@@ -74,7 +74,7 @@ function m.LoadAllStageMod()
         if string.find(k,'STAGE',1,true)~=nil then
             local hasPassWord=string.find(k,'pw',1,true)
             if not v then 
-                local r,e=self.LoadMod(v)
+                local r,e=self.LoadMod(k)
                 table.insert(ret,{ret=r,err=e})
                 result=result and r
             end

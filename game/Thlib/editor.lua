@@ -694,3 +694,12 @@ function RenderObject:render()
 		SetImgState(self,'',255,255,255,255)
 	end
 end
+
+function SplitBossInto4Difficulty(index)
+	local b=_editor_class[index]
+	for _,diff in ipairs({'Easy','Normal','Hard','Lunatic'}) do
+		local new_boss=sp.copy(b)
+		new_boss.difficulty=diff
+		_editor_class[index..':'..diff]=new_boss
+	end
+end
