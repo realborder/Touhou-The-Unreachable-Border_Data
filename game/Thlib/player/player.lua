@@ -565,6 +565,7 @@ function grazer:init(player)
 	self.a=32
 	self.b=32
 	self.aura=0
+	self.aura_timer=0
 end
 
 function grazer:frame()
@@ -572,7 +573,16 @@ function grazer:frame()
 	self.y=self.player.y
 	self.hide=self.player.hide
 	if not self.player.time_stop then
-	self.aura=self.aura+1.5 end
+		if self.player.slow==1 then
+			self.aura_timer=self.aura_timer+1
+			if self.aura_timer>15 then
+				self.aura=self.aura+sin(min(60,self.aura_timer-15)/60*90)*1.5
+			end
+		else
+			self.aura_timer=0
+		end
+		
+	end
 	--
 	if self.grazed then
 		PlaySound('graze',0.3,self.x/200)

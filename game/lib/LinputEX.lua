@@ -135,12 +135,15 @@ function GetInputExtra()
 
     --更新鼠标输入
     local x,y=GetMousePosition()
-    local ux,uy=ScreenToUI(lstg.GetMousePosition())
+    local ux,uy=ScreenToUI(x,y)
+    local wx,wy=UIToWorld(ux,uy)
     MouseState.x=x
     MouseState.y=y
     MouseState.WheelDelta=lstg.GetMouseWheelDelta()
     MouseState.x_in_UI=ux
     MouseState.y_in_UI=uy
+    MouseState.x_in_world=wx
+    MouseState.y_in_world=wy
     for i=0,7 do MouseState['MouseButton_'..i]=lstg.GetMouseState(i) end
     MouseState.LeftButton=MouseState.MouseButton_0
     MouseState.RightButton=MouseState.MouseButton_2
@@ -148,6 +151,13 @@ function GetInputExtra()
 
     --更新输入缓冲
     KeyInputTemp:RefreshAll()
+end
+
+function GetMousePositionInUI()
+    return MouseState.x_in_UI,MouseState.y_in_UI
+end
+function GetMousePositionInWorld()
+    return MouseState.x_in_world,MouseState.y_in_world
 end
 
 local Original_GetInput=GetInput
