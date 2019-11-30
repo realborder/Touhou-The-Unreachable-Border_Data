@@ -163,7 +163,7 @@ function TUO_Developer_UI.GetListSingleSel(widget)
 	return nil
 end
 
----性能监视用
+---性能监视用，发布的时候可以干掉
 function DoFrame()
 	--标题设置
 	ChangeGameTitle()

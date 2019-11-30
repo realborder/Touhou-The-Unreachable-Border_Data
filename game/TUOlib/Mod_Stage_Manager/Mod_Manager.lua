@@ -2,24 +2,26 @@ tuolib.mod_manager={}
 local m=tuolib.mod_manager
 local self=m
 local PATH='mod'
-function m:init()
+function m:init(load_now)
     self.modlist=self.modlist or {} 
     self:RefreshModList()
     self.protect_mode=true
-    local result,ret = self:LoadAllStageMod() 
-    if not result then
-        for k,v in pairs(ret) do
-            if not v.ret then
-                Print('Mod出错'..v.err)
+    if load_now then
+        local result,ret = self:LoadAllStageMod() 
+        if not result then
+            for k,v in pairs(ret) do
+                if not v.ret then
+                    Print('Mod出错'..v.err)
+                end
             end
-        end
-    end    
+        end    
+    end
 end
 function m:DoFile(path,arch)
     if self.protect_mode then
         local r,err=xpcall(lstg.DoFile,debug.traceback,path,arch)
         if r then 
-            Print('成功重载脚本：'..path,2)
+            Print('成功重载脚本：'..path..arch,2)
             return true
         else
             Print('重载脚本：'..path..' 的时候发生错误\n\t错误详细信息:\n\t\t'..err,1)
@@ -61,6 +63,7 @@ function m.LoadMod(arch)
         self.UnloadMod(arch)
         self.modlist[arch]=false
     end
+    InitAllClass()
     return r,err
 end
 function m.UnloadMod(arch)

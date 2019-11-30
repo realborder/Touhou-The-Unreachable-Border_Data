@@ -458,13 +458,13 @@ end
 
 function start_game()
 	loadConfigure()
-	if not(lfs.attributes('Library\\'..setting.mod..'_pw.zip')==nil) then
-		LoadPackSub('Library\\'..setting.mod..'_pw.zip')--正常加载加密mod
-	elseif not(lfs.attributes('Library\\'..setting.mod..'.zip')==nil) then
-		LoadPack('Library\\'..setting.mod..'.zip')--正常加载mod
-	else
+	-- if not(lfs.attributes('Library\\'..setting.mod..'_pw.zip')==nil) then
+	-- 	LoadPackSub('Library\\'..setting.mod..'_pw.zip')--正常加载加密mod
+	-- elseif not(lfs.attributes('Library\\'..setting.mod..'.zip')==nil) then
+	-- 	LoadPack('Library\\'..setting.mod..'.zip')--正常加载mod
+	-- else
 		--找不到，不加载mod
-	end
+	-- end
 	-- SetSplash(false)
 	-- SetTitle(setting.mod)
 	SetTitle('东方梦无垠 ~ The Unreachabe Oneiroborder')
@@ -483,7 +483,9 @@ function start_game()
 	-- ResetScreen()--Lscreen
 	-- SetResourceStatus'global'
 	ResetUI()
-	Include("root.lua")
+	-- Include("root.lua")
+	Include'THlib.lua'
+	tuolib.mod_manager:LoadAllStageMod()
 	SetResourceStatus'stage'
 	InitAllClass()--Lobject
 	InitScoreData()--initialize score data--Lscoredata

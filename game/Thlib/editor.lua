@@ -9,6 +9,8 @@ _editor_class={}
 _editor_cards={}
 _editor_tasks={}
 _sc_table={}
+--新的符卡练习实现
+_sc_table_new={}
 _infinite=4294967296
 
 ----------------------------------------
@@ -695,11 +697,18 @@ function RenderObject:render()
 	end
 end
 
-function SplitBossInto4Difficulty(index)
-	local b=_editor_class[index]
-	for _,diff in ipairs({'Easy','Normal','Hard','Lunatic'}) do
-		local new_boss=sp.copy(b)
-		new_boss.difficulty=diff
-		_editor_class[index..':'..diff]=new_boss
+function _AddToSCPRList(index,sc)
+	if not _sc_table_new[index] then 
+		_sc_table_new[index]={}
 	end
+	table.insert(_sc_table_new[index],sc)
+end
+
+function SplitBossInto4Difficulty(index)
+	-- local b=_editor_class[index]
+	-- for _,diff in ipairs({'Easy','Normal','Hard','Lunatic'}) do
+	-- 	local new_boss=sp.copy(b)
+	-- 	new_boss.difficulty=diff
+	-- 	_editor_class[index..':'..diff]=new_boss
+	-- end
 end

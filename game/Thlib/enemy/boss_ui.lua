@@ -135,7 +135,14 @@ function boss_ui:render()
         if self.sc_name~='' then
             SetImageState('boss_spell_name_bg','',Color(alpha*255,255,255,255))
             Render('boss_spell_name_bg',192+xoffset,236-dy2,0,1)  --这里*2了，之后换素材之后要改
-            RenderTTF('sc_name',self.sc_name,193+xoffset,193+xoffset,226-dy2,226-dy2,Color(alpha*255,0,0,0),'right','noclip')
+            for r=1,3,0.5 do
+                local alpha=0.35
+                for a=0,360,30 do
+                    RenderTTF('sc_name',self.sc_name,192+xoffset+cos(a)*r,192+xoffset+cos(a)*r,227-dy2+sin(a)*r,227-dy2+sin(a)*r,Color(alpha*255,0,0,0),'right','noclip')
+                end
+
+            end
+            -- RenderTTF('sc_name',self.sc_name,192+xoffset+2,192+xoffset+2,227-dy2-2,227-dy2-2,Color(alpha*255,10,10,10),'right','noclip')
             RenderTTF('sc_name',self.sc_name,192+xoffset,192+xoffset,227-dy2,227-dy2,Color(alpha*255,255,255,255),'right','noclip')
         end
         if self.boss.sc_bonus and self.sc_hist then
