@@ -91,7 +91,7 @@ end
 --但是为了看起来清楚，就放到render里了
 function base_menu:render()
 	if self.init_timer==1 then
-		if self.title~='' then
+		if self.title and self.title~='' then
 			exani_player_manager.SetPlayInterval(play_manager,self.title,1)
 			exani_player_manager.ExecuteExaniPredefine(play_manager,self.title,'ignite')
 		end
@@ -151,7 +151,7 @@ function base_menu:ChangeLocked()
 	self.locked=not self.locked
 	local action
 	if self.locked then action='kill' self.init_timer=0 self.choose_timer=-1 self.change_timer=0 else action='init' self.choose=1 end
-	if self.title~='' then
+	if self.title and self.title~='' then
 		exani_player_manager.SetPlayInterval(play_manager,self.title,1)
 		exani_player_manager.ExecuteExaniPredefine(play_manager,self.title,action)
 	end

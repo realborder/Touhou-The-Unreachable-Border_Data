@@ -128,23 +128,25 @@ function stage_init:frame()
 			
 			diff_menu=New(special_difficulty)
             
+            scpractice_menu=New(special_scpractice)
+            
 			RawDel(diff_menu)
 			stage_menu=New(base_menu,'stage_menu','',{
-					{'ChooseStage_item_Stage1','diff_menu','',true},
-					{'ChooseBoss_item_Boss1','diff_menu',function() debugPoint=4 end,true},
-					{'ChooseStage_item_Stage2','diff_menu','',true},
-					{'ChooseBoss_item_Boss2','diff_menu',function() debugPoint=4 end,true},
-					{'ChooseStage_item_Stage3','diff_menu','',true},
-					{'ChooseBoss_item_Boss3','diff_menu',function() debugPoint=5 end,true},
+                    {'ChooseStage_item_Stage1','diff_menu',function() lstg.var.start_from_boss=false end,true},
+                    {'ChooseBoss_item_Boss1','diff_menu',function() lstg.var.start_from_boss=true end,true},
+                    {'ChooseStage_item_Stage2','diff_menu',function() lstg.var.start_from_boss=false end,true},
+                    {'ChooseBoss_item_Boss2','diff_menu',function() lstg.var.start_from_boss=true end,true},
+                    {'ChooseStage_item_Stage3','diff_menu',function() lstg.var.start_from_boss=false end,true},
+                    {'ChooseBoss_item_Boss3','diff_menu',function() lstg.var.start_from_boss=true end,true},
 				},
 				'start_menu',
 				true
 			)
 			
 			start_menu=New(base_menu,'start_menu','Title_Menu_item_Start',{
-					{'ChooseMode_item_StoryMode','diff_menu',function() practice=nil diff_menu.menu_back=1 debugPoint=0 end,true},
+					{'ChooseMode_item_StoryMode','diff_menu',function() practice=nil diff_menu.menu_back=1 player_menu.menu_back=1 lstg.var.start_from_boss=false end,true},
 					{'ChooseMode_item_StagePrac','stage_menu',function() practice='stage' diff_menu.menu_back=2 end,true},
-					{'ChooseMode_item_SpellCardPrac','','',false},
+					{'ChooseMode_item_SpellCardPrac','scpractice_menu',function() practice='spell' player_menu.menu_back=2 menu.FlyIn(menu_sc_pr,'left') end,true},
 					{'ChooseMode_item_NightmareEcli','','',false},
 				},
 				'main_menu',
@@ -254,6 +256,8 @@ function stage_main_menu:init()
 	player_menu=New(special_player)
 	
 	diff_menu=New(special_difficulty)
+    
+    scpractice_menu=New(special_scpractice)
 	
 	stage_menu=New(base_menu,'stage_menu','',{
 			{'ChooseStage_item_Stage1','diff_menu',function() lstg.var.start_from_boss=false end,true},
@@ -268,10 +272,10 @@ function stage_main_menu:init()
 	)
 	
 	start_menu=New(base_menu,'start_menu','Title_Menu_item_Start',{
-			{'ChooseMode_item_StoryMode','diff_menu',function() practice=nil diff_menu.menu_back=1 debugPoint=0 end,true},
-			{'ChooseMode_item_StagePrac','stage_menu',function() practice='stage' diff_menu.menu_back=2 end,true},
-			{'ChooseMode_item_SpellCardPrac','','',false},
-			{'ChooseMode_item_NightmareEcli','','',false},
+			{'ChooseMode_item_StoryMode','diff_menu',function() practice=nil diff_menu.menu_back=1 player_menu.menu_back=1 lstg.var.start_from_boss=false end,true},
+            {'ChooseMode_item_StagePrac','stage_menu',function() practice='stage' diff_menu.menu_back=2 end,true},
+            {'ChooseMode_item_SpellCardPrac','scpractice_menu',function() practice='spell' player_menu.menu_back=2 menu.FlyIn(menu_sc_pr,'left') end,true},
+            {'ChooseMode_item_NightmareEcli','','',false},
 		},
 		'main_menu',
 		true
@@ -333,9 +337,30 @@ function stage_main_menu:init()
 
     PlayMusic('menu')
     
+    local sc_init=function()--by OLC
+        menu_sc_pr.pos=lstg.var.sc_index
+        menu_sc_pr.page=int(lstg.var.sc_index/ui.menu.sc_pr_line_per_page)+2
+        self.pos_changed=ui.menu.shake_time
+    end
+    
     if stage.IsReplay then--rep播放后返回rep菜单 add by OLC
         stage.IsReplay=nil
         base_menu.ChangeLocked(menus['replay_menu'])
+    elseif stage.IsSCpractice then--符卡练习后返回符卡练习菜单 add by OLC
+        stage.IsSCpractice=nil
+        if self.save_replay then
+            menu_replay_saver=New(replay_saver,self.save_replay,self.finish,function()
+                menu.FlyOut(menu_replay_saver,'right')
+                base_menu.ChangeLocked(menus['scpractice_menu'])
+                menu.FlyIn(menu_sc_pr,'left')
+                task.New(menu_sc_pr,sc_init)
+            end)
+            menu.FlyIn(menu_replay_saver,'left')
+        else
+            base_menu.ChangeLocked(menus['scpractice_menu'])
+            menu.FlyIn(menu_sc_pr,'left')
+            task.New(menu_sc_pr,sc_init)
+        end
     else
         if self.save_replay then
             menu_replay_saver=New(replay_saver,self.save_replay,self.finish,function()

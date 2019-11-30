@@ -253,7 +253,49 @@ function menu:FadeOut2()
 end
 
 -------------------------------------
+special_scpractice=Class(object)
+function special_scpractice:init()
+    self.bound=false
+    self.pre_menu='start_menu'
+    self.has_logo=false
+    self.locked=true
+    
+    self.init_timer=0
+    self.init_delay=10
+    
+    menus['scpractice_menu']=self
+    
+    menu_sc_pr=New(sc_pr_menu,function(index)
+        if index then
+            last_menu=menu_sc_pr
+            lstg.var.sc_index=index
+            menu.FlyOut(menu_sc_pr,'left')
+        else
+            menu.FlyOut(menu_sc_pr,'right')
+        end
+    end)
+end
 
+function special_scpractice:frame()
+    if self.locked then return end
+    
+    self.init_timer=self.init_timer+1
+    
+    if self.init_timer>self.init_delay then
+        if KeyTrigger'shoot' then
+            base_menu.ChangeLocked(self)
+            base_menu.ChangeLocked(menus['player_menu'])
+            exani_player_manager.ExecuteExaniPredefine(play_manager,'ChooseChar_reimu','init')
+        end
+        
+        if KeyTrigger 'spell' then
+            base_menu.ChangeLocked(self)
+            base_menu.ChangeLocked(menus[self.pre_menu])
+        end
+    end
+end
+
+-------------------------------------
 special_difficulty=Class(object)
 function special_difficulty:init()
 	self.layer=LAYER_TOP-5
@@ -463,6 +505,9 @@ function special_player:init()
 	self.group=GROUP_GHOST
 	self.bound=false
 	
+    self.pre_menu={'diff_menu','scpractice_menu'}
+	self.menu_back=1
+    
 	self.title='ChoosePlayer_title'
 	self.has_logo=false
 	self.locked=true
@@ -549,13 +594,18 @@ function special_player:frame()
 		elseif KeyTrigger'spell' then
 			self.cancel_timer=self.cancel_delay
 			base_menu.ChangeLocked(self)
-			local diff=menus['diff_menu']
-			diff.locked=false
-			diff.is_choose=false
-			diff.pre_choose=0
-			diff.delay=30
-			exani_player_manager.ExecuteExaniPredefine(play_manager,diff.title,'init')
-			exani_player_manager.ExecuteExaniPredefine(play_manager,diff.pics[diff.choose],'unchoose')
+            if self.menu_back==1 then
+                local diff=menus['diff_menu']
+                diff.locked=false
+                diff.is_choose=false
+                diff.pre_choose=0
+                diff.delay=30
+                exani_player_manager.ExecuteExaniPredefine(play_manager,diff.title,'init')
+                exani_player_manager.ExecuteExaniPredefine(play_manager,diff.pics[diff.choose],'unchoose')
+            elseif self.menu_back==2 then
+                base_menu.ChangeLocked(menus['scpractice_menu'])
+                menu.FlyIn(menu_sc_pr,'left')
+            end
 			if self.choose==1 then exani_player_manager.ExecuteExaniPredefine(play_manager,self.player[1],'killA')
 			elseif self.choose==2 then exani_player_manager.ExecuteExaniPredefine(play_manager,self.player[1],'killB')
 			elseif self.choose==3 then exani_player_manager.ExecuteExaniPredefine(play_manager,self.player[2],'killA')
@@ -590,6 +640,9 @@ function special_player:frame()
 			if practice=='stage' then
 				-- Print("关卡练习参数是 "..stage_choices[stage_pr.choose]..'@'..stage_diffs[diff.choose])
 				stage.group.PracticeStart(stage_choices[stage_pr.choose]..'@'..stage_diffs[diff.choose])
+            elseif practice=='spell' then
+                stage.IsSCpractice=true--判定进入符卡练习的flag add by OLC
+                stage.group.PracticeStart('Spell Practice@Spell Practice')
 			else
 				stage.group.Start(stage.groups[stage_diffs[diff.choose]])
 			end
