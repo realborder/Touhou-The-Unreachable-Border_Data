@@ -1,4 +1,4 @@
-local EXANI_PATH="THlib\\exani\\exani_data\\"
+local EXANI_PATH="TUOlib\\exani\\exani_data\\"
 
 local layers_player={}
 function layers_player.init(list)
@@ -524,7 +524,7 @@ function exani_player:CheckShader()
 		local rtmname='RTM'..self.name	---RenderTargetMaskedName
 		CreateRenderTarget(rtsname)
 		CreateRenderTarget(rtmname)
-		local path='THlib\\exani\\exani_data\\'..self.name..'\\'..self.name..'FX.fx'
+		local path=EXANI_PATH..self.name..'\\'..self.name..'FX.fx'
 		LoadFX(self.name..'FX',path)
 		for i=#self.picList,1,-1 do
 			if self.picList[i].attr=='shader' then self.picList[i].attr='final_shader' break end

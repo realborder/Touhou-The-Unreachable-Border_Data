@@ -7,7 +7,7 @@ tuolib=tuolib or {}
 ---梦无垠自机
 Include'TUOlib\\TUO_Player\\TUO_Player.lua'
 ---复杂动画
-
+Include'TUOlib\\exani\\exani_player_manager.lua'
 ---梦现指针系统
 Include'TUOlib\\DR_Pin_System\\DR_Pin_System.lua'
 ---3d背景处理器
