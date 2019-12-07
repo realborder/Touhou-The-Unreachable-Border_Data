@@ -1,6 +1,6 @@
-Include'THlib\\exani\\exani_player.lua'
-Include'THlib\\exani\\exani_resource.lua'
-Include'THlib\\exani\\exani_interpolation.lua'
+Include'TUOlib\\exani\\exani_player.lua'
+Include'TUOlib\\exani\\exani_resource.lua'
+Include'TUOlib\\exani\\exani_interpolation.lua'
 
 exaniname_list={
 	'BossName1A',
@@ -123,7 +123,7 @@ end
 	
 	
 play_manager={}
-local EXANI_PATH="THlib\\exani\\exani_data\\"
+local EXANI_PATH="TUOlib\\exani\\exani_data\\"
 
 exani_player_manager=Class(object)
 function exani_player_manager:init()
@@ -141,7 +141,6 @@ function exani_player_manager:Del()
 end
 
 function exani_player_manager.LoadAllResource()
-	local EXANI_PATH="THlib\\exani\\exani_data\\"
 	Print('[exani]开始加载所有资源')
 	for _,v in pairs(exaniname_list) do
 		local name=v

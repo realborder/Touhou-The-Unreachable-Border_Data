@@ -25,9 +25,6 @@ Include'sp\\sp.lua'--OLC神的sp加强库
 
 -- Include'THlib\\ChapFin.lua'
 
--- Include'THlib\\exani\\exani_manager.lua'
-Include'THlib\\exani\\exani_player_manager.lua'
-
 -- Include'THlib\\TUO\\DR_Pin.lua'
 
 Include'THlib\\menu\\base_menu.lua'
