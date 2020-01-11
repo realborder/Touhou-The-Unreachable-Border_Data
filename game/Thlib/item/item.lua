@@ -57,9 +57,9 @@ function item:frame()
 			--处理a目标值
 			if abs(a_aim1-a)<abs(a_aim-a) then a_aim=a_aim1 end
 			if abs(a_aim2-a)<abs(a_aim-a) then a_aim=a_aim2 end
-			local mag_min=0.002 --目标对子弹的吸引力的系数（大概
+			local mag_min=0.002 --玩家对物品的吸引力的系数（大概
 			local mag_max=0.25
-			local k=(1-dist/600) --目标里子弹的距离越近，这个数越接近1
+			local k=(1-dist/600) --玩家离物品的距离越近，这个数越接近1
 			local mag=mag_max*k+mag_min*(1-k)
 			self._rot=a+(a_aim-a)*mag
 			local v=self.v*(1+1.5*k) * (0.5+1.5*self.attract/8)*1.2

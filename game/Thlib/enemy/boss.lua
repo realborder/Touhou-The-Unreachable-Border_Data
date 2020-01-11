@@ -114,6 +114,7 @@ LoadImage('hpbar4','lifebar',4,0,2,2)
 SetImageState('hpbar4','',Color(255,0,0,200))
 
 LoadTexture('magicsquare',patch..'eff_magicsquare.png')
+
 LoadImageGroup('boss_aura_3D','magicsquare',0,0,256,256,5,5)
 LoadImageFromFile('dialog_box',patch..'dialog_box.png')
 

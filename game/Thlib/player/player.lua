@@ -102,7 +102,6 @@ end
 
 function player_class:frame()
 	self.grazer.world=self.world
-
 	--判断boss是否处在非符状态
 		local boss_in_nonsc=IsValid(_boss) and (not boss.GetCurrentCard(_boss).is_sc) 
 	
@@ -203,7 +202,7 @@ function player_class:frame()
 					if dx*dy~=0 then v=v*SQRT2_2 end
 					self.x=self.x+v*dx
 					self.y=self.y+v*dy		
-					--[[本来想做全方向摇杆，但是实际操作起来由于阈值的关系仍然是八向摇杆的手感，因此作废
+				--[[本来想做全方向摇杆，但是实际操作起来由于阈值的关系仍然是八向摇杆的手感，因此作废
 						local leftX,leftY,rightX,rightY=lstg.XInputManager.GetThumbState(1)
 						local dx,dy=leftX/32768,leftY/32768
 						local a=atan2(dy,dx)
@@ -372,51 +371,51 @@ function player_class:frame()
 		end
 	--by OLC，自机行走图系统	
 		---加上time_stop的限制来实现图像时停
-		if not(self._wisys) then
-			self._wisys=PlayerWalkImageSystem(self)
-		end
-		if not(self.time_stop) then
-			self._wisys:frame(dx)
+			if not(self._wisys) then
+				self._wisys=PlayerWalkImageSystem(self)
+			end
+			if not(self.time_stop) then
+				self._wisys:frame(dx)
 
-			self.lh=self.lh+(self.slow-self.lh)*0.2
-			-- if self.lh<0 then self.lh=0 end
-			-- if self.lh>1 then self.lh=1 end
+				self.lh=self.lh+(self.slow-self.lh)*0.2
+				-- if self.lh<0 then self.lh=0 end
+				-- if self.lh>1 then self.lh=1 end
 		--计时器和各种参数变换
-			if self.nextshoot>0 then self.nextshoot=self.nextshoot-1 end
-			if self.nextspell>0 then self.nextspell=self.nextspell-1 end
+				if self.nextshoot>0 then self.nextshoot=self.nextshoot-1 end
+				if self.nextspell>0 then self.nextspell=self.nextspell-1 end
 
-			if self.support>int(lstg.var.power/100) then self.support=self.support-0.0625
-			elseif self.support<int(lstg.var.power/100) then self.support=self.support+0.0625 end
-			if abs(self.support-int(lstg.var.power/100))<0.0625 then self.support=int(lstg.var.power/100) end
+				if self.support>int(lstg.var.power/100) then self.support=self.support-0.0625
+				elseif self.support<int(lstg.var.power/100) then self.support=self.support+0.0625 end
+				if abs(self.support-int(lstg.var.power/100))<0.0625 then self.support=int(lstg.var.power/100) end
 
-			self.supportx=self.x+(self.supportx-self.x)*0.6875
-			self.supporty=self.y+(self.supporty-self.y)*0.6875
+				self.supportx=self.x+(self.supportx-self.x)*0.6875
+				self.supporty=self.y+(self.supporty-self.y)*0.6875
 
-			if self.protect>0 then self.protect=self.protect-1 end --无敌时间减少，死亡计时减少
-			if self.death>0 then self.death=self.death-1 end
+				if self.protect>0 then self.protect=self.protect-1 end --无敌时间减少，死亡计时减少
+				if self.death>0 then self.death=self.death-1 end
 		--刷新分数上限
-			lstg.var.pointrate=item.PointRateFunc(lstg.var)
+				lstg.var.pointrate=item.PointRateFunc(lstg.var)
 		--更新子机
-			if self.slist then
-				self.sp={}
-				if self.support==7 then-------------------------------------------------?????????????????????????????????
-					for i=1,6 do self.sp[i]=MixTable(self.lh,self.slist[8][i]) self.sp[i][3]=1 end
-				else
-					local s=int(self.support)+1
-					if self.PowerDelay1>0 then s=s+1 end
-					local t=self.support-int(self.support)
-					for i=1,6 do
-						if self.slist[s][i] and self.slist[s+1][i] then
-							self.sp[i]=MixTable(t,MixTable(self.lh,self.slist[s][i]),MixTable(self.lh,self.slist[s+1][i]))
-							self.sp[i][3]=1
-						elseif self.slist[s+1][i] then
-							self.sp[i]=MixTable(self.lh,self.slist[s+1][i])
-							self.sp[i][3]=t
+				if self.slist then
+					self.sp={}
+					if self.support==7 then-------------------------------------------------?????????????????????????????????
+						for i=1,6 do self.sp[i]=MixTable(self.lh,self.slist[8][i]) self.sp[i][3]=1 end
+					else
+						local s=int(self.support)+1
+						if self.PowerDelay1>0 then s=s+1 end
+						local t=self.support-int(self.support)
+						for i=1,6 do
+							if self.slist[s][i] and self.slist[s+1][i] then
+								self.sp[i]=MixTable(t,MixTable(self.lh,self.slist[s][i]),MixTable(self.lh,self.slist[s+1][i]))
+								self.sp[i][3]=1
+							elseif self.slist[s+1][i] then
+								self.sp[i]=MixTable(self.lh,self.slist[s+1][i])
+								self.sp[i][3]=t
+							end
 						end
 					end
 				end
 			end
-		end
 	--时停
 		if self.time_stop then self.timer=self.timer-1 end
 	--符卡环参数的丝滑

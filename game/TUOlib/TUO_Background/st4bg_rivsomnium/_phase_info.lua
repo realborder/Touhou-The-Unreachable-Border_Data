@@ -60,8 +60,8 @@
         fovy={0.900}
     },
     {
-        time=3397,
-        duration=202,
+        time=2649,
+        duration=189,
         itpl="ACC_DEC",
         eye={-2.642,0.200,5.000},
         at={3.770,-2.074,0.632},
@@ -72,7 +72,7 @@
         fovy={0.900}
     },
     {
-        time=3600,
+        time=2839,
         duration=1,
         itpl="ACC_DEC",
         eye={-8.931,-3.088,9.108},
@@ -84,8 +84,8 @@
         fovy={0.900}
     },
     {
-        time=3622,
-        duration=120,
+        time=2841,
+        duration=14,
         itpl="ACC_DEC",
         eye={-8.931,-3.088,9.108},
         at={-2.696,-2.074,0.632},
@@ -96,8 +96,8 @@
         fovy={0.900}
     },
     {
-        time=3742,
-        duration=261,
+        time=2856,
+        duration=55,
         itpl="ACC_DEC",
         eye={-8.931,-3.088,9.108},
         at={-2.696,-2.074,0.632},

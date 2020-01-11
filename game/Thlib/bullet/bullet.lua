@@ -89,9 +89,9 @@ BulletBreakIndex={
 	Color(0xC0FF3030),--red
 	Color(0xC0FF30FF),--purple
 	Color(0xC03030FF),--blue
-	Color(0xC030FFFF),--cyan
-	Color(0xC030FF30),--green
-	Color(0xC0FFFF30),--yellow
+	Color(0xA030FFFF),--cyan
+	Color(0xA030FF30),--green
+	Color(0xA0FFFF30),--yellow
 	Color(0xC0FF8030),--orange
 	Color(0xC0D0D0D0),--gray
 }
@@ -113,7 +113,7 @@ function BulletBreak:init(x,y,index)
 	self.group=GROUP_GHOST
 	self.layer=LAYER_ENEMY_BULLET-50
 	self.img='etbreak'..index
-	local s = ran:Float(0.5,0.75)
+	local s = ran:Float(0.9,1)
 	self.hscale=s self.vscale=s
 	self.rot=ran:Float(0,360)
 	--if index%2==0 then
@@ -607,6 +607,7 @@ function straight_495:frame()
 		local x, y = self.x, self.y
 		if y > world.t then
 			self.vy = -self.vy
+			self.y = world.t * 2 - self.y
 			if self.acceleration and self.acceleration.ay then
 				self.acceleration.ay = -self.acceleration.ay
 			end
@@ -616,6 +617,7 @@ function straight_495:frame()
 		end
 		if x > world.r then
 			self.vx = -self.vx
+			self.x = world.r * 2 - self.x
 			if self.acceleration and self.acceleration.ax then
 				self.acceleration.ax = -self.acceleration.ax
 			end
@@ -625,6 +627,7 @@ function straight_495:frame()
 		end
 		if x < world.l then
 			self.vx = -self.vx
+			self.x = world.l * 2 - self.x
 			if self.acceleration and self.acceleration.ax then
 				self.acceleration.ax = -self.acceleration.ax
 			end
