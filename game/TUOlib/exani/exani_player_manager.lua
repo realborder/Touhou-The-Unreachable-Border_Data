@@ -145,13 +145,27 @@ function exani_player_manager.LoadAllResource()
 	for _,v in pairs(exaniname_list) do
 		local name=v
 		local path=EXANI_PATH..name.."\\"
-		if not exani_resource_list[v] then error(v) end
-		for _,_v in pairs(exani_resource_list[v]) do
-			local imgname=string.sub(_v,string.len(path)+1,-5)
+		--if not exani_resource_list[v] then error(v) end
+		--for _,_v in pairs(exani_resource_list[v]) do
+		--	local imgname=string.sub(_v,string.len(path)+1,-5)
 			-- Print('[exani]加载exani '..name..'的名为'..imgname..'的部件，文件路径：'.._v)
-			LoadImageFromFile(imgname,_v)
-
-		end
+		--	LoadImageFromFile(imgname,_v)
+		--end
+        if not FileExist(path.."_loadres.lua") then error(path.." not found _loadres.lua") end
+        local _res=lstg.DoFile(path.."_loadres.lua")
+        local respath=path.."\\"..name.."_res.png"
+        if FileExist(respath) then
+            LoadTexture(name.."_res",respath)
+        end
+        for i=1,#_res do
+            if type(_res[i])=="string" then
+                local imgname=string.sub(_res[i],1,-5)
+                LoadImageFromFile(imgname,path.."\\".._res[i])
+            else
+                local imgname=string.sub(_res[i][1],1,-5)
+                LoadImage(imgname,name.."_res",_res[i][2][1],_res[i][2][2],_res[i][2][3],_res[i][2][4])
+            end
+        end
 	end
 end
 
