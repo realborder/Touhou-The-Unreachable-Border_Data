@@ -2,7 +2,10 @@
 ---开发者工具
 ---code by JanrilW
 ---不打算去插件化，而是直接内含在游戏内部
----
+---整体结构为：Dev_Tool
+---				Dev_UI->Dev_Module->Dev_Panel->Dev_Widget->Dev_UI_Widget_Template
+---				Dev_Tool_functions
+---				Dev_Flow->Dev_Flow_Template
 ---
 
 TUO_Developer_Tool_kit = TUO_Developer_Tool_kit or {}

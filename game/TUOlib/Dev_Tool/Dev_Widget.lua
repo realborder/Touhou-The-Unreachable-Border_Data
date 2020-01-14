@@ -64,6 +64,7 @@ function TUO_Developer_UI:AttachWidget(panel,template,x_pos)
     }
     if tpl.init then tpl.init(tmp_widget) end
     table.insert(panel.widget,tmp_widget)
+    tmp_widget.index=#(panel.widget)
     return tmp_widget
 end 
 
@@ -181,11 +182,17 @@ function TUO_Developer_UI:DoWidgetFrame(module,panel,widget)
                         if widget._tpl_event_mouseleave then widget:_tpl_event_mouseleave() end
                         if widget._event_mouseleave then widget:_event_mouseleave() end
                     end
-
+                    --键盘触发
+                    if self.panel_operation_keytrigger.confirm and panel.cur==widget.index then
+                        if widget._tpl_event_mouseclick then widget:_tpl_event_mouseclick() end
+                        if widget._event_mouseclick then widget:_event_mouseclick() end
+                        widget._pressed_timer=1
+                    end
                     if widget._mouse_stay then
                         --鼠标按下
                         if MouseTrigger(0) then
                             widget._pressed=true
+                            panel.cur=widget.index
                             if widget._tpl_event_mousepress then widget:_tpl_event_mousepress() end
                             if widget._event_mousepress then widget:_event_mousepress() end
                         end
@@ -224,7 +231,7 @@ function TUO_Developer_UI:DoWidgetFrame(module,panel,widget)
             end
         ---timer变换
             if widget.enable then
-                if widget._mouse_stay then
+                if widget._mouse_stay or panel.cur==widget.index then
                     widget._ignite_timer=widget._ignite_timer+(1-widget._ignite_timer)*0.2
                 else
                     widget._ignite_timer=widget._ignite_timer+(0-widget._ignite_timer)*0.2
