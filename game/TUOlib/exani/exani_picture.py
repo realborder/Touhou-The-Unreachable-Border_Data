@@ -31,7 +31,7 @@ def CreatePicture(image_list,side_length):
     path=os.path.join(os.path.dirname(image_list[0]),"_loadres.lua")
     fileobj=open(path,'a')
     exani=os.path.basename(os.path.dirname(image_list[0]))
-    content=exani+"_res = {\n"
+    content="local _res = {\n"
     fileobj.write(content)
             
     for i in range(0,len(image_list)):
@@ -59,6 +59,8 @@ def CreatePicture(image_list,side_length):
         print('image:'+image_list[i])
         print(curwidth,curheight,tmp_img.size[0],tmp_img.size[1])
         curwidth+=tmp_img.size[0]
+        if curbottom<(curheight+tmp_img.size[1]):
+            curbottom=curheight+tmp_img.size[1]
         
     #new_image.show()
     if handle_flag==0:
@@ -66,9 +68,7 @@ def CreatePicture(image_list,side_length):
         print(exani_path+": all image's size is out of limit")
     else:
         exani=os.path.basename(os.path.dirname(image_list[0]))
-        content=os.path.join(os.path.dirname(image_list[0]),exani+".png")
-        if os.path.exists(content):
-            os.remove(content)
+        content=os.path.join(os.path.dirname(image_list[0]),exani+"_res.png")
         print('save image:',content)
         new_image.save(content)
     
@@ -78,7 +78,7 @@ def CreatePicture(image_list,side_length):
             content="   '"+image+"',\n"
             fileobj.write(content)
             
-    fileobj.write("}\n")
+    fileobj.write("}\nreturn _res\n")
     return True
         
 
@@ -98,7 +98,15 @@ def ImageCompos(image_list):
         if os.path.exists(os.path.join(os.path.dirname(image_list[0]),"_loadres.lua")):
             os.remove(os.path.join(os.path.dirname(image_list[0]),"_loadres.lua"))
         print('too big')
-        
+        path=os.path.join(os.path.dirname(image_list[0]),"_loadres.lua")
+        fileobj=open(path,'a')
+        content="local _res = {\n"
+        fileobj.write(content)
+        for i in range(0,len(image_list)):
+            image=os.path.basename(image_list[i])
+            content="   '"+image+"',\n"
+            fileobj.write(content)
+        fileobj.write("}\nreturn _res\n")
 
 
 #子文件夹列表
@@ -115,6 +123,8 @@ for directory in directorty_list:
 
 for exani in directorty_list:
     path=os.path.join(DIR_PATH,exani)
+    if os.path.exists(os.path.join(path,exani+"_res.png")):
+        os.remove(os.path.join(path,exani+"_res.png"))
     image_list=[]
     for filename in os.listdir(path):
         if filename.endswith('png'):

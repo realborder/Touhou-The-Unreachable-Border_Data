@@ -488,7 +488,7 @@ function special_difficulty:render()
 			local x=self.x_offset[i]
 			local n=i%(#self.pics)
 			if n==0 then n=#self.pics end
-			local tmpcx,tmpcy=GetTextureSize(self.pics[n])
+			local tmpcx,tmpcy=GetImageSize(self.pics[n])
 			Render(self.pics[n],x+self.current_dx+tmpcx/2,self.y,0,1*scalefix,1*scalefix,self.z)
 		end
 	end
