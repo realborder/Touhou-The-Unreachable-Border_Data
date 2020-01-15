@@ -1,0 +1,21 @@
+local _res = {
+   {'ChooseChar_marisa_itembottom.png',{0,0,988,157}},
+   {'ChooseChar_marisa_itembg.png',{988,0,987,441}},
+   {'ChooseChar_marisa_charbg.png',{0,441,745,264}},
+   {'ChooseChar_marisa_A_describ.png',{745,441,412,234}},
+   {'ChooseChar_marisa_B_describ.png',{1157,441,409,237}},
+   {'ChooseChar_marisa_charatt.png',{1566,441,383,34}},
+   {'ChooseChar_marisa_B_title.png',{0,705,345,47}},
+   {'ChooseChar_marisa_B_title_lit.png',{345,705,345,47}},
+   {'ChooseChar_marisa_A_title.png',{690,705,326,44}},
+   {'ChooseChar_marisa_A_title_lit.png',{1016,705,326,44}},
+   {'ChooseChar_marisa_charname.png',{1342,705,313,58}},
+   {'ChooseChar_marisa_B.png',{1655,705,274,322}},
+   {'ChooseChar_marisa_B_lit.png',{0,1027,274,322}},
+   {'ChooseChar_marisa_A.png',{274,1027,247,379}},
+   {'ChooseChar_marisa_A_lit.png',{521,1027,247,379}},
+   {'ChooseChar_marisa_charname2.png',{768,1027,231,21}},
+   'ChooseChar_marisa_itemtop.png',
+   'ChooseChar_marisa_charimg.png',
+}
+return _res

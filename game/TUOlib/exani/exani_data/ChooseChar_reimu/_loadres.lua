@@ -1,0 +1,21 @@
+local _res = {
+   {'ChooseChar_reimu_itembottom.png',{0,0,988,157}},
+   {'ChooseChar_reimu_itembg.png',{988,0,987,441}},
+   {'ChooseChar_reimu_charbg.png',{0,441,745,264}},
+   {'ChooseChar_reimu_B_describ.png',{745,441,358,234}},
+   {'ChooseChar_reimu_A_describ.png',{1103,441,350,234}},
+   {'ChooseChar_reimu_A_title.png',{1453,441,326,44}},
+   {'ChooseChar_reimu_A_title_lit.png',{0,705,326,44}},
+   {'ChooseChar_reimu_charatt.png',{326,705,282,29}},
+   {'ChooseChar_reimu_B.png',{608,705,274,322}},
+   {'ChooseChar_reimu_B_lit.png',{882,705,274,322}},
+   {'ChooseChar_reimu_B_title.png',{1156,705,258,47}},
+   {'ChooseChar_reimu_B_title_lit.png',{1414,705,258,47}},
+   {'ChooseChar_reimu_charname.png',{1672,705,253,58}},
+   {'ChooseChar_reimu_A.png',{0,1027,247,379}},
+   {'ChooseChar_reimu_A_lit.png',{247,1027,247,379}},
+   {'ChooseChar_reimu_charname2.png',{494,1027,211,21}},
+   'ChooseChar_reimu_itemtop.png',
+   'ChooseChar_reimu_charimg.png',
+}
+return _res
