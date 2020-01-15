@@ -159,6 +159,9 @@ end
 function GetMousePositionInWorld()
 	return MouseState.x_in_world,MouseState.y_in_world
 end
+function GetMouseDelta(index)
+	return MouseState[index]-MouseStatePre[index]
+end
 
 local Original_GetInput=GetInput
 if not _GetInput_overwrited then

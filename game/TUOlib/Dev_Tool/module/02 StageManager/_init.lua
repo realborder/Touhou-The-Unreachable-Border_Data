@@ -160,8 +160,45 @@ end
 local scprac=TUO_Developer_UI:NewPanel()
 function scprac:init()
 	self.name="符卡练习"
-	-- Neww'value_displayer'.monitoring_value=_sc_table
-
+	Neww'title'.text="符卡练习"
+	Neww'text_displayer'.text="boss索引"
+	local cb1=	Neww'checkbox_l'
+	cb1.display_value={"1A","1B","2","3","4","5","6A","6B","EX"}
+	cb1.width=304
+	Neww'text_displayer'.text="选择难度"
+	local cb2=	Neww'checkbox_l'
+	cb2.display_value={"Easy","Normal","Hard","Lunatic","Extra"}
+	cb2.width=304
+	local list1=Neww'list_box'
+	list1.width=304
+	list1.monitoring_value=function()
+		local ret={}
+		if cb1.cur then
+			local tb=_sc_table_new[cb1.cur_value]
+			if not tb then return end
+			for i,v in ipairs(tb) do
+				---@type cardinfo
+				local c=v
+				local name
+				if type(c.card_name)=='table' then
+					if cb2.cur then
+						name=c.card_name[cb2.cur]
+					else
+						name=table.concat(c.card_name,", ")
+					end
+				else
+					name=c.card_name[cb2.cur]
+				end
+				if name=='' then name="通常弹幕"
+					table.insert(ret,name)
+				end
+			end
+		end
+		return ret
+	end
+	local btn1=Neww'button'
+	btn1.text="开始"
+	Neww'value_displayer'.monitoring_value=_sc_table_new
 end
 
 

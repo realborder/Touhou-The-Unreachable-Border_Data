@@ -29,6 +29,7 @@ function TUO_Developer_UI:init()
 	self.timer=0
 
 	self.mouse_click_list={}
+	self.mouse_cur_timer=0
 
 	self.bgalpha=0.8
 	self.module={}
@@ -61,10 +62,14 @@ function TUO_Developer_UI:init()
 		self.panel_gap=8
 	--面板焦点机制
 		self.panel_operation_keys={
-			prev={KEY.UP,KEY.LEFT,KEY.W,KEY.A},
-			next={KEY.DOWN,KEY.RIGHT,KEY.S,KEY.D},
-			confirm={KEY.Z,KEY.ENTER},
-			back={KEY.X,KEY.ESCAPE}
+			-- prev={KEY.UP,KEY.LEFT,KEY.W,KEY.A},
+			-- next={KEY.DOWN,KEY.RIGHT,KEY.S,KEY.D},
+			-- confirm={KEY.Z,KEY.ENTER},
+			-- back={KEY.X,KEY.ESCAPE},
+			prev={KEY.W,KEY.A},
+			next={KEY.S,KEY.D},
+			confirm={KEY.ENTER},
+			back={KEY.ESCAPE}
 		}
 		self.panel_operation_keypre={}
 		self.panel_operation_keytrigger={}
@@ -96,6 +101,8 @@ function TUO_Developer_UI:frame()
 				self.topbar_width_aim=32
 			end
 		end
+		if GetMouseDelta("x")~=0 or GetMouseDelta("y")~=0 then self.mouse_cur_timer=min(1,self.mouse_cur_timer+0.1) end
+		self.mouse_cur_timer=max(0,self.mouse_cur_timer-0.04)
 		self.topbar_width=self.topbar_width+(self.topbar_width_aim-self.topbar_width)*0.2
 		if self.timer==0 then return end
 	------在完全不显示的时候会彻底关掉自身的逻辑
@@ -323,6 +330,16 @@ function TUO_Developer_UI:render()
 		p1,p2,p3={x+3*s,y},{x+3*s+8*s,y-8*s},{x+8*s,y-8*s}
 		Render4V('white',x,y,0.5,p1[1],p1[2],0.5,p2[1],p2[2],0.5,p3[1],p3[2],0.5)
 	end
+	--指针
+	local alpha=abs(self.timer)
+	local scale=abs(self.timer)/2
+	local t=self.mouse_cur_timer
+	if self.timer>0 then
+		SetImageState('_Dev_Tool_cur','',Color(255*alpha,255,255*(1-t),255*(1-t)))
+	elseif self.timer<0 then
+		SetImageState('_Dev_Tool_cur','',Color(255*alpha,255*(t),0,0))
+	end
+	Render('_Dev_Tool_cur',MouseState.x_in_UI,MouseState.y_in_UI,os.time(),scale)
 
 
 end

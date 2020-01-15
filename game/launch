@@ -453,7 +453,7 @@ else
 end
 
 
-SetSplash(true)
+SetSplash(false)
 SetTitle('东方梦无垠 ~ The Unreachabe Oneiroborder')
 SetWindowed(setting.windowed)
 SetResolution(setting.resx,setting.resy)

@@ -14,6 +14,9 @@ end
 
 
 function TUO_Developer_UI.SetWidgetSlot(x_pos)
+    if type(x_pos) == 'string' then
+        if x_pos=='world' then x_pos=440 end
+    end
     TUO_Developer_UI.widget_x_pos=x_pos
 end
 

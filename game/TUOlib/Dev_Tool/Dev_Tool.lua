@@ -61,6 +61,12 @@ function TUO_Developer_Tool_kit:LoadResource()
 	else
 		self.no_logo=true
 	end
+	local path=PATH_HEAD.."Dev_Tool_cur.png"
+	if not (lfs.attributes(path) == nil) then
+		LoadImageFromFile('_Dev_Tool_cur',path)
+	else
+		self.no_cursor=true
+	end
 	do
 		local PATH_HEAD=PATH_HEAD..'sound\\'
 		LoadSound('TUO_Dev_HUD_unlock',PATH_HEAD..'TUO_Dev_HUD_unlock.wav')
@@ -231,7 +237,7 @@ function TUO_Developer_Tool_kit:frame()
 		if self.unlock_count>=self.UNLOCK_COUNT and self.unlock_time_limit>0 then 
 			self.locked=false 
 			self.ui.visiable = true
-			if self.ui.visiable then Log('F3调试界面已开启') PlaySound('TUO_Dev_HUD_unlock',4)
+			if self.ui.visiable then Log('F3调试界面已开启') PlaySound('TUO_Dev_HUD_unlock',4) SetSplash(false)
 			else Log('F3调试界面已关闭') end
 		end
 	else

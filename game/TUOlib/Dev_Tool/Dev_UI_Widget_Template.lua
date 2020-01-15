@@ -1065,6 +1065,7 @@ function checkbox_l:init()
     self.gap_b=4
     self.display_value={}
     self.cur=nil
+    self.cur_value=nil
     self.select_timer={}
 end
 function checkbox_l:frame()
@@ -1090,6 +1091,7 @@ function checkbox_l:frame()
         local ux,uy=MouseState.x_in_UI,MouseState.y_in_UI
         if MouseTrigger(0) and ux>l and ux<r and uy>b and uy<t then
             self.cur=i
+            self.cur_value=self.display_value[i]
         end
         l=r
     end

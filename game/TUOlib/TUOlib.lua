@@ -14,6 +14,8 @@ Include'TUOlib\\DR_Pin_System\\DR_Pin_System.lua'
 Include'TUOlib\\TUO_Background\\TUO_Background.lua'
 ---mod和关卡管理器
 Include'TUOlib\\Mod_Stage_Manager\\Mod_Manager.lua'
+---符卡管理器
+Include'TUOlib\\Spellcard_Manager.lua'
 ---特效开关
 Include'TUOlib\\Effect_Cut.lua'
 ---开发者工具和UI
