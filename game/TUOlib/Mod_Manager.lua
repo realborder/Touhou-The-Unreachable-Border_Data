@@ -73,14 +73,23 @@ end
 function m.LoadAllStageMod()
     local ret={}
     local result=true
+    local target={"1","2","3","4","5","6A","6B","EX"}
+    local tmp_k={}
     for k,v in pairs(self.modlist) do
-        if string.find(k,'STAGE',1,true)~=nil then
-            local hasPassWord=string.find(k,'pw',1,true)
-            if not v then 
-                local r,e=self.LoadMod(k)
-                table.insert(ret,{ret=r,err=e})
-                result=result and r
+        for i=1,#target do
+            if not tmp_k[i] then
+                if string.find(k,'STAGE'..target[i],1,true)~=nil then
+                    tmp_k[i]=k
+                end
             end
+        end
+    end
+    for i,v in ipairs(tmp_k) do
+        if v then 
+            local hasPassWord=string.find(v,'pw',1,true)
+            local r,e=self.LoadMod(v)
+            table.insert(ret,{ret=r,err=e})
+            result=result and r
         end
     end
     return result,ret

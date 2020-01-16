@@ -138,7 +138,7 @@ function phsys:init()
     cb.gap_b=0
     cb._stay_in_this_line=true
     cb.frame=function(widget)
-        if _3DBG_Handler.bgtemp and (not widget._mouse_stay) then
+        if IsValid(_3DBG_Handler.bgtemp) and (not widget._mouse_stay) then
             local bg=_3DBG_Handler.bgtemp
             local bgcur=tuolib.BGHandler.GetCurPhase(bg)
             if bgcur then
@@ -231,7 +231,7 @@ function phsys:init()
     end
     s1.render=function (self,alpha,l,r,b,t)
         local bg=_3DBG_Handler.bgtemp
-        if not IsValid(bg) and (not bg.phaseinfo) then return end
+        if not IsValid(bg) or (not bg.phaseinfo) then return end
         local cur=tuolib.BGHandler.GetCurPhase(bg)
         local yc=(t+b)/2
         local h=self.w/2

@@ -22,7 +22,6 @@ function st2bg_village:init()
 	--
 	background.init(self,false)
 	st2bg_village.load_res()
-	SetImageState('image:bg_test','',Color(255,255,255,255))
 	self.fogc=Color(255,215,226,255)
 	--set 3d camera and fog
 	Set3D('eye',0,3.0,0)
@@ -105,11 +104,11 @@ function st2bg_village:render()
 			-- Render4V('image:bg_test',	j-0.5,0,0-z+i,	j-0.5,0,1-z+i,	j+0.5,0,1-z+i,		j+0.5,0,-z+i)
 		-- end
 	-- end
-	SetImageState('image:bg_test','',Color(255,255,255,255))
+	-- SetImageState('image:bg_test','',Color(255,255,255,255))
 	
 	
 	
-	SetImageState('image:bg_test','',Color(255,255,255,255))
+	-- SetImageState('image:bg_test','',Color(255,255,255,255))
 
 	
 	

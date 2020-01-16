@@ -697,13 +697,6 @@ function RenderObject:render()
 	end
 end
 
-function _AddToSCPRList(index,sc)
-	if not _sc_table_new[index] then 
-		_sc_table_new[index]={}
-	end
-	table.insert(_sc_table_new[index],sc)
-end
-
 function SplitBossInto4Difficulty(index)
 	-- local b=_editor_class[index]
 	-- for _,diff in ipairs({'Easy','Normal','Hard','Lunatic'}) do

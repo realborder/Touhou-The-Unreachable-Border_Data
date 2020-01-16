@@ -6,7 +6,7 @@
 local m = {}
 -- tuolib.DRP_Sys = m
 tuolib.DRP_Sys = tuolib.DRP_Sys or m
-Include'TUOlib/DR_Pin_System/ChapFin.lua'
+Include'TUOlib\\Game_System\\ChapFin.lua'
 
 function m.load_res()
     LoadImageFromFile("UI_gaming_item_collect_word", "THlib\\UI\\UI_gaming_item_collect_word.png")

@@ -339,7 +339,7 @@ function TUO_Developer_UI:render()
 	elseif self.timer<0 then
 		SetImageState('_Dev_Tool_cur','',Color(255*alpha,255*(t),0,0))
 	end
-	Render('_Dev_Tool_cur',MouseState.x_in_UI,MouseState.y_in_UI,os.time(),scale)
+	Render('_Dev_Tool_cur',MouseState.x_in_UI,MouseState.y_in_UI,os.clock()*5,scale)
 
 
 end

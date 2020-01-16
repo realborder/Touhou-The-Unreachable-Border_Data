@@ -34,8 +34,9 @@ end
 ---@param card_index number 这个数字代表了这张卡在符卡练习列表里的次序，在编辑器里把这个留空则不计入符卡练习列表中
 ---@param performingaction boolean
 function m.EditSpellCardList(card, name, boss_name, boss_id, card_index ,performingaction)
+	
 	if not card_index then return end
-
+	-- Print("新符卡："..name..", "..boss_name..", "..boss_id..", "..card_index)
 	if not _sc_table_new[boss_id] then _sc_table_new[boss_id]={} end
 	local sctb=_sc_table_new[boss_id]
 
@@ -51,6 +52,7 @@ function m.EditSpellCardList(card, name, boss_name, boss_id, card_index ,perform
 		for i,v in ipairs({"Easy","Normal","Hard","Lunatic"}) do
 			if diff==v then index=i end
 		end
+		boss_name=string.sub(boss_name,1,pos-1)
 	end
 
 	--是否为道中，这个属性备用
@@ -60,19 +62,106 @@ function m.EditSpellCardList(card, name, boss_name, boss_id, card_index ,perform
 	if index then 
 		if not cardinfo.card then cardinfo.card={} end
 		if not cardinfo.card_name then cardinfo.card_name={} end
+		if not cardinfo.is_sc then cardinfo.is_sc={} end
+		if not cardinfo.performingaction then cardinfo.performingaction={} end
 		cardinfo.card_name[index]=name
 		cardinfo.card[index]=card
+		cardinfo.performingaction[index]=performingaction
 		if name~='' then cardinfo.is_sc[index]=true end
 	else
 		cardinfo.card_name=name
 		cardinfo.card=card
+		cardinfo.performingaction=performingaction
 		if name~='' then cardinfo.is_sc=true end
 	end
-	cardinfo.performingaction=performingaction
 	cardinfo.boss_name=boss_name
 	
 end
 _AddToSCPRList=m.EditSpellCardList
+
+
+stage.group.New('menu',{},"Spell Practice New",{lifeleft=0,power=400,faith=50000,bomb=0},false)
+stage.group.AddStage('Spell Practice New','Spell Practice New@Spell Practice New',{lifeleft=0,power=400,faith=50000,bomb=0},false)
+stage.group.DefStageFunc('Spell Practice New@Spell Practice New','init',function(self)
+    _init_item(self)
+    New(mask_fader,'open')
+    New(_G[lstg.var.player_name])
+	task.New(self,function()
+		--设定bgm和背景
+		local cardinfo=_sc_table_new[lstg.var.sc_index_new1][lstg.var.sc_index_new2]
+		local card,perf
+		local suffix=''
+		local diff=difficulty
+		if not cardinfo.card.init then
+			card=cardinfo.card[diff]
+			if cardinfo.performingaction and cardinfo.performingaction[diff] then
+				perf=cardinfo.performingaction[diff]
+			end
+			suffix=":"..({"Easy","Normal","Hard","Lunatic"})[diff]
+		else
+			card=cardinfo.card
+			if cardinfo.performingaction then
+				perf=cardinfo.performingaction
+			end
+		end
+		
+		local b=_editor_class[cardinfo.boss_name..suffix]
+		if not b then b=_editor_class[cardinfo.boss_name] end
+		do
+			Print(cardinfo.boss_name..suffix,b.bgm)
+			if b.bgm ~= "" then
+				LoadMusicRecord(b.bgm)
+			else
+				LoadMusic('spellcard',music_list.spellcard[1],music_list.spellcard[2],music_list.spellcard[3])
+			end
+			if b._bg ~= nil then
+				New(b._bg)
+			else
+				New(temple_background)
+			end
+        end
+        task._Wait(30)
+		local _,bgm=EnumRes('bgm')
+		for _,v in pairs(bgm) do
+			if GetMusicState(v)~='stopped' then
+				ResumeMusic(v)
+			else
+				if b.bgm ~= "" then
+					_play_music(b.bgm)
+				else
+					_play_music("spellcard")
+				end
+			end
+		end
+
+        local _boss_wait=true local _ref
+		if perf then
+			_ref=New(b,{perf,card}) last=_ref
+		else
+			-- _ref=New(b,{card}) last=_ref
+			_ref=New(b,{boss.move.New(0,144,60,MOVE_DECEL),card}) last=_ref
+		end
+        if _boss_wait then while IsValid(_ref) do task.Wait() end end
+        task._Wait(150)
+		if ext.replay.IsReplay() then
+			ext.pop_pause_menu=true
+			ext.rep_over=true
+			lstg.tmpvar.pause_menu_text={'Replay Again','Return to Title',nil}
+		else
+			ext.pop_pause_menu=true
+			lstg.tmpvar.death = false
+			lstg.tmpvar.pause_menu_text={'Continue','Quit and Save Replay','Return to Title'}
+		end
+		task._Wait(60)
+    end)
+    task.New(self,function()
+		while coroutine.status(self.task[1])~='dead' do task.Wait() end
+		New(mask_fader,'close')
+		_stop_music()
+		task.Wait(30)
+		stage.group.FinishStage()
+	end)
+end)
 
 
 

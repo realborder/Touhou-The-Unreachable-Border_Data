@@ -291,7 +291,6 @@ function value_slider:init()
     self.monitoring_value=nil
     self.min_value=0
     self.max_value=100
-    self.deviated=false
     self.value_pre=0
     self.changetimer=0
     self.force_int=false
@@ -307,14 +306,15 @@ function value_slider:frame()
         m=self.monitoring_value
     end
     if type(m)~='number' then 
-        self.deviated=true
-        self.pos=(sin(self.timer)*0.5+0.5)*self.l
+        if self.value_pre~=self.pos_aim then self.changetimer=1 else self.changetimer=max(0,self.changetimer-0.02) end
+        self.value_pre=self.pos_aim
+        -- self.pos=(sin(self.timer)*0.5+0.5)*self.l
     else
         if self.value_pre~=m then self.changetimer=1 else self.changetimer=max(0,self.changetimer-0.02) end
         self.pos_aim=max(0,min(self.max_value-self.min_value,m-self.min_value))/(self.max_value-self.min_value)*self.l
-        self.pos=self.pos+(self.pos_aim-self.pos)*0.2
         self.value_pre=m
     end
+    self.pos=self.pos+(self.pos_aim-self.pos)*0.2
     ---排版
     local BORDER_WIDTH=self.borderwidth
     ---lrbt初始值
@@ -325,13 +325,16 @@ function value_slider:frame()
     if self._pressed then
         local mx=MouseState.x_in_UI
         local k=(mx-(l+BORDER_WIDTH))/(r-l-2*BORDER_WIDTH)
+        k=max(0,min(1,k))
         local v=(self.max_value-self.min_value)*k+self.min_value
-        v=min(self.max_value,max(self.min_value,v))
+        -- v=min(self.max_value,max(self.min_value,v))
         if self.force_int then if v-int(v)>0.5 then v=int(v)+1 else v=int(v) end end --强制取整数
         if type(self.monitoring_value)=='string' then
             IndexValueByString(self.monitoring_value,v)
         elseif type(self.monitoring_value)=='function' then
             self.monitoring_value(self,v)
+        elseif type(self.monitoring_value)=='nil' then
+            self.pos_aim=k*self.l
         end
         if self._event_valuechange then self:_event_valuechange() end
     end
@@ -497,6 +500,7 @@ function list_box:init()
     self.monitoring_value=nil
     self.display_value={}
     self.selection={}
+    self.cur=nil
     self.select_timer={}
     self._ban_pressed_effect=true
     self._ban_mul_select=false
@@ -575,11 +579,13 @@ function list_box:frame()
                 if mul then
                     local ori=self.selection[i] or false
                     self.selection[i]=not ori 
+                    self.cur=i
                 else
                     self.selection={}
                     for _i=1,#self.display_value do
                         if _i==i then
                             self.selection[_i]=true
+                            self.cur=_i
                         else
                             self.selection[_i]=false
                         end
