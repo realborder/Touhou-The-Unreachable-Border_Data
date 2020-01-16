@@ -274,7 +274,8 @@ preview_widgets[4]=function(self) --[4]音乐
 		end
 	end
 end
-preview_frame[4]=function(self)
+
+preview_frame[4]=function(self) --[4]音乐
 	if self.play_state==1 then
 		self.play_process=self.play_process+os.clock()-self.last_time
 	end

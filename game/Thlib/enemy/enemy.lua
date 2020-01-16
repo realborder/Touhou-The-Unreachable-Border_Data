@@ -23,6 +23,9 @@ LoadImageGroup('enemy_orb','enemy1',512,1152,64,64,1,8,16,16)
 LoadImageGroup('enemy_orb_ring','enemy1',576,1152,64,64,1,8,16,16)
 --毛玉敌机的加载
 LoadImageGroup('kedama','enemy1',640,1152,64,64,1,8,16,16)
+--敌机光环的加载
+LoadTexture('enemy_aura','THlib\\enemy\\enemy_aura.png')
+LoadImageGroup('enemy_aura','enemy_aura',0,0,64,64,2,2)
 
 enemybase=Class(object)
 
@@ -128,8 +131,8 @@ end
 
 enemy=Class(enemybase)
 
-_enemy_aura_tb={1,2,3,4,3,1,nil,nil,nil,3,1,4,1,nil,3,1,2,4,3,1,2,4,1,2,3,4,nil,nil,nil,nil,1,3,2,1}
-_death_ef_tb  ={1,2,3,4,1,2,3,4,	2,4,1,3,	1,1,1,1,	1,1,3,3,2,2,4,4,	1,1,3,3,2,2,4,4,	1,1,3,3,2,2,4,4}
+_enemy_aura_tb  	={1,2,3,4,1,2,3,4,	2,4,1,3,	1,1,1,1,	1,1,3,3,2,2,4,4,	1,1,3,3,2,2,4,4,	1,1,3,3,2,2,4,4}
+_death_ef_tb  		={1,2,3,4,1,2,3,4,	2,4,1,3,	1,1,1,1,	1,1,3,3,2,2,4,4,	1,1,3,3,2,2,4,4,	1,1,3,3,2,2,4,4}
 
 function enemy:init(style,hp,clear_bullet,auto_delete,nontaijutsu)
 	enemybase.init(self,hp,nontaijutsu)

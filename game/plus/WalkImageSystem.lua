@@ -327,16 +327,16 @@ function EnemyWalkImageSystem:render(dmgt, dmgmaxt)
         SetImgState(obj, '', 255, 255 - 255 * 0.75 * c, 255 - 255 * 0.75 * c, 255)
     end
     
-    --if obj.aura then
-    --    if obj._blend and obj._a and obj._r and obj._g and obj._b then
-    --        SetImageState('enemy_aura'..obj.aura,obj._blend, Color(obj._a, obj._r, obj._g, obj._b))
-    --    end
-    --    local breath=1.25 + 0.15 * sin(obj.timer * 6)
-    --    Render('enemy_aura'..obj.aura, obj.x, obj.y, obj.timer * 3, obj.hscale*breath, obj.vscale*breath)
-    --    if obj._blend and obj._a and obj._r and obj._g and obj._b then
-    --        SetImageState('enemy_aura'..obj.aura,'', Color(0xFFFFFFFF))
-    --    end
-    --end
+    if obj.aura then
+       if obj._blend and obj._a and obj._r and obj._g and obj._b then
+           SetImageState('enemy_aura'..obj.aura,obj._blend, Color(obj._a, obj._r, obj._g, obj._b))
+       end
+       local breath=1.25 + 0.15 * sin(obj.timer * 6)
+       Render('enemy_aura'..obj.aura, obj.x, obj.y, obj.timer * 3, obj.hscale*breath, obj.vscale*breath)
+       if obj._blend and obj._a and obj._r and obj._g and obj._b then
+           SetImageState('enemy_aura'..obj.aura,'', Color(0xFFFFFFFF))
+       end
+    end
     
     --调换到低一层
 	if obj.style > 16 and obj.style <= 24 then
