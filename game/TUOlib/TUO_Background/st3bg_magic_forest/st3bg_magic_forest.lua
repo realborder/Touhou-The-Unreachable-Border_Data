@@ -339,11 +339,13 @@ function st3bg_magic_forest:frame()
 
 end
 
+local rnd=math.random
+
 function st3bg_magic_forest.random_spawn(self, index)--初始化、以及随机刷新树草蘑菇的位置
 --参数1，参数2刷新第几个贴图,为0则初始化
 --狗屎代码，有大量重复部分，不重复的部分只有x的赋值和poslist的索引值，先这么着吧，以后优化（咕）
 	local function rollType()
-		local num=ran:Float(0,10)
+		local num=rnd(0,10)
 		if num<2.5 then return 1
 		elseif num<7 then return 2
 		else return 3 end
@@ -360,15 +362,15 @@ function st3bg_magic_forest.random_spawn(self, index)--初始化、以及随机�
 			local s=nil
 			if typ==1 then--tree type
 				y=1
-				z=ran:Float(0.5,1.5)
+				z=rnd(0.5,1.5)
 				s=self.imgscale_tree
 			elseif typ==2 then--grass type
 				y=0.75
-				z=ran:Float(0.3,1.1)
+				z=rnd(0.3,1.1)
 				s=self.imgscale_grass
 			else
 				y=0.15
-				z=ran:Float(0.3,0.8)
+				z=rnd(0.3,0.8)
 				s=self.imgscale_mushroom
 				mushroom_list_index = i
 			end
@@ -415,19 +417,19 @@ function st3bg_magic_forest.random_spawn(self, index)--初始化、以及随机�
 		local s=nil
 			if typ==1 then--tree type
 				y=1
-				z=ran:Float(0.5,1.5)
+				z=rnd(0.5,1.5)
 				s=self.imgscale_tree
 			elseif typ==2 then--grass type
 				y=0.75
-				z=ran:Float(0.3,1.1)
+				z=rnd(0.3,1.1)
 				s=self.imgscale_grass
 			else
 				y=0.15
-				z=ran:Float(0.3,0.8)
+				z=rnd(0.3,0.8)
 				s=self.imgscale_mushroom
 				mushroom_list_index = i
 			end
-		if ran:Sign()==1 then
+		if rnd(-1,1)>0 then
 			self.poslist[index]={typ,
 				x,y,z,
 				x,y,z+y*s[1]/s[2],
