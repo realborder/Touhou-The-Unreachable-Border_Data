@@ -71,6 +71,7 @@ function m:LoadAllBG()
                 m.list[objname] = path
             end
             m:DoFile(path)
+            -- InitSingleClass(_G[objname])
         end
     end
     InitAllClass()

@@ -131,37 +131,67 @@ function st4bg_rivsomnium.load_res()
 			RemoveResource(pool, 2, v[1])
 		end
 		local ret,err = xpcall(_LoadImageFromFile,debug.traceback,v[1],PATH..v[2],true,0,0,false,0)
-		if not ret then
+		if not ret and not CheckRes("tex",v[1] ) then
 			TUO_Developer_Flow:ErrorWindow(err)
 		end
 	end
 	LoadImageGroupFromFile('st4bg_rivsomnium_crack',PATH..'st4bg_rivsomnium_crack.png',true,4,4)
 	for i=1,16 do SetImageState('st4bg_rivsomnium_crack'..i,'mul+add',Color(0xFFFFFFFF)) end
-	local TEXNAME='st4bg_crack'
-	lstg.LoadTexture(TEXNAME,PATH..'st4bg_crack.png',true)
-	local coor_temp={
-		{942,0,436,204},
-		{1378,0,369,236},
-		{1852,0,196,362},
-		{963,789,321,308},
-		{0,0,433,155},
-		{1747,171,105,65},
-		{433,0,378,204},
-		{1694,236,158,51},
-		{1747,0,105,171},
-		{983,204,321,585},
-		{1490,462,558,541},
-		{1490,362,558,100},
-		{1693,1003,355,308},
-		{942,0,436,204}
-	}
-	for i=1,#coor_temp do
-		lstg.LoadImage('st4bg_crack'..i,TEXNAME,coor_temp[i][1],coor_temp[i][2],coor_temp[i][3],coor_temp[i][4])
-	end
-	lstg.LoadImage('st4bg_crack_b1',TEXNAME,0,1152,784,896)
-	lstg.LoadImage('st4bg_crack_b2',TEXNAME,784,1152,784,896)
-	lstg.LoadImage('st4bg_crack_b3',TEXNAME,0,256,784,896)
 
+
+	if not CheckRes('img','st4bg_tree2') then
+		local ret,err = xpcall(_LoadImageFromFile,debug.traceback,res_list[3][1],PATH..res_list[3][2],true,0,0,false,0)
+		if not ret and not CheckRes("tex",res_list[3][1] ) then
+			TUO_Developer_Flow:ErrorWindow(err)
+		end
+	end
+	if not CheckRes('img','st4bg_tree1') then
+		local ret,err = xpcall(_LoadImageFromFile,debug.traceback,res_list[2][1],PATH..res_list[2][2],true,0,0,false,0)
+		if not ret and not CheckRes("tex",res_list[2][1] ) then
+			TUO_Developer_Flow:ErrorWindow(err)
+		end
+	end
+	do
+		local ret,err = xpcall(SetImageState,debug.traceback,'st4bg_tree1','',Color(0xFFFFFFFF))
+		if not ret then TUO_Developer_Flow:ErrorWindow(err) end
+		Print(err)
+	end
+	do
+		local ret,err = xpcall(SetImageState,debug.traceback,'st4bg_tree2','',Color(0xFFFFFFFF))
+		if not ret then TUO_Developer_Flow:ErrorWindow(err) end
+		Print(err)
+	end
+
+	--SetImageState('st4bg_tree1','',Color(0xFFFFFFFF))
+	--SetImageState('st4bg_tree2','',Color(0xFFFFFFFF))
+
+	local TEXNAME='st4bg_crack'
+	--lstg.SetResourceStatus(	'global	')
+	--lstg.LoadTexture(TEXNAME,PATH..'st4bg_crack.png',true)
+	----LoadTexture(TEXNAME,'TUOlib\\TUO_Background\\st4bg_rivsomnium\\st4bg_crack.png')
+	--local coor_temp={
+	--	{942,0,436,204},
+	--	{1378,0,369,236},
+	--	{1852,0,196,362},
+	--	{963,789,321,308},
+	--	{0,0,433,155},
+	--	{1747,171,105,65},
+	--	{433,0,378,204},
+	--	{1694,236,158,51},
+	--	{1747,0,105,171},
+	--	{983,204,321,585},
+	--	{1490,462,558,541},
+	--	{1490,362,558,100},
+	--	{1693,1003,355,308},
+	--	{942,0,436,204}
+	--}
+	--for i=1,#coor_temp do
+	--	lstg.LoadImage('st4bg_crack'..i,TEXNAME,coor_temp[i][1],coor_temp[i][2],coor_temp[i][3],coor_temp[i][4])
+	--end
+	--lstg.LoadImage('st4bg_crack_b1',TEXNAME,0,1152,784,896)
+	--lstg.LoadImage('st4bg_crack_b2',TEXNAME,784,1152,784,896)
+	--lstg.LoadImage('st4bg_crack_b3',TEXNAME,0,256,784,896)
+	--lstg.SetResourceStatus('stage')
 	
 end
 function st4bg_rivsomnium:init(phase)
@@ -170,8 +200,6 @@ function st4bg_rivsomnium:init(phase)
 	self.speed=0.03--即行走速度
 	self.xpos=0--等效的摄像机x轴位置,x轴方向向前
 	st4bg_rivsomnium.InitPhaseInfo(self,phase)
-	SetImageState('st4bg_tree1','',Color(0xFFFFFFFF))
-	SetImageState('st4bg_tree2','',Color(0xFFFFFFFF))
 end
 
 function st4bg_rivsomnium:frame()
@@ -227,7 +255,8 @@ function st4bg_rivsomnium:render()
 			local x,dx=10,(-self.xpos)%10
 			local y=5
 			for z=1.5,2.5,0.05 do
-				SetImageState('st4bg_cloud','',Color(255*(1-abs(z-2))^3,255,255,255))
+				local light=z-1.5
+				SetImageState('st4bg_cloud','',Color(255*(1-abs(z-2))^3,30*light,77*light,149*light))
 				for ddx=-10,10,10 do
 					for ddy=-10,10,10 do
 						rfv('st4bg_cloud',x-dx+ddx,y+ddy,z,-dx+ddx,y+ddy,z,-dx+ddx,-y+ddy,z,x-dx+ddx,-y+ddy,z)

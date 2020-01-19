@@ -96,6 +96,8 @@ function InitAllClass()
 	end
 end
 ---对单个class的回调函数进行整理，给底层调用
+---@param v table
+---@return nil
 function InitSingleClass(v)
 	v[1]=v.init
 	v[2]=v.del

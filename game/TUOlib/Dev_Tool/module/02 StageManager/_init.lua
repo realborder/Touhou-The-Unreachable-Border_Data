@@ -189,7 +189,7 @@ function scprac:init()
 			local tb=_sc_table_new[cb1.cur_value]
 			if not tb then return end
 			for i,v in ipairs(tb) do
-				---@type cardinfo
+				---@type name
 				local c=v
 				local name
 				if type(c.card_name)=='table' then
@@ -390,4 +390,65 @@ function steptest:frame()
 	if self.ban_framefunc_timer == 0 then
 		TUO_Developer_Tool_kit.ban_framefunc = true
 	end
+end
+
+---@type TUO_Dev_Panel
+local classmonitor=TUO_Developer_UI:NewPanel()
+function classmonitor:init()
+	self.name="类"
+	Neww'title'.text='LuaSTG Class'
+	--local btn1=Neww'button'
+	local list1=Neww'list_box'
+	local search=''
+
+
+	list1.display_value={"点击刷新"}
+	--btn1._event_mouseclick=function(widget)
+	list1.monitoring_value=function(widget)
+		local out={}
+		local count=1
+		for k,v in pairs(_G) do
+			if type(v)=='table' and v.is_class then
+				--count=count+1
+				--if count>256 then break end
+				if search=='' or search==nil then
+					table.insert(out,k)
+				else
+					if string.find(k,search)~=nil then
+						table.insert(out,k)
+					end
+				end
+			end
+		end
+		return out
+		--list1.display_value=out
+	end
+
+	TUO_Developer_UI.SetWidgetSlot('slot2')
+	Neww'title'.text='操作'
+	local totop=Neww'button'
+	totop.text='回到顶部'
+	totop._event_mouseclick=function(self) classmonitor.y_offset_aim=0 end
+	local txt2=Neww'text_displayer'
+	txt2.text='输入文字以筛选'
+	txt2.gap_t=12
+	local txt=Neww'inputer'
+	txt.text=''
+	txt.width=120
+	txt._event_textchange=function(self)
+		search=self.text
+	end
+	local btnclr=Neww'button'
+	btnclr.text='清除'
+	btnclr.width=64
+	btnclr._event_mouseclick=function(self)
+		txt.text=''
+		search=nil
+	end
+end
+
+local objmonitor=TUO_Developer_UI:NewPanel()
+function objmonitor:init()
+	self.name='对象追踪'
+
 end

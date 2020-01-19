@@ -23,6 +23,7 @@ local itpl = function(vstart,vend,t)  return vstart+(vend-vstart)*(cos(180+180*t
 --------------------------------------------------
 ---在当前模块中新建面板
 function TUO_Developer_UI:NewPanel()
+	---@class TUO_Dev_Panel
 	local tmp={
 		name='未命名',
 		--槽位

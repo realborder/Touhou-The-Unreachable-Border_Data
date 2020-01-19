@@ -101,7 +101,9 @@ function TUO_Developer_UI:frame()
 				self.topbar_width_aim=32
 			end
 		end
-		if GetMouseDelta("x")~=0 or GetMouseDelta("y")~=0 then self.mouse_cur_timer=min(1,self.mouse_cur_timer+0.1) end
+		--鼠标指针
+		if GetMouseDelta("x")~=0 or GetMouseDelta("y")~=0 then self.mouse_cur_timer=min(1,self.mouse_cur_timer+0.15) end
+		if MouseTrigger(0) then self.mouse_cur_timer=1 end
 		self.mouse_cur_timer=max(0,self.mouse_cur_timer-0.04)
 		self.topbar_width=self.topbar_width+(self.topbar_width_aim-self.topbar_width)*0.2
 		if self.timer==0 then return end

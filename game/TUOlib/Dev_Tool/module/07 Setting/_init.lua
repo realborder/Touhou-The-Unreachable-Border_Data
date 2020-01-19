@@ -35,7 +35,7 @@ end
 
 local toolsetting=TUO_Developer_UI:NewPanel()
 function toolsetting:init()
-    self.name="工具设置"
+    self.name="Setting"
     Neww'title'.text='杂项'
     Neww'text_displayer'.text='改变背景透明度。'
     local slider=Neww'value_slider'
@@ -62,13 +62,14 @@ function toolsetting:init()
 end
 local sandbox=TUO_Developer_UI:NewPanel()
 function sandbox:init()
-    ----下面陈列的是最原始的创建控件的方法最新的方法见其他代码
+    ----Shown below are the original methods for creating widgets
+    ----See the rest of the code for the latest methods
     lstg.test_value=0
-    self.name="控件测试"
+    self.name="Widgets Test"
     -- local title=TUO_Developer_UI:AttachWidget(self,'title')
     --     title.text='标题控件测试'
     local title=Neww'title'
-        title.text='标题控件测试'
+        title.text='Title'
 
     local value_displayer=TUO_Developer_UI:AttachWidget(self,'value_displayer')
         value_displayer.monitoring_value='lstg.test_value'
@@ -150,7 +151,7 @@ function sandbox:init()
     
     color_sampler=TUO_Developer_UI:AttachWidget(self,'color_sampler')
 
-    Neww'text_displayer'.text='游戏内直接选取颜色！！就问你爽不爽！'
+    Neww'text_displayer'.text='Get detailed color information, cool!'
     Neww'checkbox_l'.display_value={1,2,3,4,5,6}
 
 

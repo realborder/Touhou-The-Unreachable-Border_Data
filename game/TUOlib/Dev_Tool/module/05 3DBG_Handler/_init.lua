@@ -27,6 +27,7 @@ function bgl:init()
     -- TUO_Developer_UI.SetWidgetSlot('world')
     Neww'title'.text='背景列表'
     Neww'text_displayer'.text='点按列表项以查看背景'
+
     local bt1=Neww'button'
     bt1.text='重新载入'
     bt1.width=72
@@ -45,6 +46,7 @@ function bgl:init()
     -- sw1._event_switched=function(widget,flag)
     --     self.auto_reload=flag
     -- end
+
     local bt4=Neww'button'
     bt4.text='刷新全部'
     bt4.width=72
@@ -81,7 +83,9 @@ function bgl:init()
         if IsValid(m.bgtemp) then RawDel(m.bgtemp) end
         m.bgname=bgname
         m.bgtemp=New(_G[bgname])
-        m.layer=999
+        --if not GetKeyState(KEY.CTRL) then
+        --    m.layer=999
+        --end
         m.cur=2
     end
     
