@@ -25,10 +25,10 @@ function stage.New(stage_name,as_entrance,is_menu)
 	return result
 end
 
-function stage.Set(stage_name)--于ext中重载
-	stage.next_stage=stage.stages[stage_name]
-	-- KeyStatePre={}
-end
+--function stage.Set(stage_name)--于ext中重载
+--	stage.next_stage=stage.stages[stage_name]
+--	-- KeyStatePre={}
+--end
 
 function stage.SetTimer(t)
 	stage.current_stage.timer=t-1

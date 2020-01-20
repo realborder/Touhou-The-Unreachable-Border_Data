@@ -115,7 +115,7 @@ function m.DoPhaseLogic(self, InitPhase)
     if InitPhase then
         self.stt = sp.copy(ph[InitPhase], true)
         self.cur = sp.copy(ph[InitPhase], true)
-    -- Print(string.format('eye:%.2f ,%.2f %.2f',self.cur.eye[1],self.cur.eye[2],self.cur.eye[3]))
+        Print(string.format('eye:%.2f ,%.2f %.2f',self.cur.eye[1],self.cur.eye[2],self.cur.eye[3]))
     end
     --phase切换逻辑+3d参数补间
     --触发条件是当前的timer正好为phaseinfo里写的time，这时会重新设置stt

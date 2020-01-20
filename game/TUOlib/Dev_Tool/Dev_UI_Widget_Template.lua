@@ -548,11 +548,13 @@ function list_box:frame()
             else self.display_value={name='',v='* List is empty'} self.visiable=false self.vanish_cause_novalue=true return end
             if self.vanish_cause_novalue then self.visiable=true end
             --对display_value进行排序
-            if self.display_value and self.display_value[1] and (type(self.display_value[1].name)=='string' or type(self.display_value[1].name)=='number')  then 
-                local sortfunc=self.sortfunc or function(v1,v2)  return v1.name<v2.name end
-                table.sort(self.display_value,sortfunc)
-            elseif self.display_value and self.display_value[1] and (type(self.display_value[1])=='string' or type(self.display_value[1])=='number')  then
-                table.sort(self.display_value)
+            if not self._ban_list_sort then
+                if self.display_value and self.display_value[1] and (type(self.display_value[1].name)=='string' or type(self.display_value[1].name)=='number')  then
+                    local sortfunc=self.sortfunc or function(v1,v2)  return v1.name<v2.name end
+                    table.sort(self.display_value,sortfunc)
+                elseif self.display_value and self.display_value[1] and (type(self.display_value[1])=='string' or type(self.display_value[1])=='number')  then
+                    table.sort(self.display_value)
+                end
             end
         end
 

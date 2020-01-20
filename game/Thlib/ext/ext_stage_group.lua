@@ -40,9 +40,12 @@ end
 function stage.group.AddStage(groupname,stagename,item_init,allow_practice)
 	local sg=stage.groups[groupname]
 	if sg~=nil then
+		--由云绝修改，支持在游戏不关闭的情况下复写某个单关
+
 		sg.number=sg.number+1
 		table.insert(sg,stagename)
 		local s=stage.New(stagename)
+
 		if groupname=='Spell Practice' or groupname=='SC Debugger' then--by OLC,为了使符卡debug模式更加符合符卡练习的模式
 			s.frame=stage.group.frame_sc_pr
 		else

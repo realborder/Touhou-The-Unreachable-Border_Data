@@ -30,7 +30,7 @@ end
 ---cur表用来记录当前3d参数
 function bg_template:InitPhaseInfo(phase)
 	self.phaseinfo=lstg.DoFile(PATH..'_phase_info.lua')
-	tuolib.BGHandler.DoPhaseLogic(self,1)
+	tuolib.BGHandler.DoPhaseLogic(self,phase or 1)
 end
 
 function bg_template:init(phase)
@@ -39,12 +39,15 @@ function bg_template:init(phase)
 	bg_template.load_res()
 	self.speed=0.03--即行走速度
 	self.xpos=0--等效的摄像机x轴位置,x轴方向向前
-	bg_template.InitPhaseInfo(self,phase)
-
+	self.init_phase=phase or 1
 	SetImageState('bg_test','',Color(0xA0FFFFFF))
 end
 
 function bg_template:frame()
+	if self.init_phase then
+		bg_template.InitPhaseInfo(self,self.init_phase)
+		self.init_phase=nil
+	end
 	self.xpos=self.xpos-self.speed
 
 	tuolib.BGHandler.DoPhaseLogic(self)
@@ -52,6 +55,10 @@ function bg_template:frame()
 end
 
 function bg_template:render()
+	if self.init_phase then
+		bg_template.InitPhaseInfo(self,self.init_phase)
+		self.init_phase=nil
+	end
 	SetViewMode'3d'
 	tuolib.BGHandler.Apply3DParamater(self)
 	local showboss = IsValid(_boss)

@@ -106,12 +106,13 @@ function riv_cracks:render()
 	local dy=sin(self.rot)*self.size
 	local x,y,z=self.x,self.y,self.z
 	Render4V(self.img,x-dx,y+dy,z,x+dy,y+dx,z,x+dx,y-dy,z,x-dy,y-dx,z)
+	SetViewMode'world'
 end
 InitSingleClass(riv_cracks)
 
 function st4bg_rivsomnium:InitPhaseInfo(phase)
 	self.phaseinfo=lstg.DoFile(PATH..'_phase_info.lua')
-	tuolib.BGHandler.DoPhaseLogic(self,1)
+	tuolib.BGHandler.DoPhaseLogic(self,phase or 1)
 end
 
 function st4bg_rivsomnium.load_res()
@@ -139,59 +140,58 @@ function st4bg_rivsomnium.load_res()
 	for i=1,16 do SetImageState('st4bg_rivsomnium_crack'..i,'mul+add',Color(0xFFFFFFFF)) end
 
 
-	if not CheckRes('img','st4bg_tree2') then
-		local ret,err = xpcall(_LoadImageFromFile,debug.traceback,res_list[3][1],PATH..res_list[3][2],true,0,0,false,0)
-		if not ret and not CheckRes("tex",res_list[3][1] ) then
-			TUO_Developer_Flow:ErrorWindow(err)
-		end
-	end
-	if not CheckRes('img','st4bg_tree1') then
-		local ret,err = xpcall(_LoadImageFromFile,debug.traceback,res_list[2][1],PATH..res_list[2][2],true,0,0,false,0)
-		if not ret and not CheckRes("tex",res_list[2][1] ) then
-			TUO_Developer_Flow:ErrorWindow(err)
-		end
-	end
-	do
-		local ret,err = xpcall(SetImageState,debug.traceback,'st4bg_tree1','',Color(0xFFFFFFFF))
-		if not ret then TUO_Developer_Flow:ErrorWindow(err) end
-		Print(err)
-	end
-	do
-		local ret,err = xpcall(SetImageState,debug.traceback,'st4bg_tree2','',Color(0xFFFFFFFF))
-		if not ret then TUO_Developer_Flow:ErrorWindow(err) end
-		Print(err)
-	end
+	-- if not CheckRes('img','st4bg_tree2') then
+	-- 	local ret,err = xpcall(_LoadImageFromFile,debug.traceback,res_list[3][1],PATH..res_list[3][2],true,0,0,false,0)
+	-- 	if not ret and not CheckRes("tex",res_list[3][1] ) then
+	-- 		TUO_Developer_Flow:ErrorWindow(err)
+	-- 	end
+	-- end
+	-- if not CheckRes('img','st4bg_tree1') then
+	-- 	local ret,err = xpcall(_LoadImageFromFile,debug.traceback,res_list[2][1],PATH..res_list[2][2],true,0,0,false,0)
+	-- 	if not ret and not CheckRes("tex",res_list[2][1] ) then
+	-- 		TUO_Developer_Flow:ErrorWindow(err)
+	-- 	end
+	-- end
+	-- do
+	-- 	local ret,err = xpcall(SetImageState,debug.traceback,'st4bg_tree1','',Color(0xFFFFFFFF))
+	-- 	if not ret then TUO_Developer_Flow:ErrorWindow(err) end
+	-- 	Print(err)
+	-- end
+	-- do
+	-- 	local ret,err = xpcall(SetImageState,debug.traceback,'st4bg_tree2','',Color(0xFFFFFFFF))
+	-- 	if not ret then TUO_Developer_Flow:ErrorWindow(err) end
+	-- 	Print(err)
+	-- end
 
 	--SetImageState('st4bg_tree1','',Color(0xFFFFFFFF))
 	--SetImageState('st4bg_tree2','',Color(0xFFFFFFFF))
 
 	local TEXNAME='st4bg_crack'
-	--lstg.SetResourceStatus(	'global	')
-	--lstg.LoadTexture(TEXNAME,PATH..'st4bg_crack.png',true)
-	----LoadTexture(TEXNAME,'TUOlib\\TUO_Background\\st4bg_rivsomnium\\st4bg_crack.png')
-	--local coor_temp={
-	--	{942,0,436,204},
-	--	{1378,0,369,236},
-	--	{1852,0,196,362},
-	--	{963,789,321,308},
-	--	{0,0,433,155},
-	--	{1747,171,105,65},
-	--	{433,0,378,204},
-	--	{1694,236,158,51},
-	--	{1747,0,105,171},
-	--	{983,204,321,585},
-	--	{1490,462,558,541},
-	--	{1490,362,558,100},
-	--	{1693,1003,355,308},
-	--	{942,0,436,204}
-	--}
-	--for i=1,#coor_temp do
-	--	lstg.LoadImage('st4bg_crack'..i,TEXNAME,coor_temp[i][1],coor_temp[i][2],coor_temp[i][3],coor_temp[i][4])
-	--end
-	--lstg.LoadImage('st4bg_crack_b1',TEXNAME,0,1152,784,896)
-	--lstg.LoadImage('st4bg_crack_b2',TEXNAME,784,1152,784,896)
-	--lstg.LoadImage('st4bg_crack_b3',TEXNAME,0,256,784,896)
-	--lstg.SetResourceStatus('stage')
+	-- lstg.SetResourceStatus('global')
+	lstg.LoadTexture(TEXNAME,PATH..'st4bg_crack.png',true)
+	local coor_temp={
+		{942,0,436,204},
+		{1378,0,369,236},
+		{1852,0,196,362},
+		{963,789,321,308},
+		{0,0,433,155},
+		{1747,171,105,65},
+		{433,0,378,204},
+		{1694,236,158,51},
+		{1747,0,105,171},
+		{983,204,321,585},
+		{1490,462,558,541},
+		{1490,362,558,100},
+		{1693,1003,355,308},
+		{942,0,436,204}
+	}
+	for i=1,#coor_temp do
+		lstg.LoadImage('st4bg_crack'..i,TEXNAME,coor_temp[i][1],coor_temp[i][2],coor_temp[i][3],coor_temp[i][4])
+	end
+	lstg.LoadImage('st4bg_crack_b1',TEXNAME,0,1152,784,896)
+	lstg.LoadImage('st4bg_crack_b2',TEXNAME,784,1152,784,896)
+	lstg.LoadImage('st4bg_crack_b3',TEXNAME,0,256,784,896)
+	-- lstg.SetResourceStatus('stage')
 	
 end
 function st4bg_rivsomnium:init(phase)
@@ -199,10 +199,14 @@ function st4bg_rivsomnium:init(phase)
 	st4bg_rivsomnium.load_res()
 	self.speed=0.03--即行走速度
 	self.xpos=0--等效的摄像机x轴位置,x轴方向向前
-	st4bg_rivsomnium.InitPhaseInfo(self,phase)
+	self.init_phase=phase or 1
 end
 
 function st4bg_rivsomnium:frame()
+	if self.init_phase then
+		st4bg_rivsomnium.InitPhaseInfo(self,self.init_phase)
+		self.init_phase=nil
+	end
 	self.xpos=self.xpos-self.speed
 
 	tuolib.BGHandler.DoPhaseLogic(self)
@@ -214,6 +218,10 @@ function st4bg_rivsomnium:frame()
 end
 
 function st4bg_rivsomnium:render()
+	if self.init_phase then
+		st4bg_rivsomnium.InitPhaseInfo(self,self.init_phase)
+		self.init_phase=nil
+	end
 	SetViewMode'3d'
 	tuolib.BGHandler.Apply3DParamater(self)
 	local phase=tuolib.BGHandler.GetCurPhase(self)

@@ -179,6 +179,7 @@ preview_widgets[4]=function(self) --[4]音乐
 	bar2.max_value=1
 	bar2.width=104
 	bar2.gap_b=9
+	list1._ban_list_sort=true
 	--功能
 	txt0.frame=function(widget)
 		local full=GetMusicName(3)

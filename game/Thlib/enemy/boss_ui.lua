@@ -25,6 +25,7 @@ function boss_ui:init(b)
     --test_ex(b.ex)
     if b.class.sc_image then self.sc_image = New(b.class.sc_image) end
     self.hp_bar_timer=0
+    self.hp_bar_alpha=0
     --血条被打散的效果列表
     self.hp_break_list={}
     self.hp_break_list_max=10
@@ -65,7 +66,7 @@ function boss_ui:render()
     end
     local _dy=0
     local alpha1=1-self.boss.hp_flag/30
-    
+    self.hp_bar_alpha=alpha1
     SetImageState('base_hp','',Color(alpha1*255,255,0,0))
     SetImageState('hpbar1','',Color(alpha1*255,255,255,255))
     SetImageState('hpbar2','',Color(0,255,255,255))
@@ -209,10 +210,10 @@ function boss_ui:render_hpbar()
             local k=(1+0.5*(1-t))
             local r=64*k
             local dr=min(1,self.boss.timer/60)*4*t
-            SetImageState('base_hp','',Color(255*t,255,255,255))
+            SetImageState('base_hp','',Color(255*t*self.hp_bar_alpha,255,255,255))
             Render('base_hp',self.boss.x,self.boss.y,0,0.548*k,0.548*k)
             misc.Renderhp2(self.boss.x,self.boss.y,90,360,r-dr,r,360,self.hpbarlen,c.hplen) 
-            SetImageState('base_hp2','',Color(255*t,255,255,255))
+            SetImageState('base_hp2','',Color(255*t*self.hp_bar_alpha,255,255,255))
             Render('base_hp2',self.boss.x,self.boss.y,0,0.548*k,0.548*k)
             local list=self.hp_break_list
             for i=1,self.hp_break_list_max do
