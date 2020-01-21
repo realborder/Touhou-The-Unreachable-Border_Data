@@ -64,7 +64,6 @@ function ext.replay.SaveReplay(stageNames, slot, playerName, finish)
 		assert(replayStages[v])
 		table.insert(stages, replayStages[v])
 	end
-	
 	-- TODO: gameName和gameVersion可以被用来检查录像文件的合法性
 	plus.ReplayManager.SaveReplayInfo(replayManager:MakeReplayFilename(slot),{
 		gameName = setting.mod,

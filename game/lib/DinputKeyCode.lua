@@ -181,3 +181,5 @@ local KEY={
 	MBUTTON
 	--]]
 }
+
+return KEY

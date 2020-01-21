@@ -29,6 +29,7 @@ lstg.DoFile("ex\\ex.lua")--ESC神的ex库，多玩家支持、网络连接、多
 lstg.DoFile("lib\\Lobject.lua")--Luastg的Class、object
 lstg.DoFile("lib\\Lresources.lua")--资源的加载函数、资源枚举和判断
 lstg.DoFile("lib\\Lscreen.lua")--world、3d、viewmode的参数设置
+lstg.DoFile("lib\\Lkeycode.lua")--虚拟按键代码，删掉了launch里的内容
 lstg.DoFile("lib\\Linput.lua")--按键状态更新
 lstg.DoFile("lib\\LinputEX.lua")--追加输入暂存和鼠标操作
 lstg.DoFile("lib\\Ltask.lua")--task
