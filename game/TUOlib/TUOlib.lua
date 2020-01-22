@@ -22,3 +22,5 @@ Include'TUOlib\\Effect_Cut.lua'
 Include'TUOlib\\Dev_Tool\\Dev_Tool.lua'
 ---曲子
 Include'TUOlib\\TUO_Music\\TUO_Music.lua'
+---杂鱼从场景淡入淡出
+Include'TUOlib\\EnemyAppearFromEnvironment.lua'
