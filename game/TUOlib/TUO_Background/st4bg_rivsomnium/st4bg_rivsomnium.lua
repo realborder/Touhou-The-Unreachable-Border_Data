@@ -167,7 +167,7 @@ function st4bg_rivsomnium.load_res()
 	--SetImageState('st4bg_tree2','',Color(0xFFFFFFFF))
 
 	local TEXNAME='st4bg_crack'
-	-- lstg.SetResourceStatus('global')
+	 lstg.SetResourceStatus('global')
 	lstg.LoadTexture(TEXNAME,PATH..'st4bg_crack.png',true)
 	local coor_temp={
 		{942,0,436,204},
@@ -191,7 +191,7 @@ function st4bg_rivsomnium.load_res()
 	lstg.LoadImage('st4bg_crack_b1',TEXNAME,0,1152,784,896)
 	lstg.LoadImage('st4bg_crack_b2',TEXNAME,784,1152,784,896)
 	lstg.LoadImage('st4bg_crack_b3',TEXNAME,0,256,784,896)
-	-- lstg.SetResourceStatus('stage')
+	lstg.SetResourceStatus('stage')
 	
 end
 function st4bg_rivsomnium:init(phase)

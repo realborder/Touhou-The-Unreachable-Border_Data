@@ -97,7 +97,7 @@ end
 ----已重定义于DR_Pin_System.lua
 function GetPower(v)
 	local before=int(lstg.var.power/100)
-	lstg.var.power=min(player.maxPower,lstg.var.power+v)
+	lstg.var.power=max(player.minPower,min(player.maxPower,lstg.var.power+v))
 	local after=int(lstg.var.power/100)
 	if after>before then PlaySound('powerup1',0.5) end
 end

@@ -163,6 +163,27 @@ function TUO_Developer_UI.GetListSingleSel(widget)
 	return nil
 end
 
+local function StageFunc()
+	ex.Frame()
+	task.Do(stage.current_stage)
+	stage.current_stage:frame()
+	stage.current_stage.timer=stage.current_stage.timer+1
+end
+local function ColliFunc()
+	CollisionCheck(GROUP_PLAYER,GROUP_ENEMY_BULLET)
+	CollisionCheck(GROUP_PLAYER,GROUP_ENEMY)
+	CollisionCheck(GROUP_PLAYER,GROUP_INDES)
+	CollisionCheck(GROUP_ENEMY,GROUP_PLAYER_BULLET)
+	CollisionCheck(GROUP_NONTJT,GROUP_PLAYER_BULLET)
+	CollisionCheck(GROUP_ITEM,GROUP_PLAYER)
+	--由OLC添加，可用于自机bomb
+	CollisionCheck(GROUP_SPELL,GROUP_ENEMY)
+	CollisionCheck(GROUP_SPELL,GROUP_NONTJT)
+	CollisionCheck(GROUP_SPELL,GROUP_ENEMY_BULLET)
+	CollisionCheck(GROUP_SPELL,GROUP_INDES)
+end
+
+
 ---性能监视用，发布的时候可以干掉
 function DoFrame()
 	--标题设置
@@ -176,10 +197,15 @@ function DoFrame()
 	SetPlayer()--清除jstg.current_player指向的自机
 	local t1=os.clock()
 	if GetCurrentSuperPause()<=0 or stage.nopause then
-		ex.Frame()
-		task.Do(stage.current_stage)
-		stage.current_stage:frame()
-		stage.current_stage.timer=stage.current_stage.timer+1
+		--if TUO_Developer_Tool_kit.safe_mode_flags.current_stage==true then
+		--	local ret,err = xpcall(StageFunc,debug.traceback)
+		--	if not ret then
+		--		stage
+		--	end
+		--else
+			StageFunc()
+		--end
+
 	end
 	ObjFrame()
 	if GetCurrentSuperPause()<=0 or stage.nopause then
@@ -190,17 +216,7 @@ function DoFrame()
 		end
 	end
 	if GetCurrentSuperPause()<=0 then
-		CollisionCheck(GROUP_PLAYER,GROUP_ENEMY_BULLET)
-		CollisionCheck(GROUP_PLAYER,GROUP_ENEMY)
-		CollisionCheck(GROUP_PLAYER,GROUP_INDES)
-		CollisionCheck(GROUP_ENEMY,GROUP_PLAYER_BULLET)
-		CollisionCheck(GROUP_NONTJT,GROUP_PLAYER_BULLET)
-		CollisionCheck(GROUP_ITEM,GROUP_PLAYER)
-		--由OLC添加，可用于自机bomb
-		CollisionCheck(GROUP_SPELL,GROUP_ENEMY)
-		CollisionCheck(GROUP_SPELL,GROUP_NONTJT)
-		CollisionCheck(GROUP_SPELL,GROUP_ENEMY_BULLET)
-		CollisionCheck(GROUP_SPELL,GROUP_INDES)
+		ColliFunc()
 	end
 	UpdateXY()
 	AfterFrame()

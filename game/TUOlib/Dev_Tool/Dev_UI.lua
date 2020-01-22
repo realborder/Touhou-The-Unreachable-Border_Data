@@ -333,15 +333,17 @@ function TUO_Developer_UI:render()
 		Render4V('white',x,y,0.5,p1[1],p1[2],0.5,p2[1],p2[2],0.5,p3[1],p3[2],0.5)
 	end
 	--指针
-	local alpha=abs(self.timer)
-	local scale=abs(self.timer)/2
-	local t=self.mouse_cur_timer
-	if self.timer>0 then
-		SetImageState('_Dev_Tool_cur','',Color(255*alpha,255,255*(1-t),255*(1-t)))
-	elseif self.timer<0 then
-		SetImageState('_Dev_Tool_cur','',Color(255*alpha,255*(t),0,0))
+	if not self.core.no_cursor then
+		local alpha=abs(self.timer)
+		local scale=abs(self.timer)/2
+		local t=self.mouse_cur_timer
+		if self.timer>0 then
+			SetImageState('_Dev_Tool_cur','',Color(255*alpha,255,255*(1-t),255*(1-t)))
+		elseif self.timer<0 then
+			SetImageState('_Dev_Tool_cur','',Color(255*alpha,255*(t),0,0))
+		end
+		Render('_Dev_Tool_cur',MouseState.x_in_UI,MouseState.y_in_UI,os.clock()*5,scale)
 	end
-	Render('_Dev_Tool_cur',MouseState.x_in_UI,MouseState.y_in_UI,os.clock()*5,scale)
 
 
 end

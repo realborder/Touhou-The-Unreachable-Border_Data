@@ -154,119 +154,40 @@ function quickboost:init()
 		TUO_Developer_UI.cur = 1
 	end
 
-	Neww "value_displayer".monitoring_value = "stage.groups"
-end
-
-local scprac=TUO_Developer_UI:NewPanel()
-function scprac:init()
-	self.name="符卡练习"
-	Neww'title'.text="符卡练习"
-	Neww'text_displayer'.text="boss索引"
-	local cb1=	Neww'checkbox_l'
-	cb1.display_value={"1A","1B","2","3","4","5","6A","6B","EX"}
-	cb1.width=304
-	cb1.cur=1
-	Neww'text_displayer'.text="选择难度"
-	local cb2=	Neww'checkbox_l'
-	cb2.display_value={"Easy","Normal","Hard","Lunatic"}
-	cb2.width=304
-	cb2.cur=1
-	cb1._event_mousepress=function ()
-		if cb1.cur==#cb1.display_value then
-			cb2.cur=1
-			cb2.display_value={"Extra"}
-		else
-			cb2.display_value={"Easy","Normal","Hard","Lunatic"}
-		end
-	end
-
-	local list1=Neww'list_box'
-	list1.width=304
-	list1._ban_mul_select=true
-	list1.monitoring_value=function()
-		local ret={}
-		if cb1.cur then
-			local tb=_sc_table_new[cb1.cur_value]
-			if not tb then return end
-			for i,v in ipairs(tb) do
-				---@type name
-				local c=v
-				local name
-				if type(c.card_name)=='table' then
-					if c.is_sc==true or c.is_sc[cb2.cur] then name=c.card_name[cb2.cur]
-					else name="通常弹幕" end
-				else
-					if c.is_sc then name= c.card_name
-					else name="通常弹幕" end
-				end
-				table.insert(ret,name)
-			end
-		end
-		return ret
-	end
-	Neww "text_displayer".text = "选择机体"
-	local plr_list = Neww "list_box"
-	plr_list.width = 256
-	plr_list._ban_mul_select=true
-	plr_list.refresh = function(self)
-		self.display_value = {}
-		for i = 1, #player_list do
-			table.insert(self.display_value, {name = i, v = player_list[i][1]})
-		end
-	end
-	local btn1=Neww'button'
-	btn1.text="开始"
-	btn1._event_mouseclick=function()
-		if cb1.cur and cb2.cur and list1.cur then
-			-- local cardinfo=_sc_table_new[cb1.cur_value][list1.cur]
-			local cardinfo1=cb1.cur_value
-			local cardinfo2=list1.cur
-			if cb2.cur then
-				difficulty=cb2.cur
-			end
+	-- TODO: 加一个直接退出到标题菜单的功能
 
 
-			local plr_index =plr_list.cur
-			if not plr_index then 
-				TUO_Developer_Flow:ErrorWindow("未选择机体")
-				return
-			end
-
-			-- if string.find(tostring(stage.current_stage.name), "@", 1, true) ~= nil then
-			-- 	stage.current_stage.task[1] =
-			-- 		coroutine.create(
-			-- 		function()
-			-- 		end
-			-- 	)
-			-- 	-- stage.current_stage.task[2]=coroutine.create(function() end)
-			-- 	stage.group.FinishStage()
-			-- end
-
-			ResetPool()
-			scoredata.player_select = plr_index
-			-- lstg.var.sc_index_new=cardinfo
-			lstg.var.sc_index_new1=cardinfo1
-			lstg.var.sc_index_new2=cardinfo2
-			lstg.var.player_name = player_list[plr_index][2]
-			lstg.var.rep_player = player_list[plr_index][3]
-			Print(cardinfo1,cardinfo2)
-			stage.group.PracticeStart("Spell Practice New@Spell Practice New")
-			TUO_Developer_UI.cur = 1
-		end
-	end
 	local sw1=Neww'switch'
-	local vd1=	Neww'value_displayer'
-	vd1.monitoring_value=_sc_table_new
-	vd1.visiable=false
+	local m1=Neww "value_displayer"
+
 	sw1.text_on="详细信息 开"
 	sw1.text_off="详细信息 关"
 	sw1.width=150
-	sw1._stay_in_this_line=true
 	sw1._event_switched=function(widget,flag)
-		vd1.visiable=flag
+		m1.visiable=flag
 	end
-end
+	m1.monitoring_value = "stage.groups"
+	m1.visiable=false
 
+	-- 调试参数
+	TUO_Developer_UI.SetWidgetSlot('slot2')
+	Neww'text_displayer'.text='保护模式'
+	local sw21=Neww'switch'
+	local sw22=Neww'switch'
+	local sw23=Neww'switch'
+	local sw24=Neww'switch'
+	local sw25=Neww'switch'
+	sw21.text_on,sw21.text_off='current_stage:frame',	'current_stage:frame'
+	sw22.text_on,sw22.text_off='ObjFrame',				'ObjFrame'
+	sw23.text_on,sw23.text_off='BoundCheck',			'BoundCheck'
+	sw24.text_on,sw24.text_off='CollisionCheck',		'CollisionCheck'
+	sw25.text_on,sw25.text_off='RenderFunc',			'RenderFunc'
+	sw21.monitoring_value='TUO_Developer_Tool_kit.safe_mode_flags.current_stage'
+	sw22.monitoring_value='TUO_Developer_Tool_kit.safe_mode_flags.ObjFrame'
+	sw23.monitoring_value='TUO_Developer_Tool_kit.safe_mode_flags.BoundCheck'
+	sw24.monitoring_value='TUO_Developer_Tool_kit.safe_mode_flags.CollisionCheck'
+	sw25.monitoring_value='TUO_Developer_Tool_kit.safe_mode_flags.RenderFunc'
+end
 
 local modmgr = TUO_Developer_UI:NewPanel()
 function modmgr:init()
@@ -360,6 +281,116 @@ function modmgr:init()
 		list.selection = {}
 	end
 end
+
+local scprac=TUO_Developer_UI:NewPanel()
+function scprac:init()
+	self.name="符卡练习"
+	Neww'title'.text="符卡练习"
+	Neww'text_displayer'.text="boss索引"
+	local cb1=Neww'checkbox_l'
+	cb1.display_value={"1A","1B","2","3","4","5","6A","6B","EX"}
+	cb1.width=304
+	cb1.cur=1
+	Neww'text_displayer'.text="选择难度"
+	local cb2=	Neww'checkbox_l'
+	cb2.display_value={"Easy","Normal","Hard","Lunatic"}
+	cb2.width=304
+	cb2.cur=1
+	cb1._event_mousepress=function ()
+		if cb1.cur==#cb1.display_value then
+			cb2.cur=1
+			cb2.display_value={"Extra"}
+		else
+			cb2.display_value={"Easy","Normal","Hard","Lunatic"}
+		end
+	end
+
+	local list1=Neww'list_box'
+	list1.width=304
+	list1._ban_mul_select=true
+	list1.monitoring_value=function()
+		local ret={}
+		if cb1.cur then
+			local tb=_sc_table_new[cb1.cur_value]
+			if not tb then return end
+			for i,v in ipairs(tb) do
+				local c=v
+				local name
+				if type(c.card_name)=='table' then
+					if c.is_sc==true or c.is_sc[cb2.cur] then name=c.card_name[cb2.cur]
+					else name="通常弹幕" end
+				else
+					if c.is_sc then name= c.card_name
+					else name="通常弹幕" end
+				end
+				table.insert(ret,name)
+			end
+		end
+		return ret
+	end
+	Neww "text_displayer".text = "选择机体"
+	local plr_list = Neww "list_box"
+	plr_list.width = 256
+	plr_list._ban_mul_select=true
+	plr_list.refresh = function(self)
+		self.display_value = {}
+		for i = 1, #player_list do
+			table.insert(self.display_value, {name = i, v = player_list[i][1]})
+		end
+	end
+	local btn1=Neww'button'
+	btn1.text="开始"
+	btn1._event_mouseclick=function()
+		if cb1.cur and cb2.cur and list1.cur then
+			-- local cardinfo=_sc_table_new[cb1.cur_value][list1.cur]
+			local cardinfo1=cb1.cur_value
+			local cardinfo2=list1.cur
+			if cb2.cur then
+				difficulty=cb2.cur
+			end
+
+
+			local plr_index =plr_list.cur
+			if not plr_index then
+				TUO_Developer_Flow:ErrorWindow("未选择机体")
+				return
+			end
+
+			-- if string.find(tostring(stage.current_stage.name), "@", 1, true) ~= nil then
+			-- 	stage.current_stage.task[1] =
+			-- 		coroutine.create(
+			-- 		function()
+			-- 		end
+			-- 	)
+			-- 	-- stage.current_stage.task[2]=coroutine.create(function() end)
+			-- 	stage.group.FinishStage()
+			-- end
+
+			ResetPool()
+			scoredata.player_select = plr_index
+			-- lstg.var.sc_index_new=cardinfo
+			lstg.var.sc_index_new1=cardinfo1
+			lstg.var.sc_index_new2=cardinfo2
+			lstg.var.player_name = player_list[plr_index][2]
+			lstg.var.rep_player = player_list[plr_index][3]
+			Print(cardinfo1,cardinfo2)
+			stage.group.PracticeStart("Spell Practice New@Spell Practice New")
+			TUO_Developer_UI.cur = 1
+		end
+	end
+	local sw1=Neww'switch'
+	local vd1=	Neww'value_displayer'
+	vd1.monitoring_value=_sc_table_new
+	vd1.visiable=false
+	sw1.text_on="详细信息 开"
+	sw1.text_off="详细信息 关"
+	sw1.width=150
+	sw1._stay_in_this_line=true
+	sw1._event_switched=function(widget,flag)
+		vd1.visiable=flag
+	end
+end
+
 local steptest = TUO_Developer_UI:NewPanel()
 function steptest:init()
 	self.name = "步进调试"

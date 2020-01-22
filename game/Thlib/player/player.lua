@@ -72,6 +72,7 @@ function player_class:init()
 	self.KeyDownTimer1=0 --用于记录持续按压时长
 	self.bomb_end=false --上一张符卡结束标志
 	
+	self.minPower=100 --灵力下限
 	self.maxPower=400 --灵力上限
 	self.PowerFlag=0 --随梦现指针变化的阶段标志，在（-5,5）范围内由-1至2变化
 	self.PowerDelay1=-1 --上限减少时子机存留时间倒计时，-1表示没有在倒计时
@@ -332,7 +333,8 @@ function player_class:frame()
 					self.ringW_aim=0
 				end
 			end
-			lstg.var.power=max(0,lstg.var.power-50)
+			--lstg.var.power=max(0,lstg.var.power-50)
+			GetPower(-50)
 			New(player_death_ef,self.x,self.y,1)
 			New(player_death_ef,self.x,self.y,2)
 	--死亡计时器为84时的逻辑

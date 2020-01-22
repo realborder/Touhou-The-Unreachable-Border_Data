@@ -192,20 +192,31 @@ function TUO_Developer_Tool_kit:init()
 	--
 	self:LoadResource()
 	self.visiable=false --标记界面是否可见
+	-- 解锁面板的机制
 	self.locked=true --标记是否锁定
 	self.unlock_time_limit=0
 	self.UNLOCK_TIME_LIMIT=60
 	self.unlock_count=0
 	self.UNLOCK_COUNT=3
+	-- 鼠标点击效果
 	self.mouse_click_list={}
 	self.mouseR_click_list={}
+	-- 性能监视器
 	self.performance_monitor={
 		frame_pre_cur=1
 	}
+	-- 关卡运行保护标记
+	self.safe_mode_flags={
+
+	}
+	-- UI部件
 	self.ui=TUO_Developer_UI
+
 	self.ui:init()
 	self:SortAllTemplate()
 	self:LoadAllModule()
+
+	-- 浮窗部件
 	self.flow=TUO_Developer_Flow
 	self.flow:init()
 	Log('初始化完毕',4)
