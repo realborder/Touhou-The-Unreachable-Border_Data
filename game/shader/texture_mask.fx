@@ -13,7 +13,7 @@ sampler2D ScreenTextureSampler = sampler_state {
 
 float4 screen : SCREENSIZE;
 
-//这个shader通过传入一个灰度图作为alpha通道，原图的透明度根据这个灰度图从白到黑从不透明到透明
+//杩欎釜shader閫氳繃浼犲叆涓�涓伆搴﹀浘浣滀负alpha閫氶亾锛屽師鍥剧殑閫忔槑搴︽牴鎹繖涓伆搴﹀浘浠庣櫧鍒伴粦浠庝笉閫忔槑鍒伴�忔槑
 texture2D Texture2 < string binding = "tex"; >;
 sampler2D ScreenTextureSampler2 = sampler_state {
     texture = <Texture2>;

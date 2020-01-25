@@ -18,11 +18,10 @@ function TUO_Developer_UI:NewModule(index)
         angle_aim=self.module_da*index,
         angle=360,
         x=0,y=0,r=0,
-
+        pressed_timer=0,
         mouse_stay=false,
         stay_timer=0,
         mouse_pressed=false,
-        pressed_timer=0,
         panel={}
     }
     if self.module[index] then 
@@ -62,9 +61,17 @@ function TUO_Developer_UI:DoModuleFrame(module)
         if module.mouse_pressed then module.pressed_timer=min(1,module.pressed_timer+0.2) else module.pressed_timer=max(0,module.pressed_timer-0.1) end
         module.x,module.y,module.r=x,y,r
     elseif self.timer<0 and self.cur==module.slot then
+        local ux=MouseState.x_in_UI
         local uy=MouseState.y_in_UI
         -- if uy>480-self.topbar_width and MouseIsPressed(0) or lstg.GetKeyState(KEY.ESCAPE) then  self.cur=nil end
-        if uy>480-self.topbar_width and uy<480 and MouseIsPressed(0) then self.cur=nil PlaySound('TUO_Dev_HUD_panel',2,0.75)  end
+        if ux<35 and uy>480-self.topbar_width+1 and uy<479 then
+            self.return_timer=min(1,self.return_timer+0.2)
+            if MouseIsPressed(0) then
+                self.cur=nil PlaySound('TUO_Dev_HUD_panel',2,0.75)
+            end
+        else
+            self.return_timer=max(0,self.return_timer-0.05)
+        end
         
         -- if uy>480-self.topbar_width and uy<480 and MouseIsPressed(2) then 
         --     if self.topbar_width>24 then

@@ -27,6 +27,7 @@ function TUO_Developer_UI:init()
 	self.cur=nil
 	--展开用timer，范围是0到1
 	self.timer=0
+	self.return_timer=0
 
 	self.mouse_click_list={}
 	self.mouse_cur_timer=0
@@ -77,7 +78,7 @@ function TUO_Developer_UI:init()
 end
 
 function TUO_Developer_UI:frame()
-	-----timer变换部分
+	--region timer变换部分
 		if not self.visiable then
 			self.timer=self.timer+(0-self.timer)*0.15
 			if abs(self.timer)<0.03 then self.timer=0 end
@@ -107,7 +108,9 @@ function TUO_Developer_UI:frame()
 		self.mouse_cur_timer=max(0,self.mouse_cur_timer-0.04)
 		self.topbar_width=self.topbar_width+(self.topbar_width_aim-self.topbar_width)*0.2
 		if self.timer==0 then return end
-	------在完全不显示的时候会彻底关掉自身的逻辑
+	--endregion
+
+	--region 在完全不显示的时候会彻底关掉自身的逻辑
 		--模块和面板快速切换，按下Ctrl+Tab才会回退到一开始的页面
 			local CheckKey=self.core.CheckKeyState
 			local ctrl_tr=CheckKey(KEY.CTRL)
@@ -179,6 +182,7 @@ function TUO_Developer_UI:frame()
 			for _,module in pairs(self.module) do
 				self:DoModuleFrame(module)
 			end
+	--endregion
 end
 
 function TUO_Developer_UI:RenderMonitorBar()
@@ -311,6 +315,7 @@ function TUO_Developer_UI:render()
 	--条
 	if self.timer<0 then
 		RenderCube(UI_L,UI_R,480-self.topbar_width*-self.timer,480,255*-self.timer,30,30,30)
+		RenderCube(UI_L,35,480-self.topbar_width*-self.timer,480,255*-self.timer*self.return_timer,100,100,100)
 		if self.cur then
 			local SIZE=1.2*self.topbar_width/32
 			RenderTTF2(self.core.ttf,self.module[self.cur].name,UI_L+32+5,UI_R,480-self.topbar_width*-self.timer,480,SIZE,Color(255*-self.timer,255,255,255),'vcenter')
