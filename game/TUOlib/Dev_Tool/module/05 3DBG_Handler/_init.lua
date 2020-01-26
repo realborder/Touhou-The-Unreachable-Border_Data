@@ -5,10 +5,22 @@ function _3DBG_Handler:init()
     self.name='3D背景处理'
     self.bgname=nil
     self.bgtemp=nil
+    self.music_name=nil
+    self.music_index=nil
+    self.music_play_timer=nil
+    self.music_play_time_offset=nil
+
 end
 
 function _3DBG_Handler:frame()
     if IsValid(self.bgtemp) then self.bgtemp.layer=999 end
+    if self.music_play_timer and self.music_play_timer>=0 then
+        if self.music_play_timer==0 then
+            _play_music(self.music_name,0)
+            self.music_play_timer=-1
+        end
+        self.music_play_timer=self.music_play_timer-1
+    end
 end
 
 
@@ -18,6 +30,27 @@ local bglist
 local tip1=[[
 注意，入口文件名必须和目录名一致。
 ]]
+local function playBGM(name)
+    if string.find(name,'st') then
+        local bgm=string.sub(name,1,string.find(name,'st')+2)
+        for i,v in ipairs(tuolib.music.music_list) do
+            if string.find(v[1],bgm) then
+                if not lstg.CheckRes(4,v[1]) then
+                    LoadMusicRecord(v[1])
+                end
+                if v[5] then
+                    _3DBG_Handler.music_name=v[1]
+                    _3DBG_Handler.music_index=i
+                    _3DBG_Handler.music_play_timer=v[5]
+                    _3DBG_Handler.music_play_time_offset=v[5]
+                else
+                    _play_music(v[1],0)
+                end
+                break
+            end
+        end
+    end
+end
 local bgl=TUO_Developer_UI:NewPanel()
 function bgl:init()
     self.name='背景脚本列表'
@@ -38,14 +71,8 @@ function bgl:init()
         _3DBG_Handler.bgname=name
         _3DBG_Handler.bgtemp=New(_G[name])
         _3DBG_Handler.cur=2
+        playBGM(name)
     end
-    -- local sw1=Neww'switch'
-    -- sw1._stay_in_this_line=true
-    -- sw1.text_on='实时重载 开'
-    -- sw1.text_off='实时重载 关'
-    -- sw1._event_switched=function(widget,flag)
-    --     self.auto_reload=flag
-    -- end
 
     local bt4=Neww'button'
     bt4.text='刷新全部'
@@ -62,7 +89,13 @@ function bgl:init()
     bt3._event_mouseclick=function(widget)
         if IsValid(_3DBG_Handler.bgtemp) then RawDel(_3DBG_Handler.bgtemp) end
     end
-    
+
+    local sw1=Neww'switch'
+    sw1.text_on='附带背景音乐 开'
+    sw1.text_off='附带背景音乐 关'
+    sw1._event_switched=function(widget,flag)
+        self.auto_play=flag
+    end
 
     
     bglist=Neww'list_box'
@@ -83,10 +116,8 @@ function bgl:init()
         if IsValid(m.bgtemp) then RawDel(m.bgtemp) end
         m.bgname=bgname
         m.bgtemp=New(_G[bgname])
-        --if not GetKeyState(KEY.CTRL) then
-        --    m.layer=999
-        --end
         m.cur=2
+        playBGM(name)
     end
     
 
@@ -166,6 +197,19 @@ function phsys:init()
         if bg then
             if bg.phaseinfo then
                 bg.timer=bg.phaseinfo[widget.cur].time
+                if _3DBG_Handler.music_name then
+                    local time=bg.phaseinfo[widget.cur].time
+                    local offset=_3DBG_Handler.music_play_time_offset
+                    local actuall_time=max(0,time-offset)
+                    if actuall_time<0 then
+                        _3DBG_Handler.music_play_timer=-actuall_time
+                    else
+                        --PlayMusic用的单位是秒，而不是帧
+                        _3DBG_Handler.music_play_timer=-1
+                        actuall_time=actuall_time/60
+                        PlayMusic(_3DBG_Handler.music_name,1.0,actuall_time)
+                    end
+                end
             end
         end
 
@@ -179,7 +223,7 @@ function phsys:init()
     v0.monitoring_value=function() 
         local cur=tuolib.BGHandler.GetCurPhase(_3DBG_Handler.bgtemp)
         if cur then
-            return {{name='',v=string.format('%.2f sec',_3DBG_Handler.bgtemp.timer/60)}} 
+            return {{name='',v=string.format('%d (%.2f sec)',_3DBG_Handler.bgtemp.timer,_3DBG_Handler.bgtemp.timer/60)}}
         else
             return {{name='',v='nil'}} 
         end

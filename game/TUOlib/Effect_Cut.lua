@@ -28,6 +28,9 @@ PopRenderTarget=function(...)
     end
 end
 m.oldfunc5=PostEffect
+---@param rendertarget string
+---@param fx string
+---@param parameter table
 PostEffect=function(...)
     if m.enable_shader then
         m.oldfunc5(...)

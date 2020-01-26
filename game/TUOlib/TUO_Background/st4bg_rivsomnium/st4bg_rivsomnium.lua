@@ -2,7 +2,8 @@
 --code by janrilw
 ---------------------------
 local PATH = 'TUOlib\\TUO_Background\\st4bg_rivsomnium\\'
-local RT_NAME = "st4_bg_render_target1"
+local RT_NAME1 = "st4_bg_render_target1"
+local RT_NAME2 = "st4_bg_render_target2"
 st4bg_rivsomnium = Class(object)
 
 --region cracks
@@ -78,7 +79,7 @@ InitSingleClass(cracks)
 local riv_cracks = {}
 
 --因为init里会调用frame，所以frame提前了
-function riv_cracks.New(bg,rep)
+function riv_cracks.New(bg, rep)
 	---把原本的对象改为一个循环队列
 	local list = bg.rivcrack_list
 	bg.rivcrack_list_array = bg.rivcrack_list_array + 1
@@ -95,17 +96,14 @@ function riv_cracks:Refresh(master, rep)
 	self.master = self.master or master
 	self.index = int(math.random(1, 16))
 	self.img = 'st4bg_rivsomnium_crack' .. self.index
-	self.group = GROUP_GHOST
-	self.layer = self.master.layer
-	self.bound = false
 	self.x = 15
 	self.size = 0.05 + math.random() ^ 4
 	self.y = math.random(-10, 10) * self.size
 	self.va = 180 + math.random(-1, 1) * self.size * 10
-	self.z = self.size * 10 - 3
+	self.z = self.size * 6 - 3
 	self.size = self.size * math.random(3, 5)
 	self.speed = 0.03 * math.random(1, 1.25)
-	self.rot=math.random(0,360)
+	self.rot = math.random(0, 360)
 	self.omiga = math.random(-0.3, 0.3)
 	if rep then
 		for _ = 1, rep * 5 do
@@ -127,40 +125,127 @@ function riv_cracks:frame()
 	end
 end
 
---function riv_cracks:init(master, rep)
---	self.master = master
---	self.index = int(math.random(1, 16))
---	self.img = 'st4bg_rivsomnium_crack' .. self.index
---	self.layer = self.master.layer + 1
---	self.bound = false
---	self.x = 15
---	self.size = 0.05 + math.random() ^ 4
---	self.y = math.random(-10, 10) * self.size
---	self.va = 180 + math.random(-1, 1) * self.size * 10
---	self.z = self.size * 10 - 3
---	self.size = self.size * math.random(3, 5)
---	self.speed = 0.03 * math.random(1, 1.25)
---	self.omiga = math.random(-0.3, 0.3)
---	if rep then
---		for _ = 1, rep * 5 do
---			riv_cracks.frame(self)
---		end
---	end
---end
-
 function riv_cracks:render()
-	--SetViewMode '3d'
 	local dx = cos(self.rot) * self.size
 	local dy = sin(self.rot) * self.size
 	local x, y, z = self.x, self.y, self.z
 	Render4V(self.img, x - dx, y + dy, z, x + dy, y + dx, z, x + dx, y - dy, z, x - dy, y - dx, z)
-	--SetViewMode 'world'
 end
 InitSingleClass(riv_cracks)
 
 --endregion riv_cracks
 
 
+--region riv_crack_big
+------------------------------------------------------------------------------------
+---@class riv_cracks_big
+---这个东西只能同时存在一个，新的会直接把旧的踢掉，请注意
+---然后发现问题了，没办法只能搞三示例
+local riv_cracks_big = {}
+function riv_cracks_big.New(master, index)
+	local riv = {}
+	local init_position = {
+		{ 9, -7, 4.5 },
+		{ 9, 2, 5 },
+		{ 6, -2, 6 },
+	}
+	riv.master = master
+	riv.index = index
+	riv.x, riv.y, riv.z = unpack(init_position[index])
+	riv.img = 'st4bg_bigdreamcrack'
+	riv.imgmask = 'st4bg_bigdreamcrack_mask'
+	riv.va = 180
+	riv.size = ({ 18, 18, 20 })[index]
+	riv.speed = ({ 0.02, 0.02, 0.01 })[index]
+	riv.rot = ({ 0, 0, 0 })[index]
+	riv.omiga = ({ 0.1, -0.1, 0.05 })[index]
+	riv.frame = riv_cracks_big.frame
+	riv.render = riv_cracks_big.render
+	riv.timer = 0
+	master.riv_cracks_big[index] = riv
+end
+function riv_cracks_big:frame()
+	if self.disable then
+		return
+	end
+	self.timer = self.timer + 1
+	local dx, dy = self.speed * cos(self.va), self.speed * sin(self.va)
+	self.x = self.x + dx
+	self.y = self.y + dy
+	self.rot = self.rot + self.omiga
+	if self.x < -20 then
+		self.disable = true
+	end
+end
+local function RenderScene(self,index,timer)
+	RenderClear(Color(0x00000000))
+	if index==1 then
+		SetViewMode 'world'
+		Render('st4bg_scene1', -30-timer*0.1, 1.8*224-timer*0.5, 0, 1)
+		SetViewMode '3d'
+	elseif index==2 then
+		SetViewMode 'world'
+		Render('st4bg_scene2',  30+timer*0.1, 2*224-timer*0.5, 0, 1)
+		SetViewMode '3d'
+	elseif index==3 then
+		SetViewMode '3d'
+		local dx = 5
+		local dy = 5
+		local z = -3
+		local dddx = (self.xpos * 0.25) % (dx * 2)
+		for ddx = -4 * dx, 4 * dx, dx * 2 do
+			for ddy = -4 * dy, 4 * dy, dy * 2 do
+				Render4V('st4bg_stary_sky', dddx + ddx + dx, ddy - dy, z, dddx + ddx + dx, ddy + dy, z, dddx + ddx - dx, ddy + dy, z, dddx + ddx - dx, ddy - dy, z)
+			end
+		end
+		dx,dy=1,1
+		dddx = (self.xpos * 2) % (dx * 2)
+		local i=1
+		for z=-1,5,3 do
+			local imgname='st4bg_dreamweb'..i i=i+1
+			for ddx = -10 * dx, 8 * dx, dx * 2 do
+				for ddy = -10 * dy, 4 * dy, dy * 2 do
+					Render4V(imgname, dddx + ddx + dx, ddy - dy, z, dddx + ddx + dx, ddy + dy, z, dddx + ddx - dx, ddy + dy, z, dddx + ddx - dx, ddy - dy, z)
+				end
+			end
+		end
+	end
+
+end
+
+
+
+
+function riv_cracks_big:render()
+	if self.disable then
+		return
+	end
+	local dx = cos(self.rot) * self.size
+	local dy = sin(self.rot) * self.size
+	local x, y, z = self.x, self.y, self.z
+	--具体内容
+	PushRenderTarget(RT_NAME1)
+	RenderScene(self.master,self.index,self.timer)
+
+	PopRenderTarget(RT_NAME1)
+	--遮罩
+	PushRenderTarget(RT_NAME2)
+	RenderClear(Color(0x00000000))
+	Render4V(self.imgmask, x - dx, y + dy, z, x + dy, y + dx, z, x + dx, y - dy, z, x - dy, y - dx, z)
+	PopRenderTarget(RT_NAME2)
+	PostEffect(RT_NAME1, 'mask', '', {
+		tex = RT_NAME2
+	})
+	Render4V(self.img, x - dx, y + dy, z, x + dy, y + dx, z, x + dx, y - dy, z, x - dy, y - dx, z)
+
+end
+
+--endregion
+
+
+--region st4bg_rivsomnium
+--------------------------------------------------------------------------------
+---四面背景本体
 function st4bg_rivsomnium:InitPhaseInfo(phase)
 	self.phaseinfo = lstg.DoFile(PATH .. '_phase_info.lua')
 	tuolib.BGHandler.DoPhaseLogic(self, phase or 1)
@@ -177,6 +262,9 @@ function st4bg_rivsomnium.load_res()
 		{ 'st4bg_stary_sky', 'st4bg_stary_sky.png' },
 		{ 'st4bg_bigdreamcrack', 'st4bg_bigdreamcrack.png' },
 		{ 'st4bg_bigdreamcrack_mask', 'st4bg_bigdreamcrack_mask.png' },
+		{ 'st4bg_scene1', 'st4bg_scene1.png' },
+		{ 'st4bg_scene2', 'st4bg_scene2.png' },
+		{ 'st4bg_dreamweb1', 'st4bg_dreamweb.png' },
 	}
 	for _, v in pairs(res_list) do
 		--移除旧的并加载新的，仅调试用（也就调试的时候有机会卸载资源）
@@ -194,34 +282,12 @@ function st4bg_rivsomnium.load_res()
 	for i = 1, 16 do
 		SetImageState('st4bg_rivsomnium_crack' .. i, 'mul+add', Color(0xFFFFFFFF))
 	end
-
-
-	-- if not CheckRes('img','st4bg_tree2') then
-	-- 	local ret,err = xpcall(_LoadImageFromFile,debug.traceback,res_list[3][1],PATH..res_list[3][2],true,0,0,false,0)
-	-- 	if not ret and not CheckRes("tex",res_list[3][1] ) then
-	-- 		TUO_Developer_Flow:ErrorWindow(err)
-	-- 	end
-	-- end
-	-- if not CheckRes('img','st4bg_tree1') then
-	-- 	local ret,err = xpcall(_LoadImageFromFile,debug.traceback,res_list[2][1],PATH..res_list[2][2],true,0,0,false,0)
-	-- 	if not ret and not CheckRes("tex",res_list[2][1] ) then
-	-- 		TUO_Developer_Flow:ErrorWindow(err)
-	-- 	end
-	-- end
-	-- do
-	-- 	local ret,err = xpcall(SetImageState,debug.traceback,'st4bg_tree1','',Color(0xFFFFFFFF))
-	-- 	if not ret then TUO_Developer_Flow:ErrorWindow(err) end
-	-- 	Print(err)
-	-- end
-	-- do
-	-- 	local ret,err = xpcall(SetImageState,debug.traceback,'st4bg_tree2','',Color(0xFFFFFFFF))
-	-- 	if not ret then TUO_Developer_Flow:ErrorWindow(err) end
-	-- 	Print(err)
-	-- end
-
-	--SetImageState('st4bg_tree1','',Color(0xFFFFFFFF))
-	--SetImageState('st4bg_tree2','',Color(0xFFFFFFFF))
-
+	SetImageState('st4bg_bigdreamcrack', 'mul+add', Color(0xFFFFFFFF))
+	SetImageState('st4bg_dreamweb1','mul+add',Color(0xFFFF0000))
+	CopyImage('st4bg_dreamweb2','st4bg_dreamweb1')
+	SetImageState('st4bg_dreamweb2','mul+add',Color(0xFF0000FF))
+	CopyImage('st4bg_dreamweb3','st4bg_dreamweb1')
+	SetImageState('st4bg_dreamweb3','mul+add',Color(0xFFFF0000))
 	local TEXNAME = 'st4bg_crack'
 	lstg.SetResourceStatus('global')
 	lstg.LoadFX('mask', 'shader\\texture_mask.fx')
@@ -249,7 +315,8 @@ function st4bg_rivsomnium.load_res()
 	lstg.LoadImage('st4bg_crack_b2', TEXNAME, 784, 1152, 784, 896)
 	lstg.LoadImage('st4bg_crack_b3', TEXNAME, 0, 256, 784, 896)
 	lstg.SetResourceStatus('stage')
-	lstg.CreateRenderTarget(RT_NAME)
+	lstg.CreateRenderTarget(RT_NAME1)
+	lstg.CreateRenderTarget(RT_NAME2)
 end
 function st4bg_rivsomnium:init(phase)
 	background.init(self, false)
@@ -260,7 +327,8 @@ function st4bg_rivsomnium:init(phase)
 	self.rivcrack_list = {}
 	self.rivcrack_list_array = 0
 	self.rivcrack_list_length = 120
-	self.BIG_CRACK_APPEAR = { 2767, 3767, 4767 }
+	self.BIG_CRACK_APPEAR = { 4425 - 4 * 60, 5233 - 4 * 60, 6152 - 6 * 60 }
+	self.riv_cracks_big = {}
 end
 
 function st4bg_rivsomnium:frame()
@@ -274,11 +342,22 @@ function st4bg_rivsomnium:frame()
 	local phase = tuolib.BGHandler.GetCurPhase(self)
 	--if phase >= 7 and self.timer % 5 == 0 then
 	--	riv_cracks.New(self)
-		--New(riv_cracks, self)
+	--New(riv_cracks, self)
 	--end
 	for _, v in ipairs(self.rivcrack_list) do
 		if v then
 			riv_cracks.frame(v)
+		end
+	end
+	for i, v in ipairs(self.BIG_CRACK_APPEAR) do
+		if self.timer == v then
+			riv_cracks_big.New(self, i)
+		end
+	end
+	--带场景的大碎片
+	for i = 1, 3 do
+		if self.riv_cracks_big[i] then
+			self.riv_cracks_big[i]:frame()
 		end
 	end
 	task.Do(self)
@@ -403,13 +482,17 @@ function st4bg_rivsomnium:render()
 				end
 			end
 		end
-		-- 大型梦境碎块
-
 	end
 
 	for _, v in ipairs(self.rivcrack_list) do
 		if v then
 			riv_cracks.render(v)
+		end
+	end
+	--带场景的大碎片
+	for i = 1, 3 do
+		if self.riv_cracks_big[i] then
+			self.riv_cracks_big[i]:render()
 		end
 	end
 	if showboss then
@@ -419,3 +502,4 @@ function st4bg_rivsomnium:render()
 	SetViewMode 'world'
 end
 
+--endregion

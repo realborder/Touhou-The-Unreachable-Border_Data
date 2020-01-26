@@ -228,10 +228,14 @@ preview_widgets[4]=function(self) --[4]音乐
 	end
 	btn4._event_mouseclick=function()
 		local msc=GetMusicName()
-		if msc and CheckRes('bgm',msc) and GetMusicState(msc)=='playing' then 
+		if msc and CheckRes('bgm',msc) and GetMusicState(msc)=='playing' then
 			StopMusic(msc)
 			self.play_process=0
 			self.play_state=0
+		else
+			for _,name in lstg.EnumRes(4) do
+				StopMusic(name)
+			end
 		end	
 	end
 	bar1.frame=function(widget)
@@ -255,17 +259,11 @@ preview_widgets[4]=function(self) --[4]音乐
 	bar1.render=function(widget,alpha,l,r,b,t)
 		---排版
 		local BORDER_WIDTH=widget.borderwidth
-		local HEIGHT=widget.w+BORDER_WIDTH*2
-		local GAP_T=widget.gap_t
-		local x_pos=widget.x
 		---lrbt初始值
 		local m=r-(bar1.l*self.play_period/self.play_length)-widget.borderwidth
 		local yc=(t+b)/2
 		local h=widget.w/2
-		local w2=1
-		local coor1=Color(255*alpha*(sin(os.clock()*150)+1)/2,20+120,20,20)
-		local coor2=Color(0,20+120,20,20)
-		SetImageState('white','',coor1,coor2,coor2,coor1)
+		SetImageState('white','',Color(255*alpha*(sin(os.clock()*150)+1)/2,20+120,20,20))
 		RenderRect('white',m,r-BORDER_WIDTH,yc-h,yc+h)
 	end
 	bar2.frame=function(widget)
