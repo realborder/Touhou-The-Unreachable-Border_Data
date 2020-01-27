@@ -16,13 +16,13 @@ m.music_list={
 }
 function m:init()
 	--把路径加上去
-	for i,v in ipairs(m.music_list) do
+	for _,v in ipairs(m.music_list) do
 		v[2]=m.PATH..v[2]
 	end
 	self.SetMusicInfo()
 end
 function m.SetMusicInfo()
-	for i,v in ipairs(m.music_list) do
+	for _,v in ipairs(m.music_list) do
 		MusicRecord(unpack(v))
 	end
 end

@@ -32,6 +32,10 @@ function m:DoFile(path,arch)
         return true
     end
 end
+
+
+---RefreshModList
+---刷新mod列表，
 function m:RefreshModList()
     if lfs.attributes(PATH)==nil then return false end 
     local old_mod_list=self.modlist
@@ -40,11 +44,10 @@ function m:RefreshModList()
 	for i,v in pairs(mods) do
         local flag
         flag=not v.isDirectory
-        flag=flag and string.find(v.name,'.zip',1,true)
+        flag=flag and (string.find(v.name,'.zip',1,true) or string.find(v.name,'.pack',1,true))
         if flag then
             self.modlist[PATH..'\\'..v.name]=false
             if old_mod_list[PATH..'\\'..v.name] then self.modlist[PATH..'\\'..v.name]=true end
-            -- table.insert(self.modlist,{name=PATH..'\\'..v.name,is_stage=flag2})
         end
     end
     return true

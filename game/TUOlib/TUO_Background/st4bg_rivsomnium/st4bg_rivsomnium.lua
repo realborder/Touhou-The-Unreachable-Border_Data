@@ -145,24 +145,25 @@ local riv_cracks_big = {}
 function riv_cracks_big.New(master, index)
 	local riv = {}
 	local init_position = {
-		{ 9, -7, 4.5 },
+		{ 8.5, -7, 4.5 },
 		{ 9, 2, 5 },
-		{ 6, -2, 6 },
+		{ 5.5, -7, 6 },
 	}
 	riv.master = master
 	riv.index = index
 	riv.x, riv.y, riv.z = unpack(init_position[index])
 	riv.img = 'st4bg_bigdreamcrack'
 	riv.imgmask = 'st4bg_bigdreamcrack_mask'
-	riv.va = 180
+	riv.va = ({ 180, 180, 150 })[index]
 	riv.size = ({ 18, 18, 20 })[index]
 	riv.speed = ({ 0.02, 0.02, 0.01 })[index]
-	riv.rot = ({ 0, 0, 0 })[index]
+	riv.rot = ({ 0, 0, 180 })[index]
 	riv.omiga = ({ 0.1, -0.1, 0.05 })[index]
 	riv.frame = riv_cracks_big.frame
 	riv.render = riv_cracks_big.render
 	riv.timer = 0
 	master.riv_cracks_big[index] = riv
+	return riv
 end
 function riv_cracks_big:frame()
 	if self.disable then
@@ -177,44 +178,52 @@ function riv_cracks_big:frame()
 		self.disable = true
 	end
 end
-local function RenderScene(self,index,timer)
+local function RenderScene(self, index, timer)
 	RenderClear(Color(0x00000000))
-	if index==1 then
+	if index == 1 then
 		SetViewMode 'world'
-		Render('st4bg_scene1', -30-timer*0.1, 1.8*224-timer*0.5, 0, 1)
+		Render('st4bg_scene1', -30 - timer * 0.1, 1.8 * 224 - timer * 0.5, 0, 1)
 		SetViewMode '3d'
-	elseif index==2 then
+	elseif index == 2 then
 		SetViewMode 'world'
-		Render('st4bg_scene2',  30+timer*0.1, 2*224-timer*0.5, 0, 1)
+		Render('st4bg_scene2', 30 + timer * 0.1, 2 * 224 - timer * 0.5, 0, 1)
 		SetViewMode '3d'
-	elseif index==3 then
+	elseif index == 3 then
 		SetViewMode '3d'
 		local dx = 5
 		local dy = 5
-		local z = -3
-		local dddx = (self.xpos * 0.25) % (dx * 2)
+		local z = -1
+		local dddx = (self.xpos * 0.35) % (dx * 2)
 		for ddx = -4 * dx, 4 * dx, dx * 2 do
 			for ddy = -4 * dy, 4 * dy, dy * 2 do
 				Render4V('st4bg_stary_sky', dddx + ddx + dx, ddy - dy, z, dddx + ddx + dx, ddy + dy, z, dddx + ddx - dx, ddy + dy, z, dddx + ddx - dx, ddy - dy, z)
 			end
 		end
-		dx,dy=1,1
+		dx, dy = 1, 1
 		dddx = (self.xpos * 2) % (dx * 2)
-		local i=1
-		for z=-1,5,3 do
-			local imgname='st4bg_dreamweb'..i i=i+1
-			for ddx = -10 * dx, 8 * dx, dx * 2 do
+		local i = 0
+		for z = -3, 5, 4 do
+			if z==1 then
+				local dx, dy = 4 ,4
+				local z=1
+				local dddx = (self.xpos * 2) % (dx * 2)
+				for ddx = -4 * dx, 4 * dx, dx * 2 do
+					for ddy = -4 * dy, 4 * dy, dy * 2 do
+						Render4V('st4bg_dreamweb_pattern', dddx + ddx + dx, ddy - dy, z, dddx + ddx + dx, ddy + dy, z, dddx + ddx - dx, ddy + dy, z, dddx + ddx - dx, ddy - dy, z)
+					end
+				end
+			end
+			local imgname = 'st4bg_dreamweb' .. (i + 1)
+			i = (i + 1) % 2
+			for ddx = -10 * dx, 10 * dx, dx * 2 do
 				for ddy = -10 * dy, 4 * dy, dy * 2 do
 					Render4V(imgname, dddx + ddx + dx, ddy - dy, z, dddx + ddx + dx, ddy + dy, z, dddx + ddx - dx, ddy + dy, z, dddx + ddx - dx, ddy - dy, z)
 				end
 			end
 		end
+
 	end
-
 end
-
-
-
 
 function riv_cracks_big:render()
 	if self.disable then
@@ -225,7 +234,7 @@ function riv_cracks_big:render()
 	local x, y, z = self.x, self.y, self.z
 	--具体内容
 	PushRenderTarget(RT_NAME1)
-	RenderScene(self.master,self.index,self.timer)
+	RenderScene(self.master, self.index, self.timer)
 
 	PopRenderTarget(RT_NAME1)
 	--遮罩
@@ -265,6 +274,7 @@ function st4bg_rivsomnium.load_res()
 		{ 'st4bg_scene1', 'st4bg_scene1.png' },
 		{ 'st4bg_scene2', 'st4bg_scene2.png' },
 		{ 'st4bg_dreamweb1', 'st4bg_dreamweb.png' },
+		{ 'st4bg_dreamweb_pattern', 'st4bg_dreamweb_pattern.png' },
 	}
 	for _, v in pairs(res_list) do
 		--移除旧的并加载新的，仅调试用（也就调试的时候有机会卸载资源）
@@ -283,11 +293,10 @@ function st4bg_rivsomnium.load_res()
 		SetImageState('st4bg_rivsomnium_crack' .. i, 'mul+add', Color(0xFFFFFFFF))
 	end
 	SetImageState('st4bg_bigdreamcrack', 'mul+add', Color(0xFFFFFFFF))
-	SetImageState('st4bg_dreamweb1','mul+add',Color(0xFFFF0000))
-	CopyImage('st4bg_dreamweb2','st4bg_dreamweb1')
-	SetImageState('st4bg_dreamweb2','mul+add',Color(0xFF0000FF))
-	CopyImage('st4bg_dreamweb3','st4bg_dreamweb1')
-	SetImageState('st4bg_dreamweb3','mul+add',Color(0xFFFF0000))
+	SetImageState('st4bg_dreamweb1', 'mul+add', Color(0xFFFF0000))
+	CopyImage('st4bg_dreamweb2', 'st4bg_dreamweb1')
+	SetImageState('st4bg_dreamweb2', 'mul+add', Color(0xFF0000FF))
+	SetImageState('st4bg_dreamweb_pattern', '', Color(0x30FFFFFF))
 	local TEXNAME = 'st4bg_crack'
 	lstg.SetResourceStatus('global')
 	lstg.LoadFX('mask', 'shader\\texture_mask.fx')
@@ -318,21 +327,35 @@ function st4bg_rivsomnium.load_res()
 	lstg.CreateRenderTarget(RT_NAME1)
 	lstg.CreateRenderTarget(RT_NAME2)
 end
-function st4bg_rivsomnium:init(phase)
+function st4bg_rivsomnium:init(phase,timer)
 	background.init(self, false)
 	st4bg_rivsomnium.load_res()
 	self.speed = 0.03--即行走速度
 	self.xpos = 0--等效的摄像机x轴位置,x轴方向向前
 	self.init_phase = phase or 1
+	self.init_timer=timer
 	self.rivcrack_list = {}
 	self.rivcrack_list_array = 0
 	self.rivcrack_list_length = 120
-	self.BIG_CRACK_APPEAR = { 4425 - 4 * 60, 5233 - 4 * 60, 6152 - 6 * 60 }
+	self.BIG_CRACK_APPEAR = { 4185, 4993, 5792 }
 	self.riv_cracks_big = {}
 end
 
 function st4bg_rivsomnium:frame()
-	if self.init_phase then
+	if self.init_timer then
+		local phase=1
+		self.phaseinfo = lstg.DoFile(PATH .. '_phase_info.lua')
+		for i,v in ipairs(self.phaseinfo) do
+			if self.init_timer>=v.time then
+				phase=i
+				break
+			end
+		end
+		tuolib.BGHandler.DoPhaseLogic(self, phase)
+		self.timer=self.init_timer
+		self.init_timer=nil
+		self.init_phase=nil
+	elseif self.init_phase then
 		st4bg_rivsomnium.InitPhaseInfo(self, self.init_phase)
 		self.init_phase = nil
 	end
@@ -352,6 +375,14 @@ function st4bg_rivsomnium:frame()
 	for i, v in ipairs(self.BIG_CRACK_APPEAR) do
 		if self.timer == v then
 			riv_cracks_big.New(self, i)
+			--如果落到触发节点之间
+		elseif self.timer > v and ((self.BIG_CRACK_APPEAR[i + 1] and self.timer < self.BIG_CRACK_APPEAR[i + 1]) or (not self.BIG_CRACK_APPEAR[i + 1])) then
+			local riv=riv_cracks_big.New(self, i)
+			riv.timer = self.timer - v
+			local dx, dy = riv.speed * cos(riv.va), riv.speed * sin(riv.va)
+			riv.x = riv.x + dx * (self.timer - v)
+			riv.y = riv.y + dy * (self.timer - v)
+			riv.rot = riv.rot + riv.omiga * (self.timer - v)
 		end
 	end
 	--带场景的大碎片

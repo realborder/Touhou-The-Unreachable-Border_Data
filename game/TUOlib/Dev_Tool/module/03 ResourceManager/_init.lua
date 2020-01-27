@@ -233,10 +233,14 @@ preview_widgets[4]=function(self) --[4]音乐
 			self.play_process=0
 			self.play_state=0
 		else
-			for _,name in lstg.EnumRes(4) do
+			local pool1,pool2=lstg.EnumRes(4)
+			for _,name in ipairs(pool1) do
 				StopMusic(name)
 			end
-		end	
+			for _,name in ipairs(pool2) do
+				StopMusic(name)
+			end
+		end
 	end
 	bar1.frame=function(widget)
 		if widget._pressed then

@@ -236,6 +236,7 @@ end
 ---@param tn number @语句保留条数
 ---@param stay boolean @对话后是否保持激活
 function boss.dialog:sentence(img, pos, text, t, hscale, vscale, tpic, num, emo, rx, ry, px, py, tx, ty, tn, stay)
+
     if pos == "left" then
         pos = 1
     else
@@ -275,10 +276,10 @@ function boss.dialog:sentence(img, pos, text, t, hscale, vscale, tpic, num, emo,
     lastsentence = balloon
     t = t or (60 + #text * 5)
     for _ = 1, t do
-        if (KeyIsPressed "shoot" or master.jump_dialog > 60) and _dialog_can_skip then
+        if (KeyIsPressed "shoot" or master.jump_dialog > 30) and _dialog_can_skip then
             PlaySound("plst00", 0.35, 0, true)
-            if master.jump_dialog > 60 then
-                master.jump_dialog = 56
+            if master.jump_dialog > 30 then
+                master.jump_dialog = 26
             end
             break
         end
