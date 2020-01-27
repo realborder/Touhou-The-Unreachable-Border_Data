@@ -1,3 +1,8 @@
+
+
+
+
+
 local bk=0.5
 LoadTexture('bullet1','THlib\\bullet\\bullet1.png',true)
 LoadImageGroup('preimg','bullet1',80*2,0,32*2,32*2,1,8)
@@ -53,6 +58,11 @@ LoadImageGroup('fade_ball_light','bullet5',0,0,64*2,64*2,4,2,23*bk,23*bk)
 LoadImageGroup('ball_light_dark','bullet5',0,0,64*2,64*2,4,2,23*bk,23*bk)
 LoadImageGroup('fade_ball_light_dark','bullet5',0,0,64*2,64*2,4,2,23*bk,23*bk)
 for i=1,8 do SetImageState('ball_light'..i,'mul+add') end
+LoadImageGroup('ball_dark','bullet5',0,256,64*2,64*2,4,2,23*bk,23*bk)
+LoadImageGroup('fade_ball_dark','bullet5',0,256,64*2,64*2,4,2,23*bk,23*bk)
+LoadImageGroup('ball_dark_dark','bullet5',0,256,64*2,64*2,4,2,23*bk,23*bk)
+LoadImageGroup('fade_ball_dark_dark','bullet5',0,256,64*2,64*2,4,2,23*bk,23*bk)
+for i=1,8 do SetImageState('ball_dark'..i,'mul+add') end
 --------------------------
 --------ball_huge---------
 LoadTexture('bullet_ball_huge','THlib\\bullet\\bullet_ball_huge.png')
@@ -61,6 +71,11 @@ LoadImageGroup('fade_ball_huge','bullet_ball_huge',0,0,64*2,64*2,4,2,27*bk,27*bk
 LoadImageGroup('ball_huge_dark','bullet_ball_huge',0,0,64*2,64*2,4,2,27*bk,27*bk)
 LoadImageGroup('fade_ball_huge_dark','bullet_ball_huge',0,0,64*2,64*2,4,2,27*bk,27*bk)
 for i=1,8 do SetImageState('ball_huge'..i,'mul+add') end
+LoadImageGroup('ball_huge_rev','bullet_ball_huge',0,0,64*2,64*2,4,2,27*bk,27*bk)
+LoadImageGroup('fade_ball_huge_rev','bullet_ball_huge',0,0,64*2,64*2,4,2,27*bk,27*bk)
+LoadImageGroup('ball_huge_rev_dark','bullet_ball_huge',0,0,64*2,64*2,4,2,27*bk,27*bk)
+LoadImageGroup('fade_ball_huge_rev_dark','bullet_ball_huge',0,0,64*2,64*2,4,2,27*bk,27*bk)
+for i=1,8 do SetImageState('ball_huge_rev'..i,'mul+add') end
 --------------------------
 --------water_drop--------
 LoadTexture('bullet_water_drop','THlib\\bullet\\bullet_water_drop.png')
@@ -78,9 +93,8 @@ end
 ------silence-------------
 LoadTexture('bullet6','THlib\\bullet\\bullet6.png')
 LoadImageGroup('silence','bullet6',192,0,32,32,1,8,9*bk,9*bk)
---------------------------
-------bullet_break--------
---牺牲内存优化运行性能
+
+--消弹效果
 LoadTexture('etbreak','THlib\\bullet\\etbreak.png')
 for j=1,16 do
 	LoadAnimation('etbreak'..j,'etbreak',0,0,64,64,4,2,3)
@@ -95,6 +109,7 @@ BulletBreakIndex={
 	Color(0xC0FF8030),--orange
 	Color(0xC0D0D0D0),--gray
 }
+
 for j=1,16 do
 	if j%2==0 then
 		SetAnimationState('etbreak'..j,'mul+add',BulletBreakIndex[j/2])
@@ -105,6 +120,72 @@ for j=1,16 do
 	end
 end
 
+
+--region TUO新弹型
+local TUO_bullet_list1={
+	--------------------------------------------
+	--资源名			横坐标	宽度 	高度		判定a	判定b
+	{'riv',			0,		1,		1,		6,		4},
+	{'diamond_m',	1,		1,		1,		9,		9},
+	{'diamond_l',	2,		1,		1,		13,		13},
+	{'diamond_s',	3,		1,		1,		4,		4},
+	{'triangle',	4,		1,		1,		5,		5},
+	{'flower',		5,		1,		1,		4,		4},
+	{'lua',			6,		1,		1,		8,		8},
+	{'arrow_w',		7,		1,		1,		9,		9},
+	{'clip',		8,		2,		1,		5,		5},
+	{'typec',		10,		2,		1,		2.5,	24},
+	{'pill',		12,		2,		1,		7,		21},
+	{'ginkgo',		14,		2,		2,		16,		16},
+	--------------------------------------------
+}
+local TUO_bullet_list2={
+	--------------------------------------------
+	--资源名			横坐标	宽度 	高度		判定a	判定b
+	{'gear_s',		0,		1,		1,		7,		7},
+	{'jigsaw_a',	1,		1,		1,		7,		7},
+	{'jigsaw_b',	2,		1,		1,		7,		7},
+	{'jigsaw_c',	3,		1,		1,		7,		7},
+	{'jigsaw_d',	4,		1,		1,		7,		7},
+	{'evil_a',		5,		1,		1,		4,		4},
+	{'evil_b',		6,		4,		1,		6,		6},
+	{'evil_c',		10,		2,		2,		6,		6},
+	{'evil_d',		12,		2,		2,		6,		6},
+	{'gear_l',		14,		2,		2,		22,		22},
+	--------------------------------------------
+}
+local function LoadBulletRes_TUO()
+	LoadTexture('bulletTUO1','THlib\\bullet\\bulletTUO1.png')
+	LoadTexture('bulletTUO2','THlib\\bullet\\bulletTUO2.png')
+	for i,list in ipairs({TUO_bullet_list1,TUO_bullet_list2}) do
+		for _,v in ipairs(list) do
+			LoadImageGroup(v[1],'bulletTUO'..i,v[2]*32,0,v[3]*32,v[4]*32,1,16/v[4],v[5],v[6])
+		end
+	end
+end
+local function UnloadBulletRes_TUO()
+	local pool
+	for _,list in ipairs({TUO_bullet_list1,TUO_bullet_list2}) do
+		for _,v in ipairs(list) do
+			for i=1,16 do
+				pool=CheckRes('img',v[1]..i)
+				if pool then
+					lstg.RemoveResource(pool,2,v[1]..i)
+				end
+			end
+		end
+	end
+	lstg.RemoveResource('global',1,'bulletTUO1')
+	lstg.RemoveResource('global',1,'bulletTUO2')
+
+end
+
+--UnloadBulletRes_TUO()
+LoadBulletRes_TUO()
+--endregion
+
+
+--region BulletBreak
 BulletBreak=Class(object)
 
 function BulletBreak:init(x,y,index)
@@ -126,9 +207,9 @@ end
 function BulletBreak:frame()
 	if self.timer==23 then Del(self) end
 end
---------------------------
+--endregion
 
-
+--region bullet
 bullet=Class(object)
 function bullet:init(imgclass,index,stay,destroyable)
 	self.logclass=self.class
@@ -175,7 +256,9 @@ function bullet:render()
 		SetImgState(self,'',255,255,255,255)
 	end
 end
-----------------------------------------------------------------
+--endregion
+
+--region img_class
 img_class=Class(object)
 function img_class:frame()
 	if not self.stay then
@@ -205,17 +288,22 @@ function img_class:kill()
 	New(item_faith_minor,self.x,self.y)
 end
 function img_class:render()
-	if self._blend then
-		SetImageState('preimg'..self.index,self._blend,Color(255*self.timer/11,255,255,255))
+	--更改了发弹动画，但是动画资源出事，不能用Render渲染动画资源
+	if self._blend and self.timer<=11 then
+		SetImgState(self,self._blend,255*self.timer/11,255,255,255)
+		func(self.img,self._blend,Color(255*self.timer/11,255,255,255))
 	else
-		SetImageState('preimg'..self.index,'',Color(255*self.timer/11,255,255,255))
+		SetImgState(self,'',255*self.timer/11,255,255,255)
 	end
-	Render('preimg'..self.index,self.x,self.y,self.rot,((11-self.timer)/11*3+1)*self.imgclass.size)
-	--[[
-	SetImageState('preimg'..self.index,'',Color(255*self.timer/11,255,255,255))
-	Render('preimg'..self.index,self.x,self.y,self.rot,((11-self.timer)/11*3+1)*self.imgclass.size)]]
+	local vs,hs=self.vscale,self.hscale
+	self.hscale,self.vscale=self.hscale*(3-2*self.timer/11),self.vscale*(3-2*self.timer/11)
+	DefaultRenderFunc(self)
+	self.vscale,self.hscale=vs,hs
+	SetImgState(self,'',255,255,255,255)
 end
-----------------------------------------------------------------
+--endregion
+
+
 function ChangeBulletImage(obj,imgclass,index)
 	if obj.class==obj.imgclass then
 		obj.class=imgclass
@@ -251,6 +339,7 @@ function particle_img:kill()
 	particle_img.del(self)
 end
 ----------------------------------------------------------------
+--region simple_bullet
 arrow_big=Class(img_class)
 arrow_big.size=0.6
 function arrow_big:init(index)
@@ -347,6 +436,10 @@ function star_big_b:init(index)
 	self.img='star_big_b'..int((index+1)/2)
 end
 ----------------------------------------------------------------
+--endregion
+
+
+--region huge_bullet
 ball_huge=Class(img_class)
 ball_huge.size=2.0
 function ball_huge:init(index)
@@ -414,6 +507,76 @@ function ball_huge_dark:del()
 	New(bubble2,'fade_'..self.img,self.x,self.y,self.dx,self.dy,11,1,0,Color(0xFFFFFFFF),Color(0x00FFFFFF),self.layer,'')
 end
 function ball_huge_dark:kill()
+	ball_huge.del(self)
+end
+----------------------------------------------------------------
+ball_huge_rev=Class(img_class)
+ball_huge_rev.size=2.0
+function ball_huge_rev:init(index)
+	self.img='_rev'..int((index+1)/2)
+end
+function ball_huge_rev:frame()
+	if not self.stay then
+		if not(self._forbid_ref) then
+			self._forbid_ref=true
+			self.logclass.frame(self)
+			self._forbid_ref=nil
+		end
+	else
+		self.x=self.x-self.vx
+		self.y=self.y-self.vy
+		self.rot=self.rot-self.omiga
+	end
+	if self.timer==11 then
+		self.class=self.logclass
+		self.layer=LAYER_ENEMY_BULLET-2.0+self.index*0.00001
+		--self.colli=true
+		if self.stay then self.timer=-1 end
+	end
+end
+function ball_huge_rev:render()
+	SetImageState('fade_'..self.img,'mul+add',Color(255*self.timer/11,255,255,255))
+	Render('fade_'..self.img,self.x,self.y,self.rot,(11-self.timer)/11+1)
+end
+function ball_huge_rev:del()
+	New(bubble2,'fade_'..self.img,self.x,self.y,self.dx,self.dy,11,1,0,Color(0xFFFFFFFF),Color(0x00FFFFFF),self.layer,'mul+add')
+end
+function ball_huge:kill()
+	ball_huge.del(self)
+end
+----------------------------------------------------------------------------
+ball_huge_rev_dark=Class(img_class)
+ball_huge_rev_dark.size=2.0
+function ball_huge_rev_dark:init(index)
+	self.img='ball_huge_rev_dark'..int((index+1)/2)
+end
+function ball_huge_rev_dark:frame()
+	if not self.stay then
+		if not(self._forbid_ref) then--by OLC，修正了defaul action死循环的问题
+			self._forbid_ref=true
+			self.logclass.frame(self)
+			self._forbid_ref=nil
+		end
+	else
+		self.x=self.x-self.vx
+		self.y=self.y-self.vy
+		self.rot=self.rot-self.omiga
+	end
+	if self.timer==11 then
+		self.class=self.logclass
+		self.layer=LAYER_ENEMY_BULLET-2.0+self.index*0.00001
+		--self.colli=true
+		if self.stay then self.timer=-1 end
+	end
+end
+function ball_huge_rev_dark:render()
+	SetImageState('fade_'..self.img,'',Color(255*self.timer/11,255,255,255))
+	Render('fade_'..self.img,self.x,self.y,self.rot,(11-self.timer)/11+1)
+end
+function ball_huge_rev_dark:del()
+	New(bubble2,'fade_'..self.img,self.x,self.y,self.dx,self.dy,11,1,0,Color(0xFFFFFFFF),Color(0x00FFFFFF),self.layer,'')
+end
+function ball_huge_rev_dark:kill()
 	ball_huge.del(self)
 end
 ----------------------------------------------------------------
@@ -487,6 +650,79 @@ function ball_light_dark:kill()
 	ball_light.del(self)
 end
 ----------------------------------------------------------------
+ball_dark=Class(img_class)
+ball_dark.size=2.0
+function ball_dark:init(index)
+	self.img='ball_dark'..int((index+1)/2)
+end
+function ball_dark:frame()
+	if not self.stay then
+		if not(self._forbid_ref) then--by OLC，修正了defaul action死循环的问题
+			self._forbid_ref=true
+			self.logclass.frame(self)
+			self._forbid_ref=nil
+		end
+	else
+		self.x=self.x-self.vx
+		self.y=self.y-self.vy
+		self.rot=self.rot-self.omiga
+	end
+	if self.timer==11 then
+		self.class=self.logclass
+		self.layer=LAYER_ENEMY_BULLET-2.0+self.index*0.00001
+		--self.colli=true
+		if self.stay then self.timer=-1 end
+	end
+end
+function ball_dark:render()
+	SetImageState('fade_'..self.img,'mul+add',Color(255*self.timer/11,255,255,255))
+	Render('fade_'..self.img,self.x,self.y,self.rot,(11-self.timer)/11+1)
+end
+function ball_dark:del()
+	New(bubble2,'fade_'..self.img,self.x,self.y,self.dx,self.dy,11,1,0,Color(0xFFFFFFFF),Color(0x00FFFFFF),self.layer,'mul+add')
+end
+function ball_dark:kill()
+	ball_light.del(self)
+end
+----------------------------------------------------------------
+ball_dark_dark=Class(img_class)
+ball_dark_dark.size=2.0
+function ball_dark_dark:init(index)
+	self.img='ball_dark_dark'..int((index+1)/2)
+end
+function ball_dark_dark:frame()
+	if not self.stay then
+		if not(self._forbid_ref) then--by OLC，修正了defaul action死循环的问题
+			self._forbid_ref=true
+			self.logclass.frame(self)
+			self._forbid_ref=nil
+		end
+	else
+		self.x=self.x-self.vx
+		self.y=self.y-self.vy
+		self.rot=self.rot-self.omiga
+	end
+	if self.timer==11 then
+		self.class=self.logclass
+		self.layer=LAYER_ENEMY_BULLET-2.0+self.index*0.00001
+		--self.colli=true
+		if self.stay then self.timer=-1 end
+	end
+end
+function ball_dark_dark:render()
+	SetImageState('fade_'..self.img,'',Color(255*self.timer/11,255,255,255))
+	Render('fade_'..self.img,self.x,self.y,self.rot,(11-self.timer)/11+1)
+end
+function ball_dark_dark:del()
+	New(bubble2,'fade_'..self.img,self.x,self.y,self.dx,self.dy,11,1,0,Color(0xFFFFFFFF),Color(0x00FFFFFF),self.layer,'')
+end
+function ball_dark_dark:kill()
+	ball_light.del(self)
+end
+
+--endregion
+
+--region special_bullet
 ball_big=Class(img_class)
 ball_big.size=1.0
 function ball_big:init(index)
@@ -551,6 +787,7 @@ water_drop=Class(img_class)   --2 4 6 10 12
 water_drop.size=0.702
 function water_drop:init(index)
 	self.img='water_drop'..int((index+1)/2)
+	--self.is_ani=true
 end
 function water_drop:render()
 	SetImageState('preimg'..self.index,'mul+add',Color(255*self.timer/11,255,255,255))
@@ -561,20 +798,50 @@ water_drop_dark=Class(img_class)   --2 4 6 10 12
 water_drop_dark.size=0.702
 function water_drop_dark:init(index)
 	self.img='water_drop_dark'..int((index+1)/2)
+	--self.is_ani=true
 end
 ----------------------------------------------------------------
 music=Class(img_class)
 music.size=0.8
 function music:init(index)
 	self.img='music'..int((index+1)/2)
+	--self.is_ani=true
 end
 ----------------------------------------------------------------
-silence=Class(img_class)
-silence.size=0.8
-function silence:init(index)
-	self.img='silence'..int((index+1)/2)
-end
+--silence=Class(img_class)
+--silence.size=0.8
+--function silence:init(index)
+--	self.img='silence'..int((index+1)/2)
+--end
 ----------------------------------------------------------------
+--endregion
+
+--region TUO_bullet
+for i,list in ipairs({TUO_bullet_list1,TUO_bullet_list2}) do
+	for _,v in ipairs(list) do
+		local bul=Class(img_class)
+		local classname=v[1]
+		bul.size=0.5
+		if v[4]==2 then
+			function bul:init(index)
+				self.img=v[1]..int((index+1)/2)
+			end
+		else
+			function bul:init(index)
+				self.img=v[1]..index
+			end
+		end
+		_G[classname]=bul
+	end
+end
+
+arrow_mid=Class(img_class)
+arrow_mid.size=0.61
+function arrow_mid:init(index)
+	self.img='arrow_mid'..int((index+1)/2)
+end
+
+--endregion
 
 ----------------------------------------------------------------
 straight=Class(bullet)
@@ -793,3 +1060,8 @@ BULLETSTYLE=
 	water_drop,mildew,ellipse,heart,money,music,silence,
 	water_drop_dark,ball_huge_dark,ball_light_dark
 }--30
+for _,list in ipairs({TUO_bullet_list1,TUO_bullet_list2}) do
+	for i,v in ipairs(list) do
+		table.insert(BULLETSTYLE,_G[v[1]])
+	end
+end
