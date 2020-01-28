@@ -125,33 +125,33 @@ end
 local TUO_bullet_list1={
 	--------------------------------------------
 	--资源名			横坐标	宽度 	高度		判定a	判定b
-	{'riv',			0,		1,		1,		6,		4},
-	{'diamond_m',	1,		1,		1,		9,		9},
-	{'diamond_l',	2,		1,		1,		13,		13},
-	{'diamond_s',	3,		1,		1,		4,		4},
-	{'triangle',	4,		1,		1,		5,		5},
-	{'flower',		5,		1,		1,		4,		4},
-	{'lua',			6,		1,		1,		8,		8},
-	{'arrow_w',		7,		1,		1,		9,		9},
-	{'clip',		8,		2,		1,		5,		5},
-	{'typec',		10,		2,		1,		2.5,	24},
-	{'pill',		12,		2,		1,		7,		21},
-	{'ginkgo',		14,		2,		2,		16,		16},
+	{'riv',			0,		1,		1,		3,		2},
+	{'diamond_m',	1,		1,		1,		4,		4},
+	{'diamond_l',	2,		1,		1,		6,		6},
+	{'diamond_s',	3,		1,		1,		2,		2},
+	{'triangle',	4,		1,		1,		3,		3},
+	{'flower',		5,		1,		1,		2,		2},
+	{'lua',			6,		1,		1,		2,		2},
+	{'arrow_w',		7,		1,		1,		4,		4},
+	{'clip',		8,		2,		1,		2,		2},
+	{'typec',		10,		2,		1,		1.5,	12},
+	{'pill',		12,		2,		1,		3.5,		10},
+	{'ginkgo',		14,		2,		2,		8,		8},
 	--------------------------------------------
 }
 local TUO_bullet_list2={
 	--------------------------------------------
 	--资源名			横坐标	宽度 	高度		判定a	判定b
-	{'gear_s',		0,		1,		1,		7,		7},
-	{'jigsaw_a',	1,		1,		1,		7,		7},
-	{'jigsaw_b',	2,		1,		1,		7,		7},
-	{'jigsaw_c',	3,		1,		1,		7,		7},
-	{'jigsaw_d',	4,		1,		1,		7,		7},
-	{'evil_a',		5,		1,		1,		4,		4},
-	{'evil_b',		6,		4,		1,		6,		6},
-	{'evil_c',		10,		2,		2,		6,		6},
-	{'evil_d',		12,		2,		2,		6,		6},
-	{'gear_l',		14,		2,		2,		22,		22},
+	{'gear_s',		0,		1,		1,		3,		3},
+	{'jigsaw_a',	1,		1,		1,		3,		3},
+	{'jigsaw_b',	2,		1,		1,		3,		3},
+	{'jigsaw_c',	3,		1,		1,		3,		3},
+	{'jigsaw_d',	4,		1,		1,		3,		3},
+	{'evil_a',		5,		1,		1,		2,		2},
+	{'evil_b',		6,		4,		1,		3,		3},
+	{'evil_c',		10,		2,		2,		3,		3},
+	{'evil_d',		12,		2,		2,		3,		3},
+	{'gear_l',		14,		2,		2,		11,		11},
 	--------------------------------------------
 }
 local function LoadBulletRes_TUO()
@@ -291,7 +291,6 @@ function img_class:render()
 	--更改了发弹动画，但是动画资源出事，不能用Render渲染动画资源
 	if self._blend and self.timer<=11 then
 		SetImgState(self,self._blend,255*self.timer/11,255,255,255)
-		func(self.img,self._blend,Color(255*self.timer/11,255,255,255))
 	else
 		SetImgState(self,'',255*self.timer/11,255,255,255)
 	end
@@ -1058,10 +1057,14 @@ BULLETSTYLE=
 	ball_small,ball_mid,ball_mid_c,ball_big,ball_huge,ball_light,
 	star_small,star_big,grain_a,grain_b,grain_c,kite,knife,knife_b,
 	water_drop,mildew,ellipse,heart,money,music,silence,
-	water_drop_dark,ball_huge_dark,ball_light_dark
+	water_drop_dark,ball_huge_dark,ball_light_dark,
+	ball_huge_rev,ball_huge_rev_dark,ball_dark,ball_dark_dark,
+	riv,diamond_m,diamond_l,diamond_s,triangle, flower,lua,arrow_w,clip,typec,pill,ginkgo,
+	gear_s,jigsaw_a,jigsaw_b,jigsaw_c,jigsaw_d,evil_a,evil_b,evil_c,evil_d,gear_l
 }--30
-for _,list in ipairs({TUO_bullet_list1,TUO_bullet_list2}) do
-	for i,v in ipairs(list) do
-		table.insert(BULLETSTYLE,_G[v[1]])
-	end
-end
+BULLETSTYLE_TUO={
+	riv,diamond_m,diamond_l,diamond_s,triangle, flower,lua,arrow_w,clip,typec,pill,ginkgo,
+	gear_s,jigsaw_a,jigsaw_b,jigsaw_c,jigsaw_d,evil_a,evil_b,evil_c,evil_d,gear_l}
+--BULLETSTYLE_TUO={'ball_huge_rev','ball_huge_rev_dark','ball_dark','ball_dark_dark',
+--'riv','diamond_m','diamond_l','diamond_s','triangle', 'flower','lua','arrow_w','clip','typec','pill','ginkgo',
+--'gear_s','jigsaw_a','jigsaw_b','jigsaw_c','jigsaw_d','evil_a','evil_b','evil_c','evil_d','gear_l'}

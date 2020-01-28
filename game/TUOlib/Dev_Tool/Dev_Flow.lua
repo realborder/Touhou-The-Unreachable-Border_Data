@@ -72,6 +72,9 @@ function TUO_Developer_Flow:frame()
             if flow._event_mouseclicked_outside then Print(self.timer..': '..#(self.flow)) flow:_event_mouseclicked_outside()  end
             end
         end
+        if GetKeyState(KEY.SPACE) then
+            if flow._event_mouseclicked_outside then Print(self.timer..': '..#(self.flow)) flow:_event_mouseclicked_outside()  end
+        end
         if not flow.ban_black_bg then
             self.bgtimer=min(1,self.bgtimer+0.02)
         end

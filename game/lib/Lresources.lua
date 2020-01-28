@@ -98,5 +98,5 @@ function EnumRes(typename)
 		return lstg.EnumRes(t)
 	end
 end
-
+--TODO: lfs对压缩包无效，记得之后改成 lstg file manager 的实现
 function FileExist(filename) return not (lfs.attributes(filename)==nil) end

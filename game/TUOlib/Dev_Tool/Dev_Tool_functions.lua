@@ -177,10 +177,10 @@ local function ColliFunc()
 	CollisionCheck(GROUP_NONTJT,GROUP_PLAYER_BULLET)
 	CollisionCheck(GROUP_ITEM,GROUP_PLAYER)
 	--由OLC添加，可用于自机bomb
-	CollisionCheck(GROUP_SPELL,GROUP_ENEMY)
-	CollisionCheck(GROUP_SPELL,GROUP_NONTJT)
-	CollisionCheck(GROUP_SPELL,GROUP_ENEMY_BULLET)
-	CollisionCheck(GROUP_SPELL,GROUP_INDES)
+	-- CollisionCheck(GROUP_SPELL,GROUP_ENEMY)
+	-- CollisionCheck(GROUP_SPELL,GROUP_NONTJT)
+	-- CollisionCheck(GROUP_SPELL,GROUP_ENEMY_BULLET)
+	-- CollisionCheck(GROUP_SPELL,GROUP_INDES)
 end
 
 

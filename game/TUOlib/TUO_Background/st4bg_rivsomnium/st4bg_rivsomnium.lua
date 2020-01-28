@@ -339,6 +339,19 @@ function st4bg_rivsomnium:init(phase,timer)
 	self.rivcrack_list_length = 120
 	self.BIG_CRACK_APPEAR = { 4185, 4993, 5792 }
 	self.riv_cracks_big = {}
+	if ext.sc_pr then
+		self.init_phase=12
+		self.init_timer=nil
+		for i = 1, 150 do
+			riv_cracks.New(self, i)
+		end
+		return
+	end
+	if (phase and phase>=7)or (timer and timer>=2839) then
+		for i = 1, 150 do
+			riv_cracks.New(self, i)
+		end
+	end
 end
 
 function st4bg_rivsomnium:frame()

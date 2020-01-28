@@ -346,6 +346,7 @@ function scprac:init()
 
 	local list1 = Neww 'list_box'
 	list1.width = 304
+	list1._ban_list_sort=true
 	list1._ban_mul_select = true
 	list1.monitoring_value = function()
 		local ret = {}
@@ -385,11 +386,25 @@ function scprac:init()
 			table.insert(self.display_value, { name = i, v = player_list[i][1] })
 		end
 	end
+
+	local sw1 = Neww 'switch'
+	local vd1 = Neww 'value_displayer'
+	vd1.monitoring_value = _sc_table_new
+	vd1.visiable = false
+	sw1.text_on = "详细信息 开"
+	sw1.text_off = "详细信息 关"
+	sw1.width = 150
+	sw1._stay_in_this_line = true
+	sw1._event_switched = function(widget, flag)
+		vd1.visiable = flag
+	end
+
+	TUO_Developer_UI.SetWidgetSlot('slot2')
+	Neww'title'.text='操作'
 	local btn1 = Neww 'button'
 	btn1.text = "开始"
 	btn1._event_mouseclick = function()
 		if cb1.cur and cb2.cur and list1.cur then
-			-- local cardinfo=_sc_table_new[cb1.cur_value][list1.cur]
 			local cardinfo1 = cb1.cur_value
 			local cardinfo2 = list1.cur
 			if cb2.cur then
@@ -424,17 +439,6 @@ function scprac:init()
 			TUO_Developer_UI.cur = 1
 		end
 	end
-	local sw1 = Neww 'switch'
-	local vd1 = Neww 'value_displayer'
-	vd1.monitoring_value = _sc_table_new
-	vd1.visiable = false
-	sw1.text_on = "详细信息 开"
-	sw1.text_off = "详细信息 关"
-	sw1.width = 150
-	sw1._stay_in_this_line = true
-	sw1._event_switched = function(widget, flag)
-		vd1.visiable = flag
-	end
 end
 
 local steptest = TUO_Developer_UI:NewPanel()
@@ -442,9 +446,6 @@ function steptest:init()
 	self.name = "步进调试"
 	self.ban_framefunc_timer = 0
 	self.left_for_world = true
-	-- local world_switch=TDU_New_switch(self,'world')
-	-- world_switch._event_switched=function(self,v)
-	-- steptest.left_for_world=v end
 	TUO_Developer_UI.SetWidgetSlot("world")
 	Neww "title".text = "步进调试"
 	local sw1 = Neww "switch"
@@ -474,12 +475,10 @@ local classmonitor = TUO_Developer_UI:NewPanel()
 function classmonitor:init()
 	self.name = "类"
 	Neww 'title'.text = 'LuaSTG Class'
-	--local btn1=Neww'button'
 	local list1 = Neww 'list_box'
 	local search = ''
 
 	list1.display_value = { "点击刷新" }
-	--btn1._event_mouseclick=function(widget)
 	list1.monitoring_value = function(widget)
 		local out = {}
 		local count = 1
