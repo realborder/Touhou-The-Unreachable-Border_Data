@@ -51,7 +51,7 @@ function stage.group.AddStage(groupname,stagename,item_init,allow_practice)
 		end
 		local s=stage.New(stagename)
 
-		if groupname=='Spell Practice' or groupname=='SC Debugger' then--by OLC,为了使符卡debug模式更加符合符卡练习的模式
+		if groupname=='Spell Practice' or groupname=='Spell Practice New' or groupname=='SC Debugger' then--by OLC,为了使符卡debug模式更加符合符卡练习的模式
 			s.frame=stage.group.frame_sc_pr
 		else
 			s.frame=stage.group.frame
@@ -315,6 +315,11 @@ function stage.group.ReturnToTitle(save_rep,finish)
 	elseif not save_rep then
 		title.save_replay=nil
 		moveoverflag=true
+	end
+	if TUO_Developer_Tool_kit.visiable then
+		if TUO_Developer_UI.cur==1 then
+			TUO_Developer_UI.cur=2
+		end
 	end
 	stage.Set('none', self.group.title)
 end

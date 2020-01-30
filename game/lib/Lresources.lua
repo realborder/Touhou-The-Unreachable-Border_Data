@@ -79,6 +79,58 @@ end
 
 function LoadTTF(ttfname,filename,size) lstg.LoadTTF(ttfname,filename,0,size) end
 
+--资源卸载 由云绝添加
+function UnloadTexture(tex)
+	lstg.RemoveResource(lstg.CheckRes(1,tex),1,tex)
+end
+function UnloadImage(img)
+	lstg.RemoveResource(lstg.CheckRes(2,img),2,img)
+	ImageList[img] = nil
+end
+
+function UnloadImageGroup(imgprefix,n)
+	for i=1,n do
+		UnloadImage(imgprefix..i)
+	end
+end
+function UnloadImageFromFile(teximgname)
+	UnloadImage(teximgname)
+	UnloadTexture(teximgname)
+end
+function UnloadImageGroupFromFile(teximgname,n)
+	UnloadImageGroup(teximgname,n)
+	UnloadTexture(teximgname)
+end
+function UnloadAnimation(ani)
+	lstg.RemoveResource(lstg.CheckRes(3,ani),3,ani)
+end
+UnloadAni=UnloadAnimation
+
+function UnloadAniFromFile(texaniname)
+	UnloadAnimation(texaniname)
+	UnloadTexture(texaniname)
+end
+function UnloadBGM(bgm)
+	lstg.RemoveResource(lstg.CheckRes(4,bgm),4,bgm)
+end
+UnloadMusic=UnloadBGM
+function UnloadSound(sfx)
+	lstg.RemoveResource(lstg.CheckRes(5,sfx),5,sfx)
+end
+UnloadSFX=UnloadSound
+function UnloadPSI(psi)
+	lstg.RemoveResource(lstg.CheckRes(6,psi),6,psi)
+end
+function UnloadFNT(fnt)
+	lstg.RemoveResource(lstg.CheckRes(7,fnt),7,fnt)
+end
+function UnloadTTF(ttfname)
+	lstg.RemoveResource(lstg.CheckRes(8,ttfname),8,ttfname)
+end
+function UnloadFX(fx)
+	lstg.RemoveResource(lstg.CheckRes(9,fx),9,fx)
+end
+
 ----------------------------------------
 ---资源判断和枚举
 

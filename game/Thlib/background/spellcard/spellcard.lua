@@ -23,7 +23,7 @@ function _spellcard_background:frame()
 		end
 	end
 	if IsValid(_boss) and _boss.card_num and _boss.cards[_boss.card_num] then 
-		if _boss.cards[_boss.card_num].is_sc then self.spr=min(1,self.spr+1/60) else self.spr=max(0,self.spr-1/60) end --见boss_system
+		if _boss.cards[_boss.card_num].is_sc and not(_boss.ban_scbg) then self.spr=min(1,self.spr+1/60) else self.spr=max(0,self.spr-1/60) end --见boss_system
 	else
 		self.spr=max(0,self.spr-1/60)
 	end

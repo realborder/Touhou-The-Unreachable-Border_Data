@@ -82,15 +82,15 @@ function m.LoadAllStageMod()
         for i=1,#target do
             if not tmp_k[i] then
                 if string.find(k,'STAGE'..target[i],1,true)~=nil then
-                    tmp_k[i]=k
+                    tmp_k[target[i]]=k
                 end
             end
         end
     end
-    for i,v in ipairs(tmp_k) do
-        if v then 
-            local hasPassWord=string.find(v,'pw',1,true)
-            local r,e=self.LoadMod(v)
+    for i,v in ipairs(target)  do
+        if tmp_k[v] then
+            --local hasPassWord=string.find(tmp_k[v],'pw',1,true)
+            local r,e=self.LoadMod(tmp_k[v])
             table.insert(ret,{ret=r,err=e})
             result=result and r
         end

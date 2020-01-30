@@ -134,8 +134,8 @@ local TUO_bullet_list1={
 	{'lua',			6,		1,		1,		2,		2},
 	{'arrow_w',		7,		1,		1,		4,		4},
 	{'clip',		8,		2,		1,		2,		2},
-	{'typec',		10,		2,		1,		1.5,	12},
-	{'pill',		12,		2,		1,		3.5,		10},
+	{'typec',		10,		2,		1,		12,		1.5},
+	{'pill',		12,		2,		1,		10,		3.5},
 	{'ginkgo',		14,		2,		2,		8,		8},
 	--------------------------------------------
 }
@@ -161,6 +161,14 @@ local function LoadBulletRes_TUO()
 		for _,v in ipairs(list) do
 			LoadImageGroup(v[1],'bulletTUO'..i,v[2]*32,0,v[3]*32,v[4]*32,1,16/v[4],v[5],v[6])
 		end
+	end
+	for i=1,16 do
+		SetImageCenter('riv'..i,24,16)
+		SetImageCenter('triangle'..i,11,16)
+		SetImageCenter('lua'..i,20,16)
+	end	
+	for i=1,8 do
+		SetImageCenter('ginkgo'..i,41,16)
 	end
 end
 local function UnloadBulletRes_TUO()

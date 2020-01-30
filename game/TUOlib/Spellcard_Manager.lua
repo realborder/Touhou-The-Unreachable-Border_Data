@@ -90,6 +90,7 @@ stage.group.DefStageFunc('Spell Practice New@Spell Practice New','init',function
 		--设定bgm和背景
 		local cardinfo=_sc_table_new[lstg.var.sc_index_new1][lstg.var.sc_index_new2]
 		local card,perf
+		ext.sc_pr=true
 		local suffix=''
 		local diff=difficulty
 		if not cardinfo.card.init then

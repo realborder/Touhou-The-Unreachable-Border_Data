@@ -563,7 +563,13 @@ function LoadMusicRecord(name)
 		end
 	end
 end
-
+function ClearMusicCache()
+	if not lstg.tmpvar then return end
+	if not lstg.tmpvar.musiccache then return end
+	for k,v in pairs(lstg.tmpvar.musiccache) do
+		if v then UnloadBGM(k) end
+	end
+end
 ----------------------------------------
 --拖影特效
 --？细节：现有的拖影是通过HGE粒子特效来实现的，无法更改混合模式和颜色，无法更改大小和拖影长度

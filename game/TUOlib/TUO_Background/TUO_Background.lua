@@ -144,17 +144,18 @@ function m.DoPhaseLogic(self, InitPhase)
 end
 
 function m.Apply3DParamater(self)
-        --应用参数
-        -- Print(string.format("eye:%.2f ,%.2f %.2f", self.cur.eye[1], self.cur.eye[2], self.cur.eye[3]))
-        -- Print(string.format("eye:%.2f ,%.2f %.2f", self.cur.at[1], self.cur.at[2], self.cur.at[3]))
-    
-        local cur = self.cur
-        Set3D("eye", cur.eye[1], cur.eye[2], cur.eye[3])
-        Set3D("at", cur.at[1], cur.at[2], cur.at[3])
-        Set3D("up", cur.up[1], cur.up[2], cur.up[3])
-        Set3D("fog", cur.fogdist[1], cur.fogdist[2], Color(255, cur.fogc[1], cur.fogc[2], cur.fogc[3]))
-        Set3D("z", cur.z[1], cur.z[2])
-        Set3D("fovy", cur.fovy[1])
+    --应用参数
+    -- Print(string.format("eye:%.2f ,%.2f %.2f", self.cur.eye[1], self.cur.eye[2], self.cur.eye[3]))
+    -- Print(string.format("eye:%.2f ,%.2f %.2f", self.cur.at[1], self.cur.at[2], self.cur.at[3]))
+
+    local cur = self.cur
+    Set3D("eye", cur.eye[1], cur.eye[2], cur.eye[3])
+    Set3D("at", cur.at[1], cur.at[2], cur.at[3])
+    Set3D("up", cur.up[1], cur.up[2], cur.up[3])
+    Set3D("fog", cur.fogdist[1], cur.fogdist[2], Color(255, cur.fogc[1], cur.fogc[2], cur.fogc[3]))
+    Set3D("z", cur.z[1], cur.z[2])
+    Set3D("fovy", cur.fovy[1])
+    SetViewMode '3d'
 end    
 
 ----------------------------------

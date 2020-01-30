@@ -1,6 +1,6 @@
 st1bg_trail=Class(object)
 local PATH='TUOlib\\TUO_Background\\st1bg_trail\\'
-function st1bg_trail.load_res()
+function st1bg_trail.LoadRes()
 	local _LoadImageFromFile=function(para1,para2,...)
 		_LoadImageFromFile(para1,PATH..para2,...)
 	end
@@ -9,15 +9,19 @@ function st1bg_trail.load_res()
 	_LoadImageFromFile('image:'.."st1bg_grass1","st1bg_grass1.png",true,0,0,false,0)
 	_LoadImageFromFile('image:'.."st1bg_grass2","st1bg_grass2.png",true,0,0,false,0)
 end
-function st1bg_trail.unload_res()
-
-
+function st1bg_trail.UnloadRes()
+	_UnloadImageFromFile ('image:'.."st1bg_road")
+	_UnloadImageFromFile('image:'.."st1bg_tree1")
+	_UnloadImageFromFile('image:'.."st1bg_grass1")
+	_UnloadImageFromFile('image:'.."st1bg_grass2")
 end
-function st1bg_trail:init()
-	--
-	background.init(self,false)
+function st1bg_trail:init(summon_from_st4)
+	self.summon_from_st4=summon_from_st4
+	if not summon_from_st4 then
+		background.init(self,false)
+		st1bg_trail.LoadRes()
+	end
 	--resource
-	st1bg_trail.load_res()
 	-- LoadImageFromFile('woods_ground','road1.png')
 	-- LoadImageFromFile('_woods_leaf','woods_leaf.png')
 	SetImageState('image:st1bg_road','',Color(255,255,255,255))
@@ -49,17 +53,8 @@ end
 rnd=math.random
 
 function st1bg_trail:frame()
-	--视角轻微摇晃
-	if self.timer>=360 then
-		Set3D('up',0,10,sin((self.timer-360)/5))
-		Set3D('at',1.5+0.3*sin((self.timer-360)/2.5),-0.4+0.2*sin((self.timer-360)/5),0)
-	end
 
-	--还原正作雾化距离拉远的效果
-	if self.timer>15 and self.timer<=15+240 then
-		Set3D('fog', 8.3*(self.timer-15)/240, 20*(self.timer-15)/240, Color(255,63,157,131))
-	end
-	
+
 	self.acc=self.acc+self.speed
 	if self.acc>=self.interval then
 		self.acc=self.acc-self.interval
@@ -100,12 +95,35 @@ function st1bg_trail:frame()
 end
 
 function st1bg_trail:render()
+	--强行赋值以适配四面
+	--还原正作雾化距离拉远的效果
+	if self.timer>15 and self.timer<=15+240 then
+		Set3D('eye',1.5,1,-5)
+		Set3D('at',1.5,-0.4,0)
+		Set3D('up',0,1,0)
+		Set3D('z',1,24)
+		Set3D('fovy',0.7)
+		Set3D('fog', 8.3*(self.timer-15)/240, 20*(self.timer-15)/240, Color(255,63,157,131))
+	end
+	--视角轻微摇晃
+	if self.timer>=360 then
+		Set3D('eye',1.5,1,-5)
+		Set3D('up',0,10,sin((self.timer-360)/5))
+		Set3D('at',1.5+0.3*sin((self.timer-360)/2.5),-0.4+0.2*sin((self.timer-360)/5),0)
+		Set3D('z',1,24)
+		Set3D('fovy',0.7)
+		Set3D('fog', 8.3, 20, Color(255,63,157,131))
+	end
 	SetViewMode'3d'
-	local showboss = IsValid(_boss)
+
+	local showboss = IsValid(_boss) and (not self.summon_from_st4) --为了在四面节省性能
 	if showboss then
         PostEffectCapture()
     end
-	
+	if self.summon_from_st4 then
+		PushRenderTarget('st4_bg_render_target3')
+	end
+
 	RenderClear(lstg.view3d.fog[3])
 	for j=0,6 do
 		local dz=j*4-math.mod(self.timer*self.speed,4)
@@ -126,7 +144,9 @@ function st1bg_trail:render()
 		Render4V(self.imgs[p[1]],p[7],p[8],p[6],p[7]+p[9],p[8],p[6],p[7]+p[9],-2,p[6],p[7],-2,p[6])
 		--Render(self.imgs[1],0,0,0,1,1,0)
 	end
-	
+	if self.summon_from_st4 then
+		PopRenderTarget('st4_bg_render_target3')
+	end
 	--boss的背景扭曲效果
 	if showboss then
 		local x,y = WorldToScreen(_boss.x,_boss.y)

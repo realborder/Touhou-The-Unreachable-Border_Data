@@ -1,7 +1,7 @@
 st2bg_village=Class(object)
 local PATH='TUOlib\\TUO_Background\\st2bg_village\\'
 
-function st2bg_village.load_res()
+function st2bg_village.LoadRes()
 	local _LoadImageFromFile=function(para1,para2,...)
 		_LoadImageFromFile(para1,PATH..para2,...)
 	end
@@ -18,10 +18,22 @@ function st2bg_village.load_res()
 	_LoadImageFromFile('image:'.."st2bg_sky","st2bg_sky.png",true,0,0,false,0)
 
 end
+function st2bg_village.UnloadRes()
+	_UnloadImageFromFile('image:'.."st2bg_land")
+	_UnloadImageFromFile('image:'.."st2bg_land_l")
+	_UnloadImageFromFile('image:'.."st2bg_land_r")
+	_UnloadImageFromFile('image:'.."st2bg_roof_l")
+	_UnloadImageFromFile('image:'.."st2bg_roof_r")
+	_UnloadImageFromFile('image:'.."st2bg_wall_l")
+	_UnloadImageFromFile('image:'.."st2bg_wall_r")
+	_UnloadImageFromFile('image:'.."st2bg_wall2_l")
+	_UnloadImageFromFile('image:'.."st2bg_wall2_r")
+	_UnloadImageFromFile('image:'.."st2bg_sky")
+end
 function st2bg_village:init()
 	--
 	background.init(self,false)
-	st2bg_village.load_res()
+	st2bg_village.LoadRes()
 	self.fogc=Color(255,215,226,255)
 	--set 3d camera and fog
 	Set3D('eye',0,3.0,0)

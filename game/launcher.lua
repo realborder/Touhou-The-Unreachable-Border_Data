@@ -213,7 +213,9 @@ function stage_init:frame()
 		self.load_process=1
     elseif self.timer==35 then
         New(mask_fader,'','fullscreen')
-    elseif self.timer>=67 then
+	elseif self.timer>=67 then
+		lstg.RemoveResource('global',2,'UI_gameInit')
+		lstg.RemoveResource('global',1,'UI_gameInit')
 		stage.Set('none', 'menu') 
 	end
     -- if self.timer>=1 then stage.Set('none', 'menu') end

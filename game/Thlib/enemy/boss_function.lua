@@ -53,6 +53,8 @@ end
 
 function boss:explode(a) --boss死亡特效
     if a then
+        --防止击破撞，由云绝添加
+        player.protect=240
         self.killed = true
         self.no_killeff = true
         task.Clear(self)
@@ -65,10 +67,11 @@ function boss:explode(a) --boss死亡特效
         self.lr = 28
         task.New(self, function()
             local angle = ran:Float(10, 20)
-            self.vx = 0.3 * cos(angle)
-            self.vy = 0.3 * sin(angle)
+            lstg.var.timeslow=2
+            self.vx = 0.6 * cos(angle)
+            self.vy = 0.6 * sin(angle)
             New(bullet_cleaner, self.x, self.y, 1500, 120, 60, true, true, 0)
-            for i = 1, 120 do
+            for i = 1, 45 do
                 self.hp = 0
                 self.timer = self.timer - 1
                 local lifetime = ran:Int(60, 90)
@@ -76,6 +79,7 @@ function boss:explode(a) --boss死亡特效
                 New(boss_death_ef_unit, self.x, self.y, l / lifetime, ran:Float(0, 360), lifetime, ran:Float(2, 3))
                 task.Wait(1)
             end
+            lstg.var.timeslow=1
             PlaySound("enep01", 0.5, self.x / 256)
             New(deatheff, self.x, self.y, 'first')
             New(deatheff, self.x, self.y, 'second')  

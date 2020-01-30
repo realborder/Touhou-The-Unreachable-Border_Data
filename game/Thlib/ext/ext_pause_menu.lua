@@ -192,6 +192,11 @@ function ext.pausemenu:frame()
 			end
 			self:FlyOut()
 		end
+		--TODO: 内测版新增功能：est+T回到标题界面，正式版移除
+		if Lk==KEY.T then
+			stage.group.ReturnToTitle(false,0)
+			ResetPool()
+		end
 		--槽位切换
 		do
 			if Lk==k.up or Lk==j.up then

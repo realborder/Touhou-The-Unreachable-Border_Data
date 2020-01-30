@@ -55,14 +55,11 @@ local bgl=TUO_Developer_UI:NewPanel()
 function bgl:init()
     self.name='背景脚本列表'
     self.auto_reload=false
-    -- self.left_for_world=true
-
-    -- TUO_Developer_UI.SetWidgetSlot('world')
     Neww'title'.text='背景列表'
     Neww'text_displayer'.text='点按列表项以查看背景'
 
     local bt1=Neww'button'
-    bt1.text='重新载入'
+    bt1.text='载入'
     bt1.width=72
     bt1._event_mouseclick=function(widget)
         local i,name,value=TUO_Developer_UI.GetListSingleSel(bglist)
@@ -75,19 +72,32 @@ function bgl:init()
     end
 
     local bt4=Neww'button'
-    bt4.text='刷新全部'
+    bt4.text='刷新列表'
     bt4.width=72
     bt4._stay_in_this_line=true
     bt4._event_mouseclick=function(widget)
         tuolib.BGHandler.LoadAllBG()
     end
-    
+
     local bt3=Neww'button'
     bt3.text='删除背景对象'
     bt3.width=72*1.5
     bt3._stay_in_this_line=true
     bt3._event_mouseclick=function(widget)
         if IsValid(_3DBG_Handler.bgtemp) then RawDel(_3DBG_Handler.bgtemp) end
+    end
+
+    local bt5=Neww'button'
+    bt5.text='卸载背景资源'
+    bt5.width=72*1.5
+    bt5._stay_in_this_line=true
+    bt5._event_mouseclick=function(widget)
+        local i,name,value=TUO_Developer_UI.GetListSingleSel(bglist)
+        if IsValid(_3DBG_Handler.bgtemp) then
+            if _G[name].Unload then
+                _G[name].UnloadRes()
+            end
+        end
     end
 
     local sw1=Neww'switch'
@@ -97,7 +107,7 @@ function bgl:init()
         self.auto_play=flag
     end
 
-    
+
     bglist=Neww'list_box'
     bglist.monitoring_value=function()
         local t={}
@@ -108,18 +118,18 @@ function bgl:init()
     end
     bglist.width=224
     bglist._ban_mul_select=true
-    bglist._event_mousepress=function(widget)
-        local i,name=TUO_Developer_UI.GetListSingleSel(widget)
-        if not i then return end
-        local bgname= widget.display_value[i]
-        local m=_3DBG_Handler
-        if IsValid(m.bgtemp) then RawDel(m.bgtemp) end
-        m.bgname=bgname
-        m.bgtemp=New(_G[bgname])
-        m.cur=2
-        playBGM(name)
-    end
-    
+    --bglist._event_mousepress=function(widget)
+    --    local i,name=TUO_Developer_UI.GetListSingleSel(widget)
+    --    if not i then return end
+    --    local bgname= widget.display_value[i]
+    --    local m=_3DBG_Handler
+    --    if IsValid(m.bgtemp) then RawDel(m.bgtemp) end
+    --    m.bgname=bgname
+    --    m.bgtemp=New(_G[bgname])
+    --    m.cur=2
+    --    playBGM(name)
+    --end
+
 
 
 end
@@ -212,8 +222,6 @@ function phsys:init()
                 end
             end
         end
-
-
     end
 
     local v0=Neww'value_displayer'
@@ -329,7 +337,7 @@ function phsys:init()
     end
     s2.render=function (self,alpha,l,r,b,t)
         local bg=_3DBG_Handler.bgtemp
-        if not IsValid(bg) and (not bg.phaseinfo) then return end
+        if (not IsValid(bg)) or (not bg.phaseinfo) then return end
         local cur=tuolib.BGHandler.GetCurPhase(bg)
         if cur then
             local yc=(t+b)/2

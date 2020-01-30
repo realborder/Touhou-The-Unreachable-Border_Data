@@ -178,7 +178,7 @@ function quickboost:init()
 	rtn_btn._event_mouseclick = function(widget)
 		if stage.current_stage.stage_name then
 			ResetPool()
-			stage.group.ReturnToTitle()
+			stage.group.ReturnToTitle(false,0)
 		end
 	end
 	--------------------------------------------
@@ -434,9 +434,17 @@ function scprac:init()
 			lstg.var.sc_index_new2 = cardinfo2
 			lstg.var.player_name = player_list[plr_index][2]
 			lstg.var.rep_player = player_list[plr_index][3]
-			Print(cardinfo1, cardinfo2)
+			--Print(cardinfo1, cardinfo2)
 			stage.group.PracticeStart("Spell Practice New@Spell Practice New")
 			TUO_Developer_UI.cur = 1
+		end
+	end
+	local rtn_btn = Neww 'button'
+	rtn_btn.text = '返回到标题菜单'
+	rtn_btn._event_mouseclick = function(widget)
+		if stage.current_stage.stage_name then
+			ResetPool()
+			stage.group.ReturnToTitle(false,0)
 		end
 	end
 end

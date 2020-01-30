@@ -4,7 +4,7 @@
 local PATH='TUOlib\\TUO_Background\\st3bg_magic_forest\\'
 st3bg_magic_forest=Class(object)
 
-function st3bg_magic_forest.load_res()
+function st3bg_magic_forest.LoadRes()
 	local _LoadImageFromFile=function(para1,para2,...)
 		_LoadImageFromFile(para1,PATH..para2,...)
 	end
@@ -25,6 +25,27 @@ function st3bg_magic_forest.load_res()
 	_LoadImageFromFile('image:'.."st3_sky","st3_sky.png",true,0,0,false,0)
 	_LoadImageFromFile('image:'.."st3_river_h","st3_river_h.png",true,0,0,false,0)
 	_LoadImageFromFile('image:'.."st3_river_top_hcover","st3_river_top_hcover.png",true,0,0,false,0)
+	LoadFX("fx_dizzy",PATH.."fx_dizzy.fx")
+end
+function st3bg_magic_forest.UnloadRes()
+	_UnloadImageFromFile('image:'.."st3_grass")
+	_UnloadImageFromFile('image:'.."st3_leaves")
+	_UnloadImageFromFile('image:'.."st3_river")
+	_UnloadImageFromFile('image:'.."st3_river_bottom")
+	_UnloadImageFromFile('image:'.."st3_tree")
+	_UnloadImageFromFile('image:'.."st3_mushroom")
+	_UnloadImageFromFile('image:'.."st3_mushroom_glowing")
+	_UnloadImageFromFile('image:'.."st3_surface")
+	_UnloadImageFromFile('image:'.."st3_river_top")
+	_UnloadImageFromFile('image:'.."st3_leaves_edge")
+	_UnloadImageFromFile('image:'.."st3_leaves_side")
+	_UnloadImageFromFile('image:'.."st3_dark")
+	_UnloadImageFromFile('image:'.."st3_highlight")
+	_UnloadImageFromFile('image:'.."st3_leaves_edgeB")
+	_UnloadImageFromFile('image:'.."st3_sky")
+	_UnloadImageFromFile('image:'.."st3_river_h")
+	_UnloadImageFromFile('image:'.."st3_river_top_hcover")
+	lstg.RemoveResource(lstg.CheckRes(9,'fx_dizzy'),9,'fx_dizzy')
 	LoadFX("fx_dizzy",PATH.."fx_dizzy.fx")
 end
 

@@ -142,7 +142,7 @@ function BossSystem:CheckHP()
     local b = self.boss
     if b.hp <= 0 then
         if b.card_num == b.last_card and not(b.no_killeff) and not(b.killed) then
-            boss.explode(b)
+            boss.explode(b,true)
         else
             if not(b.killed) then
                 Kill(b)
@@ -239,18 +239,22 @@ function BossSystem:UpdateBG()
     local b = self.boss
     local c = self:GetCurrentCard()
     if b.bg then
-        if IsValid(b.bg) then
-            if c.is_sc then
-                b.bg.alpha = min(1, b.bg.alpha + 1/60)
-            else
-                b.bg.alpha = max(0, b.bg.alpha - 1/60)
+        if b.ban_scbg then
+            
+        else
+            if IsValid(b.bg) then
+                if c.is_sc then
+                    b.bg.alpha = min(1, b.bg.alpha + 1/60)
+                else
+                    b.bg.alpha = max(0, b.bg.alpha - 1/60)
+                end
             end
-        end
-        if lstg.tmpvar.bg then
-            if IsValid(b.bg) and b.bg.alpha == 1 then
-                lstg.tmpvar.bg.hide = true
-            else
-                lstg.tmpvar.bg.hide = false
+            if lstg.tmpvar.bg then
+                if IsValid(b.bg) and b.bg.alpha == 1 then
+                    lstg.tmpvar.bg.hide = true
+                else
+                    lstg.tmpvar.bg.hide = false
+                end
             end
         end
     end
