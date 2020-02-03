@@ -111,12 +111,11 @@ end
 ---@param y number
 ---@param x0 number
 ---@param y0 number
----@return number 
----@overload fun(x,y):number
+---@return number,number
 function RectToPolar(x,y,x0,y0)
-	local x0,y0=x0,y0 or 0,0
+	x0,y0=x0 or 0,y0 or 0
 	local dx,dy=x-x0,y-y0
-	return hypot(dx,dy),atan2(dy,dx)
+	return hypot(dx,dy),(x>=0 and atan2(dy,dx) or atan2(dy,dx)+180)
 end
 R2P=RectToPolar
 ------------------------------
@@ -126,9 +125,8 @@ R2P=RectToPolar
 ---@param x0 number
 ---@param y0 number
 ---@return number
----@overload fun(a:number,r:number):number
 function PolarToRect(a,r,x0,y0)
-	local x0,y0=x0,y0 or 0,0
+	x0,y0=x0 or 0,y0 or 0
 	return x0+r*cos(a),y0+r+sin(a)
 end
 P2R=PolarToRect

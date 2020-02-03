@@ -71,10 +71,10 @@ LoadImageGroup('fade_ball_huge','bullet_ball_huge',0,0,64*2,64*2,4,2,27*bk,27*bk
 LoadImageGroup('ball_huge_dark','bullet_ball_huge',0,0,64*2,64*2,4,2,27*bk,27*bk)
 LoadImageGroup('fade_ball_huge_dark','bullet_ball_huge',0,0,64*2,64*2,4,2,27*bk,27*bk)
 for i=1,8 do SetImageState('ball_huge'..i,'mul+add') end
-LoadImageGroup('ball_huge_rev','bullet_ball_huge',0,0,64*2,64*2,4,2,27*bk,27*bk)
-LoadImageGroup('fade_ball_huge_rev','bullet_ball_huge',0,0,64*2,64*2,4,2,27*bk,27*bk)
-LoadImageGroup('ball_huge_rev_dark','bullet_ball_huge',0,0,64*2,64*2,4,2,27*bk,27*bk)
-LoadImageGroup('fade_ball_huge_rev_dark','bullet_ball_huge',0,0,64*2,64*2,4,2,27*bk,27*bk)
+LoadImageGroup('ball_huge_rev','bullet_ball_huge',0,256,64*2,64*2,4,2,27*bk,27*bk)
+LoadImageGroup('fade_ball_huge_rev','bullet_ball_huge',0,256,64*2,64*2,4,2,27*bk,27*bk)
+LoadImageGroup('ball_huge_rev_dark','bullet_ball_huge',0,256,64*2,64*2,4,2,27*bk,27*bk)
+LoadImageGroup('fade_ball_huge_rev_dark','bullet_ball_huge',0,256,64*2,64*2,4,2,27*bk,27*bk)
 for i=1,8 do SetImageState('ball_huge_rev'..i,'mul+add') end
 --------------------------
 --------water_drop--------
@@ -124,13 +124,13 @@ end
 --region TUO新弹型
 local TUO_bullet_list1={
 	--------------------------------------------
-	--资源名			横坐标	宽度 	高度		判定a	判定b
+	--资源名			横坐标	宽度 	高度		判定a	判定b	自旋
 	{'riv',			0,		1,		1,		3,		2},
 	{'diamond_m',	1,		1,		1,		4,		4},
 	{'diamond_l',	2,		1,		1,		6,		6},
 	{'diamond_s',	3,		1,		1,		2,		2},
 	{'triangle',	4,		1,		1,		3,		3},
-	{'flower',		5,		1,		1,		2,		2},
+	{'flower',		5,		1,		1,		2,		2,		5},
 	{'lua',			6,		1,		1,		2,		2},
 	{'arrow_w',		7,		1,		1,		4,		4},
 	{'clip',		8,		2,		1,		2,		2},
@@ -147,10 +147,10 @@ local TUO_bullet_list2={
 	{'jigsaw_b',	2,		1,		1,		3,		3},
 	{'jigsaw_c',	3,		1,		1,		3,		3},
 	{'jigsaw_d',	4,		1,		1,		3,		3},
-	{'evil_a',		5,		1,		1,		2,		2},
+	{'evil_a',		5,		1,		1,		2,		2,		5},
 	{'evil_b',		6,		4,		1,		3,		3},
-	{'evil_c',		10,		2,		2,		3,		3},
-	{'evil_d',		12,		2,		2,		3,		3},
+	{'evil_c',		10,		2,		2,		3,		3,		5},
+	{'evil_d',		12,		2,		2,		3,		3,		5},
 	{'gear_l',		14,		2,		2,		11,		11},
 	--------------------------------------------
 }
@@ -218,6 +218,47 @@ end
 --endregion
 
 --region bullet
+
+----------------------------------------------------------------
+local function DoBulletReflect(self)
+	if self.reflect_count and self.reflect_count>0 then
+		local world = lstg.world
+		local x, y = self.x, self.y
+		if y > world.t then
+			self.vy = -self.vy
+			self.y = world.t * 2 - self.y
+			if self.acceleration and self.acceleration.ay then
+				self.acceleration.ay = -self.acceleration.ay
+			end
+			self.rot = -self.rot
+			self.reflect_count = self.reflect_count-1
+			return
+		end
+		if x > world.r then
+			self.vx = -self.vx
+			self.x = world.r * 2 - self.x
+			if self.acceleration and self.acceleration.ax then
+				self.acceleration.ax = -self.acceleration.ax
+			end
+			self.rot = 180 - self.rot
+			self.reflect_count = self.reflect_count-1
+			return
+		end
+		if x < world.l then
+			self.vx = -self.vx
+			self.x = world.l * 2 - self.x
+			if self.acceleration and self.acceleration.ax then
+				self.acceleration.ax = -self.acceleration.ax
+			end
+			self.rot = 180 - self.rot
+			self.reflect_count = self.reflect_count-1
+			return
+		end
+	end
+end
+
+
+
 bullet=Class(object)
 function bullet:init(imgclass,index,stay,destroyable)
 	self.logclass=self.class
@@ -236,6 +277,7 @@ function bullet:init(imgclass,index,stay,destroyable)
 end
 
 function bullet:frame()
+	DoBulletReflect(self)
 	task.Do(self)
 end
 
@@ -269,6 +311,7 @@ end
 --region img_class
 img_class=Class(object)
 function img_class:frame()
+	DoBulletReflect(self)
 	if not self.stay then
 		if not(self._forbid_ref) then--by OLC，修正了defaul action死循环的问题
 			self._forbid_ref=true
@@ -411,6 +454,7 @@ money=Class(img_class)
 money.size=0.753
 function money:init(index)
 	self.img='money'..int((index+1)/2)
+	self.omiga=5
 end
 ----------------------------------------------------------------
 mildew=Class(img_class)
@@ -429,18 +473,21 @@ star_small=Class(img_class)
 star_small.size=0.5
 function star_small:init(index)
 	self.img='star_small'..index
+	self.omiga=5
 end
 ----------------------------------------------------------------
 star_big=Class(img_class)
 star_big.size=0.998
 function star_big:init(index)
 	self.img='star_big'..int((index+1)/2)
+	self.omiga=5
 end
 ----------------------------------------------------------------
 star_big_b=Class(img_class)
 star_big_b.size=0.999
 function star_big_b:init(index)
 	self.img='star_big_b'..int((index+1)/2)
+	self.omiga=5
 end
 ----------------------------------------------------------------
 --endregion
@@ -451,6 +498,7 @@ ball_huge=Class(img_class)
 ball_huge.size=2.0
 function ball_huge:init(index)
 	self.img='ball_huge'..int((index+1)/2)
+	self.omiga=5
 end
 function ball_huge:frame()
 	if not self.stay then
@@ -486,6 +534,7 @@ ball_huge_dark=Class(img_class)
 ball_huge_dark.size=2.0
 function ball_huge_dark:init(index)
 	self.img='ball_huge_dark'..int((index+1)/2)
+	self.omiga=5
 end
 function ball_huge_dark:frame()
 	if not self.stay then
@@ -520,7 +569,8 @@ end
 ball_huge_rev=Class(img_class)
 ball_huge_rev.size=2.0
 function ball_huge_rev:init(index)
-	self.img='_rev'..int((index+1)/2)
+	self.img='ball_huge_rev'..int((index+1)/2)
+	self.omiga=5
 end
 function ball_huge_rev:frame()
 	if not self.stay then
@@ -556,6 +606,7 @@ ball_huge_rev_dark=Class(img_class)
 ball_huge_rev_dark.size=2.0
 function ball_huge_rev_dark:init(index)
 	self.img='ball_huge_rev_dark'..int((index+1)/2)
+	self.omiga=5
 end
 function ball_huge_rev_dark:frame()
 	if not self.stay then
@@ -829,13 +880,16 @@ for i,list in ipairs({TUO_bullet_list1,TUO_bullet_list2}) do
 		local bul=Class(img_class)
 		local classname=v[1]
 		bul.size=0.5
+		local omiga=v[7] or 0
 		if v[4]==2 then
 			function bul:init(index)
 				self.img=v[1]..int((index+1)/2)
+				self.omiga=omiga
 			end
 		else
 			function bul:init(index)
 				self.img=v[1]..index
+				self.omiga=omiga
 			end
 		end
 		_G[classname]=bul
@@ -911,6 +965,7 @@ function straight_495:frame()
 		end
 	end
 end
+
 ----------------------------------------------------------------
 bullet_killer=Class(object)
 function bullet_killer:init(x,y,kill_indes)

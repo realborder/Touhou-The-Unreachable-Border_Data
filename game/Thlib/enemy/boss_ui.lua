@@ -137,7 +137,7 @@ function boss_ui:render()
             SetImageState('boss_spell_name_bg','',Color(alpha*255,255,255,255))
             Render('boss_spell_name_bg',192+xoffset,236-dy2,0,1)  --这里*2了，之后换素材之后要改
             for r=1,3,0.5 do
-                local alpha=0.35
+                local alpha=0.15
                 for a=0,360,30 do
                     RenderTTF('sc_name',self.sc_name,192+xoffset+cos(a)*r,192+xoffset+cos(a)*r,227-dy2+sin(a)*r,227-dy2+sin(a)*r,Color(alpha*255,0,0,0),'right','noclip')
                 end
@@ -209,11 +209,11 @@ function boss_ui:render_hpbar()
             -- misc.Renderhpbar(self.boss.x,self.boss.y,90,360,60,64,360,1)
             local k=(1+0.5*(1-t))
             local r=64*k
-            local dr=min(1,self.boss.timer/60)*4*t
-            SetImageState('base_hp','',Color(255*t*self.hp_bar_alpha,255,255,255))
+            local dr=min(1,self.boss.timer/60)*4.5*t
+            SetImageState('base_hp','',Color(155*t*self.hp_bar_alpha,255,255,255))
             Render('base_hp',self.boss.x,self.boss.y,0,0.548*k,0.548*k)
             misc.Renderhp2(self.boss.x,self.boss.y,90,360,r-dr,r,360,self.hpbarlen,c.hplen) 
-            SetImageState('base_hp2','',Color(255*t*self.hp_bar_alpha,255,255,255))
+            SetImageState('base_hp2','',Color(155*t*self.hp_bar_alpha,255,255,255))
             Render('base_hp2',self.boss.x,self.boss.y,0,0.548*k,0.548*k)
             local list=self.hp_break_list
             for i=1,self.hp_break_list_max do
@@ -260,8 +260,6 @@ function boss_ui:render_hpbar()
             end
             SetFontState('bonus','',Color(255,255,255,255))
             RenderText('bonus',int(max(0,self.boss.hp))..'/'..self.boss.maxhp,self.boss.x,self.boss.y-40,1,'centerpoint')
-            RenderText('bonus',self.hp_bar_timer,self.boss.x,self.boss.y+40,1,'centerpoint')
-            RenderText('bonus',tostring(self.is_combat),self.boss.x,self.boss.y+50,1,'centerpoint')
         end
     end
 end

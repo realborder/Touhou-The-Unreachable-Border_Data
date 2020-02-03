@@ -52,18 +52,6 @@ end
 
 function boss.card:frame()
     local c = boss.GetCurrentCard(self)
-    ----符卡名相关
-    ----为了满足EN难度为非符，HL难度为符卡的需求而设置
-    ----仍有问题，这个代码必须在开卡之前执行
-    if difficulty then
-        local namelist=c.namelist
-        if type(namelist)=='table' then
-            c.name= namelist[difficulty]
-            c.is_sc = (c.name ~= '')
-        end
-    end
-
-
 	----速破相关
 	c.timer=c.timer+1
 	if c.timer>1 then

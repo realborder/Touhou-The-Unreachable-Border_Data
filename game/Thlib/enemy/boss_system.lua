@@ -409,7 +409,15 @@ function BossSystem:CastCard(card)
     local sc_hist = scoredata.spell_card_hist
     local player = lstg.var.player_name
     local diff = b.difficulty
-    local name = card.name
+    --一行代码解决多难度符卡名
+    local name = type(card.namelist)=='table' and card.namelist[difficulty] or card.name
+    -- if difficulty then
+    --     local namelist=card.namelist
+    --     if type(namelist)=='table' then
+    --         card.name= namelist[difficulty]
+    --         card.is_sc = (card.name ~= '')
+    --     end
+    -- end
     self:MakeSCHist(player, diff, name)
     b.ui.sc_hist = sc_hist[player][diff][name]
     if name ~= '' then

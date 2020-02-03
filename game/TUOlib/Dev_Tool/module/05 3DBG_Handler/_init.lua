@@ -84,7 +84,7 @@ function bgl:init()
     bt3.width=72*1.5
     bt3._stay_in_this_line=true
     bt3._event_mouseclick=function(widget)
-        if IsValid(_3DBG_Handler.bgtemp) then RawDel(_3DBG_Handler.bgtemp) end
+        if IsValid(_3DBG_Handler.bgtemp) then Del(_3DBG_Handler.bgtemp) end
     end
 
     local bt5=Neww'button'
@@ -217,7 +217,7 @@ function phsys:init()
                         --PlayMusic用的单位是秒，而不是帧
                         _3DBG_Handler.music_play_timer=-1
                         actuall_time=actuall_time/60
-                        PlayMusic(_3DBG_Handler.music_name,1.0,actuall_time)
+                        _play_music(_3DBG_Handler.music_name,actuall_time)
                     end
                 end
             end

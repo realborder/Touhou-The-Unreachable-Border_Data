@@ -3,7 +3,7 @@ tuolib.music=m
 m.PATH="TUOlib\\TUO_Music\\"
 m.music_list={
 	--------------------------------------------------------------------------------------
-	--name		resource		loop end 			loop length			play offset
+	--name		file name		loop end 			loop length			play time offset
 	{"st1",		"st1.ogg",		4622127/44100,		4354178/44100,		100},
 	{"boss1",	"boss1.ogg",	2834136/44100,		2550636/44100		},
 	{"st2",		"st2.ogg",		4901315/44100,		4546147/44100,		0},
@@ -12,6 +12,7 @@ m.music_list={
 	{"st3_",	"st3.ogg",		0x487BA7/44100,		0x41FACE/44100		},
 	{"boss3",	"boss3.ogg",	4044841/44100,		3775185/44100		},
 	{"st4",		"st4.ogg",		0x5D428F/44100,		0x5792CB/44100,		303},
+	{"boss4",	"boss4.ogg",	139,		138		},
 	--------------------------------------------------------------------------------------
 }
 function m:init()

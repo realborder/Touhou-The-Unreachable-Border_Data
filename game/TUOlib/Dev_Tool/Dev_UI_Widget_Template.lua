@@ -15,7 +15,7 @@ DeserializeTable=function (widget,t,output,level,index)
     --深度保护
     if level>4 then 
         local head=''
-        for i=0,level-1 do head=head..'    ' end
+        for _=0,level-1 do head=head..'    ' end
         table.insert(widget.display_value,{name=head..'!!!',v=' Reached Table Print Limit',index=0})
         return false
     end
@@ -27,15 +27,15 @@ DeserializeTable=function (widget,t,output,level,index)
             table.insert(widget.display_value,{name='!!!',v=' Reached Table Print Limit',index=0}) return false end
         if type(_v)=='table' then 
             local head=''
-            for i=0,level-1 do head=head..'  ' end
+            for _=0,level-1 do head=head..'  ' end
             if level>0 then head=head..' +' end
             table.insert(widget.display_value,{name=head.._k,v=_v})
             -- table.insert(widget.display_value,{name=head.._k,v=_v,index=index..tostring(_v)})
-            local flag=DeserializeTable(widget,_v,nil,level+1,index..tostring(_v))
+            --local flag=DeserializeTable(widget,_v,nil,level+1,index..tostring(_v))
             -- if not flag then return false end
         else 
             local head=''
-            for i=0,level do head=head..'  ' end
+            for _=0,level do head=head..'  ' end
             table.insert(widget.display_value,{name=head.._k,v=_v})
             -- table.insert(widget.display_value,{name=head.._k,v=_v,index=index..tostring(_v)})
         end
@@ -172,7 +172,7 @@ function value_displayer:frame()
     local oringinal_t=t
     if not self.display_value then self.display_value={{name='nil',v='nil'}} end
     for _,v in pairs(self.display_value) do  
-        local index=v.index or v.name
+        local index=v.index or v.name or "default"
         change[index]=change[index] or 0
         -----------------------变量有变化则让这个变成1
         if v.v~=pre[index] then change[index]=1 else change[index]=max(0,change[index]-0.02) end
@@ -188,10 +188,10 @@ function value_displayer:render(alpha,l,r,b,t)
     
     if not self.display_value then return end
     ---lrbt初始值
-    local l=self.hitbox.l
-    local r=self.hitbox.r
-    local t=self.hitbox.t 
-    local b
+    --local l=self.hitbox.l
+    --local r=self.hitbox.r
+    --local t=self.hitbox.t 
+    --local b
     
     --缩写下
     local pre=self.value_pre
@@ -252,21 +252,21 @@ function value_gauge:frame()
 end
 function value_gauge:render(alpha,l,r,b,t)
     --panel
-    local panel=self.panel
+    --local panel=self.panel
     ---排版
     local BORDER_WIDTH=2
-    local TOP_OFFSET=16
-    local HEIGHT=self.w+BORDER_WIDTH*2
-    local GAP_T=3
-    local x_pos=self._x_pos
+    --local TOP_OFFSET=16
+    --local HEIGHT=self.w+BORDER_WIDTH*2
+    --local GAP_T=3
+    --local x_pos=self._x_pos
     
 
     ---lrbt初始值
-    local l=self.hitbox.l
-    local r=self.hitbox.r
+    --local l=self.hitbox.l
+    --local r=self.hitbox.r
     local m=l+self.pos
-    local t=self.hitbox.t
-    local b=self.hitbox.b
+    --local t=self.hitbox.t
+    --local b=self.hitbox.b
     local yc=(t+b)/2
     local h=self.w/2
     RenderCube(l,r,b,t,Color(255*alpha,20,20,20))
@@ -320,8 +320,8 @@ function value_slider:frame()
     ---lrbt初始值
     local l=self.hitbox.l
     local r=self.hitbox.r
-    local t=self.hitbox.t
-    local b=self.hitbox.b
+    --local t=self.hitbox.t
+    --local b=self.hitbox.b
     if self._pressed then
         local mx=MouseState.x_in_UI
         local k=(mx-(l+BORDER_WIDTH))/(r-l-2*BORDER_WIDTH)
@@ -346,11 +346,11 @@ function value_slider:render(alpha,l,r,b,t)
     local GAP_T=self.gap_t
     local x_pos=self.x
     ---lrbt初始值
-    local l=self.hitbox.l
-    local r=self.hitbox.r
+    --local l=self.hitbox.l
+    --local r=self.hitbox.r
     local m=l+self.pos+self.borderwidth
-    local t=self.hitbox.t
-    local b=self.hitbox.b
+    --local t=self.hitbox.t
+    --local b=self.hitbox.b
     local yc=(t+b)/2
     local h=self.w/2
     local w2=1
@@ -388,8 +388,8 @@ function button:init()
     self.gap_t=4
     self.size=0.8
 end
-function button:frame()
-end
+--function button:frame()
+--end
 function button:render(alpha,l,r,b,t)            
     --排版
     local WIDTH=self.width
@@ -397,10 +397,10 @@ function button:render(alpha,l,r,b,t)
     local SIZE=self.size
     local GAP_T=self.gap_t
     ---lrbt初始值
-    local l=self.hitbox.l
-    local r=self.hitbox.r
-    local t=self.hitbox.t
-    local b=self.hitbox.b
+    --local l=self.hitbox.l
+    --local r=self.hitbox.r
+    --local t=self.hitbox.t
+    --local b=self.hitbox.b
     
     local k=min(1,0.15*self._ignite_timer+self._pressed_timer)
     local BORDER_WIDTH=min(abs(r-l),abs(t-b))/2*alpha*k
@@ -431,8 +431,8 @@ function text_displayer:frame()
     local SIZE=self.size
     local GAP_T=self.gap_t
     ---lrbt初始值
-    local l=self.hitbox.l
-    local r=self.hitbox.r
+    --local l=self.hitbox.l
+    --local r=self.hitbox.r
     local t=self.hitbox.t
     local b=self.hitbox.b
     local pos=string.find(self.text,"\n",1,true)
@@ -463,10 +463,10 @@ function text_displayer:render(alpha,l,r,b,t)
     local SIZE=self.size
     local GAP_T=self.gap_t
     ---lrbt初始值
-    local l=self.hitbox.l
-    local r=self.hitbox.r
-    local t=self.hitbox.t
-    local b=self.hitbox.b
+    --local l=self.hitbox.l
+    --local r=self.hitbox.r
+    --local t=self.hitbox.t
+    --local b=self.hitbox.b
     local color=Color(255*alpha,self.text_rgb[1],self.text_rgb[2],self.text_rgb[3])
     local pos=string.find(self.text,"\n",1,true)
     local ux,uy=MouseState.x_in_UI,MouseState.y_in_UI
@@ -613,11 +613,11 @@ function list_box:render(alpha,l,r,b,t)
     local GAP_T=self.gap_t
     local GAP=self.gap
     ---lrbt初始值
-    local l=self.hitbox.l
-    local r=self.hitbox.r
-    local t=self.hitbox.t
-    local oringinal_t=t
-    local b=self.hitbox.b
+    --local l=self.hitbox.l
+    --local r=self.hitbox.r
+    --local t=self.hitbox.t
+    --local oringinal_t=t
+    --local b=self.hitbox.b
     RenderCube(l,r,t-2-GAP/2,t,Color(255*alpha,30,30,30))
     t=t-2-GAP
 
@@ -715,10 +715,10 @@ function inputer:render(alpha,l,r,b,t)
     local SIZE=self.size
     local GAP_T=self.gap_t
     ---lrbt初始值
-    local l=self.hitbox.l
-    local r=self.hitbox.r
-    local t=self.hitbox.t
-    local b=self.hitbox.b
+    --local l=self.hitbox.l
+    --local r=self.hitbox.r
+    --local t=self.hitbox.t
+    --local b=self.hitbox.b
 
     local h=2+(HEIGHT-2)*self.connect_timer
     local k=0.15*self._ignite_timer+0.85*self._pressed_timer
@@ -796,11 +796,11 @@ function switch:render(alpha,l,r,b,t)
     local SIZE=self.size
     local GAP_T=self.gap_t
     ---lrbt初始值
-    local l=self.hitbox.l
-    -- local r=self.hitbox.r
-    local r=l+WIDTH
-    local t=self.hitbox.t
-    local b=self.hitbox.b
+    --local l=self.hitbox.l
+    -- --local r=self.hitbox.r
+    r=l+WIDTH
+    --local t=self.hitbox.t
+    --local b=self.hitbox.b
 
     
     local k=0.3+0.7*self.flag_timer
@@ -821,7 +821,7 @@ function switch:render(alpha,l,r,b,t)
     l=r+GAP_T*2
     r=self.hitbox.r
 
-    local c=255*(max(0.5,k)-0.5)*2
+    --local c=255*(max(0.5,k)-0.5)*2
     local text='nil'
     if self.flag then   text=self.text_on or 'On'
     else                text=self.text_off or 'Off' end
@@ -853,7 +853,7 @@ function color_sampler:init()
         --兼容性保证
         if not HSVColor then return end
         local w=self.ringw
-        local l=self.hitbox.l
+        --local l=self.hitbox.l
         local b,t=self.hitbox.b,self.hitbox.t
         local r=l+t-b
         local x,y=(l+r)/2,(b+t)/2
@@ -928,10 +928,10 @@ function color_sampler:render(alpha,l,r,b,t)
         local SIZE=self.size
         local GAP_T=self.gap_t
     ---lrbt初始值
-        local l=self.hitbox.l
-        local r=self.hitbox.r
-        local t=self.hitbox.t
-        local b=self.hitbox.b
+        --local l=self.hitbox.l
+        --local r=self.hitbox.r
+        --local t=self.hitbox.t
+        --local b=self.hitbox.b
     
     --兼容性保证
     if not HSVColor then 
@@ -978,7 +978,7 @@ function color_sampler:render(alpha,l,r,b,t)
         --显示当前选取的颜色的位置，这段代码是_event_mousehold中函数的反演函数
             do  
                 local w=self.ringw
-                local l=self.hitbox.l
+                --local l=self.hitbox.l
                 local b,t=self.hitbox.b,self.hitbox.t
                 local r=l+t-b
                 local xc,yc=(l+r)/2,(b+t)/2
@@ -1052,10 +1052,10 @@ function saperater:init()
 end
 function saperater:render(alpha,l,r,b,t)        
     ---lrbt初始值
-    local l=self.hitbox.l
-    local r=self.hitbox.r
-    local t=self.hitbox.t
-    local b=self.hitbox.b
+    --local l=self.hitbox.l
+    --local r=self.hitbox.r
+    --local t=self.hitbox.t
+    --local b=self.hitbox.b
     RenderCube(l,r,b,t,100,0,0,0)
 end
 
@@ -1081,7 +1081,7 @@ end
 function checkbox_l:frame()
     if self.refresh then self:refresh() end
     if type(self.display_value)=='table' then 
-        for i,v in pairs(self.display_value) do
+        for i,_ in pairs(self.display_value) do
             self.select_timer[i]=self.select_timer[i] or 0
             if self.cur==i then 
                 self.select_timer[i]=min(1,self.select_timer[i]+0.1)
@@ -1096,7 +1096,7 @@ function checkbox_l:frame()
     local t=self.hitbox.t
     local b=self.hitbox.b
     local dw=self.width/(#self.display_value)
-    for i,v in pairs(self.display_value) do  
+    for i,_ in pairs(self.display_value) do
         r=l+dw
         local ux,uy=MouseState.x_in_UI,MouseState.y_in_UI
         if MouseTrigger(0) and ux>l and ux<r and uy>b and uy<t then
@@ -1115,11 +1115,11 @@ function checkbox_l:render(alpha,l,r,b,t)
     local GAP_T=self.gap_t
     local GAP=self.gap
     ---lrbt初始值
-    local l=self.hitbox.l
-    local r=self.hitbox.r
-    local t=self.hitbox.t
-    local oringinal_t=t
-    local b=self.hitbox.b
+    --local l=self.hitbox.l
+    --local r=self.hitbox.r
+    --local t=self.hitbox.t
+    --local oringinal_t=t
+    --local b=self.hitbox.b
 
     RenderCube(l,r+4,t,t+2,Color(255*alpha,30,30,30))
     RenderCube(l,r+4,b+2,b)

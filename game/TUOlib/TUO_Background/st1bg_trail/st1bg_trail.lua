@@ -15,8 +15,9 @@ function st1bg_trail.UnloadRes()
 	_UnloadImageFromFile('image:'.."st1bg_grass1")
 	_UnloadImageFromFile('image:'.."st1bg_grass2")
 end
-function st1bg_trail:init(summon_from_st4)
+function st1bg_trail:init(summon_from_st4,master)
 	self.summon_from_st4=summon_from_st4
+	self.master=master
 	if not summon_from_st4 then
 		background.init(self,false)
 		st1bg_trail.LoadRes()
@@ -97,16 +98,28 @@ end
 function st1bg_trail:render()
 	--强行赋值以适配四面
 	--还原正作雾化距离拉远的效果
-	if self.timer>15 and self.timer<=15+240 then
+	if self.timer<=15 then
+		Set3D('eye',1.5,1,-5)
+		Set3D('at',1.5,-0.4,0)
+		Set3D('up',0,1,0)
+		Set3D('z',1,24)
+		Set3D('fovy',0.7)
+		Set3D('fog',0.01,0.02,Color(255,63,157,131))
+	elseif self.timer>15 and self.timer<=15+240 then
 		Set3D('eye',1.5,1,-5)
 		Set3D('at',1.5,-0.4,0)
 		Set3D('up',0,1,0)
 		Set3D('z',1,24)
 		Set3D('fovy',0.7)
 		Set3D('fog', 8.3*(self.timer-15)/240, 20*(self.timer-15)/240, Color(255,63,157,131))
-	end
-	--视角轻微摇晃
-	if self.timer>=360 then
+	elseif self.timer>240+15 and self.timer<360 then
+		Set3D('eye',1.5,1,-5)
+		Set3D('at',1.5,-0.4,0)
+		Set3D('up',0,1,0)
+		Set3D('z',1,24)
+		Set3D('fovy',0.7)
+		Set3D('fog', 8.3, 20, Color(255,63,157,131))
+	elseif self.timer>=360 then --视角轻微摇晃
 		Set3D('eye',1.5,1,-5)
 		Set3D('up',0,10,sin((self.timer-360)/5))
 		Set3D('at',1.5+0.3*sin((self.timer-360)/2.5),-0.4+0.2*sin((self.timer-360)/5),0)
@@ -117,10 +130,11 @@ function st1bg_trail:render()
 	SetViewMode'3d'
 
 	local showboss = IsValid(_boss) and (not self.summon_from_st4) --为了在四面节省性能
+	local need_rt=self.summon_from_st4 and (not (self.master and self.master.disable_redundant_render))
 	if showboss then
-        PostEffectCapture()
+		background.WarpEffectCapture()
     end
-	if self.summon_from_st4 then
+	if need_rt then
 		PushRenderTarget('st4_bg_render_target3')
 	end
 
@@ -144,26 +158,12 @@ function st1bg_trail:render()
 		Render4V(self.imgs[p[1]],p[7],p[8],p[6],p[7]+p[9],p[8],p[6],p[7]+p[9],-2,p[6],p[7],-2,p[6])
 		--Render(self.imgs[1],0,0,0,1,1,0)
 	end
-	if self.summon_from_st4 then
+	if need_rt then
 		PopRenderTarget('st4_bg_render_target3')
 	end
 	--boss的背景扭曲效果
 	if showboss then
-		local x,y = WorldToScreen(_boss.x,_boss.y)
-		local x1 = x * screen.scale
-		local y1 = (screen.height - y) * screen.scale
-		local fxr = _boss.fxr or 163
-		local fxg = _boss.fxg or 73
-		local fxb = _boss.fxb or 164
-		PostEffectApply("boss_distortion", "", {
-			centerX = x1,
-			centerY = y1,
-			size = _boss.aura_alpha*200*lstg.scale_3d,
-			color = Color(125,fxr,fxg,fxb),
-			colorsize = _boss.aura_alpha*200*lstg.scale_3d,
-			arg=1500*_boss.aura_alpha/128*lstg.scale_3d,
-			timer = self.timer
-        })
+		background.WarpEffectApply()
 	end
 	SetViewMode'world'
 end

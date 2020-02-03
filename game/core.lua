@@ -14,7 +14,7 @@
 
 ---@class lstg @内建函数库
 lstg=lstg or {}
-TUO_VERSION='Snapshot 20w02a'
+TUO_VERSION='Snapshot 20w03a'
 local TITLE='东方梦无垠 ~ The Unreachabe Oneiroborder | '..TUO_VERSION
 
 ----------------------------------------

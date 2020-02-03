@@ -253,6 +253,86 @@ UTF16LEToUTF8 = function(src, bytes)
     return ffi.string(buffer, count - 1)
 end
 
+---UTF8转ANSI(如果是中文Windows操作系统，则对应的ANSI编码是中文编码GB2312，如果是英文，则为ASCII)
+---@param src userdata @UTF8字符串
+---@param bytes number|nil @等价于#src
+---@return string @ANSI字符串
+function plus.UTF8ToANSI(src, bytes)
+    --by ETC ，用于使用windows坑爹ANSI编码的函数（说的就是你，io.open）
+    --获取源字符串长度
+    bytes = bytes or #src
+    if bytes == 0 then
+        return nil
+    end
+
+    ----先转换成unicode
+
+    --计算需要的字符数
+    local needed = kernel32.MultiByteToWideChar(CP_UTF8, 0, src, bytes, nil, 0)
+    if needed <= 0 then
+        error("MultiByteToWideChar: " .. FormatLastError())
+    end
+
+    local buffer = ffi.new("uint16_t[?]", needed + 1)
+    local count = kernel32.MultiByteToWideChar(CP_UTF8, 0, src, bytes, buffer, needed)
+    buffer[count] = 0
+
+    ----再转成ANSI
+
+    --计算需要的字符数
+    local needed2 = kernel32.WideCharToMultiByte(CP_ACP, 0, buffer, -1, nil, 0, nil, nil)
+    if needed2 <= 0 then
+        error("MultiByteToWideChar: " .. FormatLastError())
+    end
+
+    local buffer2 = ffi.new("char[?]", needed2 + 1)
+    local count2 = kernel32.WideCharToMultiByte(CP_ACP, 0, buffer, -1, buffer2, needed2, nil, nil)
+    buffer2[count2] = 0
+
+    --return buffer2
+    return ffi.string(buffer2, count2 - 1)
+end
+
+---ANSI转UTF8(如果是中文Windows操作系统，则对应的ANSI编码是中文编码GB2312，如果是英文，则为ASCII)
+---@param src userdata @ANSI字符串
+---@param bytes number|nil @等价于#src
+---@return string @UTF8字符串
+function plus.ANSIToUTF8(src, bytes)
+    --by ETC ，用于使用windows坑爹ANSI编码的函数（说的就是你，io.open）
+    --获取源字符串长度
+    bytes = bytes or #src
+    if bytes == 0 then
+        return nil
+    end
+
+    ----先转换成ANSI
+
+    --计算需要的字符数
+    local needed = kernel32.MultiByteToWideChar(CP_ACP, 0, src, bytes, nil, 0)
+    if needed <= 0 then
+        error("MultiByteToWideChar: " .. FormatLastError())
+    end
+
+    local buffer = ffi.new("uint16_t[?]", needed + 1)
+    local count = kernel32.MultiByteToWideChar(CP_ACP, 0, src, bytes, buffer, needed)
+    buffer[count] = 0
+
+    ----再转成unicode
+
+    --计算需要的字符数
+    local needed2 = kernel32.WideCharToMultiByte(CP_UTF8, 0, buffer, -1, nil, 0, nil, nil)
+    if needed2 <= 0 then
+        error("MultiByteToWideChar: " .. FormatLastError())
+    end
+
+    local buffer2 = ffi.new("char[?]", needed2 + 1)
+    local count2 = kernel32.WideCharToMultiByte(CP_UTF8, 0, buffer, -1, buffer2, needed2, nil, nil)
+    buffer2[count2] = 0
+
+    --return buffer2
+    return ffi.string(buffer2, count2 - 1)
+end
+
 -------------------------------------------------- 文件系统
 
 ffi.cdef [[

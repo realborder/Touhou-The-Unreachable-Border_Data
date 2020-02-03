@@ -107,7 +107,7 @@ m.itpl = {
 
 ----------------------------
 ---切换phase的操作
----让背景完全由timer来控制，如此一来调试和控制来说会非常方便
+---让背景完全由timer来控制，如此一来调试和控制会非常方便
 ---@param self table
 function m.DoPhaseLogic(self, InitPhase)
     local ph = self.phaseinfo

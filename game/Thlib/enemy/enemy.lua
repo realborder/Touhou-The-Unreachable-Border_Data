@@ -26,6 +26,11 @@ LoadImageGroup('kedama','enemy1',640,1152,64,64,1,8,16,16)
 --敌机光环的加载
 LoadTexture('enemy_aura','THlib\\enemy\\enemy_aura.png')
 LoadImageGroup('enemy_aura','enemy_aura',0,0,64,64,2,2)
+--血条渲染
+CopyImage('enemy_hpbar','white')
+CopyImage('enemy_hpbar_base','white')
+SetImageState('enemy_hpbar','',Color(255,254,10,10))
+SetImageState('enemy_hpbar_base','',Color(255,10,10,10))
 
 enemybase=Class(object)
 
@@ -154,9 +159,31 @@ function enemy:frame()
 		if self.auto_delete then self.bound=true end
 	end
 end
-
+local size,y_offset,hp,len,height
 function enemy:render()
 	self._wisys:render(self.dmgt, self.dmgmaxt)--by OLC and ETC，新行走图系统
+	if enemy.show_hp then
+		if not self._bosssys then
+			size=max(0.2,math.log(self.maxhp,10))
+			y_offset=max(20,size*20)
+			hp=int(max(0,self.hp))..'/'..self.maxhp
+
+			--血条渲染
+			if size>1 then
+				height=min(2,size)
+				RenderRect('enemy_hpbar_base',self.x-20*size,self.x+20*size,self.y-y_offset-1.5*height,self.y-y_offset+1.5*height)
+				len=size*self.hp/self.maxhp
+				RenderRect('enemy_hpbar',self.x-19*len,self.x+19*len,self.y-y_offset-1*height,self.y-y_offset+1*height)
+			end
+			--血量渲染
+			SetFontState('bonus','',Color(155,175,20,20))
+			for a=0,330,30 do
+				RenderText('bonus',hp,self.x-cos(a)*min(2,size)/2,self.y-y_offset-sin(a)*min(2,size)/2,min(2,size)/2,'bottom','center')
+			end
+			SetFontState('bonus','',Color(255,255,255,255))
+			RenderText('bonus',hp,self.x,self.y-y_offset,min(2,size)/2,'bottom','center')
+		end
+	end
 end
 
 function enemy:take_damage(dmg)

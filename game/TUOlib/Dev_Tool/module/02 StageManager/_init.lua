@@ -289,15 +289,15 @@ function modmgr:init()
 	totop._event_mouseclick = function(widget)
 		widget.panel.y_offset_aim = 0
 	end
-	local rev = Neww "button"
-	rev.text = "反转逻辑值"
-	rev._event_mouseclick = function(widget)
-		for k, v in pairs(list.display_value) do
-			if list.selection[k] then
-				tuolib.mod_manager.modlist[v.name] = not tuolib.mod_manager.modlist[v.name]
-			end
-		end
-	end
+	--local rev = Neww "button"
+	--rev.text = "反转逻辑值"
+	--rev._event_mouseclick = function(widget)
+	--	for k, v in pairs(list.display_value) do
+	--		if list.selection[k] then
+	--			tuolib.mod_manager.modlist[v.name] = not tuolib.mod_manager.modlist[v.name]
+	--		end
+	--	end
+	--end
 	local revsel = Neww "button"
 	revsel.text = "反选"
 	revsel.gap_t = 12
@@ -483,29 +483,38 @@ local classmonitor = TUO_Developer_UI:NewPanel()
 function classmonitor:init()
 	self.name = "类"
 	Neww 'title'.text = 'LuaSTG Class'
-	local list1 = Neww 'list_box'
+	local count = 0
 	local search = ''
-
-	list1.display_value = { "点击刷新" }
-	list1.monitoring_value = function(widget)
+	local function FindAllClass()
+		count = 0
 		local out = {}
-		local count = 1
 		for k, v in pairs(_G) do
-			if type(v) == 'table' and v.is_class then
-				--count=count+1
-				--if count>256 then break end
-				if search == '' or search == nil then
-					table.insert(out, k)
-				else
-					if string.find(k, search) ~= nil then
+			if type(v) == 'table' then
+				 if v.is_class then
+					 count=count+1
+					if search == '' or search == nil then
 						table.insert(out, k)
+					else
+						if string.find(k, search) ~= nil then
+							table.insert(out, k)
+						end
 					end
 				end
 			end
 		end
 		return out
-		--list1.display_value=out
 	end
+
+	local btn1 = Neww 'button'
+	local list1 = Neww 'list_box'
+
+
+
+	btn1.text='刷新'
+	btn1._event_mouseclick=function()
+		list1.display_value=FindAllClass()
+	end
+	list1.display_value = FindAllClass()
 
 	TUO_Developer_UI.SetWidgetSlot('slot2')
 	Neww 'title'.text = '操作'

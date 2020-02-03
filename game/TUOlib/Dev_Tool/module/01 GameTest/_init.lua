@@ -131,6 +131,17 @@ function basic:init()
 	gr2.text='必杀技充能'
     gr2.gap_b=8
 
+	local rev=Neww'value_displayer'
+	rev.monitoring_value=function()
+		if IsValid(player) then
+			return {{name="player",v=tostring(player.reverse_colli)}}
+		else
+			return {{name="player",v="玩家对象不可用"}}
+		end
+	end
+	rev.text='判定反转'
+	rev.gap_b=8
+
     for i=10,15 do
         Neww'value_displayer'.monitoring_value=var[i]
     end
@@ -381,7 +392,23 @@ function boss_monitor:init()
         end
     end
 end
-
+local DPS_monitor=TUO_Developer_UI:NewPanel()
+function DPS_monitor:init()
+    self.name="伤害显示"
+    self.left_for_world=true
+    TUO_Developer_UI.SetWidgetSlot('world')
+    Neww'title'.text='伤害显示'
+    local sw= Neww'switch'
+    sw.text_on='显示敌机血量 开'
+    sw.text_off='显示敌机血量 关'
+    sw.monitoring_value=function(value)
+        if type(value)=='nil' then
+            return enemy.show_hp
+        else
+            enemy.show_hp=value
+        end
+    end
+end
 
 
 

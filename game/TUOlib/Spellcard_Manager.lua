@@ -70,6 +70,10 @@ function m.EditSpellCardList(card, name, boss_name, boss_id, card_index ,perform
 		if name~='' then cardinfo.is_sc[index]=true end
 	else
 		cardinfo.card_name=name
+		--适配多难度符卡名
+		if type(name)=='table' then
+			card.namelist=name
+		end
 		cardinfo.card=card
 		cardinfo.performingaction=performingaction
 		if name~='' then cardinfo.is_sc=true end
@@ -93,6 +97,7 @@ stage.group.DefStageFunc('Spell Practice New@Spell Practice New','init',function
 		ext.sc_pr=true
 		local suffix=''
 		local diff=difficulty
+		--card本身也是表，所以只能用这种条件来判断card是表还是card
 		if not cardinfo.card.init then
 			card=cardinfo.card[diff]
 			if cardinfo.performingaction and cardinfo.performingaction[diff] then

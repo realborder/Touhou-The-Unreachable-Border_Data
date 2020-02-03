@@ -186,6 +186,11 @@ function AfterRender()
 	end
 	--开发者工具套件渲染
 	if TUO_Developer_Tool_kit then 	TUO_Developer_Tool_kit:render() end
+	if lstg.CheckRes(7,'menu') then
+		SetFontState('menu','',Color(50,255,255,255))
+		RenderText('menu',TUO_VERSION,320,480,0.35,'center')
+		SetFontState('menu','',Color(255,255,255,255))
+	end
 end
 
 function FocusLoseFunc()

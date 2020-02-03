@@ -61,6 +61,10 @@ function player_class:init()
 	self.death=0
 	self.protect=120
 	
+	--反转判定功能，最好在stagetask里使用
+	self.reverse_colli=nil
+	self.stay_safe=true
+
 	self.graze_c=0
 	self.graze_c_before=0
 	self.ccc_state=1--指代必杀充能状态，1代表不能释放，2代表可以释放，3代表擦弹计数到达最大值
@@ -316,6 +320,22 @@ function player_class:frame()
 				self.ringR_aim=ring_radius*k+ring_width
 				self.ringW_aim=ring_width*(0.5+0.5*k)
 				self.ringWithdraw=false
+			--判定反转逻辑
+			--由于core中objframe在collicheck之前，所以设为nil以防止设置参数的那一帧玩家直接biu
+			if self.reverse_colli then
+				if self.stay_safe then
+					self.stay_safe=false
+				elseif self.stay_safe==false then
+					if self.death==0 and self.protect==0 and not self.dialog and not cheat then
+						PlaySound('pldead00',0.5)
+						self.death=100
+					end
+				elseif self.stay_safe==nil then
+					self.stay_safe=false
+				end
+			else
+				self.stay_safe=nil
+			end
 	--死亡计时器为90时的逻辑
 		elseif self.death==90 then
 			if self.time_stop then self.death=self.death-1 end
@@ -472,11 +492,15 @@ end
 
 function player_class:colli(other)
 	if self.death==0 and not self.dialog and not cheat then
-		if self.protect==0 then
-			PlaySound('pldead00',0.5)
-			self.death=100
+		if not self.reverse_colli then
+			if self.protect==0 then
+				PlaySound('pldead00',0.5)
+				self.death=100
+			end
+			if other.group==GROUP_ENEMY_BULLET then Del(other) end
+		else
+			self.stay_safe=true
 		end
-		if other.group==GROUP_ENEMY_BULLET then Del(other) end
 	end
 end
 
@@ -594,16 +618,22 @@ function grazer:frame()
 	else ParticleStop(self) end
 end
 
+local scale=0
 function grazer:render()
-	local scale=sin(90*self.player.lh)
+	scale=sin(90*self.player.lh)
 	object.render(self)
 	SetImageState('player_aura','',Color(0xFFFFFFFF)*self.player.lh+Color(0x00FFFFFF)*(1-self.player.lh))
 	Render('player_aura',self.x,self.y, self.aura,(2-scale))
 	SetImageState('player_aura','',Color(0xFFFFFFFF))
 	Render('player_aura',self.x,self.y,-self.aura,scale)
-	if player.death<50 then 
+	if player.death<50 then
+
+		scale=(1-sqrt(sqrt(1/player.protect)))*2+1
+		scale=1+0.5*sin(90*min(3,player.protect/30)/3)
+
 		SetImageState('player_indicator4','mul+add',Color(255*min(1,player.protect/10),255,255,255))
-		local scale=1+0.5*sin(90*min(3,player.protect/30)/3)
+		Render('player_indicator4',self.x,self.y,self.timer*2,scale)
+		SetImageState('player_indicator4','',Color(75*min(1,player.protect/10),255,255,255))
 		Render('player_indicator4',self.x,self.y,self.timer*2,scale)
 	elseif player.death<90 then
 		if player.death>75 then

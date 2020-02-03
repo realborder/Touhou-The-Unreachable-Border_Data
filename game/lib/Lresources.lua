@@ -80,11 +80,18 @@ end
 function LoadTTF(ttfname,filename,size) lstg.LoadTTF(ttfname,filename,0,size) end
 
 --资源卸载 由云绝添加
+local pool --用于记录资源池参数，复用变量以节省性能
 function UnloadTexture(tex)
-	lstg.RemoveResource(lstg.CheckRes(1,tex),1,tex)
+	pool=lstg.CheckRes(1,tex)
+	if pool then
+		lstg.RemoveResource(pool,1,tex)
+	end
 end
 function UnloadImage(img)
-	lstg.RemoveResource(lstg.CheckRes(2,img),2,img)
+	pool=lstg.CheckRes(2,tex)
+	if pool then
+		lstg.RemoveResource(pool,2,img)
+	end
 	ImageList[img] = nil
 end
 
@@ -102,7 +109,10 @@ function UnloadImageGroupFromFile(teximgname,n)
 	UnloadTexture(teximgname)
 end
 function UnloadAnimation(ani)
-	lstg.RemoveResource(lstg.CheckRes(3,ani),3,ani)
+	pool=lstg.CheckRes(3,tex)
+	if pool then
+		lstg.RemoveResource(pool,3,ani)
+	end
 end
 UnloadAni=UnloadAnimation
 
@@ -111,24 +121,43 @@ function UnloadAniFromFile(texaniname)
 	UnloadTexture(texaniname)
 end
 function UnloadBGM(bgm)
-	lstg.RemoveResource(lstg.CheckRes(4,bgm),4,bgm)
+	pool=lstg.CheckRes(4,tex)
+	if pool then
+		lstg.RemoveResource(pool,4,bgm)
+
+	end
 end
 UnloadMusic=UnloadBGM
 function UnloadSound(sfx)
-	lstg.RemoveResource(lstg.CheckRes(5,sfx),5,sfx)
+	pool=lstg.CheckRes(5,tex)
+	if pool then
+		lstg.RemoveResource(pool,5,sfx)
+	end
 end
 UnloadSFX=UnloadSound
 function UnloadPSI(psi)
-	lstg.RemoveResource(lstg.CheckRes(6,psi),6,psi)
+	pool=lstg.CheckRes(6,tex)
+	if pool then
+		lstg.RemoveResource(pool,6,psi)
+	end
 end
 function UnloadFNT(fnt)
-	lstg.RemoveResource(lstg.CheckRes(7,fnt),7,fnt)
+	pool=lstg.CheckRes(7,tex)
+	if pool then
+		lstg.RemoveResource(pool,7,fnt)
+	end
 end
 function UnloadTTF(ttfname)
-	lstg.RemoveResource(lstg.CheckRes(8,ttfname),8,ttfname)
+	pool=lstg.CheckRes(8,tex)
+	if pool then
+		lstg.RemoveResource(pool,8,ttfname)
+	end
 end
 function UnloadFX(fx)
-	lstg.RemoveResource(lstg.CheckRes(9,fx),9,fx)
+	pool=lstg.CheckRes(9,tex)
+	if pool then
+		lstg.RemoveResource(pool,9,fx)
+	end
 end
 
 ----------------------------------------
